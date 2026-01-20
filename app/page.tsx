@@ -158,6 +158,7 @@ export default function Home() {
   const [authMode, setAuthMode] = useState("signup");
   const [credits, setCredits] = useState(0); 
   const [ticker, setTicker] = useState("");
+  const [timeRange, setTimeRange] = useState("1Y");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [lang, setLang] = useState("en"); 

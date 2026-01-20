@@ -843,119 +843,130 @@ const getFilteredChartData = () => {
 )}
 
 {showCompareModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-2 md:p-4 overflow-y-auto">
-    {/* جسم النافذة مع خاصية السكرول الداخلي */}
-    <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-[2.5rem] p-6 md:p-10 relative shadow-2xl my-auto max-h-[90vh] overflow-y-auto custom-scrollbar">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl p-2 md:p-4 overflow-y-auto font-sans">
+    <div className="bg-[#0f172a] border border-slate-800 w-full max-w-5xl rounded-[3rem] p-6 md:p-12 relative shadow-[0_0_100px_rgba(16,185,129,0.1)] my-auto max-h-[90vh] overflow-y-auto custom-scrollbar">
       
-      <button onClick={() => {setShowCompareModal(false); setCompareResult(null);}} className="absolute top-6 right-6 text-slate-500 hover:text-white z-20">
-        <XCircle className="w-8 h-8" />
+      {/* زر الإغلاق الأنيق */}
+      <button onClick={() => {setShowCompareModal(false); setCompareResult(null);}} className="absolute top-8 right-8 text-slate-500 hover:text-white transition-transform hover:rotate-90 z-20">
+        <XCircle className="w-10 h-10" />
       </button>
       
       <div className="relative z-10">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter italic">
-            Stock <span className="text-emerald-500 underline decoration-emerald-500/30">Battle</span>
+        <div className="text-center mb-12">
+          <div className="inline-block bg-emerald-500/10 border border-emerald-500/20 px-4 py-1 rounded-full text-emerald-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4">
+            Institutional Battle Engine v2.0
+          </div>
+          <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter italic leading-none">
+            Capital <span className="text-emerald-500">Clash</span>
           </h2>
-          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-2">Institutional Comparison • 2 Credits</p>
         </div>
         
-        {/* خانات إدخال الرموز */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-blue-500 ml-2 uppercase tracking-widest opacity-70">Challenger 1</label>
-            <input type="text" placeholder="e.g. AAPL" className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl outline-none uppercase font-mono text-center text-xl text-blue-400 focus:border-blue-500 transition-all shadow-inner" onChange={(e)=>setCompareTickers({...compareTickers, t1: e.target.value})} />
+        {/* مدخلات الرموز بتصميم عصري */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-transparent rounded-2xl blur opacity-20 group-hover:opacity-40 transition"></div>
+            <input type="text" placeholder="TICKER 1" className="relative w-full bg-slate-950 border border-slate-800 p-5 rounded-2xl outline-none uppercase font-mono text-center text-2xl text-blue-400 focus:border-blue-500 transition-all" onChange={(e)=>setCompareTickers({...compareTickers, t1: e.target.value})} />
           </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-emerald-500 ml-2 uppercase tracking-widest opacity-70">Challenger 2</label>
-            <input type="text" placeholder="e.g. MSFT" className="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl outline-none uppercase font-mono text-center text-xl text-emerald-400 focus:border-emerald-500 transition-all shadow-inner" onChange={(e)=>setCompareTickers({...compareTickers, t2: e.target.value})} />
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-transparent rounded-2xl blur opacity-20 group-hover:opacity-40 transition"></div>
+            <input type="text" placeholder="TICKER 2" className="relative w-full bg-slate-950 border border-slate-800 p-5 rounded-2xl outline-none uppercase font-mono text-center text-2xl text-emerald-400 focus:border-emerald-500 transition-all" onChange={(e)=>setCompareTickers({...compareTickers, t2: e.target.value})} />
           </div>
         </div>
 
         <button 
           onClick={handleCompare} 
           disabled={loadingCompare} 
-          className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 py-5 rounded-2xl font-black text-xl transition-all disabled:opacity-50 shadow-xl shadow-emerald-500/10 active:scale-[0.98]"
+          className="w-full bg-white text-black hover:bg-emerald-500 hover:text-white py-6 rounded-2xl font-black text-2xl transition-all disabled:opacity-50 shadow-[0_20px_40px_rgba(255,255,255,0.05)] active:scale-[0.98] uppercase tracking-tighter"
         >
-          {loadingCompare ? "Analyzing Market Data..." : "Launch Financial Battle"}
+          {loadingCompare ? "Computing Strategic Alpha..." : "Execute Battle Analysis"}
         </button>
 
         {compareResult && (
-          <div className="mt-12 space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000 pb-10">
+          <div className="mt-16 space-y-16 animate-in fade-in slide-in-from-bottom-10 duration-1000">
             
-            {/* 1. مقياس الهيمنة (Visual Dominance Meter) */}
-            <div className="bg-slate-950 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-              <div className="absolute -right-10 -top-10 opacity-5 text-white"><Zap size={150} /></div>
-              <h3 className="text-center text-slate-500 font-black text-[10px] uppercase tracking-[0.4em] mb-8">Dominance Analysis</h3>
-              <div className="flex items-center gap-6">
-                <div className="text-center w-20">
-                  <span className="block font-mono text-blue-400 font-black text-2xl">{compareResult.stock1.symbol}</span>
-                  <span className="text-[9px] text-slate-600 font-bold uppercase tracking-tighter">Aggressive</span>
-                </div>
-                <div className="flex-1 h-5 bg-slate-900 rounded-full overflow-hidden flex border border-slate-800 p-0.5">
-                  <div className="h-full bg-blue-500 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.6)]" style={{ width: '58%' }}></div>
-                  <div className="h-full bg-emerald-500 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.6)] ml-1" style={{ width: '42%' }}></div>
-                </div>
-                <div className="text-center w-20">
-                  <span className="block font-mono text-emerald-400 font-black text-2xl">{compareResult.stock2.symbol}</span>
-                  <span className="text-[9px] text-slate-600 font-bold uppercase tracking-tighter">Stability</span>
-                </div>
+            {/* 1. ميزة الـ Head-to-Head Visuals */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+              <div className="text-center p-6 bg-blue-500/5 rounded-[2rem] border border-blue-500/10">
+                 <span className="text-5xl font-black text-blue-400 font-mono tracking-tighter">${Number(compareResult.stock1.price).toFixed(2)}</span>
+                 <p className="text-slate-500 text-xs font-bold mt-2 uppercase">{compareResult.stock1.symbol} Current Price</p>
+              </div>
+              <div className="flex flex-col items-center">
+                 <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center border-4 border-slate-900 shadow-xl relative z-10">
+                    <span className="text-white font-black text-xl italic">VS</span>
+                 </div>
+                 <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent -mt-8"></div>
+              </div>
+              <div className="text-center p-6 bg-emerald-500/5 rounded-[2rem] border border-emerald-500/10">
+                 <span className="text-5xl font-black text-emerald-400 font-mono tracking-tighter">${Number(compareResult.stock2.price).toFixed(2)}</span>
+                 <p className="text-slate-500 text-xs font-bold mt-2 uppercase">{compareResult.stock2.symbol} Current Price</p>
               </div>
             </div>
 
-            {/* 2. جدول البيانات التقني (Technical Matrix) */}
-            <div className="bg-slate-950/50 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-              <table className="w-full text-left text-sm border-collapse">
-                <thead className="bg-slate-900/80">
-                  <tr>
-                    <th className="p-5 text-slate-500 font-black uppercase text-[10px] tracking-widest">Core Metric</th>
-                    <th className="p-5 text-blue-400 font-black text-center bg-blue-500/5">{compareResult.stock1.symbol}</th>
-                    <th className="p-5 text-emerald-400 font-black text-center bg-emerald-500/5">{compareResult.stock2.symbol}</th>
+            {/* 2. جدول البيانات "الماتريكس" المعمق */}
+            <div className="bg-slate-950/30 border border-slate-800 rounded-[2.5rem] overflow-hidden backdrop-blur-sm">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-slate-900/50">
+                    <th className="p-6 text-slate-500 font-black uppercase text-[10px] tracking-[0.2em]">Institutional Matrix</th>
+                    <th className="p-6 text-blue-400 font-black text-center text-xl">{compareResult.stock1.symbol}</th>
+                    <th className="p-6 text-emerald-400 font-black text-center text-xl">{compareResult.stock2.symbol}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50 font-mono text-[13px]">
-                  <tr className="hover:bg-slate-800/20 transition-colors">
-                    <td className="p-5 text-slate-400 font-bold text-xs uppercase tracking-tighter">Price</td>
-                    <td className="p-5 text-white text-center">${compareResult.stock1.price}</td>
-                    <td className="p-5 text-white text-center">${compareResult.stock2.price}</td>
-                  </tr>
-                  <tr className="hover:bg-slate-800/20 transition-colors">
-                    <td className="p-5 text-slate-400 font-bold text-xs uppercase tracking-tighter">Valuation (P/E)</td>
-                    <td className="p-5 text-white text-center">{compareResult.stock1.pe_ratio}</td>
-                    <td className="p-5 text-white text-center">{compareResult.stock2.pe_ratio}</td>
-                  </tr>
-                  <tr className="hover:bg-slate-800/20 transition-colors">
-                    <td className="p-5 text-slate-400 font-bold text-xs uppercase tracking-tighter">Profit Margin</td>
-                    <td className="p-5 text-blue-400 text-center">{compareResult.stock1.profit_margins?.toFixed(1)}%</td>
-                    <td className="p-5 text-emerald-400 text-center">{compareResult.stock2.profit_margins?.toFixed(1)}%</td>
-                  </tr>
+                <tbody className="divide-y divide-slate-800/50 font-mono">
+                  {[
+                    { label: "Valuation (P/E)", v1: compareResult.stock1.pe_ratio, v2: compareResult.stock2.pe_ratio },
+                    { label: "Efficiency (ROE)", v1: compareResult.stock1.return_on_equity, v2: compareResult.stock2.return_on_equity, suffix: "%" },
+                    { label: "Revenue Growth", v1: compareResult.stock1.revenue_growth, v2: compareResult.stock2.revenue_growth, suffix: "%" },
+                    { label: "Profit Margin", v1: compareResult.stock1.profit_margins, v2: compareResult.stock2.profit_margins, suffix: "%" }
+                  ].map((row, i) => (
+                    <tr key={i} className="group hover:bg-white/[0.02] transition-colors">
+                      <td className="p-6 text-slate-500 font-bold text-xs uppercase tracking-widest">{row.label}</td>
+                      <td className="p-6 text-white text-center text-lg">{Number(row.v1).toFixed(2)}{row.suffix}</td>
+                      <td className="p-6 text-white text-center text-lg">{Number(row.v2).toFixed(2)}{row.suffix}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
 
-            {/* 3. الحكم النهائي (The Verdict) */}
-            <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-700/50 p-8 md:p-12 rounded-[3rem] shadow-2xl relative border-t-emerald-500/40 overflow-hidden">
-               <div className="absolute -left-10 -bottom-10 opacity-5 text-emerald-500"><Trophy size={200} /></div>
-               <div className="flex items-center gap-4 mb-8">
-                  <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)] rotate-3">
-                     <Trophy className="text-black w-8 h-8" />
+            {/* 3. ميزة الـ AI Deep Verdict (البطاقة الذهبية) */}
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-[4rem] blur-3xl opacity-30"></div>
+              <div className="relative bg-[#0b1121] border border-slate-700/50 p-8 md:p-14 rounded-[3.5rem] shadow-3xl">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                  <div className="flex items-center gap-5">
+                    <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-[1.5rem] flex items-center justify-center shadow-2xl shadow-emerald-500/40 transform -rotate-3">
+                       <Trophy className="text-black w-10 h-10" />
+                    </div>
+                    <div>
+                      <h4 className="text-white text-3xl font-black uppercase tracking-tighter italic leading-none">The Master Thesis</h4>
+                      <p className="text-emerald-500 text-xs font-black uppercase tracking-[0.3em] mt-1">Winning Asset: {compareResult.analysis.winner}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-white text-2xl font-black uppercase tracking-tighter italic">Battle Verdict</h4>
-                    <p className="text-[10px] text-emerald-500 font-black uppercase tracking-[0.3em]">Final Recommendation</p>
+                  <div className="bg-slate-900 border border-slate-800 px-6 py-3 rounded-2xl">
+                     <span className="text-[10px] text-slate-500 font-black uppercase block mb-1">Confidence Score</span>
+                     <div className="flex items-center gap-2">
+                        <div className="h-2 w-24 bg-slate-800 rounded-full overflow-hidden">
+                           <div className="h-full bg-emerald-500" style={{width: '85%'}}></div>
+                        </div>
+                        <span className="text-white font-mono font-black text-sm">85%</span>
+                     </div>
                   </div>
-               </div>
+                </div>
 
-               <div className="prose prose-invert max-w-none">
-                  <p className="text-slate-200 leading-relaxed text-base md:text-lg font-medium italic border-l-4 border-emerald-500 pl-6 py-2 bg-emerald-500/5 rounded-r-2xl">
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-slate-200 leading-relaxed text-lg md:text-2xl font-medium italic first-letter:text-7xl first-letter:font-black first-letter:text-emerald-500 first-letter:mr-3 first-letter:float-left bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent">
                     {compareResult.analysis.verdict}
                   </p>
-               </div>
+                </div>
+              </div>
+            </div>
 
-               <div className="mt-10 pt-8 border-t border-slate-800 flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
-                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest font-mono">Winner: {compareResult.analysis.winner}</span>
-                  </div>
+            {/* تذييل النافذة */}
+            <div className="flex justify-center pb-8">
+               <div className="flex items-center gap-3 bg-slate-900/50 border border-slate-800 px-8 py-4 rounded-full">
+                  <Activity className="text-emerald-500 w-5 h-5 animate-pulse" />
+                  <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">Institutional Engine Active • Data Verified</span>
                </div>
             </div>
           </div>

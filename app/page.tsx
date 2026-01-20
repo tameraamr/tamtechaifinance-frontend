@@ -467,7 +467,7 @@ const getFilteredChartData = () => {
     
     {/* السطر الأول: خانة البحث + زر التحليل + زر النرد */}
     <div className="flex gap-2 w-full mb-4">
-      <div className="flex-1 flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl focus-within:border-blue-500/50 transition-all">
+      <div className="flex-1 flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl ...">
         <input 
           type="text" 
           placeholder={t.searchPlaceholder} 

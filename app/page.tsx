@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
+import { motion } from "framer-motion";
 
 // هذا هو "المنظف" اللي بيحذف Headline وبيقصر الأرقام
 const cleanAIOutput = (text: string) => {
@@ -406,19 +407,19 @@ const getFilteredChartData = () => {
 
 {/* الحاوية المتحركة المحدثة */}
 <div className="flex overflow-hidden relative ml-4 flex-1 items-center h-full">
-  <div 
-    className="flex gap-12 items-center animate-marquee whitespace-nowrap py-1"
-    style={{ 
-      display: 'flex',
-      width: 'max-content',
-      animationDuration: '30s', // جرب 30 ثانية ليكون متزن
-      transform: 'translateZ(0)', // سر السرعة في الموبايل
-      WebkitTransform: 'translateZ(0)',
+  {/* استخدام motion.div يضمن سلاسة 60 إطار في الثانية حتى على الموبايلات الضعيفة */}
+  <motion.div 
+    className="flex gap-12 items-center whitespace-nowrap py-1"
+    animate={{ x: ["0%", "-50%"] }} 
+    transition={{ 
+      ease: "linear", 
+      duration: 25, 
+      repeat: Infinity 
     }}
   >
     {marketPulse.length > 0 ? (
-      [...marketPulse, ...marketPulse, ...marketPulse].map((index, i) => ( // كررناها 3 مرات لضمان عدم وجود فراغ
-        <div key={i} className="flex items-center gap-2 px-2 shrink-0">
+      [...marketPulse, ...marketPulse].map((index, i) => (
+        <div key={i} className="flex items-center gap-2 px-4 shrink-0">
           <span className="text-[10px] font-bold text-slate-500 uppercase">{index.name}</span>
           <span className="text-[11px] font-mono font-bold text-slate-200">{index.price}</span>
           <span className={`text-[9px] font-bold ${index.up ? 'text-emerald-500' : 'text-red-500'}`}>
@@ -426,12 +427,12 @@ const getFilteredChartData = () => {
           </span>
         </div>
       ))
-  ) : (
-      <span className="text-[10px] text-slate-600 animate-pulse font-bold tracking-widest uppercase">
+    ) : (
+      <span className="text-[10px] text-slate-600 animate-pulse font-bold tracking-widest uppercase px-4">
         Loading Global Market Data...
       </span>
     )}
-  </div>
+  </motion.div>
 </div>
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative">

@@ -243,31 +243,23 @@ export default function Home() {
 
     try {
       const res = await fetch(`${BASE_URL}/verify-license`, {
-        method: "POST", 
-        headers: { 
-          "Content-Type": "application/json", 
-          Authorization: `Bearer ${token}` 
-        },
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ license_key: licenseKey.trim() }),
       });
-      
       const data = await res.json();
-      
-      if (data.valid) { 
-        setCredits(data.credits); 
-        setShowPaywall(false); 
-        setLicenseKey(""); 
-        // رسالة نجاح تظهر في المتصفح
-        alert(`🎉 Success! Balance: ${data.credits}`); 
-      } 
-      else { 
-        // تخزين الخطأ لعرضه تحت الزر مباشرة (أفضل للموبايل)
-        setAuthError(data.message); 
+      if (data.valid) {
+        setCredits(data.credits);
+        setShowPaywall(false);
+        setLicenseKey("");
+        alert(`🎉 Success! Balance: ${data.credits}`);
+      } else {
+        setAuthError(data.message);
       }
-    } catch (err) { 
-      setAuthError("Connection Error. Please check your internet."); 
+    } catch {
+      setAuthError("Error connecting to server");
     }
-};
+  };
 
   const handleDownloadPDF = async () => {
     const input = document.getElementById('report-content');
@@ -431,20 +423,50 @@ export default function Home() {
         )}
 
         {showPaywall && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-            <div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-md w-full text-center relative shadow-2xl">
-              <div className="bg-slate-800 p-4 rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center mx-auto mb-6 border border-slate-700"><Lock className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" /></div>
-              <h2 className="text-xl md:text-3xl font-bold mb-2 text-white">{t.paywallTitle}</h2>
-              <p className="text-slate-400 mb-8 text-xs md:text-sm">{t.paywallDesc}</p>
-              <a href="https://tamtechfinance.gumroad.com/l/tool" target="_blank" className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 md:py-4 rounded-xl mb-6 text-sm md:text-base">{t.upgradeBtn}</a>
-              <div className="flex gap-2">
-                <input type="text" placeholder={t.inputKey} className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs" value={licenseKey} onChange={(e) => setLicenseKey(e.target.value)} />
-                <button onClick={handleRedeem} className="bg-slate-700 hover:bg-slate-600 text-white font-bold px-3 py-2 rounded-lg text-xs">{t.redeemBtn}</button>
-              </div>
-              <button onClick={()=>setShowPaywall(false)} className="mt-4 text-[10px] md:text-xs text-slate-500 hover:text-slate-300">Close</button>
-            </div>
-          </div>
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
+    <div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-md w-full text-center relative shadow-2xl">
+      <div className="bg-slate-800 p-4 rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center mx-auto mb-6 border border-slate-700">
+        <Lock className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" />
+      </div>
+      
+      <h2 className="text-xl md:text-3xl font-bold mb-2 text-white">{t.paywallTitle}</h2>
+      <p className="text-slate-400 mb-8 text-xs md:text-sm">{t.paywallDesc}</p>
+      
+      <a href="https://tamtechfinance.gumroad.com/l/tool" target="_blank" className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 md:py-4 rounded-xl mb-6 text-sm md:text-base cursor-pointer">
+        {t.upgradeBtn}
+      </a>
+      
+      <div className="flex flex-col gap-2"> {/* غيرنا التنسيق ليكون أفضل للموبايل */}
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            placeholder={t.inputKey} 
+            className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" 
+            value={licenseKey} 
+            onChange={(e) => setLicenseKey(e.target.value)} 
+          />
+          <button 
+            onClick={handleRedeem} 
+            className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg text-xs cursor-pointer active:scale-95 transition-all"
+          >
+            {t.redeemBtn}
+          </button>
+        </div>
+
+        {/* 👇 هذا هو السطر السحري لعرض الخطأ في الموبايل */}
+        {authError && (
+          <p className="text-red-500 text-[10px] md:text-xs mt-1 animate-pulse text-left">
+            ⚠️ {authError}
+          </p>
         )}
+      </div>
+
+      <button onClick={()=>setShowPaywall(false)} className="mt-6 text-[10px] md:text-xs text-slate-500 hover:text-slate-300 cursor-pointer">
+        Close
+      </button>
+    </div>
+  </div>
+)}
 
         {result && !loading && (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-6 md:space-y-8 pb-20 px-1 md:px-0">

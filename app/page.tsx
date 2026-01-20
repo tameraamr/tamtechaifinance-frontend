@@ -239,10 +239,15 @@ export default function Home() {
 
   const handleRedeem = async () => {
     setAuthError("");
+    if (!licenseKey.trim()) return;
+
     try {
       const res = await fetch(`${BASE_URL}/verify-license`, {
         method: "POST", 
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { 
+          "Content-Type": "application/json", 
+          Authorization: `Bearer ${token}` 
+        },
         body: JSON.stringify({ license_key: licenseKey.trim() }),
       });
       
@@ -252,16 +257,15 @@ export default function Home() {
         setCredits(data.credits); 
         setShowPaywall(false); 
         setLicenseKey(""); 
+        // رسالة نجاح تظهر في المتصفح
         alert(`🎉 Success! Balance: ${data.credits}`); 
       } 
       else { 
-        // 👇 هذا التعديل سيجعل الرسالة تظهر فوراً
+        // تخزين الخطأ لعرضه تحت الزر مباشرة (أفضل للموبايل)
         setAuthError(data.message); 
-        alert(`❌ ${data.message}`); // تنبيه للمستخدم بالخطأ القادم من السيرفر
       }
     } catch (err) { 
-      setAuthError("Connection Error"); 
-      alert("❌ Could not connect to the server");
+      setAuthError("Connection Error. Please check your internet."); 
     }
 };
 

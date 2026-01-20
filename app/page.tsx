@@ -405,12 +405,20 @@ const getFilteredChartData = () => {
       </nav>
 
 {/* الحاوية المتحركة المحدثة */}
-<div className="flex overflow-hidden relative ml-4 flex-1">
-  <div className="flex gap-12 items-center animate-marquee whitespace-nowrap py-1">
+<div className="flex overflow-hidden relative ml-4 flex-1 items-center h-full">
+  <div 
+    className="flex gap-12 items-center animate-marquee whitespace-nowrap py-1"
+    style={{ 
+      display: 'flex',
+      width: 'max-content',
+      animationDuration: '30s', // جرب 30 ثانية ليكون متزن
+      transform: 'translateZ(0)', // سر السرعة في الموبايل
+      WebkitTransform: 'translateZ(0)',
+    }}
+  >
     {marketPulse.length > 0 ? (
-      // نكرر المصفوفة لضمان حركة انسيابية بلا انقطاع
-      [...marketPulse, ...marketPulse].map((index, i) => (
-        <div key={i} className="flex items-center gap-2 px-2">
+      [...marketPulse, ...marketPulse, ...marketPulse].map((index, i) => ( // كررناها 3 مرات لضمان عدم وجود فراغ
+        <div key={i} className="flex items-center gap-2 px-2 shrink-0">
           <span className="text-[10px] font-bold text-slate-500 uppercase">{index.name}</span>
           <span className="text-[11px] font-mono font-bold text-slate-200">{index.price}</span>
           <span className={`text-[9px] font-bold ${index.up ? 'text-emerald-500' : 'text-red-500'}`}>
@@ -418,8 +426,7 @@ const getFilteredChartData = () => {
           </span>
         </div>
       ))
-    ) : (
-      /* تظهر هذه الجملة لثانية واحدة فقط حتى تكتمل عملية الـ Fetch */
+  ) : (
       <span className="text-[10px] text-slate-600 animate-pulse font-bold tracking-widest uppercase">
         Loading Global Market Data...
       </span>

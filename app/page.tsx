@@ -564,6 +564,32 @@ const getFilteredChartData = () => {
                             </div>
                         </div>
                         <div className="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-3xl p-2 md:p-8 h-[300px] md:h-[500px] shadow-2xl">
+                              {/* --- بداية كود الأزرار --- */}
+<div className="flex justify-between items-center mb-6 bg-slate-800/30 p-2 rounded-2xl border border-slate-700/50">
+  <div className="flex items-center gap-2">
+    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Market History</span>
+  </div>
+  <div className="flex gap-1">
+    {['1W', '1M', '6M', '1Y'].map((range) => (
+      <button
+        key={range}
+        onClick={(e) => {
+          e.preventDefault();
+          setTimeRange(range);
+        }}
+        className={`px-3 py-1.5 rounded-xl text-[10px] font-black transition-all cursor-pointer ${
+          timeRange === range 
+          ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/40 scale-105' 
+          : 'text-slate-500 hover:bg-slate-700/50 hover:text-slate-300'
+        }`}
+      >
+        {range}
+      </button>
+    ))}
+  </div>
+</div>
+{/* --- نهاية كود الأزرار --- */}                            
                             <ResponsiveContainer width="100%" height="100%">
                               <AreaChart data={getFilteredChartData()}>
                                 <defs>

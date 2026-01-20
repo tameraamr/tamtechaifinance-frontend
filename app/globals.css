@@ -33,3 +33,20 @@ body {
     @apply cursor-pointer;
   }
 }
+
+/* تعريف حركة الماركي (الشريط الإخباري) */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+
+/* ميزة إضافية: عند وضع الماوس على الشريط يتوقف ليسهل القراءة */
+.group:hover .animate-marquee {
+  animation-play-state: paused;
+}

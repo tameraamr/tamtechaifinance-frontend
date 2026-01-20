@@ -382,35 +382,43 @@ const getFilteredChartData = () => {
         </div>
       </nav>
 
-{/* Market Pulse Strip */}
-<div className="bg-slate-950/50 border-b border-slate-800/50 py-2 overflow-hidden shadow-inner">
-  <div className="max-w-7xl mx-auto px-6 flex items-center gap-8 animate-in fade-in slide-in-from-top duration-1000">
+{/* Market Pulse Strip - المعدل للحركة */}
+<div className="bg-slate-950/50 border-b border-slate-800/50 py-2 overflow-hidden shadow-inner sticky top-16 z-30 backdrop-blur-md group">
+  <div className="max-w-7xl mx-auto px-6 flex items-center">
     
-    {/* مؤشر الخوف والطمع (كمثال ذكي) */}
-    <div className="flex items-center gap-2 border-r border-slate-800 pr-8">
+    {/* عنوان الشريط - ثابت لا يتحرك */}
+    <div className="flex items-center gap-2 border-r border-slate-800 pr-4 bg-[#0b1121] z-10">
       <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Market Pulse:</span>
-      <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
+      <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20 whitespace-nowrap">
         <Zap className="w-3 h-3 fill-emerald-400"/> BULLISH
       </span>
     </div>
 
-    {/* شريط المؤشرات المتنقل */}
-    <div className="flex gap-6 items-center overflow-x-auto no-scrollbar py-1">
-      {[
-        { name: "S&P 500", price: "5,842", change: "+0.45%", up: true },
-        { name: "NASDAQ", price: "18,210", change: "+0.82%", up: true },
-        { name: "BTC", price: "$102,450", change: "-1.20%", up: false },
-        { name: "GOLD", price: "2,650", change: "+0.15%", up: true },
-        { name: "VIX", price: "14.20", change: "STABLE", up: null }
-      ].map((index, i) => (
-        <div key={i} className="flex items-center gap-2 whitespace-nowrap">
-          <span className="text-[10px] font-bold text-slate-400">{index.name}</span>
-          <span className="text-[11px] font-mono font-bold text-slate-200">{index.price}</span>
-          <span className={`text-[9px] font-bold ${index.up === true ? 'text-emerald-500' : index.up === false ? 'text-red-500' : 'text-blue-400'}`}>
-            {index.change}
-          </span>
-        </div>
-      ))}
+    {/* الحاوية المتحركة */}
+    <div className="flex overflow-hidden relative ml-4">
+      <div className="flex gap-12 items-center animate-marquee whitespace-nowrap py-1">
+        {[
+          { name: "S&P 500", price: "5,842", change: "+0.45%", up: true },
+          { name: "NASDAQ", price: "18,210", change: "+0.82%", up: true },
+          { name: "BTC", price: "$102,450", change: "-1.20%", up: false },
+          { name: "GOLD", price: "2,650", change: "+0.15%", up: true },
+          { name: "VIX", price: "14.20", change: "STABLE", up: null },
+          // تكرار البيانات لضمان عدم وجود فراغ أثناء الدوران
+          { name: "S&P 500", price: "5,842", change: "+0.45%", up: true },
+          { name: "NASDAQ", price: "18,210", change: "+0.82%", up: true },
+          { name: "BTC", price: "$102,450", change: "-1.20%", up: false },
+          { name: "GOLD", price: "2,650", change: "+0.15%", up: true },
+          { name: "VIX", price: "14.20", change: "STABLE", up: null },
+        ].map((index, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-slate-500">{index.name}</span>
+            <span className="text-[11px] font-mono font-bold text-slate-200">{index.price}</span>
+            <span className={`text-[9px] font-bold ${index.up === true ? 'text-emerald-500' : index.up === false ? 'text-red-500' : 'text-blue-400'}`}>
+              {index.change}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </div>

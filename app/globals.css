@@ -36,17 +36,20 @@ body {
 
 /* تعريف حركة الماركي (الشريط الإخباري) */
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 .animate-marquee {
   display: flex;
   width: max-content;
   animation: marquee 25s linear infinite;
+  /* السطرين اللي تحت هما السر في سلاسة الموبايل */
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
-/* ميزة إضافية: عند وضع الماوس على الشريط يتوقف ليسهل القراءة */
-.group:hover .animate-marquee {
+/* عشان نسرع الشريط شوي إذا كان بطيء */
+.animate-marquee:hover {
   animation-play-state: paused;
 }

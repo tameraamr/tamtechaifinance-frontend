@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+// استيراد مكتبة التحليلات
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,10 +20,15 @@ export const metadata: Metadata = {
   description: "Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.",
   keywords: ["Stock Analysis", "AI Finance", "Market Intelligence", "Investment Tool", "Tamtech Finance", "Financial Analysis AI"],
   
-  // الأيقونة (تأكد أن الاسم logo.png مطابق لما في مجلد public)
+  // الأيقونة
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
+  },
+
+  // كود التحقق من جوجل سيرتش كونسول (من الملف الذي رفعته)
+  verification: {
+    google: "google7c0ae22a0cf47c58", 
   },
 
   // لظهور الرابط بشكل احترافي عند المشاركة (Social Media)
@@ -68,6 +75,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        {/* إضافة تتبع جوجل هنا */}
+        <GoogleAnalytics gaId="G-6DD71GL8SC" />
       </body>
     </html>
   );

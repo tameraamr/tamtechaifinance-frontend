@@ -314,7 +314,17 @@ export default function Home() {
                   <div className="absolute bottom-full right-0 mb-2 w-48 bg-slate-950 border border-slate-700 text-slate-300 text-xs p-2 rounded shadow-xl hidden group-hover/tooltip:block z-10">{t.tooltips[tooltipKey]}</div>
               </div>
           </div>
-          <div className={`text-xl font-mono font-bold ${getMetricStatus(metricKey, value)}`} dir="ltr">{typeof value === 'number' ? value.toFixed(2) : value}{suffix}</div>
+          {/* التعديل هنا: فحص إذا كانت القيمة 0 أو غير موجودة */}
+          <div className={`text-xl font-mono font-bold ${getMetricStatus(metricKey, value)}`} dir="ltr">
+            {(!value || value === 0 || value === "0") ? (
+              <span className="text-slate-500 text-xs italic font-normal">N/A</span>
+            ) : (
+              <>
+                {typeof value === 'number' ? value.toFixed(2) : value}
+                {suffix}
+              </>
+            )}
+          </div>
       </div>
   );
 

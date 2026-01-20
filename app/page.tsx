@@ -11,6 +11,15 @@ import {
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 
+// هذا هو "المنظف" اللي بيحذف Headline وبيقصر الأرقام
+const cleanAIOutput = (text: string) => {
+  if (!text) return "";
+  return text
+    .replace(/^Headline:\s*.+?:\s*/i, "") // بيحذف Headline واسم الشركة المتكرر
+    .replace(/^Headline:\s*/i, "")        // بيحذف كلمة Headline لوحدها
+    .replace(/(\d+\.\d{3,})/g, (m) => parseFloat(m).toFixed(2)); // بيقصر الأرقام الطويلة
+};
+
 const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 
 const translations: any = {
@@ -594,21 +603,27 @@ export default function Home() {
                                 <div className="p-2 bg-blue-500/10 rounded-lg"><Target className="w-5 h-5 md:w-6 md:h-6"/></div> 
                                 Business DNA
                               </h3>
-                              <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">{result.analysis.chapter_1_the_business}</p>
+                              <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">
+  {cleanAIOutput(result.analysis.chapter_1_the_business)}
+</p>
                             </div>
                             <div className="bg-slate-800/20 border border-emerald-500/10 p-5 md:p-8 rounded-3xl hover:bg-slate-800/40 transition-all duration-500 group">
                               <h3 className="text-emerald-500 font-black mb-4 flex gap-3 text-sm md:text-xl uppercase tracking-tighter items-center">
                                 <div className="p-2 bg-emerald-500/10 rounded-lg"><ShieldCheck className="w-5 h-5 md:w-6 md:h-6"/></div> 
                                 Financial Health
                               </h3>
-                              <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">{result.analysis.chapter_2_financials}</p>
+                              <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">
+  {cleanAIOutput(result.analysis.chapter_2_financials)}
+</p>
                             </div>
                             <div className="bg-slate-800/20 border border-purple-500/10 p-5 md:p-8 rounded-3xl hover:bg-slate-800/40 transition-all duration-500 group">
                               <h3 className="text-purple-500 font-black mb-4 flex gap-3 text-sm md:text-xl uppercase tracking-tighter items-center">
                                 <div className="p-2 bg-purple-500/10 rounded-lg"><DollarSign className="w-5 h-5 md:w-6 md:h-6"/></div> 
                                 Valuation Analysis
                               </h3>
-                              <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">{result.analysis.chapter_3_valuation}</p>
+                              <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">
+  {cleanAIOutput(result.analysis.chapter_3_valuation)}
+</p>
                             </div>
                         </div>
                         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 md:p-8 h-[350px] md:h-[500px] shadow-2xl flex flex-col sticky top-24">
@@ -616,7 +631,7 @@ export default function Home() {
                               <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400/20"/> {t.radar}
                             </h3>
                             <ResponsiveContainer width="100%" height="100%">
-                              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={result.analysis.radar_scores}>
+                              <RadarChart cx="50%" cy="50%" outerRadius="60%" data={result.analysis.radar_scores}>
                                 <PolarGrid stroke="#1e293b" />
                                 <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 10, fontWeight: 'bold' }} />
                                 <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />

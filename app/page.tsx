@@ -11,7 +11,6 @@ import {
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 
-// الروابط المحدثة لـ Railway
 const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 
 const translations: any = {
@@ -124,61 +123,6 @@ const translations: any = {
         debt: "الديون للملكية: مقياس للرافعة المالية والمخاطر.",
         curr: "النسبة الحالية: قدرة الشركة على سداد التزاماتها قصيرة الأجل."
     }
-  },
-  it: {
-    loginTitle: "Accedi",
-    signupTitle: "Crea Account",
-    email: "Email",
-    pass: "Password",
-    loginBtn: "Accedi",
-    signupBtn: "Iscriviti",
-    switchSign: "Non hai un account? Iscriviti",
-    switchLog: "Hai un account? Accedi",
-    logout: "Esci",
-    guestBadge: "Ospite",
-    freeLeft: "Crediti",
-    registerToContinue: "Registrati",
-    registerDesc: "Crea un account per acquistare crediti.",
-    paywallTitle: "Limite Raggiunto",
-    paywallDesc: "Crediti esauriti. Passa a Pro.",
-    searchPlaceholder: "Inserisci Ticker (es. NVDA)...",
-    scan: "Scansione...",
-    analyze: "Analizza",
-    verdict: "Verdetto IA",
-    confidence: "Fiducia",
-    analyst: "Analista",
-    targetPrice: "Prezzo Target",
-    low: "Min", high: "Max", trend: "Trend", radar: "Radar", swot: "SWOT", bull: "Rialzista", bear: "Ribassista",
-    forecasts: "Previsioni IA", oneYear: "1 Anno", fiveYears: "5 Anni",
-    pe: "P/E", mcap: "Cap. Mercato", growth: "Crescita", debt: "Debito",
-    strengths: "Punti di Forza", weaknesses: "Debolezze", opportunities: "Opportunità", threats: "Minacce",
-    upgradeBtn: "Ottieni Chiave ($5)", redeemBtn: "Riscatta", inputKey: "Codice...", haveKey: "HAI UN CODICE?",
-    heroTitle: "Intelligenza di Mercato",
-    heroSubtitle: "Analisi finanziaria con IA.",
-    feat1Title: "Valutazione", feat1Desc: "Valore intrinseco vs mercato.",
-    feat2Title: "Previsioni", feat2Desc: "Outlook prezzi 1-5 anni.",
-    feat3Title: "Rischi", feat3Desc: "Analisi SWOT dettagliata.",
-    metricsTitle: "Metriche Finanziarie",
-    download: "Scarica Report",
-    disclaimerTitle: "Disclaimer",
-    disclaimerText: "TamtechAI è uno strumento di analisi basato su IA, non un consulente finanziario. Dati a solo scopo informativo.",
-    reportTitle: "Rapporto di Analisi Finanziaria",
-    randomBtn: "Ispirami",
-    randomTitle: "Scelta IA",
-    randomDesc: "La nostra IA suggerisce questo titolo. Vuoi usare 1 credito?",
-    cancel: "Annulla",
-    tooltips: {
-        pe: "P/E Ratio: Prezzo delle azioni rispetto agli utili.",
-        peg: "PEG Ratio: P/E rettificato per la crescita.",
-        pb: "P/B Ratio: Prezzo rispetto al valore contabile.",
-        ps: "P/S Ratio: Prezzo rispetto alle vendite.",
-        beta: "Beta: Volatilità rispetto al mercato.",
-        div: "Dividend Yield: Dividendi annuali rispetto al prezzo.",
-        roe: "ROE: Redditività rispetto al patrimonio netto.",
-        margin: "Margine di Profitto: % di ricavi che diventa utile.",
-        debt: "Debito/Patrimonio: Leva finanziaria.",
-        curr: "Current Ratio: Liquidità a breve termine."
-    }
   }
 };
 
@@ -199,6 +143,9 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
+  
+  // الحالة الجديدة لرسائل الخطأ
+  const [authError, setAuthError] = useState("");
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
@@ -220,6 +167,7 @@ export default function Home() {
   };
 
   const handleAuth = async () => {
+    setAuthError(""); // تصغير الخطأ عند البدء
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
     let body, headers = {};
     if (authMode === "login") {
@@ -230,10 +178,22 @@ export default function Home() {
     }
     try {
       const res = await fetch(url, { method: "POST", headers, body }); const data = await res.json();
-      if (!res.ok) { let msg = data.detail; if(Array.isArray(msg)) msg = msg.map((e:any)=>e.msg).join("\n"); alert("❌ " + (msg || "Error")); return; }
-      if (authMode === "login") { localStorage.setItem("access_token", data.access_token); setToken(data.access_token); fetchUserData(data.access_token); } 
-      else { alert("✅ Account created! Login now."); setAuthMode("login"); }
-    } catch { alert("Connection Error"); }
+      if (!res.ok) { 
+        let msg = data.detail; 
+        if(Array.isArray(msg)) msg = msg.map((e:any)=>e.msg).join("\n"); 
+        setAuthError(msg || "Error"); 
+        return; 
+      }
+      if (authMode === "login") { 
+        localStorage.setItem("access_token", data.access_token); 
+        setToken(data.access_token); 
+        fetchUserData(data.access_token); 
+      } 
+      else { 
+        alert("✅ Account created! Login now."); 
+        setAuthMode("login"); 
+      }
+    } catch { setAuthError("Connection Error"); }
   };
 
   const logout = () => { localStorage.removeItem("access_token"); setToken(null); setUserEmail(""); setResult(null); };
@@ -278,6 +238,7 @@ export default function Home() {
   };
 
   const handleRedeem = async () => {
+    setAuthError("");
     try {
       const res = await fetch(`${BASE_URL}/verify-license`, {
         method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -285,8 +246,8 @@ export default function Home() {
       });
       const data = await res.json();
       if (data.valid) { setCredits(data.credits); setShowPaywall(false); setLicenseKey(""); alert(`🎉 Success! Balance: ${data.credits}`); } 
-      else { alert(data.message); }
-    } catch { alert("Error"); }
+      else { setAuthError(data.message); }
+    } catch { setAuthError("Error"); }
   };
 
   const handleDownloadPDF = async () => {
@@ -346,12 +307,19 @@ export default function Home() {
             <span className="font-bold text-xl tracking-tight">TamtechAI <span className="text-blue-500">Pro</span></span>
           </div>
           <div className="flex items-center gap-4">
+             {/* تعديل ظهور الرصيد في الهاتف */}
              {!token && <div className="hidden md:flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1 rounded-full text-xs font-bold text-slate-400"><User className="w-3 h-3"/> {t.guestBadge}: <span className={guestTrials>0?"text-white":"text-red-500"}>{guestTrials}</span></div>}
-             {token && <div className="hidden md:flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1 rounded-full text-xs font-bold text-slate-300"><Star className={`w-3 h-3 ${credits > 0 ? "text-yellow-400" : "text-slate-600"}`} /><span>{t.freeLeft}: <span className={credits > 0 ? "text-white" : "text-red-500"}>{credits}</span></span></div>}
-             <div className="flex bg-slate-900 border border-slate-700 rounded-full p-1">
-              {['en', 'ar', 'it'].map((l) => (<button key={l} onClick={() => setLang(l)} className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>{l}</button>))}
+             {token && (
+                <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-2 py-1 md:px-3 md:py-1 rounded-full text-[10px] md:text-xs font-bold text-slate-300">
+                    <Star className={`w-3 h-3 ${credits > 0 ? "text-yellow-400" : "text-slate-600"}`} />
+                    <span>{t.freeLeft}: <span className={credits > 0 ? "text-white" : "text-red-500"}>{credits}</span></span>
+                </div>
+             )}
+             
+             <div className="flex bg-slate-900 border border-slate-700 rounded-full p-1 scale-90 md:scale-100">
+              {['en', 'ar', 'it'].map((l) => (<button key={l} onClick={() => setLang(l)} className={`px-2 md:px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold uppercase ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>{l}</button>))}
             </div>
-            {token ? (<button onClick={logout} className="p-2 text-slate-400 hover:text-red-400" title={t.logout}><LogOut className="w-5 h-5"/></button>) : (<button onClick={() => { setAuthMode("login"); setShowAuthModal(true); }} className="text-xs font-bold bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600">{t.loginBtn}</button>)}
+            {token ? (<button onClick={logout} className="p-2 text-slate-400 hover:text-red-400" title={t.logout}><LogOut className="w-5 h-5"/></button>) : (<button onClick={() => { setAuthMode("login"); setAuthError(""); setShowAuthModal(true); }} className="text-[10px] md:text-xs font-bold bg-slate-800 hover:bg-slate-700 px-2 md:px-3 py-1.5 rounded-lg border border-slate-600">{t.loginBtn}</button>)}
           </div>
         </div>
       </nav>
@@ -362,11 +330,11 @@ export default function Home() {
             <div className="absolute inset-0 bg-blue-500 opacity-20 blur-xl rounded-full group-hover:opacity-30 transition-opacity"></div>
             <div className="flex gap-2 w-full">
                 <div className="relative flex-1 flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl">
-                <input type="text" placeholder={t.searchPlaceholder} className="w-full bg-transparent p-4 text-lg outline-none uppercase font-mono" value={ticker} onChange={(e) => setTicker(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} />
-                <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-6 py-4 font-bold transition-all disabled:opacity-50 min-w-[100px]">{loading ? t.scan : t.analyze}</button>
+                <input type="text" placeholder={t.searchPlaceholder} className="w-full bg-transparent p-4 text-sm md:text-lg outline-none uppercase font-mono" value={ticker} onChange={(e) => setTicker(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} />
+                <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-6 py-4 font-bold transition-all disabled:opacity-50 min-w-[80px] md:min-w-[100px] text-xs md:text-base">{loading ? t.scan : t.analyze}</button>
                 </div>
                 <button onClick={fetchRandomStock} disabled={loadingRandom} className="bg-slate-800 border border-slate-700 hover:bg-slate-700 hover:border-blue-500/50 text-white p-4 rounded-xl shadow-2xl transition-all group disabled:opacity-50" title={t.randomBtn}>
-                    {loadingRandom ? <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-purple-500"></div> : <Dices className="w-6 h-6 text-purple-400 group-hover:rotate-12 transition-transform" />}
+                    {loadingRandom ? <div className="animate-spin rounded-full h-5 w-5 md:h-6 md:w-6 border-t-2 border-purple-500"></div> : <Dices className="w-5 h-5 md:w-6 md:h-6 text-purple-400 group-hover:rotate-12 transition-transform" />}
                 </button>
             </div>
           </div>
@@ -388,8 +356,8 @@ export default function Home() {
 
         {!result && !loading && (
             <div className="flex flex-col items-center justify-center mt-8 animate-in fade-in duration-700">
-                <h1 className="text-4xl md:text-5xl font-bold text-center text-white mb-4 tracking-tight">{t.heroTitle}</h1>
-                <p className="text-slate-400 text-center max-w-2xl mb-12 text-lg">{t.heroSubtitle}</p>
+                <h1 className="text-3xl md:text-5xl font-bold text-center text-white mb-4 tracking-tight">{t.heroTitle}</h1>
+                <p className="text-slate-400 text-center max-w-2xl mb-12 text-sm md:text-lg">{t.heroSubtitle}</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
                     <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-blue-500/30 transition-colors group"><div className="bg-blue-900/20 p-3 rounded-lg w-fit mb-4 group-hover:bg-blue-900/40 transition"><Brain className="w-6 h-6 text-blue-400" /></div><h3 className="text-lg font-bold text-slate-200 mb-2">{t.feat1Title}</h3><p className="text-sm text-slate-400 leading-relaxed">{t.feat1Desc}</p></div>
                     <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-purple-500/30 transition-colors group"><div className="bg-purple-900/20 p-3 rounded-lg w-fit mb-4 group-hover:bg-purple-900/40 transition"><TrendingUp className="w-6 h-6 text-purple-400" /></div><h3 className="text-lg font-bold text-slate-200 mb-2">{t.feat2Title}</h3><p className="text-sm text-slate-400 leading-relaxed">{t.feat2Desc}</p></div>
@@ -398,43 +366,88 @@ export default function Home() {
             </div>
         )}
 
-        {showAuthModal && (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"><div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-md w-full relative shadow-2xl"><button onClick={() => setShowAuthModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white"><XCircle className="w-6 h-6"/></button><h2 className="text-2xl font-bold text-center mb-2">{authMode === "login" ? t.loginTitle : t.registerToContinue}</h2><p className="text-slate-400 text-center mb-6 text-sm">{authMode === "signup" ? t.registerDesc : "Welcome back!"}</p><div className="space-y-4"><input type="email" placeholder={t.email} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 ltr:text-left rtl:text-right" value={email} onChange={e=>setEmail(e.target.value)} /><input type="password" placeholder={t.pass} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 ltr:text-left rtl:text-right" value={password} onChange={e=>setPassword(e.target.value)} /><button onClick={handleAuth} className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold">{authMode === "login" ? t.loginBtn : t.signupBtn}</button><button onClick={() => setAuthMode(authMode==="login"?"signup":"login")} className="w-full text-sm text-slate-400 hover:text-white">{authMode==="login" ? t.switchSign : t.switchLog}</button></div></div></div>)}
-        {showPaywall && (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"><div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-md w-full text-center relative shadow-2xl"><div className="bg-slate-800 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 border border-slate-700"><Lock className="w-8 h-8 text-yellow-400" /></div><h2 className="text-3xl font-bold mb-2 text-white">{t.paywallTitle}</h2><p className="text-slate-400 mb-8 text-sm">{t.paywallDesc}</p><a href="https://tamtechfinance.gumroad.com/l/tool" target="_blank" className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl mb-6">{t.upgradeBtn}</a><div className="flex gap-2"><input type="text" placeholder={t.inputKey} className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4" value={licenseKey} onChange={(e) => setLicenseKey(e.target.value)} /><button onClick={handleRedeem} className="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-lg">{t.redeemBtn}</button></div><button onClick={()=>setShowPaywall(false)} className="mt-4 text-xs text-slate-500 hover:text-slate-300">Close</button></div></div>)}
+        {showAuthModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
+            <div className="bg-slate-900 border border-slate-700 p-6 md:p-8 rounded-3xl max-w-md w-full relative shadow-2xl">
+              <button onClick={() => setShowAuthModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white"><XCircle className="w-6 h-6"/></button>
+              <h2 className="text-xl md:text-2xl font-bold text-center mb-2">{authMode === "login" ? t.loginTitle : t.registerToContinue}</h2>
+              <p className="text-slate-400 text-center mb-6 text-xs md:text-sm">{authMode === "signup" ? t.registerDesc : "Welcome back!"}</p>
+              
+              {/* رسالة الخطأ هنا */}
+              {authError && (
+                <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded-lg text-xs mb-4 text-center animate-pulse">
+                  {authError}
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <input type="email" placeholder={t.email} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 ltr:text-left rtl:text-right text-sm outline-none focus:border-blue-500" value={email} onChange={e=>setEmail(e.target.value)} />
+                <input type="password" placeholder={t.pass} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 ltr:text-left rtl:text-right text-sm outline-none focus:border-blue-500" value={password} onChange={e=>setPassword(e.target.value)} />
+                <button onClick={handleAuth} className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold transition-all active:scale-95">{authMode === "login" ? t.loginBtn : t.signupBtn}</button>
+                <button onClick={() => {setAuthMode(authMode==="login"?"signup":"login"); setAuthError("");}} className="w-full text-xs text-slate-400 hover:text-white">{authMode==="login" ? t.switchSign : t.switchLog}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showPaywall && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
+            <div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-md w-full text-center relative shadow-2xl">
+              <div className="bg-slate-800 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 border border-slate-700"><Lock className="w-8 h-8 text-yellow-400" /></div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-2 text-white">{t.paywallTitle}</h2>
+              <p className="text-slate-400 mb-8 text-xs md:text-sm">{t.paywallDesc}</p>
+              
+              {authError && (
+                <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded-lg text-xs mb-4 text-center">
+                  {authError}
+                </div>
+              )}
+
+              <a href="https://tamtechfinance.gumroad.com/l/tool" target="_blank" className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl mb-6 text-sm md:text-base">{t.upgradeBtn}</a>
+              <div className="flex gap-2">
+                <input type="text" placeholder={t.inputKey} className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 text-xs" value={licenseKey} onChange={(e) => setLicenseKey(e.target.value)} />
+                <button onClick={handleRedeem} className="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-lg text-xs">{t.redeemBtn}</button>
+              </div>
+              <button onClick={()=>{setShowPaywall(false); setAuthError("");}} className="mt-4 text-[10px] text-slate-500 hover:text-slate-300 uppercase tracking-widest">Close</button>
+            </div>
+          </div>
+        )}
+
         {loading && !result && <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>}
 
         {result && !loading && (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-8 pb-20">
                 <div className="flex justify-end px-2">
-                    <button onClick={handleDownloadPDF} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-sm font-bold border border-slate-700 transition">
+                    <button onClick={handleDownloadPDF} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-700 transition">
                         <Download className="w-4 h-4" /> {t.download}
                     </button>
                 </div>
 
-                <div id="report-content" className="p-4 bg-[#0b1121]">
-                    <div className="mb-6 border-b border-slate-700 pb-4 flex justify-between items-center">
+                <div id="report-content" className="p-2 md:p-4 bg-[#0b1121]">
+                    <div className="mb-6 border-b border-slate-800 pb-4 flex justify-between items-center">
                         <div className="flex items-center gap-2">
-                            <BarChart3 className="text-blue-500 w-8 h-8" />
-                            <div><h1 className="text-2xl font-bold text-white">TamtechAI <span className="text-blue-500">Pro</span></h1><p className="text-slate-400 text-xs">{t.reportTitle}</p></div>
+                            <BarChart3 className="text-blue-500 w-6 h-6 md:w-8 md:h-8" />
+                            <div><h1 className="text-lg md:text-2xl font-bold text-white">TamtechAI <span className="text-blue-500">Pro</span></h1><p className="text-slate-500 text-[10px]">{t.reportTitle}</p></div>
                         </div>
-                        <div className="text-right"><div className="text-slate-200 font-mono font-bold text-xl">{result.ticker}</div><div className="text-slate-500 text-xs">{new Date().toLocaleDateString()}</div></div>
+                        <div className="text-right"><div className="text-slate-200 font-mono font-bold text-sm md:text-xl">{result.ticker}</div><div className="text-slate-500 text-[10px]">{new Date().toLocaleDateString()}</div></div>
                     </div>
                     
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                         <div className="lg:col-span-1 bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6">
-                            <div className="flex justify-between items-center mb-2"><span className="bg-slate-700/50 px-2 py-1 rounded text-xs text-blue-300 font-mono">{result.ticker}</span>{result.data.recommendationKey!=="none" && <span className="text-[10px] uppercase font-bold text-blue-400 border border-blue-500/30 px-2 py-1 rounded">{t.analyst}: {result.data.recommendationKey.replace('_', ' ')}</span>}</div>
-                            <h1 className="text-3xl font-bold mb-1">{result.data.companyName}</h1>
-                            <div className="text-5xl font-mono font-bold my-4" dir="ltr">${result.data.price?.toFixed(2)}</div>
-                            <div className="mb-6"><div className="flex justify-between text-xs text-slate-400 mb-1"><span>{t.low}: ${result.data.fiftyTwoWeekLow}</span><span>{t.high}: ${result.data.fiftyTwoWeekHigh}</span></div><div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden relative"><div className="h-full bg-gradient-to-r from-blue-600 to-emerald-400 absolute" style={{ left: `${calculateRangePos(result.data.price, result.data.fiftyTwoWeekLow, result.data.fiftyTwoWeekHigh) - 2}%`, width: '4%' }}></div></div></div>
-                            <div className={`p-5 rounded-xl text-center border-2 ${getVerdictColor(result.analysis.verdict)}`}><div className="text-xs uppercase opacity-80 mb-2 font-bold tracking-widest">{t.verdict}</div><span className="text-4xl font-black tracking-tighter block">{result.analysis.verdict}</span><div className="mt-2 text-xs font-bold opacity-75">{t.confidence}: {result.analysis.confidence_score}%</div></div>
+                            <div className="flex justify-between items-center mb-2"><span className="bg-slate-700/50 px-2 py-1 rounded text-[10px] text-blue-300 font-mono">{result.ticker}</span>{result.data.recommendationKey!=="none" && <span className="text-[8px] uppercase font-bold text-blue-400 border border-blue-500/30 px-2 py-1 rounded">{t.analyst}: {result.data.recommendationKey.replace('_', ' ')}</span>}</div>
+                            <h1 className="text-xl md:text-3xl font-bold mb-1">{result.data.companyName}</h1>
+                            <div className="text-3xl md:text-5xl font-mono font-bold my-4" dir="ltr">${result.data.price?.toFixed(2)}</div>
+                            <div className="mb-6"><div className="flex justify-between text-[10px] text-slate-500 mb-1"><span>{t.low}: ${result.data.fiftyTwoWeekLow}</span><span>{t.high}: ${result.data.fiftyTwoWeekHigh}</span></div><div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden relative"><div className="h-full bg-gradient-to-r from-blue-600 to-emerald-400 absolute" style={{ left: `${calculateRangePos(result.data.price, result.data.fiftyTwoWeekLow, result.data.fiftyTwoWeekHigh) - 2}%`, width: '4%' }}></div></div></div>
+                            <div className={`p-4 rounded-xl text-center border ${getVerdictColor(result.analysis.verdict)}`}><div className="text-[10px] uppercase opacity-80 mb-1 font-bold tracking-widest">{t.verdict}</div><span className="text-2xl md:text-4xl font-black tracking-tighter block">{result.analysis.verdict}</span><div className="mt-1 text-[10px] font-bold opacity-75">{t.confidence}: {result.analysis.confidence_score}%</div></div>
                         </div>
-                        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 h-[450px]">
-                            <ResponsiveContainer width="100%" height="100%"><AreaChart data={result.data.chart_data}><defs><linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} /><XAxis dataKey="date" stroke="#64748b" tickFormatter={(str) => str.slice(5)} minTickGap={40} /><YAxis stroke="#64748b" domain={['auto', 'auto']} orientation={isRTL?"right":"left"} /><Tooltip contentStyle={{backgroundColor: '#0f172a', borderColor: '#334155'}} /><Area type="monotone" dataKey="price" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorPrice)" /></AreaChart></ResponsiveContainer>
+                        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-2 md:p-6 h-[300px] md:h-[450px]">
+                            <ResponsiveContainer width="100%" height="100%"><AreaChart data={result.data.chart_data}><defs><linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} /><XAxis dataKey="date" stroke="#475569" tick={{fontSize: 8}} tickFormatter={(str) => str.slice(5)} minTickGap={40} /><YAxis stroke="#475569" tick={{fontSize: 8}} domain={['auto', 'auto']} orientation={isRTL?"right":"left"} /><Tooltip contentStyle={{backgroundColor: '#0f172a', borderColor: '#334155', fontSize: '10px'}} /><Area type="monotone" dataKey="price" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorPrice)" /></AreaChart></ResponsiveContainer>
                         </div>
                     </div>
 
-                    <div className="bg-slate-900/30 border border-slate-800 rounded-2xl p-6 mb-8">
-                        <h3 className="text-xl font-bold mb-4 text-white flex items-center gap-2"><Activity className="w-5 h-5 text-blue-400" /> {t.metricsTitle}</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <div className="bg-slate-900/30 border border-slate-800 rounded-2xl p-4 md:p-6 mb-8">
+                        <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2"><Activity className="w-5 h-5 text-blue-400" /> {t.metricsTitle}</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
                             <MetricCard label="P/E Ratio" value={result.data.pe_ratio} metricKey="pe" tooltipKey="pe" />
                             <MetricCard label="PEG Ratio" value={result.data.peg_ratio} metricKey="peg" tooltipKey="peg" />
                             <MetricCard label="Price/Sales" value={result.data.price_to_sales} metricKey="ps" tooltipKey="ps" />
@@ -452,41 +465,41 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div className="bg-slate-800/20 border border-blue-500/20 p-6 rounded-2xl"><h4 className="text-blue-400 font-bold mb-3 flex gap-2 items-center"><Calendar className="w-4 h-4"/> {t.oneYear}</h4><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.forecasts?.next_1_year}</p></div>
-                        <div className="bg-slate-800/20 border border-purple-500/20 p-6 rounded-2xl"><h4 className="text-purple-400 font-bold mb-3 flex gap-2 items-center"><TrendingUp className="w-4 h-4"/> {t.fiveYears}</h4><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.forecasts?.next_5_years}</p></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
+                        <div className="bg-slate-800/20 border border-blue-500/20 p-4 md:p-6 rounded-2xl"><h4 className="text-blue-400 font-bold mb-3 flex gap-2 items-center text-xs md:text-sm"><Calendar className="w-4 h-4"/> {t.oneYear}</h4><p className="text-slate-400 text-xs leading-relaxed">{result.analysis.forecasts?.next_1_year}</p></div>
+                        <div className="bg-slate-800/20 border border-purple-500/20 p-4 md:p-6 rounded-2xl"><h4 className="text-purple-400 font-bold mb-3 flex gap-2 items-center text-xs md:text-sm"><TrendingUp className="w-4 h-4"/> {t.fiveYears}</h4><p className="text-slate-400 text-xs leading-relaxed">{result.analysis.forecasts?.next_5_years}</p></div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
                         <div className="lg:col-span-2 space-y-4">
-                            <div className="bg-slate-800/30 border border-blue-500/20 p-6 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-blue-400 font-bold mb-2 flex gap-2"><Target className="w-5 h-5"/> Business DNA</h3><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.chapter_1_the_business}</p></div>
-                            <div className="bg-slate-800/30 border border-emerald-500/20 p-6 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-emerald-400 font-bold mb-2 flex gap-2"><ShieldCheck className="w-5 h-5"/> Financial Health</h3><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.chapter_2_financials}</p></div>
-                            <div className="bg-slate-800/30 border border-purple-500/20 p-6 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-purple-400 font-bold mb-2 flex gap-2"><DollarSign className="w-5 h-5"/> Valuation</h3><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.chapter_3_valuation}</p></div>
+                            <div className="bg-slate-800/30 border border-blue-500/10 p-5 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-blue-400 font-bold mb-2 flex gap-2 text-xs md:text-sm"><Target className="w-4 h-4"/> Business DNA</h3><p className="text-slate-400 text-xs leading-relaxed">{result.analysis.chapter_1_the_business}</p></div>
+                            <div className="bg-slate-800/30 border border-emerald-500/10 p-5 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-emerald-400 font-bold mb-2 flex gap-2 text-xs md:text-sm"><ShieldCheck className="w-4 h-4"/> Financial Health</h3><p className="text-slate-400 text-xs leading-relaxed">{result.analysis.chapter_2_financials}</p></div>
+                            <div className="bg-slate-800/30 border border-purple-500/10 p-5 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-purple-400 font-bold mb-2 flex gap-2 text-xs md:text-sm"><DollarSign className="w-4 h-4"/> Valuation</h3><p className="text-slate-400 text-xs leading-relaxed">{result.analysis.chapter_3_valuation}</p></div>
                         </div>
-                        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 h-[400px]">
-                            <h3 className="text-center font-bold text-slate-400 mb-4 flex justify-center gap-2"><Zap className="w-4 h-4 text-yellow-400"/> {t.radar}</h3>
-                            <ResponsiveContainer width="100%" height="100%"><RadarChart cx="50%" cy="50%" outerRadius="70%" data={result.analysis.radar_scores}><PolarGrid stroke="#334155" /><PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10 }} /><PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} /><Radar name="Score" dataKey="A" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} /><Tooltip contentStyle={{backgroundColor: '#0f172a', borderColor: '#334155'}} /></RadarChart></ResponsiveContainer>
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-800/20 border border-slate-800 p-8 rounded-3xl mb-8">
-                        <h3 className="text-2xl font-bold mb-6 text-center">{t.swot}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-emerald-900/10 border border-emerald-500/20 p-6 rounded-2xl"><h4 className="text-emerald-400 font-bold mb-2 flex gap-2"><CheckCircle size={16}/> {t.strengths}</h4><ul className="space-y-1">{result.analysis.swot_analysis.strengths.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
-                            <div className="bg-orange-900/10 border border-orange-500/20 p-6 rounded-2xl"><h4 className="text-orange-400 font-bold mb-2 flex gap-2"><AlertTriangle size={16}/> {t.weaknesses}</h4><ul className="space-y-1">{result.analysis.swot_analysis.weaknesses.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
-                            <div className="bg-blue-900/10 border border-blue-500/20 p-6 rounded-2xl"><h4 className="text-blue-400 font-bold mb-2 flex gap-2"><Lightbulb size={16}/> {t.opportunities}</h4><ul className="space-y-1">{result.analysis.swot_analysis.opportunities.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
-                            <div className="bg-red-900/10 border border-red-500/20 p-6 rounded-2xl"><h4 className="text-red-400 font-bold mb-2 flex gap-2"><XCircle size={16}/> {t.threats}</h4><ul className="space-y-1">{result.analysis.swot_analysis.threats.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
+                        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 h-[350px] md:h-[400px]">
+                            <h3 className="text-center font-bold text-slate-500 mb-4 flex justify-center gap-2 text-[10px] md:text-xs tracking-widest uppercase"><Zap className="w-3 h-3 text-yellow-500"/> {t.radar}</h3>
+                            <ResponsiveContainer width="100%" height="100%"><RadarChart cx="50%" cy="50%" outerRadius="70%" data={result.analysis.radar_scores}><PolarGrid stroke="#1e293b" /><PolarAngleAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 8 }} /><PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} /><Radar name="Score" dataKey="A" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} /><Tooltip contentStyle={{backgroundColor: '#0f172a', borderColor: '#334155', fontSize: '10px'}} /></RadarChart></ResponsiveContainer>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-emerald-900/5 border border-emerald-500/10 p-6 rounded-2xl"><h3 className="text-lg font-bold text-emerald-500/80 mb-3">{t.bull}</h3><ul className="space-y-2">{result.analysis.bull_case_points.map((p:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {p}</li>)}</ul></div>
-                        <div className="bg-red-900/5 border border-red-500/10 p-6 rounded-2xl"><h3 className="text-lg font-bold text-red-500/80 mb-3">{t.bear}</h3><ul className="space-y-2">{result.analysis.bear_case_points.map((p:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {p}</li>)}</ul></div>
+                    <div className="bg-slate-800/20 border border-slate-800 p-6 md:p-8 rounded-3xl mb-8">
+                        <h3 className="text-xl font-bold mb-6 text-center">{t.swot}</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <div className="bg-emerald-900/10 border border-emerald-500/10 p-5 rounded-2xl"><h4 className="text-emerald-400 font-bold mb-2 flex gap-2 text-xs md:text-sm"><CheckCircle size={14}/> {t.strengths}</h4><ul className="space-y-1">{result.analysis.swot_analysis.strengths.map((s:any,i:any)=><li key={i} className="text-slate-500 text-[10px]">• {s}</li>)}</ul></div>
+                            <div className="bg-orange-900/10 border border-orange-500/10 p-5 rounded-2xl"><h4 className="text-orange-400 font-bold mb-2 flex gap-2 text-xs md:text-sm"><AlertTriangle size={14}/> {t.weaknesses}</h4><ul className="space-y-1">{result.analysis.swot_analysis.weaknesses.map((s:any,i:any)=><li key={i} className="text-slate-500 text-[10px]">• {s}</li>)}</ul></div>
+                            <div className="bg-blue-900/10 border border-blue-500/10 p-5 rounded-2xl"><h4 className="text-blue-400 font-bold mb-2 flex gap-2 text-xs md:text-sm"><Lightbulb size={14}/> {t.opportunities}</h4><ul className="space-y-1">{result.analysis.swot_analysis.opportunities.map((s:any,i:any)=><li key={i} className="text-slate-500 text-[10px]">• {s}</li>)}</ul></div>
+                            <div className="bg-red-900/10 border border-red-500/10 p-5 rounded-2xl"><h4 className="text-red-400 font-bold mb-2 flex gap-2 text-xs md:text-sm"><XCircle size={14}/> {t.threats}</h4><ul className="space-y-1">{result.analysis.swot_analysis.threats.map((s:any,i:any)=><li key={i} className="text-slate-500 text-[10px]">• {s}</li>)}</ul></div>
+                        </div>
                     </div>
 
-                    <footer className="border-t border-slate-800 mt-12 py-6 text-center">
-                        <h4 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">{t.disclaimerTitle}</h4>
-                        <p className="text-slate-600 text-[10px] max-w-3xl mx-auto leading-relaxed px-4">{t.disclaimerText}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div className="bg-emerald-900/5 border border-emerald-500/5 p-5 rounded-2xl"><h3 className="text-sm font-bold text-emerald-500/60 mb-3">{t.bull}</h3><ul className="space-y-2">{result.analysis.bull_case_points.map((p:any,i:any)=><li key={i} className="text-slate-500 text-[10px] md:text-xs">• {p}</li>)}</ul></div>
+                        <div className="bg-red-900/5 border border-red-500/5 p-5 rounded-2xl"><h3 className="text-sm font-bold text-red-500/60 mb-3">{t.bear}</h3><ul className="space-y-2">{result.analysis.bear_case_points.map((p:any,i:any)=><li key={i} className="text-slate-500 text-[10px] md:text-xs">• {p}</li>)}</ul></div>
+                    </div>
+
+                    <footer className="border-t border-slate-900 mt-12 py-6 text-center">
+                        <h4 className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">{t.disclaimerTitle}</h4>
+                        <p className="text-slate-600 text-[8px] md:text-[10px] max-w-3xl mx-auto leading-relaxed px-4">{t.disclaimerText}</p>
                     </footer>
 
                 </div>

@@ -11,6 +11,9 @@ import {
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 
+// الروابط المحدثة لـ Railway
+const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
+
 const translations: any = {
   en: {
     loginTitle: "Login to Continue",
@@ -50,7 +53,6 @@ const translations: any = {
     disclaimerTitle: "Disclaimer",
     disclaimerText: "TamtechAI is an AI-powered analytical tool, not a financial advisor. All data and analysis are for informational purposes only. Investments carry risks.",
     reportTitle: "Investment Analysis Report",
-    // 👇 الجديد
     randomBtn: "Inspire Me",
     randomTitle: "AI Investment Pick",
     randomDesc: "Our AI brain suggests this high-potential stock. Use 1 credit to analyze:",
@@ -100,13 +102,12 @@ const translations: any = {
     heroSubtitle: "استخدم قوة الذكاء الاصطناعي لفك شفرة الميزانيات العمومية والتقييمات.",
     feat1Title: "تقييم عميق", feat1Desc: "حساب القيمة الجوهرية.",
     feat2Title: "تنبؤات مستقبلية", feat2Desc: "توقعات لأسعار 1-5 سنوات.",
-    feat3Title: "تحليل المخاطر", feat3Desc: "تفصيل شامل لنقاط القوة والضعف.",
+    feat3Title: "تحليل المخاطر", feat3Desc: "تفصيل شامل لنقاط القوة والضعش.",
     metricsTitle: "المؤشرات المالية المتقدمة",
     download: "تحميل التقرير",
     disclaimerTitle: "إخلاء مسؤولية",
     disclaimerText: "منصة TamtechAI هي أداة تحليل مدعومة بالذكاء الاصطناعي وليست مستشاراً مالياً. جميع البيانات هي لأغراض تعليمية فقط. الاستثمار ينطوي على مخاطر.",
     reportTitle: "تقرير التحليل الاستثماري",
-    // 👇 الجديد
     randomBtn: "ألهمني",
     randomTitle: "اقتراح الذكاء الاصطناعي",
     randomDesc: "عقلنا الاصطناعي يقترح هذا السهم الواعد. هل تريد استهلاك 1 رصيد لتحليل:",
@@ -162,7 +163,6 @@ const translations: any = {
     disclaimerTitle: "Disclaimer",
     disclaimerText: "TamtechAI è uno strumento di analisi basato su IA, non un consulente finanziario. Dati a solo scopo informativo.",
     reportTitle: "Rapporto di Analisi Finanziaria",
-    // 👇 الجديد
     randomBtn: "Ispirami",
     randomTitle: "Scelta IA",
     randomDesc: "La nostra IA suggerisce questo titolo. Vuoi usare 1 credito?",
@@ -200,7 +200,6 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
 
-  // 👇 حالة جديدة للمودال العشوائي
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
 
@@ -214,14 +213,14 @@ export default function Home() {
 
   const fetchUserData = async (currentToken: string) => {
     try {
-      const res = await fetch("http://localhost:8000/users/me", { headers: { Authorization: `Bearer ${currentToken}` } });
+      const res = await fetch(`${BASE_URL}/users/me`, { headers: { Authorization: `Bearer ${currentToken}` } });
       if (res.ok) { const data = await res.json(); setCredits(data.credits); setUserEmail(data.email); setShowAuthModal(false); } 
       else { logout(); }
     } catch { logout(); }
   };
 
   const handleAuth = async () => {
-    const url = authMode === "login" ? "http://localhost:8000/token" : "http://localhost:8000/register";
+    const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
     let body, headers = {};
     if (authMode === "login") {
       const formData = new URLSearchParams(); formData.append('username', email); formData.append('password', password);
@@ -239,11 +238,10 @@ export default function Home() {
 
   const logout = () => { localStorage.removeItem("access_token"); setToken(null); setUserEmail(""); setResult(null); };
 
-  // 👇 دالة لجلب سهم عشوائي من الذكاء الاصطناعي
   const fetchRandomStock = async () => {
       setLoadingRandom(true);
       try {
-          const res = await fetch("http://localhost:8000/suggest-stock");
+          const res = await fetch(`${BASE_URL}/suggest-stock`);
           const data = await res.json();
           setRandomTicker(data.ticker); 
       } catch {
@@ -253,7 +251,6 @@ export default function Home() {
       }
   };
 
-  // 👇 تأكيد التحليل العشوائي
   const confirmRandomAnalysis = () => {
       if (randomTicker) {
           setTicker(randomTicker);
@@ -271,7 +268,7 @@ export default function Home() {
     setLoading(true);
     try {
       const headers: any = {}; if (token) headers["Authorization"] = `Bearer ${token}`;
-      const res = await fetch(`http://localhost:8000/analyze/${targetTicker}?lang=${lang}`, { headers });
+      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { headers });
       if (res.status === 402) { setShowPaywall(true); setLoading(false); return; }
       if (!res.ok) throw new Error("Stock not found");
       const data = await res.json(); setResult(data);
@@ -282,7 +279,7 @@ export default function Home() {
 
   const handleRedeem = async () => {
     try {
-      const res = await fetch("http://localhost:8000/verify-license", {
+      const res = await fetch(`${BASE_URL}/verify-license`, {
         method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ license_key: licenseKey.trim() }),
       });
@@ -363,7 +360,6 @@ export default function Home() {
         <div className="flex justify-center mb-10">
           <div className="relative w-full max-w-xl group">
             <div className="absolute inset-0 bg-blue-500 opacity-20 blur-xl rounded-full group-hover:opacity-30 transition-opacity"></div>
-            {/* 👇 زر النرد المضاف بجانب مربع البحث */}
             <div className="flex gap-2 w-full">
                 <div className="relative flex-1 flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl">
                 <input type="text" placeholder={t.searchPlaceholder} className="w-full bg-transparent p-4 text-lg outline-none uppercase font-mono" value={ticker} onChange={(e) => setTicker(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} />
@@ -376,7 +372,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 🎲 Random Suggestion Modal */}
         {randomTicker && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
                 <div className="bg-slate-900 border border-purple-500/30 p-8 rounded-3xl max-w-sm w-full text-center relative shadow-2xl">

@@ -305,6 +305,19 @@ export default function Home() {
       }
   };
 
+
+// هاد الكود وظيفته يفلتر البيانات حسب الزر اللي بتكبسه
+const getFilteredChartData = () => {
+  if (!result || !result.data || !result.data.chart_data) return [];
+  
+  const allData = result.data.chart_data;
+  if (timeRange === '1W') return allData.slice(-7);   // آخر 7 أيام
+  if (timeRange === '1M') return allData.slice(-30);  // آخر 30 يوم
+  if (timeRange === '6M') return allData.slice(-180); // آخر 180 يوم
+  return allData; // الحالة العادية (سنة)
+};
+
+
   const MetricCard = ({ label, value, tooltipKey, metricKey, suffix = "" }: any) => (
       <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl flex flex-col justify-between hover:border-blue-500/30 transition group relative">
           <div className="flex justify-between items-start mb-2">
@@ -551,7 +564,7 @@ export default function Home() {
                         </div>
                         <div className="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-3xl p-2 md:p-8 h-[300px] md:h-[500px] shadow-2xl">
                             <ResponsiveContainer width="100%" height="100%">
-                              <AreaChart data={result.data.chart_data}>
+                              <AreaChart data={getFilteredChartData()}>
                                 <defs>
                                   <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>

@@ -477,12 +477,12 @@ const getFilteredChartData = () => {
           onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} 
         />
         <button 
-          onClick={() => handleAnalyze()} 
-          disabled={loading} 
-          className="bg-blue-600 hover:bg-blue-500 px-6 py-4 font-black text-xs md:text-base disabled:opacity-50 transition-colors shrink-0"
-        >
-          {loading ? "..." : t.analyze}
-        </button>
+  onClick={() => handleAnalyze()} 
+  disabled={loading} 
+  className="bg-blue-600 hover:bg-blue-500 px-6 py-4 font-black text-xs md:text-base disabled:opacity-50 transition-colors shrink-0 h-full rounded-none"
+>
+  {loading ? "..." : t.analyze}
+</button>
       </div>
       
       <button onClick={fetchRandomStock} className="bg-slate-800 border border-slate-700 p-4 rounded-xl hover:bg-slate-700 transition-all shrink-0">

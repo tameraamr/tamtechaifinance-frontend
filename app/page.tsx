@@ -170,6 +170,10 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
   const [authError, setAuthError] = useState("");
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [compareTickers, setCompareTickers] = useState({ t1: "", t2: "" });
+  const [compareResult, setCompareResult] = useState<any>(null);
+  const [loadingCompare, setLoadingCompare] = useState(false);
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
@@ -269,6 +273,29 @@ export default function Home() {
       else { const newGuest = guestTrials - 1; setGuestTrials(newGuest); localStorage.setItem("guest_trials", newGuest.toString()); }
     } catch (err: any) { setAuthError(err.message); } finally { setLoading(false); }
   };
+
+  const handleCompare = async () => {
+  if (!compareTickers.t1 || !compareTickers.t2) return;
+  if (credits < 2) { setShowPaywall(true); return; }
+
+  setLoadingCompare(true);
+  try {
+    const res = await fetch(`${BASE_URL}/analyze-compare/${compareTickers.t1}/${compareTickers.t2}?lang=${lang}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    
+    if (res.status === 402) { setShowPaywall(true); return; }
+    if (!res.ok) throw new Error();
+    
+    const data = await res.json();
+    setCompareResult(data);
+    setCredits(data.credits_left); // تحديث الرصيد فوراً
+  } catch (err) {
+    setAuthError("Comparison failed. Check tickers.");
+  } finally {
+    setLoadingCompare(false);
+  }
+};
 
   const handleRedeem = async () => {
     setAuthError("");
@@ -461,6 +488,13 @@ const getFilteredChartData = () => {
       <button onClick={fetchRandomStock} disabled={loadingRandom} className="bg-slate-800 border border-slate-700 p-3 md:p-4 rounded-xl shadow-2xl transition-all group disabled:opacity-50">
           {loadingRandom ? <div className="animate-spin h-5 w-5 md:h-6 md:w-6 border-t-2 border-purple-500 rounded-full"></div> : <Dices className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />}
       </button>
+      <button 
+  onClick={() => setShowCompareModal(true)} 
+  className="bg-slate-800 border border-slate-700 p-3 md:p-4 rounded-xl shadow-2xl transition-all group hover:border-emerald-500/50"
+>
+  <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-emerald-400" />
+</button>
+
     </div>
   </div>
 
@@ -795,6 +829,60 @@ const getFilteredChartData = () => {
     </p>
   </div>
 )}
+
+{showCompareModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 overflow-y-auto">
+    <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-[2.5rem] p-6 md:p-10 relative shadow-2xl overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
+      
+      <button onClick={() => {setShowCompareModal(false); setCompareResult(null);}} className="absolute top-6 right-6 text-slate-500 hover:text-white z-10"><XCircle /></button>
+      
+      <div className="relative z-10">
+        <h2 className="text-2xl md:text-4xl font-black mb-2 text-center text-white">Stock Battle <span className="text-emerald-500">2x</span></h2>
+        <p className="text-slate-500 text-center text-xs mb-8 font-bold uppercase tracking-widest">Costs 2 Credits</p>
+        
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <input type="text" placeholder="TICKER 1" className="bg-slate-950 border border-slate-800 p-4 rounded-2xl outline-none uppercase font-mono text-center text-xl text-blue-400 focus:border-blue-500 transition-all" onChange={(e)=>setCompareTickers({...compareTickers, t1: e.target.value})} />
+          <input type="text" placeholder="TICKER 2" className="bg-slate-950 border border-slate-800 p-4 rounded-2xl outline-none uppercase font-mono text-center text-xl text-emerald-400 focus:border-emerald-500 transition-all" onChange={(e)=>setCompareTickers({...compareTickers, t2: e.target.value})} />
+        </div>
+
+        <button onClick={handleCompare} disabled={loadingCompare} className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 py-4 rounded-2xl font-black text-lg transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+          {loadingCompare ? "Analyzing Battle..." : "Launch Comparison"}
+        </button>
+
+        {compareResult && (
+          <div className="mt-10 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+             {/* Winner Badge */}
+             <div className="flex justify-center">
+               <div className="bg-emerald-500/20 border border-emerald-500/50 px-6 py-2 rounded-full text-emerald-400 font-black text-sm uppercase tracking-tighter flex items-center gap-2">
+                 <Star className="w-4 h-4 fill-emerald-400"/> AI Winner: {compareResult.analysis.winner}
+               </div>
+             </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-slate-800/30 p-6 rounded-3xl border border-blue-500/10">
+                   <h4 className="text-blue-400 font-black mb-4 uppercase text-xs">{compareResult.stock1.symbol} Summary</h4>
+                   <p className="text-slate-400 text-sm leading-relaxed line-clamp-4">{compareResult.stock1.description}</p>
+                </div>
+                <div className="bg-slate-800/30 p-6 rounded-3xl border border-emerald-500/10">
+                   <h4 className="text-emerald-400 font-black mb-4 uppercase text-xs">{compareResult.stock2.symbol} Summary</h4>
+                   <p className="text-slate-400 text-sm leading-relaxed line-clamp-4">{compareResult.stock2.description}</p>
+                </div>
+             </div>
+
+             <div className="bg-slate-950 border border-slate-800 p-6 rounded-3xl">
+               <h3 className="text-slate-200 font-black mb-4 flex items-center gap-2 uppercase text-sm"><Zap className="text-yellow-400 fill-yellow-400 w-4 h-4"/> Institutional Verdict</h3>
+               <p className="text-slate-300 text-sm md:text-base leading-relaxed italic">"{compareResult.analysis.verdict}"</p>
+             </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+
       </main>
     </div>
   );

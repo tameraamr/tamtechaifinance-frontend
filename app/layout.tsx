@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Tamtech Finance | AI Stock Analysis", // الاسم اللي بيظهر فوق
   description: "Institutional-grade market intelligence powered by AI",
   icons: {
-    icon: "/logo.png", 
+    icon: "/logo.PNG", 
   },
 };
 

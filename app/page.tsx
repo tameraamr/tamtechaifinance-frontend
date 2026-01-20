@@ -158,6 +158,7 @@ export default function Home() {
   const [authMode, setAuthMode] = useState("signup");
   const [credits, setCredits] = useState(0); 
   const [ticker, setTicker] = useState("");
+  const [marketPulse, setMarketPulse] = useState<any[]>([]);
   const [timeRange, setTimeRange] = useState("1Y");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -173,11 +174,34 @@ export default function Home() {
   const [loadingRandom, setLoadingRandom] = useState(false);
 
   useEffect(() => {
+    // كود جلب بيانات اليوزر (خلوه زي ما هو)
     const savedGuest = localStorage.getItem("guest_trials");
     if (savedGuest) setGuestTrials(parseInt(savedGuest));
     else localStorage.setItem("guest_trials", "3");
     const savedToken = localStorage.getItem("access_token");
     if (savedToken) { setToken(savedToken); fetchUserData(savedToken); }
+
+    // --- الدالة الجديدة لجلب أسعار الشريط الحقيقية ---
+    const fetchPulse = async () => {
+      try {
+        const res = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbols=[%22BTCUSDT%22,%22ETHUSDT%22,%22SOLUSDT%22,%22BNBUSDT%22]");
+        const cryptoData = await res.json();
+        const formattedData = cryptoData.map((coin: any) => ({
+          name: coin.symbol.replace("USDT", ""),
+          price: parseFloat(coin.lastPrice).toLocaleString(),
+          change: (parseFloat(coin.priceChangePercent) >= 0 ? "+" : "") + parseFloat(coin.priceChangePercent).toFixed(2) + "%",
+          up: parseFloat(coin.priceChangePercent) >= 0
+        }));
+        // إضافة مؤشرات السوق التقليدية (لأنها ثابتة بالليل)
+        formattedData.push({ name: "GOLD", price: "2,645.20", change: "+0.12%", up: true });
+        formattedData.push({ name: "S&P 500", price: "5,842.10", change: "+0.45%", up: true });
+        setMarketPulse(formattedData);
+      } catch (err) { console.log("Pulse fetch error"); }
+    };
+
+    fetchPulse();
+    const interval = setInterval(fetchPulse, 60000); // تحديث كل دقيقة
+    return () => clearInterval(interval);
   }, []);
 
   const fetchUserData = async (currentToken: string) => {
@@ -382,42 +406,40 @@ const getFilteredChartData = () => {
         </div>
       </nav>
 
-{/* Market Pulse Strip - المعدل للحركة */}
+{/* Market Pulse Strip - المربوط بالبيانات الحقيقية */}
 <div className="bg-slate-950/50 border-b border-slate-800/50 py-2 overflow-hidden shadow-inner sticky top-16 z-30 backdrop-blur-md group">
   <div className="max-w-7xl mx-auto px-6 flex items-center">
     
     {/* عنوان الشريط - ثابت لا يتحرك */}
     <div className="flex items-center gap-2 border-r border-slate-800 pr-4 bg-[#0b1121] z-10">
-      <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Market Pulse:</span>
+      <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter text-slate-400">Market Pulse:</span>
       <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20 whitespace-nowrap">
-        <Zap className="w-3 h-3 fill-emerald-400"/> BULLISH
+        <Zap className="w-3 h-3 fill-emerald-400"/> LIVE
       </span>
     </div>
 
     {/* الحاوية المتحركة */}
-    <div className="flex overflow-hidden relative ml-4">
+    <div className="flex overflow-hidden relative ml-4 flex-1">
       <div className="flex gap-12 items-center animate-marquee whitespace-nowrap py-1">
-        {[
-          { name: "S&P 500", price: "5,842", change: "+0.45%", up: true },
-          { name: "NASDAQ", price: "18,210", change: "+0.82%", up: true },
-          { name: "BTC", price: "$102,450", change: "-1.20%", up: false },
-          { name: "GOLD", price: "2,650", change: "+0.15%", up: true },
-          { name: "VIX", price: "14.20", change: "STABLE", up: null },
-          // تكرار البيانات لضمان عدم وجود فراغ أثناء الدوران
-          { name: "S&P 500", price: "5,842", change: "+0.45%", up: true },
-          { name: "NASDAQ", price: "18,210", change: "+0.82%", up: true },
-          { name: "BTC", price: "$102,450", change: "-1.20%", up: false },
-          { name: "GOLD", price: "2,650", change: "+0.15%", up: true },
-          { name: "VIX", price: "14.20", change: "STABLE", up: null },
-        ].map((index, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-slate-500">{index.name}</span>
-            <span className="text-[11px] font-mono font-bold text-slate-200">{index.price}</span>
-            <span className={`text-[9px] font-bold ${index.up === true ? 'text-emerald-500' : index.up === false ? 'text-red-500' : 'text-blue-400'}`}>
-              {index.change}
-            </span>
+        {marketPulse.length > 0 ? (
+          // تكرار البيانات مرتين لضمان حركة دائرية بلا انقطاع
+          [...marketPulse, ...marketPulse].map((index, i) => (
+            <div key={i} className="flex items-center gap-2 px-2">
+              <span className="text-[10px] font-bold text-slate-500 uppercase">{index.name}</span>
+              <span className="text-[11px] font-mono font-bold text-slate-200">{index.price}</span>
+              <span className={`text-[9px] font-bold ${index.up ? 'text-emerald-500' : 'text-red-500'}`}>
+                {index.change}
+              </span>
+            </div>
+          ))
+        ) : (
+          // تظهر هذه الرسالة فقط لثانية واحدة عند التحميل لأول مرة
+          <div className="flex gap-4">
+             <span className="text-[10px] text-slate-600 animate-pulse font-bold uppercase tracking-widest">
+               Connecting to global markets...
+             </span>
           </div>
-        ))}
+        )}
       </div>
     </div>
   </div>

@@ -31,7 +31,7 @@ const translations: any = {
     paywallTitle: "Limit Reached",
     paywallDesc: "You have 0 credits. Purchase a Pro Key to unlock 50 deep scans.",
     searchPlaceholder: "Enter Ticker (e.g. NVDA)...",
-    scan: "Scanning...",
+    scan: "Running deep analysis... This might take a moment to ensure institutional accuracy.",
     analyze: "Analyze",
     verdict: "AI Verdict",
     confidence: "Confidence",
@@ -86,7 +86,7 @@ const translations: any = {
     paywallTitle: "نفذ رصيدك",
     paywallDesc: "رصيدك الحالي 0. اشترِ مفتاح Pro للحصول على 50 تحليل.",
     searchPlaceholder: "أدخل رمز السهم (مثلاً: NVDA)...",
-    scan: "جاري الفحص...",
+    scan: " جاري التحليل العميق... قد يستغرق ذلك بضع ثوانٍ لضمان أدق النتائج",
     analyze: "حلل الآن",
     verdict: "حكم الذكاء الاصطناعي",
     confidence: "نسبة الثقة",
@@ -128,7 +128,7 @@ const translations: any = {
     loginTitle: "Accedi", signupTitle: "Crea Account", email: "Email", pass: "Password", loginBtn: "Accedi", signupBtn: "Iscriviti",
     switchSign: "Non hai un account? Iscriviti", switchLog: "Hai un account? Accedi", logout: "Esci", guestBadge: "Ospite", freeLeft: "Crediti",
     registerToContinue: "Registrati", registerDesc: "Crea un account per acquistare crediti.", paywallTitle: "Limite Raggiunto",
-    paywallDesc: "Crediti esauriti. Passa a Pro.", searchPlaceholder: "Inserisci Ticker (es. NVDA)...", scan: "Scansione...", analyze: "Analizza",
+    paywallDesc: "Crediti esauriti. Passa a Pro.", searchPlaceholder: "Inserisci Ticker (es. NVDA)...", scan: "Analisi profonda in corso... Potrebbe volerci un momento per garantire la massima precisione.", analyze: "Analizza",
     verdict: "Verdetto IA", confidence: "Fiducia", analyst: "Analista", targetPrice: "Prezzo Target", low: "Min", high: "Max", trend: "Trend", radar: "Radar", swot: "SWOT", bull: "Rialzista", bear: "Ribassista",
     forecasts: "Previsioni IA", oneYear: "1 Anno", fiveYears: "5 Anni", pe: "P/E", mcap: "Cap. Mercato", growth: "Crescita", debt: "Debito",
     strengths: "Punti di Forza", weaknesses: "Debolezze", opportunities: "Opportunità", threats: "Minacce", upgradeBtn: "Ottieni Chiave ($5)", redeemBtn: "Riscatta", inputKey: "Codice...", haveKey: "HAI UN CODICE?",
@@ -612,7 +612,16 @@ export default function Home() {
                 </div>
             </div>
         )}
-        {loading && !result && <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div></div>}
+        {loading && !result && (
+  <div className="flex flex-col items-center mt-20 gap-4 animate-in fade-in">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    <p className="text-blue-400 text-xs md:text-sm font-bold animate-pulse text-center px-6 max-w-md leading-relaxed">
+      {lang === 'ar' ? "الذكاء الاصطناعي يقوم الآن بفك شفرة الميزانيات العمومية والتقييمات... بضع ثوانٍ من فضلك" : 
+       lang === 'it' ? "L'IA sta decodificando bilanci e valutazioni... attendere prego" :
+       "AI is decoding balance sheets and valuations... this deep scan takes a moment"}
+    </p>
+  </div>
+)}
       </main>
     </div>
   );

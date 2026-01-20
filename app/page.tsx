@@ -241,14 +241,29 @@ export default function Home() {
     setAuthError("");
     try {
       const res = await fetch(`${BASE_URL}/verify-license`, {
-        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        method: "POST", 
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ license_key: licenseKey.trim() }),
       });
+      
       const data = await res.json();
-      if (data.valid) { setCredits(data.credits); setShowPaywall(false); setLicenseKey(""); alert(`🎉 Success! Balance: ${data.credits}`); } 
-      else { setAuthError(data.message); }
-    } catch { setAuthError("Error"); }
-  };
+      
+      if (data.valid) { 
+        setCredits(data.credits); 
+        setShowPaywall(false); 
+        setLicenseKey(""); 
+        alert(`🎉 Success! Balance: ${data.credits}`); 
+      } 
+      else { 
+        // 👇 هذا التعديل سيجعل الرسالة تظهر فوراً
+        setAuthError(data.message); 
+        alert(`❌ ${data.message}`); // تنبيه للمستخدم بالخطأ القادم من السيرفر
+      }
+    } catch (err) { 
+      setAuthError("Connection Error"); 
+      alert("❌ Could not connect to the server");
+    }
+};
 
   const handleDownloadPDF = async () => {
     const input = document.getElementById('report-content');

@@ -118,7 +118,7 @@ const translations: any = {
         ps: "السعر للمبيعات (P/S): يقيم سعر السهم بالنسبة للإيرادات.",
         beta: "بيتا (Beta): مقياس للتذبذب مقارنة بالسوق. أعلى من 1 يعني مخاطرة أعلى.",
         div: "عائد التوزيعات: النسبة المئوية للأرباح الموزعة سنوياً.",
-        roe: "العائد على حقوق الملكية (ROE): يقيس ربحية الشركة بالنسبة حقوق المساهمين.",
+        roe: "العائد على حقوق الملكية (ROE): يقيس ربحية الشركة بالنسبة لحقوق المساهمين.",
         margin: "هامش الربح: النسبة المئوية للإيرادات التي تتحول لربح صافي.",
         debt: "الديون للملكية: مقياس للرافعة المالية والمخاطر.",
         curr: "النسبة الحالية: قدرة الشركة على سداد التزاماتها قصيرة الأجل."
@@ -158,7 +158,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
   
-  // نظام الأخطاء الجديد بدون Alert
+  // نظام الأخطاء بدون Alert
   const [authError, setAuthError] = useState("");
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
@@ -259,31 +259,54 @@ export default function Home() {
         const dataUrl = await toPng(input, { cacheBust: true, pixelRatio: 2 });
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
         const imgProps = pdf.getImageProperties(dataUrl);
         const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, imgHeight);
-        pdf.save(`${ticker}_Analysis.pdf`);
-    } catch { setAuthError("PDF Failed"); }
+        let heightLeft = imgHeight;
+        let position = 0;
+        pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+        while (heightLeft > 0) { position -= pdfHeight; pdf.addPage(); pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight); heightLeft -= pdfHeight; }
+        pdf.save(`${ticker || "Analysis"}_TamtechAI.pdf`);
+    } catch (err) { setAuthError("PDF Failed"); }
   };
 
   const formatNumber = (num: any) => num > 1e9 ? (num/1e9).toFixed(2)+"B" : num > 1e6 ? (num/1e6).toFixed(2)+"M" : num?.toLocaleString();
   const getVerdictColor = (v: string) => v?.includes("BUY") ? "text-emerald-400 border-emerald-500/50 bg-emerald-500/10" : v?.includes("SELL") ? "text-red-400 border-red-500/50 bg-red-500/10" : "text-yellow-400 border-yellow-500/50 bg-yellow-500/10";
   const calculateRangePos = (c: number, l: number, h: number) => Math.min(Math.max(((c-l)/(h-l))*100, 0), 100);
 
+  const getMetricStatus = (key: string, value: number) => {
+      if(!value && value !== 0) return "text-slate-200";
+      switch(key) {
+          case 'peg': return value < 1 ? "text-emerald-400" : value > 2 ? "text-red-400" : "text-yellow-400";
+          case 'margin': return value > 20 ? "text-emerald-400" : value < 5 ? "text-red-400" : "text-yellow-400";
+          case 'debt': return value < 50 ? "text-emerald-400" : value > 100 ? "text-red-400" : "text-yellow-400";
+          case 'beta': return value < 1 ? "text-emerald-400" : value > 1.5 ? "text-orange-400" : "text-yellow-400";
+          case 'roe': return value > 15 ? "text-emerald-400" : value < 5 ? "text-red-400" : "text-yellow-400";
+          default: return "text-slate-200";
+      }
+  };
+
   const MetricCard = ({ label, value, tooltipKey, metricKey, suffix = "" }: any) => (
-      <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl flex flex-col hover:border-blue-500/30 transition group">
-          <div className="flex justify-between items-start mb-2"><span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{label}</span><HelpCircle className="w-3 h-3 text-slate-600" /></div>
-          <div className={`text-xl font-mono font-bold text-slate-200`} dir="ltr">{typeof value === 'number' ? value.toFixed(2) : value}{suffix}</div>
+      <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl flex flex-col justify-between hover:border-blue-500/30 transition group relative">
+          <div className="flex justify-between items-start mb-2">
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{label}</span>
+              <div className="relative group/tooltip">
+                  <HelpCircle className="w-3 h-3 text-slate-600 cursor-help hover:text-blue-400" />
+                  <div className="absolute bottom-full right-0 mb-2 w-48 bg-slate-950 border border-slate-700 text-slate-300 text-xs p-2 rounded shadow-xl hidden group-hover/tooltip:block z-10">{t.tooltips[tooltipKey]}</div>
+              </div>
+          </div>
+          <div className={`text-xl font-mono font-bold ${getMetricStatus(metricKey, value)}`} dir="ltr">{typeof value === 'number' ? value.toFixed(2) : value}{suffix}</div>
       </div>
   );
 
   return (
-    <div dir={isRTL ? "rtl" : "ltr"} className={`min-h-screen bg-[#0b1121] text-slate-100 font-sans ${isRTL ? 'font-arabic' : ''}`}>
+    <div dir={isRTL ? "rtl" : "ltr"} className={`min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 ${isRTL ? 'font-arabic' : ''}`}>
       <nav className="border-b border-slate-800 bg-[#0b1121]/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2"><BarChart3 className="text-blue-500 w-6 h-6" /><span className="font-bold text-xl tracking-tight">TamtechAI <span className="text-blue-500">Pro</span></span></div>
           <div className="flex items-center gap-4">
-            {/* 👇 إصلاح الكريدت ليظهر في الجوال */}
+            {/* عرض الكريدت في الجوال */}
             {token ? (
               <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold text-slate-300">
                 <Star className="w-3 h-3 text-yellow-400" /><span>{t.freeLeft}: <span className={credits > 0 ? "text-white" : "text-red-500"}>{credits}</span></span>
@@ -291,7 +314,6 @@ export default function Home() {
             ) : (
               <div className="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold text-slate-400"><User className="w-3 h-3"/> {t.guestBadge}: {guestTrials}</div>
             )}
-            {/* 👇 رجوع اللغات الـ 3 */}
             <div className="hidden md:flex bg-slate-900 border border-slate-700 rounded-full p-1">
               {['en', 'ar', 'it'].map((l) => (<button key={l} onClick={() => setLang(l)} className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>{l}</button>))}
             </div>
@@ -313,7 +335,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 👇 رجوع الـ Hero Section والمميزات (الأشياء الجميلة) */}
         {!result && !loading && (
             <div className="flex flex-col items-center justify-center mt-8 animate-in fade-in duration-700">
                 <h1 className="text-3xl md:text-5xl font-bold text-center text-white mb-4 tracking-tight">{t.heroTitle}</h1>
@@ -326,7 +347,6 @@ export default function Home() {
             </div>
         )}
 
-        {/* 👇 الـ Auth Modal مع نظام الأخطاء الجديد */}
         {showAuthModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"><div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-md w-full relative">
             <button onClick={() => setShowAuthModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white"><XCircle className="w-6 h-6"/></button>
@@ -336,35 +356,103 @@ export default function Home() {
               <input type="email" placeholder={t.email} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm" value={email} onChange={e=>setEmail(e.target.value)} />
               <input type="password" placeholder={t.pass} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm" value={password} onChange={e=>setPassword(e.target.value)} />
               <button onClick={handleAuth} className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold">{authMode === "login" ? t.loginBtn : t.signupBtn}</button>
-              <button onClick={() => setAuthMode(authMode==="login"?"signup":"login")} className="w-full text-xs text-slate-400">{authMode==="login" ? t.switchSign : t.switchLog}</button>
+              <button onClick={() => {setAuthMode(authMode==="login"?"signup":"login"); setAuthError("");}} className="w-full text-xs text-slate-400">{authMode==="login" ? t.switchSign : t.switchLog}</button>
             </div>
           </div></div>
         )}
 
-        {/* بقية محتوى النتائج والـ PDF يتبع هنا بنفس كودك الأصلي... */}
+        {showPaywall && (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"><div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-md w-full text-center relative shadow-2xl"><div className="bg-slate-800 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 border border-slate-700"><Lock className="w-8 h-8 text-yellow-400" /></div><h2 className="text-3xl font-bold mb-2 text-white">{t.paywallTitle}</h2><p className="text-slate-400 mb-8 text-sm">{t.paywallDesc}</p><a href="https://tamtechfinance.gumroad.com/l/tool" target="_blank" className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl mb-6">{t.upgradeBtn}</a><div className="flex gap-2"><input type="text" placeholder={t.inputKey} className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4" value={licenseKey} onChange={(e) => setLicenseKey(e.target.value)} /><button onClick={handleRedeem} className="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-lg">{t.redeemBtn}</button></div><button onClick={()=>setShowPaywall(false)} className="mt-4 text-xs text-slate-500 hover:text-slate-300">Close</button></div></div>)}
+
         {result && !loading && (
-          <div id="report-content" className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-8 pb-20 p-4 bg-[#0b1121]">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div className="lg:col-span-1 bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6">
-                    <h1 className="text-xl md:text-3xl font-bold mb-1">{result.data.companyName}</h1>
-                    <div className="text-3xl md:text-5xl font-mono font-bold my-4" dir="ltr">${result.data.price?.toFixed(2)}</div>
-                    <div className={`p-4 rounded-xl text-center border-2 ${getVerdictColor(result.analysis.verdict)}`}>
-                      <span className="text-2xl md:text-4xl font-black block">{result.analysis.verdict}</span>
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-8 pb-20">
+                <div className="flex justify-end px-2">
+                    <button onClick={handleDownloadPDF} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-sm font-bold border border-slate-700 transition">
+                        <Download className="w-4 h-4" /> {t.download}
+                    </button>
+                </div>
+
+                <div id="report-content" className="p-4 bg-[#0b1121]">
+                    <div className="mb-6 border-b border-slate-700 pb-4 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                            <BarChart3 className="text-blue-500 w-8 h-8" />
+                            <div><h1 className="text-2xl font-bold text-white">TamtechAI <span className="text-blue-500">Pro</span></h1><p className="text-slate-400 text-xs">{t.reportTitle}</p></div>
+                        </div>
+                        <div className="text-right"><div className="text-slate-200 font-mono font-bold text-xl">{result.ticker}</div><div className="text-slate-500 text-xs">{new Date().toLocaleDateString()}</div></div>
                     </div>
-                </div>
-                <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 h-[400px]">
-                   <ResponsiveContainer width="100%" height="100%"><AreaChart data={result.data.chart_data}><XAxis dataKey="date" hide /><YAxis hide /><Area type="monotone" dataKey="price" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} /></AreaChart></ResponsiveContainer>
+                   
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div className="lg:col-span-1 bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6">
+                            <div className="flex justify-between items-center mb-2"><span className="bg-slate-700/50 px-2 py-1 rounded text-xs text-blue-300 font-mono">{result.ticker}</span>{result.data.recommendationKey!=="none" && <span className="text-[10px] uppercase font-bold text-blue-400 border border-blue-500/30 px-2 py-1 rounded">{t.analyst}: {result.data.recommendationKey.replace('_', ' ')}</span>}</div>
+                            <h1 className="text-3xl font-bold mb-1">{result.data.companyName}</h1>
+                            <div className="text-5xl font-mono font-bold my-4" dir="ltr">${result.data.price?.toFixed(2)}</div>
+                            <div className="mb-6"><div className="flex justify-between text-xs text-slate-400 mb-1"><span>{t.low}: ${result.data.fiftyTwoWeekLow}</span><span>{t.high}: ${result.data.fiftyTwoWeekHigh}</span></div><div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden relative"><div className="h-full bg-gradient-to-r from-blue-600 to-emerald-400 absolute" style={{ left: `${calculateRangePos(result.data.price, result.data.fiftyTwoWeekLow, result.data.fiftyTwoWeekHigh) - 2}%`, width: '4%' }}></div></div></div>
+                            <div className={`p-5 rounded-xl text-center border-2 ${getVerdictColor(result.analysis.verdict)}`}><div className="text-xs uppercase opacity-80 mb-2 font-bold tracking-widest">{t.verdict}</div><span className="text-4xl font-black tracking-tighter block">{result.analysis.verdict}</span><div className="mt-2 text-xs font-bold opacity-75">{t.confidence}: {result.analysis.confidence_score}%</div></div>
+                        </div>
+                        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 h-[450px]">
+                            <ResponsiveContainer width="100%" height="100%"><AreaChart data={result.data.chart_data}><defs><linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} /><XAxis dataKey="date" stroke="#64748b" tickFormatter={(str) => str.slice(5)} minTickGap={40} /><YAxis stroke="#64748b" domain={['auto', 'auto']} orientation={isRTL?"right":"left"} /><Tooltip contentStyle={{backgroundColor: '#0f172a', borderColor: '#334155'}} /><Area type="monotone" dataKey="price" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorPrice)" /></AreaChart></ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-900/30 border border-slate-800 rounded-2xl p-6 mb-8">
+                        <h3 className="text-xl font-bold mb-4 text-white flex items-center gap-2"><Activity className="w-5 h-5 text-blue-400" /> {t.metricsTitle}</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <MetricCard label="P/E Ratio" value={result.data.pe_ratio} metricKey="pe" tooltipKey="pe" />
+                            <MetricCard label="PEG Ratio" value={result.data.peg_ratio} metricKey="peg" tooltipKey="peg" />
+                            <MetricCard label="Price/Sales" value={result.data.price_to_sales} metricKey="ps" tooltipKey="ps" />
+                            <MetricCard label="Price/Book" value={result.data.price_to_book} metricKey="pb" tooltipKey="pb" />
+                            <MetricCard label="EPS (TTM)" value={result.data.eps} metricKey="eps" tooltipKey="pe" suffix="$" />
+                            <MetricCard label="Profit Margin" value={result.data.profit_margins} metricKey="margin" tooltipKey="margin" suffix="%" />
+                            <MetricCard label="Operating Margin" value={result.data.operating_margins} metricKey="margin" tooltipKey="margin" suffix="%" />
+                            <MetricCard label="ROE" value={result.data.return_on_equity} metricKey="roe" tooltipKey="roe" suffix="%" />
+                            <MetricCard label="Dividend Yield" value={result.data.dividend_yield} metricKey="div" tooltipKey="div" suffix="%" />
+                            <MetricCard label="Beta" value={result.data.beta} metricKey="beta" tooltipKey="beta" />
+                            <MetricCard label="Debt/Equity" value={result.data.debt_to_equity} metricKey="debt" tooltipKey="debt" />
+                            <MetricCard label="Current Ratio" value={result.data.current_ratio} metricKey="curr" tooltipKey="curr" />
+                            <MetricCard label="Rev Growth" value={result.data.revenue_growth} metricKey="margin" tooltipKey="margin" suffix="%" />
+                            <MetricCard label="Market Cap" value={formatNumber(result.data.market_cap)} metricKey="mcap" tooltipKey="pe" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="bg-slate-800/20 border border-blue-500/20 p-6 rounded-2xl"><h4 className="text-blue-400 font-bold mb-3 flex gap-2 items-center"><Calendar className="w-4 h-4"/> {t.oneYear}</h4><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.forecasts?.next_1_year}</p></div>
+                        <div className="bg-slate-800/20 border border-purple-500/20 p-6 rounded-2xl"><h4 className="text-purple-400 font-bold mb-3 flex gap-2 items-center"><TrendingUp className="w-4 h-4"/> {t.fiveYears}</h4><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.forecasts?.next_5_years}</p></div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                        <div className="lg:col-span-2 space-y-4">
+                            <div className="bg-slate-800/30 border border-blue-500/20 p-6 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-blue-400 font-bold mb-2 flex gap-2"><Target className="w-5 h-5"/> Business DNA</h3><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.chapter_1_the_business}</p></div>
+                            <div className="bg-slate-800/30 border border-emerald-500/20 p-6 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-emerald-400 font-bold mb-2 flex gap-2"><ShieldCheck className="w-5 h-5"/> Financial Health</h3><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.chapter_2_financials}</p></div>
+                            <div className="bg-slate-800/30 border border-purple-500/20 p-6 rounded-2xl hover:bg-slate-800/50 transition"><h3 className="text-purple-400 font-bold mb-2 flex gap-2"><DollarSign className="w-5 h-5"/> Valuation</h3><p className="text-slate-300 text-sm leading-relaxed">{result.analysis.chapter_3_valuation}</p></div>
+                        </div>
+                        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 h-[400px]">
+                            <h3 className="text-center font-bold text-slate-400 mb-4 flex justify-center gap-2"><Zap className="w-4 h-4 text-yellow-400"/> {t.radar}</h3>
+                            <ResponsiveContainer width="100%" height="100%"><RadarChart cx="50%" cy="50%" outerRadius="70%" data={result.analysis.radar_scores}><PolarGrid stroke="#334155" /><PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 10 }} /><PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} /><Radar name="Score" dataKey="A" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} /><Tooltip contentStyle={{backgroundColor: '#0f172a', borderColor: '#334155'}} /></RadarChart></ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    <div className="bg-slate-800/20 border border-slate-800 p-8 rounded-3xl mb-8">
+                        <h3 className="text-2xl font-bold mb-6 text-center">{t.swot}</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-emerald-900/10 border border-emerald-500/20 p-6 rounded-2xl"><h4 className="text-emerald-400 font-bold mb-2 flex gap-2"><CheckCircle size={16}/> {t.strengths}</h4><ul className="space-y-1">{result.analysis.swot_analysis.strengths.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
+                            <div className="bg-orange-900/10 border border-orange-500/20 p-6 rounded-2xl"><h4 className="text-orange-400 font-bold mb-2 flex gap-2"><AlertTriangle size={16}/> {t.weaknesses}</h4><ul className="space-y-1">{result.analysis.swot_analysis.weaknesses.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
+                            <div className="bg-blue-900/10 border border-blue-500/20 p-6 rounded-2xl"><h4 className="text-blue-400 font-bold mb-2 flex gap-2"><Lightbulb size={16}/> {t.opportunities}</h4><ul className="space-y-1">{result.analysis.swot_analysis.opportunities.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
+                            <div className="bg-red-900/10 border border-red-500/20 p-6 rounded-2xl"><h4 className="text-red-400 font-bold mb-2 flex gap-2"><XCircle size={16}/> {t.threats}</h4><ul className="space-y-1">{result.analysis.swot_analysis.threats.map((s:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {s}</li>)}</ul></div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-emerald-900/5 border border-emerald-500/10 p-6 rounded-2xl"><h3 className="text-lg font-bold text-emerald-500/80 mb-3">{t.bull}</h3><ul className="space-y-2">{result.analysis.bull_case_points.map((p:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {p}</li>)}</ul></div>
+                        <div className="bg-red-900/5 border border-red-500/10 p-6 rounded-2xl"><h3 className="text-lg font-bold text-red-500/80 mb-3">{t.bear}</h3><ul className="space-y-2">{result.analysis.bear_case_points.map((p:any,i:any)=><li key={i} className="text-slate-400 text-xs">• {p}</li>)}</ul></div>
+                    </div>
+
+                    <footer className="border-t border-slate-800 mt-12 py-6 text-center">
+                        <h4 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">{t.disclaimerTitle}</h4>
+                        <p className="text-slate-600 text-[10px] max-w-3xl mx-auto leading-relaxed px-4">{t.disclaimerText}</p>
+                    </footer>
                 </div>
             </div>
-            {/* ... بقية الـ SWOT والمقاطع المالية كما في كودك الأصلي ... */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-               <div className="bg-slate-800/30 p-6 rounded-2xl"><h3 className="font-bold mb-2">Business DNA</h3><p className="text-sm text-slate-400">{result.analysis.chapter_1_the_business}</p></div>
-               <div className="bg-slate-800/30 p-6 rounded-2xl"><h3 className="font-bold mb-2">Financials</h3><p className="text-sm text-slate-400">{result.analysis.chapter_2_financials}</p></div>
-            </div>
-            <button onClick={handleDownloadPDF} className="w-full bg-slate-800 py-3 rounded-xl font-bold">Download Report PDF</button>
-          </div>
         )}
-        {loading && <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div></div>}
+        {loading && !result && <div className="flex justify-center mt-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500"></div></div>}
       </main>
     </div>
   );

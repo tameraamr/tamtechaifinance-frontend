@@ -488,11 +488,23 @@ const getFilteredChartData = () => {
       <button onClick={fetchRandomStock} disabled={loadingRandom} className="bg-slate-800 border border-slate-700 p-3 md:p-4 rounded-xl shadow-2xl transition-all group disabled:opacity-50">
           {loadingRandom ? <div className="animate-spin h-5 w-5 md:h-6 md:w-6 border-t-2 border-purple-500 rounded-full"></div> : <Dices className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />}
       </button>
+      
       <button 
   onClick={() => setShowCompareModal(true)} 
-  className="bg-slate-800 border border-slate-700 p-3 md:p-4 rounded-xl shadow-2xl transition-all group hover:border-emerald-500/50"
+  className="w-full max-w-xl mt-4 bg-gradient-to-r from-blue-900/40 to-emerald-900/40 border border-blue-500/30 p-4 rounded-2xl flex items-center justify-between group hover:border-emerald-500/60 transition-all active:scale-[0.98]"
 >
-  <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-emerald-400" />
+  <div className="flex items-center gap-3">
+    <div className="bg-blue-500/20 p-2 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
+      <TrendingUp className="w-5 h-5 text-blue-400 group-hover:text-emerald-400" />
+    </div>
+    <div className="text-left">
+      <span className="block text-sm font-black text-white uppercase tracking-tighter">Battle Mode: Compare Stocks</span>
+      <span className="block text-[10px] text-slate-500 font-bold uppercase tracking-widest">Deep Institutional Analysis</span>
+    </div>
+  </div>
+  <div className="bg-slate-900 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-black text-emerald-400">
+    COST: 2 CREDITS
+  </div>
 </button>
 
     </div>
@@ -832,7 +844,7 @@ const getFilteredChartData = () => {
 
 {showCompareModal && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 overflow-y-auto">
-    <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-[2.5rem] p-6 md:p-10 relative shadow-2xl overflow-hidden">
+    <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-[2rem] p-6 md:p-10 relative shadow-2xl my-auto max-h-[90vh] overflow-y-auto custom-scrollbar">
       {/* Background Glow */}
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
       

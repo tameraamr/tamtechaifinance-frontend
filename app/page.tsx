@@ -353,6 +353,23 @@ export default function Home() {
           </div>
         </div>
 
+        {/* --- الصق الكود هنا --- */}
+        {randomTicker && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
+                <div className="bg-slate-900 border border-purple-500/30 p-8 rounded-3xl max-w-sm w-full text-center relative shadow-2xl">
+                    <div className="bg-purple-900/20 p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 border border-purple-500/30">
+                        <Zap className="w-8 h-8 text-purple-400" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2 text-white">{t.randomTitle}</h2>
+                    <p className="text-slate-400 mb-6 text-sm">{t.randomDesc} <span className="font-bold text-white text-lg block mt-2 font-mono bg-slate-800 py-1 rounded border border-slate-700">{randomTicker}</span></p>
+                    <div className="flex gap-3">
+                        <button onClick={confirmRandomAnalysis} className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition">{t.analyze}</button>
+                        <button onClick={() => setRandomTicker(null)} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition">{t.cancel}</button>
+                    </div>
+                </div>
+            </div>
+        )}
+
         {!result && !loading && (
             <div className="flex flex-col items-center justify-center mt-4 md:mt-8 animate-in fade-in duration-700">
                 <h1 className="text-2xl md:text-5xl font-bold text-center text-white mb-4 tracking-tight px-2">{t.heroTitle}</h1>

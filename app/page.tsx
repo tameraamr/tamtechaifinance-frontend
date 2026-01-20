@@ -350,19 +350,33 @@ export default function Home() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative">
-        <div className="flex justify-center mb-8 md:mb-10">
-          <div className="relative w-full max-w-xl flex gap-2">
-            <div className="flex-1 flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl">
-              <input type="text" placeholder={t.searchPlaceholder} className="w-full bg-transparent p-3 md:p-4 text-xs md:text-lg outline-none uppercase font-mono" value={ticker} onChange={(e) => setTicker(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} />
-              <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-6 py-3 md:py-4 font-bold text-xs md:text-base disabled:opacity-50">
-                {loading ? t.scan : t.analyze}
-              </button>
-            </div>
-            <button onClick={fetchRandomStock} disabled={loadingRandom} className="bg-slate-800 border border-slate-700 p-3 md:p-4 rounded-xl shadow-2xl transition-all group disabled:opacity-50">
-                {loadingRandom ? <div className="animate-spin h-5 w-5 md:h-6 md:w-6 border-t-2 border-purple-500 rounded-full"></div> : <Dices className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />}
-            </button>
-          </div>
-        </div>
+  <div className="flex justify-center mb-8 md:mb-10">
+    <div className="relative w-full max-w-xl flex gap-2">
+      {/* الـ Container الرئيسي شلنا منه الـ overflow-hidden والـ rounded */}
+      <div className="flex-1 flex items-center bg-slate-900 border border-slate-700 rounded-xl shadow-2xl">
+        <input 
+          type="text" 
+          placeholder={t.searchPlaceholder} 
+          // أضفنا rounded-l-xl (يمين حاد، يسار دائري)
+          className="w-full bg-transparent p-3 md:p-4 text-xs md:text-lg outline-none uppercase font-mono rounded-l-xl" 
+          value={ticker} 
+          onChange={(e) => setTicker(e.target.value)} 
+          onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} 
+        />
+        <button 
+          onClick={() => handleAnalyze()} 
+          disabled={loading} 
+          // أضفنا rounded-r-xl (يسار حاد، يمين دائري) عشان يسكر الزاوية صح مع الـ border
+          className="bg-blue-600 hover:bg-blue-500 px-4 md:px-6 py-3 md:py-4 font-bold text-xs md:text-base disabled:opacity-50 rounded-r-[11px] h-full"
+        >
+          {loading ? t.scan : t.analyze}
+        </button>
+      </div>
+      <button onClick={fetchRandomStock} disabled={loadingRandom} className="bg-slate-800 border border-slate-700 p-3 md:p-4 rounded-xl shadow-2xl transition-all group disabled:opacity-50">
+          {loadingRandom ? <div className="animate-spin h-5 w-5 md:h-6 md:w-6 border-t-2 border-purple-500 rounded-full"></div> : <Dices className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />}
+      </button>
+    </div>
+  </div>
 
         {/* --- الصق الكود هنا --- */}
         {randomTicker && (

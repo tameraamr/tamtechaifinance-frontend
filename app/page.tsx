@@ -883,6 +883,35 @@ const getFilteredChartData = () => {
                 </div>
              </div>
 
+             <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden mb-6 mt-4">
+  <table className="w-full text-left text-[11px] md:text-sm border-collapse">
+    <thead className="bg-slate-900/50">
+      <tr>
+        <th className="p-3 text-slate-500 uppercase font-black">Metric</th>
+        <th className="p-3 text-blue-400 font-black">{compareResult.stock1.symbol}</th>
+        <th className="p-3 text-emerald-400 font-black">{compareResult.stock2.symbol}</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-slate-800/50 font-mono">
+      <tr>
+        <td className="p-3 text-slate-400 font-bold">Current Price</td>
+        <td className="p-3 text-white">${compareResult.stock1.price}</td>
+        <td className="p-3 text-white">${compareResult.stock2.price}</td>
+      </tr>
+      <tr>
+        <td className="p-3 text-slate-400 font-bold">P/E Ratio</td>
+        <td className="p-3 text-white">{compareResult.stock1.pe_ratio}</td>
+        <td className="p-3 text-white">{compareResult.stock2.pe_ratio}</td>
+      </tr>
+      <tr>
+        <td className="p-3 text-slate-400 font-bold">Profit Margin</td>
+        <td className="p-3 text-white">{compareResult.stock1.profit_margins.toFixed(2)}%</td>
+        <td className="p-3 text-white">{compareResult.stock2.profit_margins.toFixed(2)}%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
              <div className="bg-slate-950 border border-slate-800 p-6 rounded-3xl">
                <h3 className="text-slate-200 font-black mb-4 flex items-center gap-2 uppercase text-sm"><Zap className="text-yellow-400 fill-yellow-400 w-4 h-4"/> Institutional Verdict</h3>
                <p className="text-slate-300 text-sm md:text-base leading-relaxed italic">"{compareResult.analysis.verdict}"</p>

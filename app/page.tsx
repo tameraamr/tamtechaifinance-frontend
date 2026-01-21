@@ -167,6 +167,44 @@ const formatNewsDate = (dateString: string) => {
   }
 };
 
+const countriesList = [
+  // الدول العربية
+  { code: "JO", name: "Jordan / الأردن" },
+  { code: "SA", name: "Saudi Arabia / السعودية" },
+  { code: "AE", name: "UAE / الإمارات" },
+  { code: "EG", name: "Egypt / مصر" },
+  { code: "PS", name: "Palestine / فلسطين" },
+  { code: "KW", name: "Kuwait / الكويت" },
+  { code: "QA", name: "Qatar / قطر" },
+  { code: "BH", name: "Bahrain / البحرين" },
+  { code: "OM", name: "Oman / عمان" },
+  { code: "LB", name: "Lebanon / لبنان" },
+  { code: "SY", name: "Syria / سوريا" },
+  { code: "IQ", name: "Iraq / العراق" },
+  { code: "MA", name: "Morocco / المغرب" },
+  { code: "DZ", name: "Algeria / الجزائر" },
+  { code: "TN", name: "Tunisia / تونس" },
+  { code: "LY", name: "Libya / ليبيا" },
+  // أهم دول العالم
+  { code: "US", name: "USA / أمريكا" },
+  { code: "UK", name: "UK / بريطانيا" },
+  { code: "IT", name: "Italy / إيطاليا" },
+  { code: "DE", name: "Germany / ألمانيا" },
+  { code: "FR", name: "France / فرنسا" },
+  { code: "ES", name: "Spain / إسبانيا" },
+  { code: "TR", name: "Turkey / تركيا" },
+  { code: "CA", name: "Canada / كندا" },
+  { code: "AU", name: "Australia / أستراليا" },
+  { code: "CH", name: "Switzerland / سويسرا" },
+  { code: "SE", name: "Sweden / السويد" },
+  { code: "NL", name: "Netherlands / هولندا" },
+  { code: "RU", name: "Russia / روسيا" },
+  { code: "CN", name: "China / الصين" },
+  { code: "JP", name: "Japan / اليابان" },
+  { code: "BR", name: "Brazil / البرازيل" }
+];
+
+
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState("");
@@ -780,18 +818,18 @@ const getFilteredChartData = () => {
                             <div>
                                 <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Country <span className="text-red-500">*</span></label>
                                 <select 
-                                    className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
-                                    value={country} 
-                                    onChange={e=>setCountry(e.target.value)}
-                                >
-                                    <option value="" disabled>Select</option>
-                                    <option value="US">USA</option>
-                                    <option value="SA">Saudi Arabia</option>
-                                    <option value="AE">UAE</option>
-                                    <option value="EG">Egypt</option>
-                                    <option value="JO">Jordan</option>
-                                    <option value="Other">Other</option>
-                                </select>
+    className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
+    value={country} 
+    onChange={e => setCountry(e.target.value)}
+>
+    <option value="" disabled>{lang === 'ar' ? 'اختر الدولة' : 'Select Country'}</option>
+    {/* ربط القائمة بالكود */}
+    {countriesList.map((c) => (
+        <option key={c.code} value={c.code}>
+            {c.name}
+        </option>
+    ))}
+</select>
                             </div>
                             <div>
                                 <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Address</label>

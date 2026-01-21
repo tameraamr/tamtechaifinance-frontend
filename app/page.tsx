@@ -174,6 +174,7 @@ export default function Home() {
   const [compareTickers, setCompareTickers] = useState({ t1: "", t2: "" });
   const [compareResult, setCompareResult] = useState<any>(null);
   const [loadingCompare, setLoadingCompare] = useState(false);
+  const [compareError, setCompareError] = useState<string | null>(null);
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
@@ -276,8 +277,7 @@ export default function Home() {
 
   const handleCompare = async () => {
   if (!compareTickers.t1 || !compareTickers.t2) return;
-  if (credits < 2) { setShowPaywall(true); return; }
-
+  setCompareError(null); // تصفير الخطأ قبل البدء
   setLoadingCompare(true);
   try {
     const res = await fetch(`${BASE_URL}/analyze-compare/${compareTickers.t1}/${compareTickers.t2}?lang=${lang}`, {
@@ -285,13 +285,13 @@ export default function Home() {
     });
     
     if (res.status === 402) { setShowPaywall(true); return; }
-    if (!res.ok) throw new Error();
+    if (!res.ok) throw new Error("Check your tickers or credits");
     
     const data = await res.json();
     setCompareResult(data);
-    setCredits(data.credits_left); // تحديث الرصيد فوراً
-  } catch (err) {
-    setAuthError("Comparison failed. Check tickers.");
+    setCredits(data.credits_left);
+  } catch (err: any) {
+    setCompareError(err.message || "Connection failed"); // عرض الخطأ هنا
   } finally {
     setLoadingCompare(false);
   }
@@ -874,13 +874,36 @@ const getFilteredChartData = () => {
           </div>
         </div>
 
-        <button 
-          onClick={handleCompare} 
-          disabled={loadingCompare} 
-          className="w-full bg-white text-black hover:bg-emerald-500 hover:text-white py-6 rounded-2xl font-black text-2xl transition-all disabled:opacity-50 shadow-2xl active:scale-[0.98] uppercase tracking-tighter"
-        >
-          {loadingCompare ? "Extracting Alpha..." : "Launch Deep Comparison"}
-        </button>
+        <div className="space-y-4">
+          {compareError && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl text-center text-sm font-black animate-pulse">
+              ⚠️ {compareError}
+            </div>
+          )}
+
+          <button 
+            onClick={() => {
+              if (!token) { 
+                setShowCompareModal(false); 
+                setAuthMode("signup");      
+                setShowAuthModal(true);     
+                return;
+              }
+              handleCompare();
+            }} 
+            disabled={loadingCompare} 
+            className="w-full bg-white text-black hover:bg-emerald-500 hover:text-white py-6 rounded-2xl font-black text-2xl transition-all disabled:opacity-50 shadow-2xl active:scale-[0.98] uppercase tracking-tighter cursor-pointer"
+          >
+            {loadingCompare ? "Extracting Alpha..." : "Launch Deep Comparison"}
+          </button>
+          
+          <div className="flex justify-center items-center gap-2">
+             <Zap className="w-3 h-3 text-emerald-500 fill-emerald-500" />
+             <p className="text-center text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">
+                Premium Analysis: 2 Strategy Credits
+             </p>
+          </div>
+        </div>
 
         {compareResult && (
           <div className="mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-700 pb-10">

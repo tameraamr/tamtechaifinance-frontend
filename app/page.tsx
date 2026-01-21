@@ -267,8 +267,8 @@ export default function Home() {
     } catch { logout(); }
   };
 
-  const handleAuth = async () => {
-    setAuthError(""); // تصفير الأخطاء السابقة
+const handleAuth = async () => {
+    setAuthError(""); // تنظيف أي خطأ سابق
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
     let body, headers = {};
 
@@ -280,40 +280,60 @@ export default function Home() {
       headers = { "Content-Type": "application/x-www-form-urlencoded" };
     } else {
       body = JSON.stringify({ 
-        email, password, first_name: firstName, last_name: lastName, phone_number: phone, country: country, address: address || null 
+        email, 
+        password, 
+        first_name: firstName, 
+        last_name: lastName, 
+        phone_number: phone, 
+        country: country, 
+        address: address || null 
       }); 
       headers = { "Content-Type": "application/json" };
     }
 
     try {
       const res = await fetch(url, { method: "POST", headers, body });
-      const data = await res.json();
       
-      // 👇 هنا الإصلاح: إذا لم تنجح العملية، اعرض رسالة الباك-إند
+      // نحاول قراءة الرد كـ JSON
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        // إذا فشل تحويل الرد لـ JSON، فهذا يعني خطأ سيرفر غريب
+        throw new Error("Server Error: Invalid response format");
+      }
+      
+      // 👇 هنا السحر: إذا كان الرد فيه مشكلة (400 أو 401 أو 422)
       if (!res.ok) { 
         let errorMsg = "Something went wrong";
+        
+        // التحقق مما إذا كان الخطأ تفصيلياً (مصفوفة) أو نصاً عادياً
         if (data.detail) {
-            // أحياناً الخطأ يكون مصفوفة وأحياناً نص
-            errorMsg = Array.isArray(data.detail) 
-                ? data.detail.map((e:any) => e.msg).join(", ") 
-                : data.detail;
+            if (Array.isArray(data.detail)) {
+                // تجميع الأخطاء إذا كانت كثيرة (مثل: الباسوورد ضعيف + الايميل غلط)
+                errorMsg = data.detail.map((e:any) => e.msg).join(" & ");
+            } else {
+                errorMsg = data.detail;
+            }
         }
-        setAuthError(errorMsg); 
-        return; 
+        setAuthError(errorMsg); // نعرض الخطأ الحقيقي للمستخدم
+        return; // نوقف التنفيذ هنا ولا نذهب للـ catch
       }
 
-      // إذا نجحنا
+      // ✅ إذا وصلنا هنا، فالعملية ناجحة 100%
       if (authMode === "login") { 
         localStorage.setItem("access_token", data.access_token); 
         setToken(data.access_token); 
         fetchUserData(data.access_token); 
       } else { 
-        alert("✅ Account created! You can login now."); 
+        alert("✅ Account created! Please login."); 
         setAuthMode("login"); 
       }
-    } catch (err) { 
-        // هذا يظهر فقط إذا السيرفر طافي أو النت مقطوع
-        setAuthError("Server unreachable or connection lost."); 
+
+    } catch (err: any) { 
+        // ❌ هذا يظهر فقط إذا النت مفصول أو السيرفر طافي
+        console.error(err);
+        setAuthError(err.message || "Connection failed. Please check if backend is running."); 
     }
   };
 

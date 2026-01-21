@@ -187,6 +187,11 @@ export default function Home() {
   const isRTL = lang === 'ar';
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
   const [authError, setAuthError] = useState("");
   const [showCompareModal, setShowCompareModal] = useState(false);
@@ -270,7 +275,16 @@ export default function Home() {
       const formData = new URLSearchParams(); formData.append('username', email); formData.append('password', password);
       body = formData; headers = { "Content-Type": "application/x-www-form-urlencoded" };
     } else {
-      body = JSON.stringify({ email, password }); headers = { "Content-Type": "application/json" };
+      body = JSON.stringify({ 
+        email, 
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phone,
+        country: country,       
+        address: address || null // نرسل null إذا تركه فارغاً
+      }); 
+      headers = { "Content-Type": "application/json" }
     }
     try {
       const res = await fetch(url, { method: "POST", headers, body }); const data = await res.json();
@@ -665,19 +679,90 @@ const getFilteredChartData = () => {
         )}
 
         {showAuthModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-            <div className="bg-slate-900 border border-slate-700 p-6 md:p-8 rounded-3xl max-w-md w-full relative shadow-2xl">
-              <button onClick={() => setShowAuthModal(false)} className="absolute top-4 right-4 text-slate-500 hover:text-white"><XCircle className="w-6 h-6"/></button>
-              <h2 className="text-xl md:text-2xl font-bold text-center mb-2">{authMode === "login" ? t.loginTitle : t.registerToContinue}</h2>
-              <p className="text-slate-400 text-center mb-6 text-xs md:text-sm">{authMode === "signup" ? t.registerDesc : "Welcome back!"}</p>
-              {authError && <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-2 rounded text-[10px] md:text-xs mb-4 text-center">{authError}</div>}
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in">
+            
+            <div className="bg-[#0f172a] border border-slate-700 p-6 md:p-8 rounded-[2rem] max-w-lg w-full relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+              <button onClick={() => setShowAuthModal(false)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors"><XCircle className="w-6 h-6"/></button>
+              
+              <div className="text-center mb-6">
+                  <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">
+                    {authMode === "login" ? t.loginTitle : "Join the Elite"}
+                  </h2>
+                  <p className="text-slate-400 text-xs md:text-sm">
+                    {authMode === "signup" ? "Create your professional portfolio." : "Welcome back, Investor."}
+                  </p>
+              </div>
+
+              {authError && <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-xl text-xs font-bold mb-6 text-center flex items-center justify-center gap-2"><AlertTriangle size={16}/> {authError}</div>}
+              
               <div className="space-y-4">
-                <input type="email" placeholder={t.email} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs md:text-sm" value={email} onChange={e=>setEmail(e.target.value)} />
-                <input type="password" placeholder={t.pass} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs md:text-sm" value={password} onChange={e=>setPassword(e.target.value)} />
-                <button onClick={handleAuth} className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm md:text-base">{authMode === "login" ? t.loginBtn : t.signupBtn}</button>
-                <button onClick={() => {setAuthMode(authMode==="login"?"signup":"login"); setAuthError("");}} className="w-full text-[10px] md:text-xs text-slate-400 hover:text-white">{authMode==="login" ? t.switchSign : t.switchLog}</button>
+                
+                {authMode === "signup" && (
+                    <>
+                        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-5">
+                            <div className="space-y-1">
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">First Name <span className="text-red-500">*</span></label>
+                                <input type="text" placeholder="John" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={firstName} onChange={e=>setFirstName(e.target.value)} />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Last Name <span className="text-red-500">*</span></label>
+                                <input type="text" placeholder="Doe" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={lastName} onChange={e=>setLastName(e.target.value)} />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-6">
+                            <div className="space-y-1">
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Country <span className="text-red-500">*</span></label>
+                                <select 
+                                    className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
+                                    value={country} 
+                                    onChange={e=>setCountry(e.target.value)}
+                                >
+                                    <option value="" disabled>Select Country</option>
+                                    <option value="US">United States</option>
+                                    <option value="SA">Saudi Arabia</option>
+                                    <option value="AE">UAE</option>
+                                    <option value="EG">Egypt</option>
+                                    <option value="IT">Italy</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Address</label>
+                                <input type="text" placeholder="City, Street" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={address} onChange={e=>setAddress(e.target.value)} />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1 animate-in slide-in-from-bottom-7">
+                             <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Phone Number <span className="text-red-500">*</span></label>
+                             <input type="tel" placeholder="+1 234 567 890" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={phone} onChange={e=>setPhone(e.target.value)} />
+                        </div>
+                    </>
+                )}
+
+                <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Email Address <span className="text-red-500">*</span></label>
+                    <input type="email" placeholder="name@company.com" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={email} onChange={e=>setEmail(e.target.value)} />
+                </div>
+                
+                <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Password <span className="text-red-500">*</span></label>
+                    <input type="password" placeholder="••••••••" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={password} onChange={e=>setPassword(e.target.value)} />
+                </div>
+
+                <button onClick={handleAuth} className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-3 md:py-4 rounded-xl font-black text-sm md:text-base text-white shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all mt-4">
+                    {authMode === "login" ? t.loginBtn : "Create Account"}
+                </button>
+                
+                <div className="text-center pt-2">
+                    <button onClick={() => {setAuthMode(authMode==="login"?"signup":"login"); setAuthError("");}} className="text-xs text-slate-400 hover:text-white font-medium transition-colors">
+                        {authMode==="login" ? t.switchSign : t.switchLog}
+                    </button>
+                </div>
               </div>
             </div>
+            
           </div>
         )}
 

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { 
   TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target, 
-  CheckCircle, XCircle, BarChart3, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Download, Dices 
+  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Download, Dices 
 } from "lucide-react";
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -195,6 +195,8 @@ export default function Home() {
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
+  const [suggestions, setSuggestions] = useState<{symbol: string, name: string}[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     // كود جلب بيانات اليوزر (خلوه زي ما هو)
@@ -278,18 +280,57 @@ export default function Home() {
   const handleAnalyze = async (overrideTicker?: string) => {
     const targetTicker = overrideTicker || ticker; 
     if (!targetTicker) return;
-    if (token) { if (credits <= 0) { setShowPaywall(true); return; } } 
-    else { if (guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); return; } }
+
+    // 1. تشغيل وضع التحميل وتصفير الأخطاء القديمة
     setLoading(true);
+    setAuthError(""); 
+    setShowSuggestions(false);
+    
+    // إخفاء النتيجة السابقة عشان المستخدم يعرف إنه في بحث جديد
+    setResult(null); 
+
+    // التحقق من الرصيد قبل الاتصال بالسيرفر
+    if (token) { 
+        if (credits <= 0) { setShowPaywall(true); setLoading(false); return; } 
+    } else { 
+        if (guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; } 
+    }
+    
     try {
-      const headers: any = {}; if (token) headers["Authorization"] = `Bearer ${token}`;
+      const headers: any = { "Authorization": token ? `Bearer ${token}` : "" };
+      
+      // إرسال الطلب للباك-إند
       const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { headers });
-      if (res.status === 402) { setShowPaywall(true); setLoading(false); return; }
-      if (!res.ok) throw new Error("Stock not found");
-      const data = await res.json(); setResult(data);
-      if (token) { setCredits(data.credits_left); } 
-      else { const newGuest = guestTrials - 1; setGuestTrials(newGuest); localStorage.setItem("guest_trials", newGuest.toString()); }
-    } catch (err: any) { setAuthError(err.message); } finally { setLoading(false); }
+      
+      // معالجة حالة "رصيد غير كافٍ" من السيرفر
+      if (res.status === 402) { setShowPaywall(true); return; }
+      
+      // 👇 هنا السحر: إذا الباك-إند رجع 404 (سهم غلط)، نلقط الخطأ هنا
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Stock not found");
+      }
+      
+      // إذا نجحنا
+      const data = await res.json(); 
+      setResult(data);
+      
+      // تحديث الرصيد
+      if (token) setCredits(data.credits_left);
+      else { 
+          const ng = guestTrials - 1; 
+          setGuestTrials(ng); 
+          localStorage.setItem("guest_trials", ng.toString()); 
+      }
+      
+    } catch (err: any) { 
+      // عرض الرسالة الحمراء للمستخدم
+      setAuthError(err.message); 
+      setResult(null);
+    } finally { 
+      // 👇 هذا أهم سطر: يوقف الدائرة عن الدوران سواء نجحنا أو فشلنا
+      setLoading(false); 
+    }
   };
 
   const handleCompare = async () => {

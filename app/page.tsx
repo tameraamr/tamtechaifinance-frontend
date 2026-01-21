@@ -198,33 +198,52 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState<{symbol: string, name: string}[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // Hook 1: جلب بيانات المستخدم والنبض العلوي
   useEffect(() => {
-    // كود جلب بيانات اليوزر (خلوه زي ما هو)
     const savedGuest = localStorage.getItem("guest_trials");
     if (savedGuest) setGuestTrials(parseInt(savedGuest));
     else localStorage.setItem("guest_trials", "3");
     const savedToken = localStorage.getItem("access_token");
     if (savedToken) { setToken(savedToken); fetchUserData(savedToken); }
 
-    // --- الدالة الجديدة لجلب أسعار الشريط الحقيقية ---
-    // --- الدالة المحدثة لجلب البيانات من الباك-إند الخاص بك ---
     const fetchPulse = async () => {
       try {
         const res = await fetch(`${BASE_URL}/market-pulse`);
         const data = await res.json();
-        
-        // التحقق من أن البيانات مصفوفة وليست فارغة
-        if (Array.isArray(data) && data.length > 0) {
-          setMarketPulse(data);
-        }
-      } catch (err) {
-        console.log("الباك-إند لسه مش جاهز بالبيانات الحقيقية");
-      }
+        if (Array.isArray(data) && data.length > 0) setMarketPulse(data);
+      } catch (err) { console.log("Pulse error"); }
     };
-
     fetchPulse();
-    const interval = setInterval(fetchPulse, 60000); // تحديث كل دقيقة
+    const interval = setInterval(fetchPulse, 60000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Hook 2: جلب الاقتراحات الذكية عند الكتابة
+  useEffect(() => {
+    const getSuggestions = async () => {
+      if (ticker.length < 2) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+      try {
+        const response = await fetch(`${BASE_URL}/search-ticker/${ticker}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSuggestions(data);
+          setShowSuggestions(true);
+        }
+      } catch (error) { console.error("Suggestions error:", error); }
+    };
+    const timer = setTimeout(getSuggestions, 300);
+    return () => clearTimeout(timer);
+  }, [ticker]);
+
+  // Hook 3: إغلاق القائمة عند الضغط في أي مكان خارج المربع
+  useEffect(() => {
+    const closeSuggestions = () => setShowSuggestions(false);
+    window.addEventListener('click', closeSuggestions);
+    return () => window.removeEventListener('click', closeSuggestions);
   }, []);
 
   const fetchUserData = async (currentToken: string) => {
@@ -535,52 +554,58 @@ const getFilteredChartData = () => {
 </div>
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative">
-  <div className="flex flex-col items-center mb-10 w-full max-w-xl mx-auto px-4">
-    
-    {/* السطر الأول: خانة البحث + زر التحليل + زر النرد */}
-    <div className="flex gap-2 w-full mb-4">
-      <div className="flex-1 flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl ...">
+  <div className="flex flex-col items-center mb-10 w-full max-w-xl mx-auto px-4 relative z-50">
+  <div className="flex gap-2 w-full mb-4 relative">
+    <div className="flex-1 relative group">
+      <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl focus-within:border-blue-500/50 transition-all">
         <input 
           type="text" 
           placeholder={t.searchPlaceholder} 
           className="w-full bg-transparent p-4 text-sm md:text-lg outline-none uppercase font-mono text-white" 
           value={ticker} 
-          onChange={(e) => setTicker(e.target.value)} 
+          onChange={(e) => setTicker(e.target.value.toUpperCase())} 
+          onFocus={() => ticker.length >= 2 && setShowSuggestions(true)}
           onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} 
         />
-        <button 
-  onClick={() => handleAnalyze()} 
-  disabled={loading} 
-  className="bg-blue-600 hover:bg-blue-500 px-6 py-4 font-black text-xs md:text-base disabled:opacity-50 transition-colors shrink-0 h-full rounded-none"
->
-  {loading ? "..." : t.analyze}
-</button>
+        <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-6 py-4 font-black text-xs md:text-base disabled:opacity-50 transition-colors shrink-0 h-full text-white">
+          {loading ? "..." : t.analyze}
+        </button>
       </div>
-      
-      <button onClick={fetchRandomStock} className="bg-slate-800 border border-slate-700 p-4 rounded-xl hover:bg-slate-700 transition-all shrink-0">
-        <Dices className="w-6 h-6 text-purple-400" />
-      </button>
-    </div>
 
-    {/* السطر الثاني: زر المقارنة العريض (واضح ومنفصل) */}
-    <button 
-      onClick={() => setShowCompareModal(true)} 
-      className="w-full bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group hover:border-emerald-500/50 transition-all active:scale-[0.98] shadow-xl"
-    >
-      <div className="flex items-center gap-3">
-        <div className="bg-emerald-500/10 p-2 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
-          <TrendingUp className="w-5 h-5 text-emerald-400" />
+      {/* قائمة الاقتراحات المنسدلة */}
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f172a] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-[100] backdrop-blur-xl">
+          <div className="max-h-[280px] overflow-y-auto">
+            {suggestions.map((s, i) => (
+              <button key={i} onClick={() => { setTicker(s.symbol); handleAnalyze(s.symbol); }} className="w-full flex items-center justify-between px-5 py-4 hover:bg-blue-600/10 border-b border-slate-800/40 last:border-0 transition-all group/item text-left">
+                <div className="flex flex-col items-start text-left">
+                  <span className="text-blue-400 font-black text-sm">{s.symbol}</span>
+                  <span className="text-slate-500 text-[10px] font-bold truncate max-w-[200px] uppercase text-left">{s.name}</span>
+                </div>
+                <Search size={14} className="text-slate-600 group-hover/item:text-blue-500" />
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="text-left">
-          <span className="block text-xs font-black text-white uppercase tracking-tighter italic">Stock Battle Mode</span>
-          <span className="block text-[9px] text-slate-500 font-bold uppercase tracking-widest">Compare Two Giants • 2 Credits</span>
-        </div>
-      </div>
-      <div className="bg-slate-950 px-3 py-1 rounded-full border border-emerald-500/30 text-[10px] font-black text-emerald-400">
-        BATTLE
-      </div>
+      )}
+    </div>
+    
+    <button onClick={fetchRandomStock} className="bg-slate-800 border border-slate-700 p-4 rounded-xl hover:bg-slate-700 transition-all shrink-0 h-[58px] md:h-[62px]">
+      <Dices className="w-6 h-6 text-purple-400" />
     </button>
   </div>
+
+  <button onClick={() => setShowCompareModal(true)} className="w-full bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group hover:border-emerald-500/50 transition-all active:scale-[0.98] shadow-xl">
+    <div className="flex items-center gap-3">
+      <TrendingUp className="w-5 h-5 text-emerald-400" />
+      <div className="text-left">
+        <span className="block text-xs font-black text-white uppercase tracking-tighter italic">Stock Battle Mode</span>
+        <span className="block text-[9px] text-slate-500 font-bold uppercase tracking-widest">Compare Two Giants</span>
+      </div>
+    </div>
+    <div className="bg-slate-950 px-3 py-1 rounded-full border border-emerald-500/30 text-[10px] font-black text-emerald-400">BATTLE</div>
+  </button>
+</div>
 
         {/* --- الصق الكود هنا --- */}
         {randomTicker && (

@@ -268,35 +268,53 @@ export default function Home() {
   };
 
   const handleAuth = async () => {
-    setAuthError("");
+    setAuthError(""); // تصفير الأخطاء السابقة
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
     let body, headers = {};
+
     if (authMode === "login") {
-      const formData = new URLSearchParams(); formData.append('username', email); formData.append('password', password);
-      body = formData; headers = { "Content-Type": "application/x-www-form-urlencoded" };
+      const formData = new URLSearchParams(); 
+      formData.append('username', email); 
+      formData.append('password', password);
+      body = formData; 
+      headers = { "Content-Type": "application/x-www-form-urlencoded" };
     } else {
       body = JSON.stringify({ 
-        email, 
-        password,
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phone,
-        country: country,       
-        address: address || null // نرسل null إذا تركه فارغاً
+        email, password, first_name: firstName, last_name: lastName, phone_number: phone, country: country, address: address || null 
       }); 
-      headers = { "Content-Type": "application/json" }
+      headers = { "Content-Type": "application/json" };
     }
+
     try {
-      const res = await fetch(url, { method: "POST", headers, body }); const data = await res.json();
+      const res = await fetch(url, { method: "POST", headers, body });
+      const data = await res.json();
+      
+      // 👇 هنا الإصلاح: إذا لم تنجح العملية، اعرض رسالة الباك-إند
       if (!res.ok) { 
-        let msg = data.detail; 
-        if(Array.isArray(msg)) msg = msg.map((e:any)=>e.msg).join(" "); 
-        setAuthError(msg || "Error"); 
+        let errorMsg = "Something went wrong";
+        if (data.detail) {
+            // أحياناً الخطأ يكون مصفوفة وأحياناً نص
+            errorMsg = Array.isArray(data.detail) 
+                ? data.detail.map((e:any) => e.msg).join(", ") 
+                : data.detail;
+        }
+        setAuthError(errorMsg); 
         return; 
       }
-      if (authMode === "login") { localStorage.setItem("access_token", data.access_token); setToken(data.access_token); fetchUserData(data.access_token); } 
-      else { alert("✅ Account created! Login now."); setAuthMode("login"); }
-    } catch { setAuthError("Connection Error"); }
+
+      // إذا نجحنا
+      if (authMode === "login") { 
+        localStorage.setItem("access_token", data.access_token); 
+        setToken(data.access_token); 
+        fetchUserData(data.access_token); 
+      } else { 
+        alert("✅ Account created! You can login now."); 
+        setAuthMode("login"); 
+      }
+    } catch (err) { 
+        // هذا يظهر فقط إذا السيرفر طافي أو النت مقطوع
+        setAuthError("Server unreachable or connection lost."); 
+    }
   };
 
   const logout = () => { localStorage.removeItem("access_token"); setToken(null); setUserEmail(""); setResult(null); };
@@ -679,90 +697,94 @@ const getFilteredChartData = () => {
         )}
 
         {showAuthModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in">
+          // 👇 التعديل الأول: خلفية أخف (black/60) و Blur أنعم (backdrop-blur-sm)
+          // وأضفنا z-[60] لضمان أنها فوق كل شيء
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
             
-            <div className="bg-[#0f172a] border border-slate-700 p-6 md:p-8 rounded-[2rem] max-w-lg w-full relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
-              <button onClick={() => setShowAuthModal(false)} className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors"><XCircle className="w-6 h-6"/></button>
+            {/* 👇 التعديل الثاني: المربع نفسه بتصميم أنظف */}
+            <div className="bg-[#0f172a] border border-slate-700 p-6 md:p-8 rounded-3xl max-w-lg w-full relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+              
+              <button onClick={() => setShowAuthModal(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white transition-colors"><XCircle className="w-6 h-6"/></button>
               
               <div className="text-center mb-6">
-                  <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">
-                    {authMode === "login" ? t.loginTitle : "Join the Elite"}
+                  {/* 👇 نصوص بسيطة وعملية */}
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    {authMode === "login" ? "Login" : "Create Account"}
                   </h2>
-                  <p className="text-slate-400 text-xs md:text-sm">
-                    {authMode === "signup" ? "Create your professional portfolio." : "Welcome back, Investor."}
+                  <p className="text-slate-400 text-sm">
+                    {authMode === "signup" ? "Sign up to access advanced AI analysis tools." : "Enter your credentials to access your dashboard."}
                   </p>
               </div>
 
-              {authError && <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-xl text-xs font-bold mb-6 text-center flex items-center justify-center gap-2"><AlertTriangle size={16}/> {authError}</div>}
+              {/* صندوق الخطأ الأحمر */}
+              {authError && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-xs font-bold mb-5 text-center flex items-center justify-center gap-2"><AlertTriangle size={16}/> {authError}</div>}
               
               <div className="space-y-4">
-                
+                {/* حقول التسجيل (نفس المنطق السابق لكن بتنسيق أنظف) */}
                 {authMode === "signup" && (
                     <>
-                        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-5">
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">First Name <span className="text-red-500">*</span></label>
-                                <input type="text" placeholder="John" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={firstName} onChange={e=>setFirstName(e.target.value)} />
+                        <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-bottom-2">
+                            <div>
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">First Name <span className="text-red-500">*</span></label>
+                                <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={firstName} onChange={e=>setFirstName(e.target.value)} />
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Last Name <span className="text-red-500">*</span></label>
-                                <input type="text" placeholder="Doe" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={lastName} onChange={e=>setLastName(e.target.value)} />
+                            <div>
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Last Name <span className="text-red-500">*</span></label>
+                                <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={lastName} onChange={e=>setLastName(e.target.value)} />
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 animate-in slide-in-from-bottom-6">
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Country <span className="text-red-500">*</span></label>
+                        <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-bottom-3">
+                            <div>
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Country <span className="text-red-500">*</span></label>
                                 <select 
-                                    className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
+                                    className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
                                     value={country} 
                                     onChange={e=>setCountry(e.target.value)}
                                 >
-                                    <option value="" disabled>Select Country</option>
-                                    <option value="US">United States</option>
+                                    <option value="" disabled>Select</option>
+                                    <option value="US">USA</option>
                                     <option value="SA">Saudi Arabia</option>
                                     <option value="AE">UAE</option>
                                     <option value="EG">Egypt</option>
-                                    <option value="IT">Italy</option>
-                                    <option value="DE">Germany</option>
+                                    <option value="JO">Jordan</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Address</label>
-                                <input type="text" placeholder="City, Street" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={address} onChange={e=>setAddress(e.target.value)} />
+                            <div>
+                                <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Address</label>
+                                <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={address} onChange={e=>setAddress(e.target.value)} />
                             </div>
                         </div>
 
-                        <div className="space-y-1 animate-in slide-in-from-bottom-7">
-                             <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Phone Number <span className="text-red-500">*</span></label>
-                             <input type="tel" placeholder="+1 234 567 890" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={phone} onChange={e=>setPhone(e.target.value)} />
+                        <div className="animate-in slide-in-from-bottom-4">
+                             <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Phone <span className="text-red-500">*</span></label>
+                             <input type="tel" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={phone} onChange={e=>setPhone(e.target.value)} />
                         </div>
                     </>
                 )}
 
-                <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Email Address <span className="text-red-500">*</span></label>
-                    <input type="email" placeholder="name@company.com" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={email} onChange={e=>setEmail(e.target.value)} />
+                <div>
+                    <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Email <span className="text-red-500">*</span></label>
+                    <input type="email" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={email} onChange={e=>setEmail(e.target.value)} />
                 </div>
                 
-                <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Password <span className="text-red-500">*</span></label>
-                    <input type="password" placeholder="••••••••" className="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-sm text-white outline-none transition-all" value={password} onChange={e=>setPassword(e.target.value)} />
+                <div>
+                    <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Password <span className="text-red-500">*</span></label>
+                    <input type="password" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={password} onChange={e=>setPassword(e.target.value)} />
                 </div>
 
-                <button onClick={handleAuth} className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-3 md:py-4 rounded-xl font-black text-sm md:text-base text-white shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all mt-4">
-                    {authMode === "login" ? t.loginBtn : "Create Account"}
+                <button onClick={handleAuth} className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm text-white transition-all mt-4">
+                    {authMode === "login" ? "Login" : "Register"}
                 </button>
                 
                 <div className="text-center pt-2">
-                    <button onClick={() => {setAuthMode(authMode==="login"?"signup":"login"); setAuthError("");}} className="text-xs text-slate-400 hover:text-white font-medium transition-colors">
-                        {authMode==="login" ? t.switchSign : t.switchLog}
+                    <button onClick={() => {setAuthMode(authMode==="login"?"signup":"login"); setAuthError("");}} className="text-xs text-slate-400 hover:text-white transition-colors">
+                        {authMode==="login" ? "Don't have an account? Sign up" : "Already have an account? Login"}
                     </button>
                 </div>
               </div>
             </div>
-            
           </div>
         )}
 

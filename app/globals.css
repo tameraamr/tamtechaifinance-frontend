@@ -53,3 +53,14 @@ body {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* عشان الشريط الابيض الي عجنب المتصفح */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #0b1121; /* نفس لون خلفية الموقع */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b; /* لون رمادي غامق */
+  border-radius: 4px;
+}

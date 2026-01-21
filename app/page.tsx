@@ -176,6 +176,8 @@ export default function Home() {
   const [authMode, setAuthMode] = useState("signup");
   const [credits, setCredits] = useState(0); 
   const [ticker, setTicker] = useState("");
+  const [suggestions, setSuggestions] = useState<{symbol: string, name: string}[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [marketPulse, setMarketPulse] = useState<any[]>([]);
   const [timeRange, setTimeRange] = useState("1Y");
   const [loading, setLoading] = useState(false);
@@ -195,8 +197,7 @@ export default function Home() {
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
-  const [suggestions, setSuggestions] = useState<{symbol: string, name: string}[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+
 
   // Hook 1: جلب بيانات المستخدم والنبض العلوي
   useEffect(() => {
@@ -217,6 +218,27 @@ export default function Home() {
     const interval = setInterval(fetchPulse, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  // 👇 هذا الـ Hook هو اللي بيحكي مع الباك-إند عشان يجيب الاقتراحات
+  useEffect(() => {
+    const getSuggestions = async () => {
+      if (ticker.length < 2) { 
+        setSuggestions([]); 
+        setShowSuggestions(false); 
+        return; 
+      }
+      try {
+        const response = await fetch(`${BASE_URL}/search-ticker/${ticker}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSuggestions(data);
+          setShowSuggestions(true);
+        }
+      } catch (error) { console.error("Search error:", error); }
+    };
+    const timer = setTimeout(getSuggestions, 300); // تأخير بسيط عشان الأداء
+    return () => clearTimeout(timer);
+  }, [ticker]);
 
   // Hook 2: جلب الاقتراحات الذكية عند الكتابة
   useEffect(() => {
@@ -300,41 +322,30 @@ export default function Home() {
     const targetTicker = overrideTicker || ticker; 
     if (!targetTicker) return;
 
-    // 1. تشغيل وضع التحميل وتصفير الأخطاء القديمة
     setLoading(true);
-    setAuthError(""); 
-    setShowSuggestions(false);
-    
-    // إخفاء النتيجة السابقة عشان المستخدم يعرف إنه في بحث جديد
-    setResult(null); 
+    setAuthError(""); // مسح الأخطاء القديمة
+    setShowSuggestions(false); // إخفاء القائمة
+    setResult(null); // تصفير النتيجة
 
-    // التحقق من الرصيد قبل الاتصال بالسيرفر
-    if (token) { 
-        if (credits <= 0) { setShowPaywall(true); setLoading(false); return; } 
-    } else { 
-        if (guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; } 
-    }
+    // فحص الرصيد محلياً
+    if (token && credits <= 0) { setShowPaywall(true); setLoading(false); return; }
+    if (!token && guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; }
     
     try {
       const headers: any = { "Authorization": token ? `Bearer ${token}` : "" };
-      
-      // إرسال الطلب للباك-إند
       const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { headers });
       
-      // معالجة حالة "رصيد غير كافٍ" من السيرفر
       if (res.status === 402) { setShowPaywall(true); return; }
       
-      // 👇 هنا السحر: إذا الباك-إند رجع 404 (سهم غلط)، نلقط الخطأ هنا
       if (!res.ok) {
+        // 👇 هنا بنلقط رسالة "السهم غير موجود" من الباك-إند
         const errorData = await res.json();
         throw new Error(errorData.detail || "Stock not found");
       }
       
-      // إذا نجحنا
       const data = await res.json(); 
       setResult(data);
       
-      // تحديث الرصيد
       if (token) setCredits(data.credits_left);
       else { 
           const ng = guestTrials - 1; 
@@ -343,12 +354,9 @@ export default function Home() {
       }
       
     } catch (err: any) { 
-      // عرض الرسالة الحمراء للمستخدم
-      setAuthError(err.message); 
-      setResult(null);
+      setAuthError(err.message); // عرض الخطأ بالأحمر
     } finally { 
-      // 👇 هذا أهم سطر: يوقف الدائرة عن الدوران سواء نجحنا أو فشلنا
-      setLoading(false); 
+      setLoading(false); // وقف التحميل دائماً
     }
   };
 
@@ -555,7 +563,7 @@ const getFilteredChartData = () => {
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative">
   <div className="flex flex-col items-center mb-10 w-full max-w-xl mx-auto px-4 relative z-50">
-  <div className="flex gap-2 w-full mb-4 relative">
+  <div className="flex gap-2 w-full mb-4 relative z-50">
     <div className="flex-1 relative group">
       <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl focus-within:border-blue-500/50 transition-all">
         <input 

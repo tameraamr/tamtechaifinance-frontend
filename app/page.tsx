@@ -241,6 +241,24 @@ export default function Home() {
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
 
+  const [recentAnalyses, setRecentAnalyses] = useState<any[]>([]);
+
+// دالة لجلب التحليلات الأخيرة من الباك-إند
+const fetchRecentAnalyses = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/recent-analyses`);
+    const data = await res.json();
+    setRecentAnalyses(data);
+  } catch (err) {
+    console.error("Error fetching recent analyses:", err);
+  }
+};
+
+// تشغيل الدالة عند فتح الموقع
+useEffect(() => {
+  fetchRecentAnalyses();
+}, []);
+
 
   // Hook 1: جلب بيانات المستخدم والنبض العلوي
   useEffect(() => {
@@ -734,6 +752,53 @@ const getFilteredChartData = () => {
     <div className="bg-slate-950 px-3 py-1 rounded-full border border-emerald-500/30 text-[10px] font-black text-emerald-400">BATTLE</div>
   </button>
 </div>
+
+{/* 👇 Recent Analyses👇 */}
+{recentAnalyses.length > 0 && !result && !loading && (
+  <div className="max-w-7xl mx-auto px-4 md:px-6 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <div className="flex items-center justify-between mb-6">
+      <h2 className="text-sm md:text-xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
+        <span className="w-1.5 h-5 bg-blue-500 rounded-full"></span>
+        {lang === 'ar' ? 'أحدث التحليلات' : 'Recent Analyses'}
+      </h2>
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Feed</span>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+      {recentAnalyses.map((item, index) => (
+        <button 
+          key={index} 
+          onClick={() => {
+            setTicker(item.ticker);
+            handleAnalyze(item.ticker);
+          }}
+          className="bg-slate-900/40 border border-slate-800 p-3 md:p-4 rounded-2xl hover:border-blue-500/50 transition-all group text-left relative overflow-hidden active:scale-95"
+        >
+          <div className="flex justify-between items-start mb-2">
+            <span className="text-sm md:text-lg font-black text-white group-hover:text-blue-400 transition-colors font-mono">{item.ticker}</span>
+            <span className="text-[9px] font-bold text-slate-600 uppercase">{item.time}</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <div className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-tighter ${
+              item.verdict.includes('BUY') ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+              item.verdict.includes('SELL') ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 
+              'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+            }`}>
+              {item.verdict}
+            </div>
+          </div>
+          {/* تأثير ضوئي عند الهوفر */}
+          <div className="absolute -right-2 -bottom-2 w-12 h-12 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-all"></div>
+        </button>
+      ))}
+    </div>
+  </div>
+)}
+
 
         {/* --- الصق الكود هنا --- */}
         {randomTicker && (

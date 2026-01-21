@@ -271,7 +271,7 @@ const handleAuth = async () => {
     setAuthError(""); // تنظيف الأخطاء السابقة
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
     
-    let body, headers = {};
+    let body, headers: any = {};
 
     if (authMode === "login") {
       const formData = new URLSearchParams(); 
@@ -294,30 +294,38 @@ const handleAuth = async () => {
 
     try {
       const res = await fetch(url, { method: "POST", headers, body });
-      const data = await res.json(); // قراءة الرد كـ JSON دائماً
+      
+      // 👇 التعديل الجوهري: التحقق من نوع الاستجابة قبل محاولة قراءة JSON
+      const contentType = res.headers.get("content-type");
+      let data;
 
-      // 👇👇👇 هذا هو الجزء المسؤول عن قراءة السبب الحقيقي 👇👇👇
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+          data = await res.json();
+      } else {
+          // إذا لم يكن JSON (مثلاً صفحة خطأ HTML من السيرفر)، نقرأه كنص لنعرف السبب
+          const text = await res.text();
+          throw new Error(`Server Error (${res.status}): Please try again later.`);
+      }
+
+      // معالجة الأخطاء القادمة من الباك-إند (400, 401, 422)
       if (!res.ok) {
-        // فحص نوع الخطأ القادم من FastAPI
         if (data.detail) {
-            // الحالة 1: أخطاء التحقق (مثل: الباسوورد قصير، الايميل غير صالح) - تأتي كمصفوفة
+            // حالة أخطاء التحقق (Validation Errors)
             if (Array.isArray(data.detail)) {
-                // ندمج كل الأخطاء في رسالة واحدة
                 const messages = data.detail.map((err: any) => err.msg).join(" & ");
                 setAuthError(messages);
             } 
-            // الحالة 2: أخطاء منطقية (مثل: الايميل مستخدم، كلمة المرور خطأ) - تأتي كنص
+            // حالة الأخطاء المنطقية العادية
             else {
                 setAuthError(data.detail);
             }
         } else {
-            // الحالة 3: خطأ من السيرفر لكن بدون رسالة تفصيلية
-            setAuthError("Operation failed. Please try again.");
+            setAuthError("Unknown error occurred.");
         }
-        return; // توقف هنا ولا تكمل
+        return; 
       }
 
-      // ✅ إذا وصلنا هنا، فالعملية ناجحة
+      // ✅ النجاح
       if (authMode === "login") { 
         localStorage.setItem("access_token", data.access_token); 
         setToken(data.access_token); 
@@ -327,13 +335,13 @@ const handleAuth = async () => {
         setAuthMode("login"); 
       }
 
-    } catch (err) { 
-        // هذا يظهر فقط إذا السيرفر طافي تماماً
-        console.error(err);
-        setAuthError("Cannot connect to server. Please check your internet."); 
+    } catch (err: any) { 
+        console.error("Auth Error:", err);
+        // عرض السبب الحقيقي إذا كان متاحاً، وإلا عرض الرسالة العامة
+        // سيظهر الآن خطأ "Failed to fetch" فقط إذا كانت المشكلة في الشبكة/CORS فعلاً
+        setAuthError(err.message || "Cannot connect to server. Check your connection."); 
     }
   };
-
   const logout = () => { localStorage.removeItem("access_token"); setToken(null); setUserEmail(""); setResult(null); };
 
   const fetchRandomStock = async () => {

@@ -366,22 +366,32 @@ const handleAuth = async () => {
     if (!targetTicker) return;
 
     setLoading(true);
-    setAuthError(""); // مسح الأخطاء القديمة
-    setShowSuggestions(false); // إخفاء القائمة
-    setResult(null); // تصفير النتيجة
+    setAuthError(""); 
+    setShowSuggestions(false); 
+    setResult(null); 
 
-    // فحص الرصيد محلياً
+    // 1. فحص الرصيد محلياً للمسجلين
     if (token && credits <= 0) { setShowPaywall(true); setLoading(false); return; }
+    
+    // 2. فحص أولي للزوار (بناءً على المتصفح)
     if (!token && guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; }
     
     try {
       const headers: any = { "Authorization": token ? `Bearer ${token}` : "" };
       const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { headers });
       
+      // 👇 التعديل الجديد: التعامل مع حظر الـ IP القادم من السيرفر
+      if (res.status === 403) { 
+          // إذا أرجع السيرفر 403، فهذا يعني أن IP الجهاز استهلك محاولاته حتى لو تلاعب بالمتصفح
+          setAuthMode("signup"); 
+          setShowAuthModal(true); 
+          setLoading(false); 
+          return; 
+      }
+
       if (res.status === 402) { setShowPaywall(true); return; }
       
       if (!res.ok) {
-        // 👇 هنا بنلقط رسالة "السهم غير موجود" من الباك-إند
         const errorData = await res.json();
         throw new Error(errorData.detail || "Stock not found");
       }
@@ -389,35 +399,44 @@ const handleAuth = async () => {
       const data = await res.json(); 
       setResult(data);
       
-      if (token) setCredits(data.credits_left);
-      else { 
+      if (token) {
+          setCredits(data.credits_left);
+      } else { 
+          // تحديث عداد المتصفح المحلي
           const ng = guestTrials - 1; 
           setGuestTrials(ng); 
           localStorage.setItem("guest_trials", ng.toString()); 
       }
       
     } catch (err: any) { 
-      setAuthError(err.message); // عرض الخطأ بالأحمر
+      setAuthError(err.message); 
     } finally { 
-      setLoading(false); // وقف التحميل دائماً
+      setLoading(false); 
     }
   };
 
-  const handleCompare = async () => {
+const handleCompare = async () => {
     if (!compareTickers.t1 || !compareTickers.t2) return;
     
-    // 1. تصفير أي خطأ سابق قبل البدء
     setCompareError(null); 
     setAuthError(""); 
 
     setLoadingCompare(true);
     try {
       const res = await fetch(`${BASE_URL}/analyze-compare/${compareTickers.t1}/${compareTickers.t2}?lang=${lang}`, {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { "Authorization": token ? `Bearer ${token}` : "" }
       });
       
-      // 2. إذا كان الرصيد غير كافٍ (402) أو (403)
-      if (res.status === 402 || res.status === 403) {
+      // 👇 التعديل الجديد: إذا استنفد الزائر محاولات الـ IP (403)
+      if (res.status === 403) {
+        setShowCompareModal(false); // إغلاق نافذة المقارنة
+        setAuthMode("signup");      // تحويل لنمط التسجيل
+        setShowAuthModal(true);     // إظهار شاشة التسجيل
+        setLoadingCompare(false);
+        return;
+      }
+
+      if (res.status === 402) {
         setCompareError("Insufficient credits. You need 2 credits for this battle.");
         return; 
       }
@@ -429,16 +448,14 @@ const handleAuth = async () => {
       
       const data = await res.json();
       setCompareResult(data);
-      setCredits(data.credits_left);
+      if (token) setCredits(data.credits_left);
       
     } catch (err: any) {
-      // 3. عرض الخطأ مباشرة داخل صندوق compareError اللي بداخل النافذة
       setCompareError(err.message || "Something went wrong. Check tickers.");
     } finally {
       setLoadingCompare(false);
     }
   };
-
   const handleRedeem = async () => {
     setAuthError("");
     if (!licenseKey.trim()) return;

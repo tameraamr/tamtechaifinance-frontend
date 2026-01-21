@@ -219,14 +219,19 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // 👇 هذا الـ Hook هو اللي بيحكي مع الباك-إند عشان يجيب الاقتراحات
+  // ✅ هذا هو الكود الصحيح والوحيد للاقتراحات
   useEffect(() => {
     const getSuggestions = async () => {
-      if (ticker.length < 2) { 
+      // 1. إذا النص قصير جداً، لا تبحث وأخفِ القائمة
+      if (!ticker || ticker.length < 2) { 
         setSuggestions([]); 
         setShowSuggestions(false); 
         return; 
       }
+      
+      // 2. إذا كان النظام مشغولاً بالتحليل، لا تقم بالبحث الآن
+      if (loading) return; 
+
       try {
         const response = await fetch(`${BASE_URL}/search-ticker/${ticker}`);
         if (response.ok) {
@@ -236,30 +241,11 @@ export default function Home() {
         }
       } catch (error) { console.error("Search error:", error); }
     };
-    const timer = setTimeout(getSuggestions, 300); // تأخير بسيط عشان الأداء
-    return () => clearTimeout(timer);
-  }, [ticker]);
 
-  // Hook 2: جلب الاقتراحات الذكية عند الكتابة
-  useEffect(() => {
-    const getSuggestions = async () => {
-      if (ticker.length < 2) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
-      try {
-        const response = await fetch(`${BASE_URL}/search-ticker/${ticker}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-          setShowSuggestions(true);
-        }
-      } catch (error) { console.error("Suggestions error:", error); }
-    };
-    const timer = setTimeout(getSuggestions, 300);
+    // نستخدم Delay بسيط (300ms) عشان ما نضغط السيرفر مع كل حرف
+    const timer = setTimeout(getSuggestions, 300); 
     return () => clearTimeout(timer);
-  }, [ticker]);
+  }, [ticker, loading]); // أضفنا loading للمصفوفة
 
   // Hook 3: إغلاق القائمة عند الضغط في أي مكان خارج المربع
   useEffect(() => {
@@ -563,6 +549,22 @@ const getFilteredChartData = () => {
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative">
   <div className="flex flex-col items-center mb-10 w-full max-w-xl mx-auto px-4 relative z-50">
+    {/* 👇👇👇 بداية كود عرض الخطأ الجديد 👇👇👇 */}
+  {authError && !showAuthModal && !showPaywall && (
+    <div className="w-full mb-4 bg-red-500/10 border border-red-500/50 p-4 rounded-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 shadow-lg backdrop-blur-md">
+      <div className="flex items-center gap-3">
+        <AlertTriangle className="text-red-500 w-5 h-5 shrink-0" />
+        <span className="text-red-200 text-xs md:text-sm font-bold">{authError}</span>
+      </div>
+      <button 
+        onClick={() => setAuthError("")} 
+        className="text-red-400 hover:text-white transition-colors p-1 hover:bg-red-500/20 rounded-lg"
+      >
+        <XCircle className="w-5 h-5" />
+      </button>
+    </div>
+  )}
+  {/* 👆👆👆 نهاية كود عرض الخطأ 👆👆👆 */}
   <div className="flex gap-2 w-full mb-4 relative z-50">
     <div className="flex-1 relative group">
       <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl focus-within:border-blue-500/50 transition-all">
@@ -580,20 +582,26 @@ const getFilteredChartData = () => {
         </button>
       </div>
 
-      {/* قائمة الاقتراحات المنسدلة */}
+      {/* قائمة الاقتراحات المنسدلة المحسنة */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f172a] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-[100] backdrop-blur-xl">
-          <div className="max-h-[280px] overflow-y-auto">
-            {suggestions.map((s, i) => (
-              <button key={i} onClick={() => { setTicker(s.symbol); handleAnalyze(s.symbol); }} className="w-full flex items-center justify-between px-5 py-4 hover:bg-blue-600/10 border-b border-slate-800/40 last:border-0 transition-all group/item text-left">
-                <div className="flex flex-col items-start text-left">
-                  <span className="text-blue-400 font-black text-sm">{s.symbol}</span>
-                  <span className="text-slate-500 text-[10px] font-bold truncate max-w-[200px] uppercase text-left">{s.name}</span>
-                </div>
-                <Search size={14} className="text-slate-600 group-hover/item:text-blue-500" />
-              </button>
-            ))}
-          </div>
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f172a] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-[100] max-h-[300px] overflow-y-auto custom-scrollbar ring-1 ring-white/10">
+          {suggestions.map((s, i) => (
+            <button 
+              key={i} 
+              onClick={() => { 
+                setTicker(s.symbol); 
+                setShowSuggestions(false); // ✅ مهم: إخفاء القائمة فوراً
+                handleAnalyze(s.symbol);   // ✅ مهم: بدء التحليل فوراً
+              }} 
+              className="w-full flex items-center justify-between px-5 py-3 hover:bg-blue-600/20 border-b border-slate-800/50 last:border-0 transition-all group/item text-left"
+            >
+              <div className="flex flex-col items-start text-left">
+                <span className="text-blue-400 font-black text-sm">{s.symbol}</span>
+                <span className="text-slate-500 text-[10px] font-bold truncate max-w-[200px] uppercase text-left">{s.name}</span>
+              </div>
+              <Search size={14} className="text-slate-600 group-hover/item:text-blue-500 transition-colors" />
+            </button>
+          ))}
         </div>
       )}
     </div>

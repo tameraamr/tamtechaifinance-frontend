@@ -268,8 +268,9 @@ export default function Home() {
   };
 
 const handleAuth = async () => {
-    setAuthError(""); // تنظيف أي خطأ سابق
+    setAuthError(""); // تنظيف الأخطاء السابقة
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
+    
     let body, headers = {};
 
     if (authMode === "login") {
@@ -293,47 +294,43 @@ const handleAuth = async () => {
 
     try {
       const res = await fetch(url, { method: "POST", headers, body });
-      
-      // نحاول قراءة الرد كـ JSON
-      let data;
-      try {
-        data = await res.json();
-      } catch (e) {
-        // إذا فشل تحويل الرد لـ JSON، فهذا يعني خطأ سيرفر غريب
-        throw new Error("Server Error: Invalid response format");
-      }
-      
-      // 👇 هنا السحر: إذا كان الرد فيه مشكلة (400 أو 401 أو 422)
-      if (!res.ok) { 
-        let errorMsg = "Something went wrong";
-        
-        // التحقق مما إذا كان الخطأ تفصيلياً (مصفوفة) أو نصاً عادياً
+      const data = await res.json(); // قراءة الرد كـ JSON دائماً
+
+      // 👇👇👇 هذا هو الجزء المسؤول عن قراءة السبب الحقيقي 👇👇👇
+      if (!res.ok) {
+        // فحص نوع الخطأ القادم من FastAPI
         if (data.detail) {
+            // الحالة 1: أخطاء التحقق (مثل: الباسوورد قصير، الايميل غير صالح) - تأتي كمصفوفة
             if (Array.isArray(data.detail)) {
-                // تجميع الأخطاء إذا كانت كثيرة (مثل: الباسوورد ضعيف + الايميل غلط)
-                errorMsg = data.detail.map((e:any) => e.msg).join(" & ");
-            } else {
-                errorMsg = data.detail;
+                // ندمج كل الأخطاء في رسالة واحدة
+                const messages = data.detail.map((err: any) => err.msg).join(" & ");
+                setAuthError(messages);
+            } 
+            // الحالة 2: أخطاء منطقية (مثل: الايميل مستخدم، كلمة المرور خطأ) - تأتي كنص
+            else {
+                setAuthError(data.detail);
             }
+        } else {
+            // الحالة 3: خطأ من السيرفر لكن بدون رسالة تفصيلية
+            setAuthError("Operation failed. Please try again.");
         }
-        setAuthError(errorMsg); // نعرض الخطأ الحقيقي للمستخدم
-        return; // نوقف التنفيذ هنا ولا نذهب للـ catch
+        return; // توقف هنا ولا تكمل
       }
 
-      // ✅ إذا وصلنا هنا، فالعملية ناجحة 100%
+      // ✅ إذا وصلنا هنا، فالعملية ناجحة
       if (authMode === "login") { 
         localStorage.setItem("access_token", data.access_token); 
         setToken(data.access_token); 
         fetchUserData(data.access_token); 
       } else { 
-        alert("✅ Account created! Please login."); 
+        alert("✅ Account created successfully! Please login."); 
         setAuthMode("login"); 
       }
 
-    } catch (err: any) { 
-        // ❌ هذا يظهر فقط إذا النت مفصول أو السيرفر طافي
+    } catch (err) { 
+        // هذا يظهر فقط إذا السيرفر طافي تماماً
         console.error(err);
-        setAuthError(err.message || "Connection failed. Please check if backend is running."); 
+        setAuthError("Cannot connect to server. Please check your internet."); 
     }
   };
 

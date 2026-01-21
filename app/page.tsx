@@ -276,26 +276,40 @@ export default function Home() {
   };
 
   const handleCompare = async () => {
-  if (!compareTickers.t1 || !compareTickers.t2) return;
-  setCompareError(null); // تصفير الخطأ قبل البدء
-  setLoadingCompare(true);
-  try {
-    const res = await fetch(`${BASE_URL}/analyze-compare/${compareTickers.t1}/${compareTickers.t2}?lang=${lang}`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    if (!compareTickers.t1 || !compareTickers.t2) return;
     
-    if (res.status === 402) { setShowPaywall(true); return; }
-    if (!res.ok) throw new Error("Check your tickers or credits");
-    
-    const data = await res.json();
-    setCompareResult(data);
-    setCredits(data.credits_left);
-  } catch (err: any) {
-    setCompareError(err.message || "Connection failed"); // عرض الخطأ هنا
-  } finally {
-    setLoadingCompare(false);
-  }
-};
+    // 1. تصفير أي خطأ سابق قبل البدء
+    setCompareError(null); 
+    setAuthError(""); 
+
+    setLoadingCompare(true);
+    try {
+      const res = await fetch(`${BASE_URL}/analyze-compare/${compareTickers.t1}/${compareTickers.t2}?lang=${lang}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      
+      // 2. إذا كان الرصيد غير كافٍ (402) أو (403)
+      if (res.status === 402 || res.status === 403) {
+        setCompareError("Insufficient credits. You need 2 credits for this battle.");
+        return; 
+      }
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Comparison failed");
+      }
+      
+      const data = await res.json();
+      setCompareResult(data);
+      setCredits(data.credits_left);
+      
+    } catch (err: any) {
+      // 3. عرض الخطأ مباشرة داخل صندوق compareError اللي بداخل النافذة
+      setCompareError(err.message || "Something went wrong. Check tickers.");
+    } finally {
+      setLoadingCompare(false);
+    }
+  };
 
   const handleRedeem = async () => {
     setAuthError("");

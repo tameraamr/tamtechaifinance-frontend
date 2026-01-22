@@ -12,6 +12,13 @@ import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import { motion } from "framer-motion";
 
+// Import components
+import MarketDashboard from '../src/components/MarketDashboard';
+import NewsAnalysis from '../src/components/NewsAnalysis';
+import ComparisonBattle from '../src/components/ComparisonBattle';
+import Forecasts from '../src/components/Forecasts';
+import RecentAnalyses from '../src/components/RecentAnalyses';
+
 // هذا هو "المنظف" اللي بيحذف Headline وبيقصر الأرقام
 const cleanAIOutput = (text: string) => {
   if (!text) return "";
@@ -293,6 +300,8 @@ useEffect(() => {
     else localStorage.setItem("guest_trials", "3");
     const savedToken = localStorage.getItem("access_token");
     if (savedToken) { setToken(savedToken); fetchUserData(savedToken); }
+
+    fetchRecentAnalyses();
 
     const fetchPulse = async () => {
       try {
@@ -802,119 +811,17 @@ const getFilteredChartData = () => {
 </div>
 
 
- {/* 👇 radar sentiment icon 👇 */}
-{/* 👇 Intelligence Dashboard: المربعين بجانب بعضهما 👇 */}
-<div className="w-full max-w-6xl mx-auto px-4 mt-12 pb-12 relative z-10">
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch font-sans">
-    
-    {/* المربع اليسار: رادار المشاعر */}
-    <div className="relative group min-h-[380px]">
-      <div className={`absolute -inset-1 rounded-[2.5rem] blur-2xl opacity-20 animate-pulse transition-all duration-1000 ${sentiment.score > 55 ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
-      <div className="relative bg-[#020617]/90 border border-slate-800/80 p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-3xl overflow-hidden h-full flex flex-col justify-between border-t-slate-700/50">
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <div className={`w-2.5 h-2.5 rounded-full animate-ping ${sentiment.score > 55 ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
-              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic">Intelligence Feed</h3>
-            </div>
-            <h2 className={`text-4xl font-black italic tracking-tighter ${sentiment.score > 55 ? 'text-emerald-400' : 'text-red-400'}`}>
-               {lang === 'ar' ? (sentiment.score > 75 ? 'طمع مفرط' : sentiment.score > 55 ? 'تفاؤل' : sentiment.score < 25 ? 'خوف شديد' : sentiment.score < 45 ? 'حذر' : 'حياد') : sentiment.sentiment}
-            </h2>
-          </div>
-          <div className="text-right">
-             <div className="text-5xl font-mono font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">{sentiment.score}%</div>
-             <div className="text-[9px] font-bold text-slate-600 uppercase tracking-widest mt-2">Sentiment Score</div>
-          </div>
-        </div>
-        <div className="my-10 relative">
-          <div className="relative h-6 bg-slate-950 rounded-full border border-slate-800/50 p-1.5 shadow-inner">
-            <div className={`h-full rounded-full transition-all duration-[2500ms] cubic-bezier(0.34, 1.56, 0.64, 1) relative shadow-[0_0_25px_rgba(0,0,0,0.5)] ${sentiment.score > 55 ? 'bg-gradient-to-r from-emerald-600 to-emerald-400' : 'bg-gradient-to-r from-red-600 to-red-400'}`} style={{ width: `${sentiment.score}%` }}>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-7 h-7 bg-white rounded-full shadow-[0_0_20px_#fff] border-[7px] border-current scale-110"></div>
-            </div>
-          </div>
-          <div className="flex justify-between mt-4 text-[9px] font-black uppercase text-slate-600 tracking-[0.2em] px-2">
-            <span>Panic</span><span>Neutral</span><span>Greed</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* المربع اليمين: تدفق القطاعات */}
-    <div className="relative bg-[#020617]/90 border border-slate-800/80 p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-3xl flex flex-col min-h-[380px] border-t-slate-700/50">
-      <div className="flex items-center justify-between mb-8 border-b border-slate-800/50 pb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></div>
-          <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic">Sector Dynamics</h3>
-        </div>
-        <div className="text-[8px] font-black text-slate-700 uppercase tracking-widest">Real-time Stream</div>
-      </div>
-      <div className="space-y-4 flex-1">
-        {sectors.length > 0 ? sectors.map((s, i) => (
-          <div key={i} className="flex justify-between items-center p-5 bg-slate-900/30 rounded-[1.5rem] border border-slate-800/40 hover:border-blue-500/30 transition-all hover:bg-slate-900/50 group">
-            <span className="text-sm font-black text-slate-300 uppercase tracking-tight group-hover:text-white transition-colors">{s.name}</span>
-            <div className="flex items-center gap-5">
-              <span className={`text-sm font-mono font-black ${s.positive ? 'text-emerald-400' : 'text-red-400'}`}>{s.change}</span>
-              <div className={`w-1.5 h-7 rounded-full ${s.positive ? 'bg-emerald-500' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]'}`}></div>
-            </div>
-          </div>
-        )) : (
-          <div className="flex flex-col items-center justify-center h-full gap-4 opacity-30 grayscale">
-            <Activity className="w-10 h-10 animate-spin text-slate-500" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Connecting to Market Data...</span>
-          </div>
-        )}
-      </div>
-    </div>
-
-  </div>
-</div>
-  {/* finish radar sentiment icon  */}
-
 {/* 👇 Recent Analyses👇 */}
-{recentAnalyses.length > 0 && !result && !loading && (
-  <div className="max-w-7xl mx-auto px-4 md:px-6 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-    <div className="flex items-center justify-between mb-6">
-      <h2 className="text-sm md:text-xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
-        <span className="w-1.5 h-5 bg-blue-500 rounded-full"></span>
-        {lang === 'ar' ? 'أحدث التحليلات' : 'Recent Analyses'}
-      </h2>
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Feed</span>
-      </div>
-    </div>
+<RecentAnalyses
+  recentAnalyses={recentAnalyses}
+  lang={lang}
+  setTicker={setTicker}
+  handleAnalyze={handleAnalyze}
+/>
 
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-      {recentAnalyses.map((item, index) => (
-        <button 
-          key={index} 
-          onClick={() => {
-            setTicker(item.ticker);
-            handleAnalyze(item.ticker);
-          }}
-          className="bg-slate-900/40 border border-slate-800 p-3 md:p-4 rounded-2xl hover:border-blue-500/50 transition-all group text-left relative overflow-hidden active:scale-95"
-        >
-          <div className="flex justify-between items-start mb-2">
-            <span className="text-sm md:text-lg font-black text-white group-hover:text-blue-400 transition-colors font-mono">{item.ticker}</span>
-            <span className="text-[9px] font-bold text-slate-600 uppercase">{item.time}</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-tighter ${
-              item.verdict.includes('BUY') ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
-              item.verdict.includes('SELL') ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 
-              'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-            }`}>
-              {item.verdict}
-            </div>
-          </div>
-          {/* تأثير ضوئي عند الهوفر */}
-          <div className="absolute -right-2 -bottom-2 w-12 h-12 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-all"></div>
-        </button>
-      ))}
-    </div>
-  </div>
-)}
+ {/* 👇 radar sentiment icon 👇 */}
+<MarketDashboard sentiment={sentiment} sectors={sectors} lang={lang} t={t} />
+  {/* finish radar sentiment icon  */}
 
 
         {/* --- الصق الكود هنا --- */}
@@ -1211,20 +1118,7 @@ const getFilteredChartData = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8">
-                        <div className="bg-blue-500/[0.03] border border-blue-500/10 p-5 md:p-8 rounded-3xl group hover:bg-blue-500/[0.05] transition-all duration-500">
-                          <h4 className="text-blue-500 font-black mb-4 flex gap-3 items-center text-sm md:text-xl">
-                            <Calendar className="w-5 h-5 md:w-6 md:h-6"/> {t.oneYear}
-                          </h4>
-                          <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">{result.analysis.forecasts?.next_1_year}</p>
-                        </div>
-                        <div className="bg-purple-500/[0.03] border border-purple-500/10 p-5 md:p-8 rounded-3xl group hover:bg-purple-500/[0.05] transition-all duration-500">
-                          <h4 className="text-purple-500 font-black mb-4 flex gap-3 items-center text-sm md:text-xl">
-                            <TrendingUp className="w-5 h-5 md:w-6 md:h-6"/> {t.fiveYears}
-                          </h4>
-                          <p className="text-slate-300 text-xs md:text-base leading-relaxed font-medium">{result.analysis.forecasts?.next_5_years}</p>
-                        </div>
-                    </div>
+                    <Forecasts forecasts={result.analysis.forecasts} t={t} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10 mb-8">
                         <div className="lg:col-span-2 space-y-6 md:space-y-8">
@@ -1273,65 +1167,7 @@ const getFilteredChartData = () => {
                     </div>
 
     {/* قسم مشاعر الأخبار المطور مع الروابط والوقت */}
-{result?.analysis?.news_analysis && (
-  <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-1000">
-    <div className="flex items-center justify-center gap-2 mb-6">
-      <div className="h-px w-8 bg-slate-800"></div>
-      <h3 className="font-black text-slate-500 text-[10px] uppercase tracking-[0.3em] flex items-center gap-2">
-        <Activity className="w-3 h-3 text-blue-500" /> Market Pulse
-      </h3>
-      <div className="h-px w-8 bg-slate-800"></div>
-    </div>
-    
-    <div className="space-y-3">
-      {result.analysis.news_analysis.map((news: any, i: number) => (
-        <a 
-          key={i} 
-          href={news.url || "#"} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="block bg-slate-900/40 border border-slate-800/50 p-4 rounded-2xl hover:border-blue-500/40 hover:bg-slate-900/60 transition-all group cursor-pointer"
-        >
-          <div className="flex justify-between items-start mb-2 gap-3">
-            <p className="text-slate-300 text-[11px] font-bold leading-relaxed group-hover:text-blue-400 transition-colors line-clamp-2 flex-1 text-left">
-              {news.headline}
-            </p>
-            <span className="text-[9px] text-slate-500 font-medium ml-2 whitespace-nowrap">
-  {formatNewsDate(news.time)}
-</span>
-          </div>
-
-          <div className="flex items-center justify-between mt-3">
-            <div className="flex items-center">
-              {news.sentiment === 'positive' ? (
-                <span className="flex items-center gap-1 text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase">
-                  <TrendingUp size={10} /> Bullish
-                </span>
-              ) : news.sentiment === 'negative' ? (
-                <span className="flex items-center gap-1 text-[9px] font-black text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full uppercase">
-                  <TrendingDown size={10} /> Bearish
-                </span>
-              ) : (
-                <span className="text-[9px] font-black text-slate-500 bg-slate-500/10 px-2 py-0.5 rounded-full uppercase">
-                  Neutral
-                </span>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2">
-               <div className="w-12 h-1 bg-slate-800 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${news.sentiment === 'positive' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : news.sentiment === 'negative' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : 'bg-slate-500'}`} 
-                    style={{ width: `${(news.impact_score || 5) * 10}%` }}
-                  ></div>
-               </div>
-            </div>
-          </div>
-        </a>
-      ))}
-    </div>
-  </div>
-)}
+<NewsAnalysis newsAnalysis={result?.analysis?.news_analysis} formatNewsDate={formatNewsDate} lang={lang} />
 
                     <div className="bg-slate-900/80 border border-slate-800/50 p-6 md:p-12 rounded-[2.5rem] mb-12 shadow-2xl">
                         <h3 className="text-2xl md:text-4xl font-black mb-10 text-center text-white tracking-tight">{t.swot}</h3>
@@ -1384,152 +1220,21 @@ const getFilteredChartData = () => {
   </div>
 )}
 
-{showCompareModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-2xl p-2 md:p-4 overflow-y-auto font-sans selection:bg-emerald-500/30">
-    <div className="bg-[#0b0f1a] border border-slate-800 w-full max-w-5xl rounded-[3rem] p-6 md:p-12 relative shadow-[0_0_100px_rgba(16,185,129,0.1)] my-auto max-h-[92vh] overflow-y-auto custom-scrollbar">
-      
-      {/* Close Button */}
-      <button onClick={() => {setShowCompareModal(false); setCompareResult(null);}} className="absolute top-8 right-8 text-slate-500 hover:text-white transition-all hover:rotate-90 z-20">
-        <XCircle className="w-10 h-10" />
-      </button>
-      
-      <div className="relative z-10">
-        {/* Header Section */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
-            <Zap className="w-3 h-3 fill-emerald-500" /> Premium Battle Engine • 2 Credits
-          </div>
-          <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter italic leading-none">
-            Financial <span className="text-emerald-500">Showdown</span>
-          </h2>
-        </div>
-        
-        {/* Ticker Inputs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-blue-400 ml-4 uppercase tracking-[0.2em]">Aggressive Challenger</label>
-            <input type="text" placeholder="TICKER 1" className="w-full bg-slate-950 border border-slate-800 p-5 rounded-2xl outline-none uppercase font-mono text-center text-3xl text-blue-400 focus:border-blue-500 transition-all shadow-2xl" onChange={(e)=>setCompareTickers({...compareTickers, t1: e.target.value})} />
-          </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-emerald-400 ml-4 uppercase tracking-[0.2em]">Value Defender</label>
-            <input type="text" placeholder="TICKER 2" className="w-full bg-slate-950 border border-slate-800 p-5 rounded-2xl outline-none uppercase font-mono text-center text-3xl text-emerald-400 focus:border-emerald-500 transition-all shadow-2xl" onChange={(e)=>setCompareTickers({...compareTickers, t2: e.target.value})} />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {compareError && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl text-center text-sm font-black animate-pulse">
-              ⚠️ {compareError}
-            </div>
-          )}
-
-          <button 
-            onClick={() => {
-              if (!token) { 
-                setShowCompareModal(false); 
-                setAuthMode("signup");      
-                setShowAuthModal(true);     
-                return;
-              }
-              handleCompare();
-            }} 
-            disabled={loadingCompare} 
-            className="w-full bg-white text-black hover:bg-emerald-500 hover:text-white py-6 rounded-2xl font-black text-2xl transition-all disabled:opacity-50 shadow-2xl active:scale-[0.98] uppercase tracking-tighter cursor-pointer"
-          >
-            {loadingCompare ? "Extracting Alpha..." : "Launch Deep Comparison"}
-          </button>
-          
-          <div className="flex justify-center items-center gap-2">
-             <Zap className="w-3 h-3 text-emerald-500 fill-emerald-500" />
-             <p className="text-center text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">
-                Premium Analysis: 2 Strategy Credits
-             </p>
-          </div>
-        </div>
-
-        {compareResult && (
-          <div className="mt-16 space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-700 pb-10">
-            
-            {/* 1. Comparison Dashboard Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-[2rem] text-center group hover:border-blue-500/30 transition-all">
-                <span className="block text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest">{compareResult.stock1.symbol} Price</span>
-                <span className="text-4xl font-black text-blue-400 font-mono">${Number(compareResult.stock1.price).toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-center p-4">
-                <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.4)]">
-                  <Trophy className="text-black w-8 h-8" />
-                </div>
-              </div>
-              <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-[2rem] text-center group hover:border-emerald-500/30 transition-all">
-                <span className="block text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest">{compareResult.stock2.symbol} Price</span>
-                <span className="text-4xl font-black text-emerald-400 font-mono">${Number(compareResult.stock2.price).toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* 2. Professional Metrics Table */}
-            <div className="bg-slate-950/50 border border-slate-800 rounded-[2.5rem] overflow-hidden backdrop-blur-md">
-              <table className="w-full text-left">
-                <thead className="bg-slate-900/80 border-b border-slate-800">
-                  <tr>
-                    <th className="p-6 text-slate-500 font-black uppercase text-[10px] tracking-[0.2em]">Institutional Matrix</th>
-                    <th className="p-6 text-blue-400 font-black text-center text-xl bg-blue-500/5 font-mono">{compareResult.stock1.symbol}</th>
-                    <th className="p-6 text-emerald-400 font-black text-center text-xl bg-emerald-500/5 font-mono">{compareResult.stock2.symbol}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/50 font-mono">
-                  {[
-                    { label: "P/E Ratio (Valuation)", v1: compareResult.stock1.pe_ratio, v2: compareResult.stock2.pe_ratio },
-                    { label: "ROE % (Profitability)", v1: compareResult.stock1.return_on_equity, v2: compareResult.stock2.return_on_equity, suffix: "%" },
-                    { label: "Rev Growth (YoY)", v1: compareResult.stock1.revenue_growth, v2: compareResult.stock2.revenue_growth, suffix: "%" },
-                    { label: "Net Margin", v1: compareResult.stock1.profit_margins, v2: compareResult.stock2.profit_margins, suffix: "%" }
-                  ].map((row, i) => (
-                    <tr key={i} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="p-6 text-slate-500 font-bold text-xs uppercase tracking-widest">{row.label}</td>
-                      <td className="p-6 text-white text-center text-lg">{Number(row.v1 || 0).toFixed(2)}{row.suffix}</td>
-                      <td className="p-6 text-white text-center text-lg">{Number(row.v2 || 0).toFixed(2)}{row.suffix}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* 3. Deep Analysis Verdict (The Big Winner) */}
-            <div className="bg-gradient-to-br from-slate-900 to-[#0b0f1a] border border-slate-700/50 p-8 md:p-14 rounded-[3.5rem] shadow-3xl relative">
-              <div className="flex items-center gap-5 mb-10 border-b border-slate-800 pb-8">
-                 <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-emerald-500/30 rotate-3">
-                    <Brain className="text-black w-10 h-10" />
-                 </div>
-                 <div>
-                   <h4 className="text-white text-3xl font-black uppercase tracking-tighter italic">AI Analysis Verdict</h4>
-                   <p className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.4em]">Proprietary Winning Thesis</p>
-                 </div>
-              </div>
-
-              <div className="prose prose-invert max-w-none">
-                <p className="text-slate-300 leading-relaxed text-lg md:text-xl font-medium italic border-l-4 border-emerald-500 pl-8 py-4 bg-emerald-500/5 rounded-r-3xl">
-                  {compareResult.analysis.verdict}
-                </p>
-              </div>
-
-              <div className="mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div className="bg-slate-900 border border-slate-800 px-8 py-4 rounded-full flex items-center gap-3">
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
-                  <span className="text-white font-black uppercase text-xs tracking-widest">Winner: {compareResult.analysis.winner}</span>
-                </div>
-                <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">
-                  Verified Institutional Data Stream • Gemini 2.0 Flash
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-)}
-
-
+<ComparisonBattle
+  showCompareModal={showCompareModal}
+  setShowCompareModal={setShowCompareModal}
+  compareTickers={compareTickers}
+  setCompareTickers={setCompareTickers}
+  compareResult={compareResult}
+  loadingCompare={loadingCompare}
+  compareError={compareError}
+  handleCompare={handleCompare}
+  token={token}
+  setAuthMode={setAuthMode}
+  setShowAuthModal={setShowAuthModal}
+  lang={lang}
+  t={t}
+/>
       </main>
     </div>
   );

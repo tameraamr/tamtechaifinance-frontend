@@ -810,6 +810,18 @@ const getFilteredChartData = () => {
   </button>
 </div>
 
+ 
+ {/* 👇 Loading Animation 👇 */}
+ {loading && !result && (
+  <div className="flex flex-col items-center mt-20 gap-4 animate-in fade-in">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    <p className="text-blue-400 text-xs md:text-sm font-bold animate-pulse text-center px-6 max-w-md leading-relaxed">
+      {lang === 'ar' ? "الذكاء الاصطناعي يقوم الآن بفك شفرة الميزانيات العمومية والتقييمات... بضع ثوانٍ من فضلك" : 
+       lang === 'it' ? "L'IA sta decodificando bilanci e valutazioni... attendere prego" :
+       "AI is decoding balance sheets and valuations... this deep scan takes a moment"}
+    </p>
+  </div>
+)}
 
 {/* 👇 Recent Analyses👇 */}
 <RecentAnalyses
@@ -1209,16 +1221,7 @@ const getFilteredChartData = () => {
                 </div>
             </div>
         )}
-        {loading && !result && (
-  <div className="flex flex-col items-center mt-20 gap-4 animate-in fade-in">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-    <p className="text-blue-400 text-xs md:text-sm font-bold animate-pulse text-center px-6 max-w-md leading-relaxed">
-      {lang === 'ar' ? "الذكاء الاصطناعي يقوم الآن بفك شفرة الميزانيات العمومية والتقييمات... بضع ثوانٍ من فضلك" : 
-       lang === 'it' ? "L'IA sta decodificando bilanci e valutazioni... attendere prego" :
-       "AI is decoding balance sheets and valuations... this deep scan takes a moment"}
-    </p>
-  </div>
-)}
+       
 
 <ComparisonBattle
   showCompareModal={showCompareModal}

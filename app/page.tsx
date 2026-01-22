@@ -678,6 +678,23 @@ const getFilteredChartData = () => {
 </div>
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative">
+{/* حاوية العنوان المحدثة بمقاسات أصغر */}
+  <div className="flex flex-col items-center text-center mb-6 md:mb-8">
+      <h1 className="text-xl md:text-4xl font-black text-white mb-2 tracking-tighter max-w-3xl leading-none">
+          {t.heroTitle}
+      </h1>
+      <p className="text-slate-400 max-w-xl text-[10px] md:text-sm px-4 mx-auto leading-tight opacity-80">
+          {t.heroSubtitle}
+      </p>
+  </div>
+
+  {/* مربع البحث والباتل مود بمساحة أصغر قليلًا */}
+  <div className="flex flex-col items-center w-full max-w-lg mx-auto px-4 relative z-50 mb-8">
+      {/* كود البحث والباتل مود الخاص بك... */}
+  </div>
+
+  {/* الآن ستظهر التحليلات الأخيرة والمميزات مباشرة تحتهم */}
+
   <div className="flex flex-col items-center mb-10 w-full max-w-xl mx-auto px-4 relative z-50">
     {/* 👇👇👇 بداية كود عرض الخطأ الجديد 👇👇👇 */}
   {authError && !showAuthModal && !showPaywall && (
@@ -707,7 +724,7 @@ const getFilteredChartData = () => {
           onFocus={() => ticker.length >= 2 && setShowSuggestions(true)}
           onKeyDown={(e) => e.key === "Enter" && handleAnalyze()} 
         />
-        <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-6 py-4 font-black text-xs md:text-base disabled:opacity-50 transition-colors shrink-0 h-full text-white">
+        <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-6 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
           {loading ? "..." : t.analyze}
         </button>
       </div>
@@ -819,8 +836,7 @@ const getFilteredChartData = () => {
 
         {!result && !loading && (
             <div className="flex flex-col items-center justify-center mt-4 md:mt-8 animate-in fade-in duration-700">
-                <h1 className="text-2xl md:text-5xl font-bold text-center text-white mb-4 tracking-tight px-2">{t.heroTitle}</h1>
-                <p className="text-slate-400 text-center max-w-2xl mb-8 md:mb-12 text-xs md:text-lg px-4">{t.heroSubtitle}</p>
+                
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full max-w-5xl px-2">
                     <div className="bg-slate-900/50 border border-slate-800 p-4 md:p-6 rounded-2xl hover:border-blue-500/30 transition group">
                       <div className="bg-blue-900/20 p-2 md:p-3 rounded-lg w-fit mb-3 md:mb-4"><Brain className="w-5 h-5 md:w-6 md:h-6 text-blue-400" /></div>

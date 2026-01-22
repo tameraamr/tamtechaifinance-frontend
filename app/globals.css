@@ -64,3 +64,20 @@ body {
   background: #1e293b; /* لون رمادي غامق */
   border-radius: 4px;
 }
+
+
+@keyframes border-flow {
+  0% { border-color: rgba(59, 130, 246, 0.2); }
+  50% { border-color: rgba(59, 130, 246, 0.8); }
+  100% { border-color: rgba(59, 130, 246, 0.2); }
+}
+
+@keyframes glow-pulse {
+  0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+  100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.1); }
+}
+
+.animate-glow {
+  animation: glow-pulse 3s infinite ease-in-out;
+}

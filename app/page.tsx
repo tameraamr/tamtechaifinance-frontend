@@ -254,6 +254,23 @@ const fetchRecentAnalyses = async () => {
   }
 };
 
+const [sentiment, setSentiment] = useState({ sentiment: "Neutral", score: 50 });
+
+const fetchSentiment = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/market-sentiment`);
+    const data = await res.json();
+    setSentiment(data);
+  } catch (err) {
+    console.error("Sentiment error:", err);
+  }
+};
+
+// اجعل الرادار يتحدث عند فتح الصفحة وعند كل تحليل جديد
+useEffect(() => {
+  fetchSentiment();
+}, [recentAnalyses]);
+
 // تشغيل الدالة عند فتح الموقع
 useEffect(() => {
   fetchRecentAnalyses();
@@ -758,6 +775,11 @@ const getFilteredChartData = () => {
     </button>
   </div>
 
+
+
+ {/* 👇 Battle Mode Button 👇 */}
+
+
   <button onClick={() => setShowCompareModal(true)} className="w-full bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group hover:border-emerald-500/50 transition-all active:scale-[0.98] shadow-xl">
     <div className="flex items-center gap-3">
       <TrendingUp className="w-5 h-5 text-emerald-400" />
@@ -769,6 +791,95 @@ const getFilteredChartData = () => {
     <div className="bg-slate-950 px-3 py-1 rounded-full border border-emerald-500/30 text-[10px] font-black text-emerald-400">BATTLE</div>
   </button>
 </div>
+
+
+ {/* 👇 radar sentiment icon 👇 */}
+<div className="w-full max-w-lg mx-auto px-4 mt-12 pb-10">
+  <div className="relative group">
+    {/* تأثير التوهج النيوني المحيط */}
+    <div className={`absolute -inset-1 rounded-[2.5rem] blur-2xl opacity-20 animate-pulse transition-all duration-1000 ${
+      sentiment.score > 55 ? 'bg-emerald-500' : sentiment.score < 45 ? 'bg-red-500' : 'bg-blue-600'
+    }`}></div>
+
+    <div className="relative bg-[#020617] border border-slate-800/80 p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-3xl overflow-hidden">
+      
+      {/* شبكة الرادار الخلفية */}
+      <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] pointer-events-none"></div>
+
+      <div className="relative z-10">
+        <div className="flex justify-between items-start mb-10">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full animate-ping ${sentiment.score > 55 ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic">Intelligence Feed</h3>
+            </div>
+            <h2 className={`text-4xl font-black italic tracking-tighter transition-all duration-700 ${
+              sentiment.score > 55 ? 'text-emerald-400 drop-shadow-sm' : sentiment.score < 45 ? 'text-red-400' : 'text-blue-400'
+            }`}>
+              {lang === 'ar' ? 
+                (sentiment.score > 75 ? 'طمع مفرط' : sentiment.score > 55 ? 'تفاؤل' : 
+                 sentiment.score < 25 ? 'خوف شديد' : sentiment.score < 45 ? 'حذر' : 'حياد تام') 
+                : sentiment.sentiment}
+            </h2>
+          </div>
+          <div className="text-right">
+             <div className="text-5xl font-mono font-black text-white tracking-tighter drop-shadow-lg">{sentiment.score}%</div>
+             <div className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em] mt-2">Sentiment Score</div>
+          </div>
+        </div>
+
+        {/* مسار النيون الاحترافي */}
+        <div className="relative h-6 bg-slate-950 rounded-full border border-slate-800/50 p-1.5 mb-10 shadow-2xl overflow-hidden">
+           {/* مناطق القوة */}
+           <div className="absolute inset-0 flex opacity-10">
+              <div className="h-full w-1/4 bg-red-600"></div>
+              <div className="h-full w-1/4 bg-orange-600"></div>
+              <div className="h-full w-1/4 bg-yellow-600"></div>
+              <div className="h-full w-1/4 bg-emerald-600"></div>
+           </div>
+
+           {/* شريط التقدم النيوني السائل */}
+           <div 
+             className={`h-full rounded-full transition-all duration-[2500ms] cubic-bezier(0.34, 1.56, 0.64, 1) relative shadow-[0_0_30px_rgba(0,0,0,1)] ${
+               sentiment.score > 55 ? 'bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-emerald-500/50' : 
+               sentiment.score < 45 ? 'bg-gradient-to-r from-red-600 to-red-400 shadow-red-500/50' : 
+               'bg-gradient-to-r from-blue-600 to-blue-400 shadow-blue-500/50'
+             }`}
+             style={{ width: `${sentiment.score}%` }}
+           >
+              {/* الضوء الأبيض المنسحب */}
+              <div className="absolute top-0 bottom-0 right-0 w-8 bg-white/20 blur-md"></div>
+              {/* رأس المؤشر المتوهج */}
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-[0_0_20px_#fff] border-[6px] border-current scale-125"></div>
+           </div>
+        </div>
+
+        {/* عدادات البيانات السفلية */}
+        <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800/50">
+           <div className="flex flex-col items-center">
+              <span className="text-[8px] font-bold text-slate-600 uppercase mb-2">Volatility</span>
+              <div className={`px-3 py-1 rounded-full text-[10px] font-black border ${sentiment.score < 45 ? 'text-red-400 border-red-500/30 bg-red-500/5' : 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5'}`}>
+                 {sentiment.score < 45 ? 'HIGH RISK' : 'LOW RISK'}
+              </div>
+           </div>
+           <div className="flex flex-col items-center">
+              <span className="text-[8px] font-bold text-slate-600 uppercase mb-2">Momentum</span>
+              <div className="text-sm font-mono font-black text-slate-300 tracking-tighter uppercase">
+                 {sentiment.score > 55 ? 'Bullish' : 'Bearish'}
+              </div>
+           </div>
+           <div className="flex flex-col items-center">
+              <span className="text-[8px] font-bold text-slate-600 uppercase mb-2">Trend</span>
+              <div className="flex gap-1">
+                 {[1,2,3].map(i => <div key={i} className={`w-1.5 h-3 rounded-sm ${sentiment.score > 50 ? 'bg-emerald-500/40' : 'bg-red-500/40'}`}></div>)}
+              </div>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  {/* finish radar sentiment icon  */}
 
 {/* 👇 Recent Analyses👇 */}
 {recentAnalyses.length > 0 && !result && !loading && (

@@ -107,10 +107,15 @@ const formatNewsDate = (dateString: string) => {
 
 const formatNumber = (num: any) => num > 1e9 ? (num/1e9).toFixed(2)+"B" : num > 1e6 ? (num/1e6).toFixed(2)+"M" : num?.toLocaleString();
 
-const formatMetricValue = (value: any) => {
+const formatMetricValue = (value: any, key?: string) => {
   if (value === null || value === undefined) return "N/A";
   if (typeof value === 'string') return value; // Already formatted (like Market Cap)
   if (isNaN(value)) return "N/A";
+
+  // For certain metrics, 0 should be treated as N/A since it's not a valid value
+  const zeroIsInvalid = ['pe', 'peg', 'ps', 'pb', 'eps', 'margin', 'roe', 'beta'];
+  if (value === 0 && zeroIsInvalid.includes(key || '')) return "N/A";
+
   return Number(value).toFixed(2);
 };
 
@@ -128,7 +133,11 @@ const analysisProgressMessages = [
 
 const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: any) => {
   const getMetricStatus = (key: string, value: number) => {
-    if(!value && value !== 0) return "text-slate-200";
+    // Check for invalid zeros that should be N/A
+    const zeroIsInvalid = ['pe', 'peg', 'ps', 'pb', 'eps', 'margin', 'roe', 'beta'];
+    if (value === 0 && zeroIsInvalid.includes(key)) return "text-slate-400";
+
+    if(!value && value !== 0) return "text-slate-400";
     switch(key) {
         case 'peg': return value < 1 ? "text-emerald-400" : value > 2 ? "text-red-400" : "text-yellow-400";
         case 'pe': return value < 15 ? "text-emerald-400" : value > 25 ? "text-red-400" : "text-yellow-400";
@@ -150,7 +159,7 @@ const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: any) =
     <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-3 md:p-4 hover:bg-slate-800/50 transition-all group">
       <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">{label}</div>
       <div className={`text-lg md:text-xl font-mono font-bold ${getMetricStatus(metricKey, value)}`}>
-        {value !== null && value !== undefined ? `${formatMetricValue(value)}${suffix}` : "N/A"}
+        {value !== null && value !== undefined ? `${formatMetricValue(value, metricKey)}${suffix}` : "N/A"}
       </div>
     </div>
   );

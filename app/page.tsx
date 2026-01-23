@@ -622,8 +622,10 @@ export default function Home() {
           <div className="flex items-center gap-2"><BarChart3 className="text-blue-500 w-6 h-6" /><span className="font-bold text-xl tracking-tight">TamtechAI <span className="text-blue-500">Pro</span></span></div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            {/* التعديل هنا: الرصيد يظهر في الهاتف أيضاً */}
-            {token ? (
+{/* 👇 التعديل هنا: إذا كان جاري التحميل، نعرض دائرة تحميل صغيرة بدلاً من البيانات الخاطئة */}
+  {authLoading ? (
+    <div className="w-20 h-8 bg-slate-800/50 rounded-full animate-pulse"></div>
+  ) : token ? (
               <div className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 py-1 rounded-full text-[10px] md:text-xs font-bold text-slate-300">
                 <Star className="w-3 h-3 text-yellow-400" />
                 <span>{credits}</span>

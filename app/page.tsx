@@ -1116,12 +1116,41 @@ export default function Home() {
       </div>
     </div>
 
-    {/* إخلاء المسؤولية المالي السريع */}
-    <div className="border-t border-slate-800/50 pt-8 mt-8 text-center">
-      <p className="text-slate-500 text-[10px] italic max-w-3xl mx-auto mb-4">
-        {isRTL ? "تنبيه: جميع المعلومات هي لأغراض تعليمية ولا تعتبر نصيحة استثمارية." : "Disclaimer: All information is for educational purposes and does not constitute investment advice."}
-      </p>
-      <div className="text-slate-600 text-[10px] font-mono">© 2026 TamtechAI Pro. System Status: <span className="text-green-500">Operational</span></div>
+{/* إخلاء المسؤولية المالي الاحترافي والصارم */}
+    <div className="border-t border-slate-800/50 pt-12 mt-12 text-center">
+      <div className="max-w-4xl mx-auto mb-10 p-6 rounded-2xl bg-slate-900/30 border border-red-900/20 backdrop-blur-sm">
+        <div className="flex items-center justify-center gap-2 mb-4 text-red-500/80">
+          <AlertTriangle className="w-4 h-4" />
+          <span className="text-[11px] font-black uppercase tracking-[0.2em]">
+            {isRTL ? "تحذير قانوني صارم" : "Strict Legal Disclaimer"}
+          </span>
+        </div>
+        
+        <p className="text-slate-500 text-[11px] md:text-[12px] leading-relaxed italic text-justify md:text-center px-4">
+          {isRTL 
+            ? "يعد استخدام TamtechAI Pro إقراراً بأنك تدرك تماماً أن جميع التحليلات والبيانات والتقارير الصادرة هي نتاج خوارزميات ذكاء اصطناعي لأغراض معلوماتية وبحثية فقط. لا تشكل هذه البيانات بأي حال من الأحوال نصيحة استثمارية، مالية، أو قانونية. ينطوي الاستثمار في الأسواق المالية على مخاطر جوهرية قد تؤدي لفقدان رأس المال بالكامل. نحن لا نتحمل أدنى مسؤولية عن أي قرارات استثمارية تُتخذ بناءً على هذه التقارير." 
+            : "The use of TamtechAI Pro constitutes an acknowledgment that all generated analyses and reports are the product of AI algorithms for informational and research purposes only. This information does not, under any circumstances, constitute financial, investment, or legal advice. Trading in financial markets involves substantial risk, including the potential loss of all invested principal. TamtechAI Pro and its affiliates are not liable for any financial losses or decisions made based on the provided data."}
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4">
+        <div className="text-slate-600 text-[10px] font-mono tracking-widest uppercase">
+          © 2026 TamtechAI Pro <span className="mx-2">|</span> 
+          {isRTL ? "جميع الحقوق محفوظة" : "All Rights Reserved"}
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/5 border border-green-500/20">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter">
+              System: Operational
+            </span>
+          </div>
+          <div className="text-slate-700 text-[10px] font-bold uppercase tracking-tighter">
+            v2.4.0-Stable
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </footer>

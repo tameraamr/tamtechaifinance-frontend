@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target,
-  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Download, Dices
+  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from 'react-hot-toast';
@@ -257,6 +257,7 @@ export default function Home() {
   const [loadingRandom, setLoadingRandom] = useState(false);
 
   const [recentAnalyses, setRecentAnalyses] = useState<any[]>([]);
+  const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
 
   // دالة لجلب التحليلات الأخيرة من الباك-إند
   const fetchRecentAnalyses = async () => {
@@ -364,6 +365,7 @@ export default function Home() {
   // REMOVED: Auto-redirect useEffect - now using manual confirmation
 
   const handleAuth = async () => {
+    setIsSubmittingAuth(true); // 👈 تفعيل التحميل
     setAuthError(""); // تنظيف الأخطاء السابقة
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
 
@@ -450,7 +452,8 @@ export default function Home() {
       // عرض السبب الحقيقي إذا كان متاحاً، وإلا عرض الرسالة العامة
       // سيظهر الآن خطأ "Failed to fetch" فقط إذا كانت المشكلة في الشبكة/CORS فعلاً
       setAuthError(err.message || "Cannot connect to server. Check your connection.");
-    }
+    } finally { setIsSubmittingAuth(false); // 👈 إيقاف التحميل في كل الحالات
+  }
   };
 
   const fetchRandomStock = async () => {
@@ -971,9 +974,22 @@ export default function Home() {
                   <input type="password" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
 
-                <button onClick={handleAuth} className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm text-white transition-all mt-4">
-                  {authMode === "login" ? "Login" : "Register"}
-                </button>
+<button 
+  onClick={handleAuth} 
+  disabled={isSubmittingAuth} // يمنع الضغط المتكرر أثناء إرسال البيانات
+  className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm text-white transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+>
+  {isSubmittingAuth ? (
+    <>
+      {/* 🔄 دائرة التحميل المتحركة */}
+      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+      <span>{authMode === "login" ? "Logging in..." : "Creating Account..."}</span>
+    </>
+  ) : (
+    // النص الذي يظهر في الحالة العادية
+    authMode === "login" ? "Login" : "Register"
+  )}
+</button>
 
                 <div className="text-center pt-2">
                   <button onClick={() => { setAuthMode(authMode === "login" ? "signup" : "login"); setAuthError(""); }} className="text-xs text-slate-400 hover:text-white transition-colors">
@@ -1048,60 +1064,67 @@ export default function Home() {
         />
 
         {/* Footer Component */}
-        <footer className="border-t border-slate-800 bg-[#0b1121] mt-16">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
-            {/* Main Footer Content */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-8">
-              {/* Brand Section */}
-              <div className="md:col-span-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <Brain className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="font-bold text-xl text-white">Tamtech Ai</span>
-                </div>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  Empowering your investment decisions with AI-driven insights.
-                </p>
-              </div>
+<footer className="bg-[#0b1121] border-t border-slate-800 pt-16 pb-8 mt-20">
+  <div className="max-w-7xl mx-auto px-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 text-left">
+      
+      {/* العمود الأول: الهوية */}
+      <div className="col-span-1 md:col-span-1">
+        <div className="flex items-center gap-2 mb-4">
+          <BarChart3 className="text-blue-500 w-6 h-6" />
+          <span className="font-bold text-xl text-white">TamtechAI <span className="text-blue-500">Pro</span></span>
+        </div>
+        <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+          {isRTL ? "منصة رائدة لتحليل الأسهم باستخدام أحدث تقنيات الذكاء الاصطناعي." : "Leading stock analysis platform powered by advanced AI technology."}
+        </p>
+        <div className="flex gap-4">
+          <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all"><Twitter className="w-5 h-5" /></a>
+          <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-600 transition-all"><Linkedin className="w-5 h-5" /></a>
+          <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all"><Send className="w-5 h-5" /></a>
+        </div>
+      </div>
 
-              {/* Navigation Links */}
-              <div className="md:col-span-2">
-                <h3 className="text-white font-semibold text-lg mb-4">Quick Links</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <a href="/" className="text-slate-400 hover:text-blue-400 transition-colors text-sm">
-                    Home
-                  </a>
-                  <a href="/terms" className="text-slate-400 hover:text-blue-400 transition-colors text-sm">
-                    Terms of Service
-                  </a>
-                  <a href="/privacy" className="text-slate-400 hover:text-blue-400 transition-colors text-sm">
-                    Privacy Policy
-                  </a>
-                </div>
-              </div>
-            </div>
+      {/* العمود الثاني: المنصة - صفحات مهمة */}
+      <div>
+        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "المنصة" : "Platform"}</h4>
+        <ul className="space-y-4 text-sm text-slate-400">
+          <li><Link href="/about" className="hover:text-blue-500">{isRTL ? "من نحن" : "About Us"}</Link></li>
+          <li><Link href="/pricing" className="hover:text-blue-500">{isRTL ? "الخطط والأسعار" : "Pricing Plans"}</Link></li>
+          <li><Link href="/contact" className="hover:text-blue-500">{isRTL ? "اتصل بنا" : "Contact Support"}</Link></li>
+        </ul>
+      </div>
 
-            {/* Financial Disclaimer */}
-            <div className="border-t border-slate-800 pt-8">
-              <h3 className="text-white font-bold text-lg mb-4 text-center">
-                Financial Disclaimer
-              </h3>
-              <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-6">
-                <p className="text-slate-300 text-sm leading-relaxed text-center max-w-4xl mx-auto">
-                  <strong className="text-white">Tamtech Ai</strong> is an informational tool and does not provide financial, investment, or legal advice. All stock analyses are generated by AI and should be used for educational purposes only. Investing in the stock market involves significant risk. We are not responsible for any financial losses incurred based on the information provided by this platform. Always consult with a certified financial advisor before making investment decisions.
-                </p>
-              </div>
-            </div>
+      {/* العمود الثالث: القانونية - التي أنشأناها */}
+      <div>
+        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "قانوني" : "Legal"}</h4>
+        <ul className="space-y-4 text-sm text-slate-400">
+          <li><Link href="/terms" className="hover:text-blue-500">{isRTL ? "الشروط والأحكام" : "Terms of Service"}</Link></li>
+          <li><Link href="/privacy" className="hover:text-blue-500">{isRTL ? "الخصوصية" : "Privacy Policy"}</Link></li>
+          <li><Link href="/risk" className="text-red-400 hover:text-red-500 font-medium">{isRTL ? "تحذير المخاطر" : "Risk Disclosure"}</Link></li>
+        </ul>
+      </div>
 
-            {/* Copyright */}
-            <div className="border-t border-slate-800 mt-8 pt-6 text-center">
-              <p className="text-slate-500 text-xs">
-                © {new Date().getFullYear()} Tamtech Ai. All rights reserved.
-              </p>
-            </div>
-          </div>
-        </footer>
+      {/* العمود الرابع: بطاقة الثقة */}
+      <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl shadow-inner">
+        <h4 className="text-white font-bold mb-2 text-sm flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-green-500" />
+          Enterprise Grade
+        </h4>
+        <p className="text-slate-500 text-[11px] leading-relaxed">
+          {isRTL ? "تشفير بيانات بمستوى بنكي عالمي لضمان حماية خصوصيتك المالية." : "Bank-grade encryption to ensure your financial privacy is fully protected."}
+        </p>
+      </div>
+    </div>
+
+    {/* إخلاء المسؤولية المالي السريع */}
+    <div className="border-t border-slate-800/50 pt-8 mt-8 text-center">
+      <p className="text-slate-500 text-[10px] italic max-w-3xl mx-auto mb-4">
+        {isRTL ? "تنبيه: جميع المعلومات هي لأغراض تعليمية ولا تعتبر نصيحة استثمارية." : "Disclaimer: All information is for educational purposes and does not constitute investment advice."}
+      </p>
+      <div className="text-slate-600 text-[10px] font-mono">© 2026 TamtechAI Pro. System Status: <span className="text-green-500">Operational</span></div>
+    </div>
+  </div>
+</footer>
       </main>
     </div>
   );

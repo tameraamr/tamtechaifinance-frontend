@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
-
+import toast from 'react-hot-toast';
 // Import components
 import NewsAnalysis from '../../../src/components/NewsAnalysis';
 import Forecasts from '../../../src/components/Forecasts';
@@ -178,6 +178,7 @@ export default function AnalysisPage() {
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
   const [timeRange, setTimeRange] = useState('1Y');
   const [lang, setLang] = useState('en');
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Authentication state
   const [authChecked, setAuthChecked] = useState(false);
@@ -280,24 +281,56 @@ export default function AnalysisPage() {
     };
   }, [loading]);
 
-  const handleDownloadPDF = async () => {
-    const input = document.getElementById('report-content');
-    if (!input) return;
-    try {
-        const dataUrl = await toPng(input, { cacheBust: true, pixelRatio: 2 });
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgProps = pdf.getImageProperties(dataUrl);
-        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-        pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-        while (heightLeft > 0) { position -= pdfHeight; pdf.addPage(); pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight); heightLeft -= pdfHeight; }
-        pdf.save(`${ticker || "Analysis"}_TamtechAI.pdf`);
-    } catch (err) { console.error("PDF Failed", err); }
-  };
+const handleDownloadPDF = async () => {
+  const input = document.getElementById('report-content');
+  if (!input || isGeneratingPDF) return; // صمام أمان لمنع البدء المتكرر
+
+  setIsGeneratingPDF(true); // تفعيل الـ Spinner فوراً
+  
+  // إظهار تنبيه للمستخدم ببدء العملية
+  const pdfToast = toast.loading(isRTL ? "جاري تجهيز تقريرك الاحترافي... انتظر قليلاً" : "Preparing your report... please wait");
+
+  try {
+    // إعدادات الصورة بدقة عالية
+    const dataUrl = await toPng(input, { 
+      cacheBust: true, 
+      pixelRatio: 2,
+      backgroundColor: '#0b1121' // يحافظ على لون الخلفية الداكن في الـ PDF
+    });
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgProps = pdf.getImageProperties(dataUrl);
+    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    // إضافة الصفحة الأولى
+    pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    // معالجة الصفحات المتعددة تلقائياً إذا كان التقرير طويلاً
+    while (heightLeft > 0) { 
+      position -= pdfHeight; 
+      pdf.addPage(); 
+      pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, imgHeight); 
+      heightLeft -= pdfHeight; 
+    }
+
+    pdf.save(`${ticker || "Analysis"}_TamtechAI.pdf`);
+    
+    // تحديث التنبيه للنجاح
+    toast.success(isRTL ? "تم تحميل التقرير بنجاح! 🚀" : "Report downloaded successfully!", { id: pdfToast });
+
+  } catch (err) {
+    console.error("PDF Failed", err);
+    toast.error(isRTL ? "فشل تحميل التقرير، حاول مرة أخرى" : "Failed to generate PDF", { id: pdfToast });
+  } finally {
+    setIsGeneratingPDF(false); // إعادة الزر لحالته الطبيعية مهما كانت النتيجة
+  }
+};
 
   const handleBack = () => {
     // Clear any temporary View Report flags/states
@@ -467,9 +500,24 @@ export default function AnalysisPage() {
           <button onClick={handleBack} className="flex items-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold border border-slate-600/50 transition">
             <ArrowLeft className="w-3 h-3 md:w-4 md:h-4" /> Back to Search
           </button>
-          <button onClick={handleDownloadPDF} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold border border-slate-700 transition">
-            <Download className="w-3 h-3 md:w-4 md:h-4" /> {t.download}
-          </button>
+<button
+  onClick={handleDownloadPDF}
+  disabled={isGeneratingPDF} // تعطيل الزر تماماً أثناء التوليد
+  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-70 disabled:cursor-wait shadow-lg shadow-blue-500/20"
+>
+  {isGeneratingPDF ? (
+    <>
+      {/* دائرة التحميل المتحركة */}
+      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+      <span>{isRTL ? "جاري التوليد..." : "Generating..."}</span>
+    </>
+  ) : (
+    <>
+      <Download className="w-4 h-4" />
+      <span>{isRTL ? "تحميل تقرير PDF" : "Download PDF Report"}</span>
+    </>
+  )}
+</button>
         </div>
 
         <div id="report-content" className="p-3 md:p-6 bg-[#0b1121] rounded-3xl border border-slate-800/50">

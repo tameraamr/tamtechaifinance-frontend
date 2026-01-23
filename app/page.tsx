@@ -7,6 +7,7 @@ import {
   CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Download, Dices
 } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from 'react-hot-toast';
 
 // Import components
 import MarketDashboard from '../src/components/MarketDashboard';
@@ -422,16 +423,23 @@ export default function Home() {
 
       // ✅ النجاح
       if (authMode === "login") {
-        const userData = {
-          email: data.email || email,
-          first_name: data.first_name,
-          last_name: data.last_name,
-          phone_number: data.phone_number,
-          country: data.country,
-          address: data.address,
-        };
-        login(data.access_token, userData, data.credits || 0);
+  // البيانات الآن تأتي جاهزة من السيرفر داخل data.user و data.credits
+  // لا داعي للتخمين أو القيم الافتراضية
+       login(data.access_token, data.user, data.credits); 
+  
         setShowAuthModal(false);
+        toast.success(`Welcome back, ${data.user.first_name || 'User'}! 💰 Balance: ${data.credits} credits`, {
+          duration: 5000,
+          icon: '🚀',
+          style: {
+           borderRadius: '12px',
+          background: '#1e293b',
+           color: '#fff',
+           border: '1px solid #334155',
+          fontSize: '14px',
+          fontWeight: 'bold',
+      },
+    });
       } else {
         alert("✅ Account created successfully! Please login.");
         setAuthMode("login");

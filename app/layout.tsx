@@ -4,6 +4,7 @@ import "./globals.css";
 // استيراد مكتبة التحليلات
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { AuthProvider } from '../src/context/AuthContext';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,9 +78,10 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
+          <Toaster position="top-center" reverseOrder={false} />
         </AuthProvider>
         {/* إضافة تتبع جوجل هنا */}
-        <GoogleAnalytics gaId="G-6DD71GL8SC" />
+        <GoogleAnalytics gaId="G-6DD71GL8SC" />        
       </body>
     </html>
   );

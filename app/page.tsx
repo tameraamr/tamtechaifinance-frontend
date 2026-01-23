@@ -733,6 +733,9 @@ export default function Home() {
             </div>
           )}
           {/* 👆👆👆 نهاية كود عرض الخطأ 👆👆👆 */}
+          
+
+
           <div className="flex gap-2 w-full mb-4 relative z-50">
             <div className="flex-1 relative group">
               <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl focus-within:border-blue-500/50 transition-all">
@@ -797,7 +800,14 @@ export default function Home() {
             <div className="bg-slate-950 px-3 py-1 rounded-full border border-emerald-500/30 text-[10px] font-black text-emerald-400">BATTLE</div>
           </button>
         </div>
-
+        {/* 👇 Recent Analyses👇 */}
+        <RecentAnalyses
+          recentAnalyses={recentAnalyses}
+          lang={lang}
+          setTicker={setTicker}
+          handleAnalyze={handleAnalyze}
+        />
+        {/* X Recent Analyses X */}
 
         {/* 👇 Loading Animation 👇 */}
         {loading && !result && (
@@ -812,13 +822,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* 👇 Recent Analyses👇 */}
-        <RecentAnalyses
-          recentAnalyses={recentAnalyses}
-          lang={lang}
-          setTicker={setTicker}
-          handleAnalyze={handleAnalyze}
-        />
 
         {/* 👇 radar sentiment icon 👇 */}
         <MarketDashboard sentiment={sentiment} sectors={sectors} lang={lang} t={t} />

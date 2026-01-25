@@ -2,8 +2,16 @@
 import React from 'react';
 import { Check, Zap, ShieldCheck, Key, ShoppingCart, ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function PricingPage() {
+  useEffect(() => {
+    document.title = "Pricing | Affordable AI Stock Analysis Credits - Tamtech Finance";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Get unlimited access to AI-powered stock analysis. Flexible credit packages starting at $9. Try 3 analyses free. No subscription required.');
+    }
+  }, []);
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-200 pb-20 selection:bg-blue-500/30">
       {/* Navigation Header */}

@@ -2,12 +2,18 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Lightbulb, TrendingUp, ShieldCheck, Cpu, UserCheck } from 'lucide-react';
-// إذا كنت تستخدم مكون Nav أو Footer في جميع الصفحات، استورده هنا
-// import Navbar from '../../components/Navbar'; 
-// import Footer from '../../components/Footer';
+import { useEffect } from 'react';
 
 export default function AboutUsPage() {
-  const isRTL = false; // يمكنك ربطها بحالة اللغة إذا كان لديك نظام تعدد لغات شامل
+  const isRTL = false;
+
+  useEffect(() => {
+    document.title = "About Us | AI-Powered Financial Intelligence - Tamtech Finance";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Learn about Tamtech Finance\'s mission to democratize institutional-grade market intelligence through advanced AI technology. Empowering investors worldwide.');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-200 font-sans pb-20">

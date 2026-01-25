@@ -2,9 +2,18 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Brain } from "lucide-react";
+import { useEffect } from "react";
 
 export default function TermsPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    document.title = "Terms of Service | User Agreement - Tamtech Finance";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Terms and conditions for using Tamtech Finance AI stock analysis platform. Read our user agreement and service terms.');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans">

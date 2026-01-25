@@ -2,9 +2,18 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Brain, Shield, Database, Cookie } from "lucide-react";
+import { useEffect } from "react";
 
 export default function PrivacyPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    document.title = "Privacy Policy | Data Protection & Security - Tamtech Finance";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Learn how Tamtech Finance protects your data. Comprehensive privacy policy covering data collection, usage, and security measures.');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans">

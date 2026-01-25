@@ -1,11 +1,18 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, MessageSquare, Send, ArrowLeft, Clock, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ContactPage() {
-  // تعريف المتغيرات الناقصة لحل الخطأ
-  const [isRTL, setIsRTL] = useState(false); // يمكنك تغييرها يدوياً أو ربطها بنظام اللغة لديك
+  const [isRTL, setIsRTL] = useState(false);
+
+  useEffect(() => {
+    document.title = "Contact Us | Get Support - Tamtech Finance";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Need help with AI stock analysis? Contact Tamtech Finance support team. Fast response within 24 hours. Email us at tamtecht@gmail.com');
+    }
+  }, []);
 
   const handleEmailSend = () => {
     const subject = encodeURIComponent("Support Inquiry: TamtechAI Pro");

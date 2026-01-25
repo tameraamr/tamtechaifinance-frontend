@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, FormEvent, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target,
-  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices
+  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from 'react-hot-toast';
@@ -228,6 +228,7 @@ export default function Home() {
   const [ticker, setTicker] = useState("");
   const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [userTyping, setUserTyping] = useState(false);
   const [marketPulse, setMarketPulse] = useState<any[]>([]);
   const [timeRange, setTimeRange] = useState("1Y");
   const [loading, setLoading] = useState(false);
@@ -255,9 +256,18 @@ export default function Home() {
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState(false);
+  const [pickerResult, setPickerResult] = useState<{ ticker: string; name?: string; price?: number | null } | null>(null);
+  const [pickerLoading, setPickerLoading] = useState(false);
+  const [newsSearch, setNewsSearch] = useState("");
 
   const [recentAnalyses, setRecentAnalyses] = useState<any[]>([]);
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
+  const [displaySymbol, setDisplaySymbol] = useState("????");
+  const [displayName, setDisplayName] = useState("");
+  const [displayPrice, setDisplayPrice] = useState<number | undefined>();
+  const [spinnerRolling, setSpinnerRolling] = useState(false);
+  const [selectedSpinnerTicker, setSelectedSpinnerTicker] = useState<string | null>(null);
+  const rollerRef = useRef<NodeJS.Timeout | null>(null);
 
   // دالة لجلب التحليلات الأخيرة من الباك-إند
   const fetchRecentAnalyses = async () => {
@@ -323,8 +333,8 @@ export default function Home() {
         return;
       }
 
-      // 2. إذا كان النظام مشغولاً بالتحليل، لا تقم بالبحث الآن
-      if (loading) return;
+      // 2. إذا كان النظام مشغولاً بالتحليل أو المستخدم لا يكتب، لا تقم بالبحث
+      if (loading || analysisComplete || !userTyping) return;
 
       try {
         const response = await fetch(`${BASE_URL}/search-ticker/${ticker}`);
@@ -336,10 +346,10 @@ export default function Home() {
       } catch (error) { console.error("Search error:", error); }
     };
 
-    // نستخدم Delay بسيط (300ms) عشان ما نضغط السيرفر مع كل حرف
-    const timer = setTimeout(getSuggestions, 300);
+    // نستخدم Delay بسيط (100ms) عشان نظهر الاقتراحات أسرع
+    const timer = setTimeout(getSuggestions, 100);
     return () => clearTimeout(timer);
-  }, [ticker, loading]); // أضفنا loading للمصفوفة
+  }, [ticker, loading, analysisComplete]); // أضفنا analysisComplete للمصفوفة
 
   // Hook 3: إغلاق القائمة عند الضغط في أي مكان خارج المربع
   useEffect(() => {
@@ -469,6 +479,147 @@ export default function Home() {
     }
   };
 
+  const handleServiceRandomPick = async () => {
+    setPickerLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/suggest-stock`);
+      const data = await res.json();
+      const tickerSymbol = data?.ticker || data?.symbol;
+
+      let companyName: string | undefined;
+      let lastPrice: number | null | undefined;
+
+      try {
+        const quoteRes = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${tickerSymbol}`);
+        if (quoteRes.ok) {
+          const quoteData = await quoteRes.json();
+          const q = quoteData?.quoteResponse?.result?.[0];
+          if (q) {
+            companyName = q.longName || q.shortName;
+            lastPrice = typeof q.regularMarketPrice === 'number' ? q.regularMarketPrice : null;
+          }
+        }
+      } catch (err) {
+        console.warn("Quote fetch fallback", err);
+      }
+
+      setPickerResult({ ticker: tickerSymbol, name: companyName, price: lastPrice });
+    } catch (err) {
+      toast.error("Could not pick a stock. Try again.");
+    } finally {
+      setPickerLoading(false);
+    }
+  };
+
+  const handleServiceAnalyze = (tickerSymbol: string) => {
+    setTicker(tickerSymbol);
+    handleAnalyze(tickerSymbol);
+  };
+
+  const handleNewsQuickSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (!newsSearch.trim()) return;
+    router.push(`/news?ticker=${newsSearch.trim().toUpperCase()}`);
+  };
+
+  const spinTicker = async () => {
+    setSpinnerRolling(true);
+    setDisplayName("");
+    setDisplayPrice(undefined);
+
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    rollerRef.current = setInterval(() => {
+      const random = Array.from({ length: 4 }, () => letters[Math.floor(Math.random() * letters.length)]).join("");
+      setDisplaySymbol(random);
+    }, 85);
+
+    try {
+      const res = await fetch(`${BASE_URL}/suggest-stock`);
+      const data = await res.json();
+
+      // Wait before stopping animation
+      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+      
+      // Stop animation and set results
+      if (rollerRef.current) clearInterval(rollerRef.current);
+      setDisplaySymbol(data.ticker);
+      setSelectedSpinnerTicker(data.ticker);
+
+      // Fetch price from Yahoo Finance (happens in background)
+      fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${data.ticker}`)
+        .then((r) => r.json())
+        .then((q) => {
+          const quote = q.quoteResponse?.result?.[0];
+          if (quote) {
+            setDisplayName(quote.longName || quote.shortName || "");
+            setDisplayPrice(quote.regularMarketPrice);
+          }
+        })
+        .catch(() => {});
+      
+      // Set rolling to false last to ensure proper state update
+      setSpinnerRolling(false);
+    } catch (err) {
+      if (rollerRef.current) clearInterval(rollerRef.current);
+      setSpinnerRolling(false);
+      toast.error("Failed to pick a stock");
+    }
+  };
+
+  const handleSpinnerAnalyze = async () => {
+    if (!selectedSpinnerTicker) return;
+
+    if (!token && guestTrials <= 0) {
+      setAuthMode("signup");
+      setShowAuthModal(true);
+      return;
+    }
+
+    setLoading(true);
+    setAuthError("");
+
+    try {
+      const headers: any = { Authorization: token ? `Bearer ${token}` : "" };
+      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}`, { headers });
+
+      if (res.status === 403) {
+        setAuthMode("signup");
+        setShowAuthModal(true);
+        setLoading(false);
+        return;
+      }
+
+      if (res.status === 402) {
+        setShowPaywall(true);
+        setLoading(false);
+        return;
+      }
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Stock not found");
+      }
+
+      const data = await res.json();
+      sessionStorage.setItem("analysis_result", JSON.stringify(data));
+      sessionStorage.setItem("analysis_ticker", selectedSpinnerTicker);
+      setResult(data);
+      setAnalysisComplete(true);
+
+      if (token) {
+        updateCredits(data.credits_left);
+      } else {
+        const ng = guestTrials - 1;
+        setGuestTrials(ng);
+        localStorage.setItem("guest_trials", ng.toString());
+      }
+    } catch (err: any) {
+      setAuthError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const confirmRandomAnalysis = () => {
     if (randomTicker) { setTicker(randomTicker); setRandomTicker(null); setTimeout(() => handleAnalyze(randomTicker), 100); }
   };
@@ -477,9 +628,13 @@ export default function Home() {
     const targetTicker = overrideTicker || ticker;
     if (!targetTicker) return;
 
+    // Prevent double-calls while loading
+    if (loading) return;
+
     setLoading(true);
     setAuthError("");
     setShowSuggestions(false);
+    setUserTyping(false);
     setResult(null);
     setAnalysisComplete(false);
 
@@ -624,13 +779,27 @@ export default function Home() {
   };
 
   return (
-    <div dir={isRTL ? "rtl" : "ltr"} className={`min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 ${isRTL ? 'font-arabic' : ''}`}>
+    <div dir={isRTL ? "rtl" : "ltr"} className={`min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden ${isRTL ? 'font-arabic' : ''}`}>
       <Suspense fallback={null}>
         <SearchParamsHandler setShowAuthModal={setShowAuthModal} setShowPaywall={setShowPaywall} />
       </Suspense>
       <nav className="border-b border-slate-800 bg-[#0b1121]/80 backdrop-blur-xl sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2"><BarChart3 className="text-blue-500 w-6 h-6" /><span className="font-bold text-xl tracking-tight">TamtechAI <span className="text-blue-500">Pro</span></span></div>
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4 md:gap-12">
+            <div className="flex items-center gap-2"><BarChart3 className="text-blue-500 w-5 h-5 md:w-6 md:h-6" /><span className="font-bold text-lg md:text-xl tracking-tight">TamtechAI <span className="text-blue-500">Pro</span></span></div>
+            
+            <div className="flex items-center gap-2 md:gap-3 border-l border-slate-700 pl-3 md:pl-8">
+              <Link href="/stock-analyzer" className="text-[10px] md:text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-2.5 md:px-4 py-1.5 md:py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
+                Analyzer
+              </Link>
+              <Link href="/random-picker" className="text-[10px] md:text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-2.5 md:px-4 py-1.5 md:py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
+                Random Picker
+              </Link>
+              <Link href="/news" className="text-[10px] md:text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-2.5 md:px-4 py-1.5 md:py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
+                News
+              </Link>
+            </div>
+          </div>
 
           <div className="flex items-center gap-2 md:gap-4">
 {/* 👇 التعديل هنا: إذا كان جاري التحميل، نعرض دائرة تحميل صغيرة بدلاً من البيانات الخاطئة */}
@@ -666,6 +835,7 @@ export default function Home() {
             )}
           </div>
         </div>
+
       </nav>
 
       {/* الحاوية المتحركة المحدثة */}
@@ -698,108 +868,250 @@ export default function Home() {
         </motion.div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative">
-        {/* حاوية العنوان المحدثة بمقاسات أصغر */}
-        <div className="flex flex-col items-center text-center mb-6 md:mb-8">
-          <h1 className="text-xl md:text-4xl font-black text-white mb-2 tracking-tighter max-w-3xl leading-none">
-            {t.heroTitle}
-          </h1>
-          <p className="text-slate-400 max-w-xl text-[10px] md:text-sm px-4 mx-auto leading-tight opacity-80">
-            {t.heroSubtitle}
-          </p>
-        </div>
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 relative">
+        {/* Compact AI Analyzer - Top Section */}
+        <div id="main-analyzer" className="relative z-20 overflow-visible bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900/20 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-2xl mb-6">
+          <div className="absolute -left-16 -top-16 w-48 h-48 bg-blue-600/10 blur-3xl" aria-hidden="true" />
+          <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
 
-        {/* مربع البحث والباتل مود بمساحة أصغر قليلًا */}
-        <div className="flex flex-col items-center w-full max-w-lg mx-auto px-4 relative z-50 mb-8">
-          {/* كود البحث والباتل مود الخاص بك... */}
-        </div>
+          <div className="relative z-10 flex flex-col items-center text-center mb-4">
+            <p className="text-xs uppercase tracking-[0.25em] text-blue-300 font-bold">⚡ Primary Engine</p>
+            <h2 className="text-lg md:text-2xl font-black text-white mt-1">AI Stock Analyzer</h2>
+          </div>
 
-        {/* الآن ستظهر التحليلات الأخيرة والمميزات مباشرة تحتهم */}
-
-        <div className="flex flex-col items-center mb-10 w-full max-w-xl mx-auto px-4 relative z-50">
-          {/* 👇👇👇 بداية كود عرض الخطأ الجديد 👇👇👇 */}
-          {authError && !showAuthModal && !showPaywall && (
-            <div className="w-full mb-4 bg-red-500/10 border border-red-500/50 p-4 rounded-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 shadow-lg backdrop-blur-md">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="text-red-500 w-5 h-5 shrink-0" />
-                <span className="text-red-200 text-xs md:text-sm font-bold">{authError}</span>
+          <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
+            {authError && !showAuthModal && !showPaywall && (
+              <div className="w-full mb-3 bg-red-500/10 border border-red-500/50 p-3 rounded-lg flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="text-red-500 w-4 h-4 shrink-0" />
+                  <span className="text-red-200 text-xs font-bold">{authError}</span>
+                </div>
+                <button onClick={() => setAuthError("")} className="text-red-400 hover:text-white p-1">
+                  <XCircle className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setAuthError("")}
-                className="text-red-400 hover:text-white transition-colors p-1 hover:bg-red-500/20 rounded-lg"
-              >
-                <XCircle className="w-5 h-5" />
-              </button>
-            </div>
-          )}
-          {/* 👆👆👆 نهاية كود عرض الخطأ 👆👆👆 */}
-          
+            )}
 
-
-          <div className="flex gap-2 w-full mb-4 relative z-50">
-            <div className="flex-1 relative group">
-              <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl focus-within:border-blue-500/50 transition-all">
+            <div className="w-full relative">
+              <div className="flex items-center bg-slate-950/70 border border-slate-800 rounded-xl overflow-hidden shadow-lg focus-within:border-blue-500/50 transition-all">
                 <input
                   id="ticker-input"
                   name="ticker"
                   type="text"
                   placeholder={t.searchPlaceholder}
-                  className="w-full bg-transparent p-4 text-sm md:text-lg outline-none uppercase font-mono text-white"
+                  className="w-full bg-transparent p-3 text-sm outline-none uppercase font-mono text-white"
                   value={ticker}
-                  onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                  onChange={(e) => {
+                    setTicker(e.target.value.toUpperCase());
+                    setUserTyping(true);
+                  }}
                   onFocus={() => ticker.length >= 2 && setShowSuggestions(true)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAnalyze();
+                    }
+                  }}
                 />
-                <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-6 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
+                <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-5 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
                   {loading ? "..." : t.analyze}
+                </button>
+                <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch">
+                  <Dices className="w-5 h-5 text-purple-400" />
                 </button>
               </div>
 
-              {/* قائمة الاقتراحات المنسدلة المحسنة */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0f172a] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-[100] max-h-[300px] overflow-y-auto custom-scrollbar ring-1 ring-white/10">
+                <div className="absolute left-0 right-0 mt-2 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10">
                   {suggestions.map((s, i) => (
                     <button
                       key={i}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         setTicker(s.symbol);
-                        setShowSuggestions(false); // ✅ مهم: إخفاء القائمة فوراً
-                        handleAnalyze(s.symbol);   // ✅ مهم: بدء التحليل فوراً
+                        setShowSuggestions(false);
+                        handleAnalyze(s.symbol);
                       }}
-                      className="w-full flex items-center justify-between px-5 py-3 hover:bg-blue-600/20 border-b border-slate-800/50 last:border-0 transition-all group/item text-left"
+                      className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-600/20 border-b border-slate-800/50 last:border-0 transition-all group/item text-left text-sm"
                     >
-                      <div className="flex flex-col items-start text-left">
-                        <span className="text-blue-400 font-black text-sm">{s.symbol}</span>
-                        <span className="text-slate-500 text-[10px] font-bold truncate max-w-[200px] uppercase text-left">{s.name}</span>
+                      <div className="flex flex-col items-start">
+                        <span className="text-blue-400 font-bold">{s.symbol}</span>
+                        <span className="text-slate-500 text-[10px] truncate max-w-[200px]">{s.name}</span>
                       </div>
-                      <Search size={14} className="text-slate-600 group-hover/item:text-blue-500 transition-colors" />
+                      <Search size={12} className="text-slate-600 group-hover/item:text-blue-500" />
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            <button onClick={fetchRandomStock} className="bg-slate-800 border border-slate-700 p-4 rounded-xl hover:bg-slate-700 transition-all shrink-0 h-[58px] md:h-[62px]">
-              <Dices className="w-6 h-6 text-purple-400" />
-            </button>
+            {/* Loading State - Inside Tool Container */}
+            {loading && (
+              <div className="w-full mt-4 bg-blue-900/20 border border-blue-500/30 rounded-xl p-4 text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-2"></div>
+                <p className="text-blue-300 text-sm font-bold">{t.scan}</p>
+                <p className="text-slate-400 text-xs mt-1">{progressMessages[progressMessageIndex]}</p>
+              </div>
+            )}
           </div>
+        </div>
 
-
-
-          {/* 👇 Battle Mode Button 👇 */}
-
-
-          <button onClick={() => setShowCompareModal(true)} className="w-full bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 p-4 rounded-2xl flex items-center justify-between group hover:border-emerald-500/50 transition-all active:scale-[0.98] shadow-xl">
-            <div className="flex items-center gap-3">
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
-              <div className="text-left">
-                <span className="block text-xs font-black text-white uppercase tracking-tighter italic">Stock Battle Mode</span>
-                <span className="block text-[9px] text-slate-500 font-bold uppercase tracking-widest">Compare Two Giants</span>
+        {/* Financial Tool Suite - Top Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
+          {/* News Terminal Card - Coming Soon */}
+          <motion.div
+            whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 50px -25px rgba(59,130,246,0.45)" }}
+            className="relative overflow-hidden bg-gradient-to-br from-blue-900/30 via-slate-900 to-[#0f172a] border border-blue-500/30 rounded-2xl p-5 flex flex-col gap-3 shadow-xl opacity-50 pointer-events-none"
+          >
+            <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/10 blur-3xl" aria-hidden="true" />
+            <div className="absolute -left-10 -bottom-10 w-28 h-28 bg-blue-500/5 blur-2xl" aria-hidden="true" />
+            
+            <div className="flex items-center justify-between relative z-10">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">📰 News Desk</p>
+                <h3 className="text-xl font-black text-white mt-1">News Terminal</h3>
+                <p className="text-xs text-blue-200 font-semibold mt-1">Real-time market signals</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-400/10 border border-blue-400/40 flex items-center justify-center shadow-lg">
+                <Newspaper className="text-blue-100" size={24} />
               </div>
             </div>
-            <div className="bg-slate-950 px-3 py-1 rounded-full border border-emerald-500/30 text-[10px] font-black text-emerald-400">BATTLE</div>
-          </button>
+            
+            <p className="text-slate-200 text-sm leading-relaxed">Breaking news, earnings surprises, Fed moves & M&A chatter that moves markets.</p>
+            
+            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 Fed Updates</span>
+              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">💰 Earnings</span>
+              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">🤝 M&A Deals</span>
+              <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">🎯 NVDA, AAPL</span>
+            </div>
+            
+            <button disabled className="inline-flex items-center justify-center gap-2 bg-slate-700 text-slate-400 font-bold px-4 py-2.5 rounded-xl text-sm shadow-lg mt-auto cursor-not-allowed">
+              Launch Terminal <ArrowRight size={16} />
+            </button>
+          </motion.div>
+
+          {/* Random Stock Picker Card */}
+          <motion.div
+            whileHover={{ y: -6, scale: 1.02, boxShadow: "0 25px 60px -25px rgba(168,85,247,0.55)" }}
+            className="relative overflow-hidden bg-gradient-to-br from-purple-900/40 via-slate-900 to-blue-900/30 border border-purple-500/40 ring-1 ring-purple-500/20 rounded-2xl p-5 flex flex-col gap-3 shadow-2xl"
+          >
+            <div className="absolute -right-12 -bottom-12 w-40 h-40 bg-purple-500/10 blur-3xl" aria-hidden="true" />
+            <div className="absolute -left-10 -top-14 w-28 h-28 bg-blue-500/10 blur-3xl" aria-hidden="true" />
+            
+            {/* Spinner Display */}
+            {spinnerRolling || selectedSpinnerTicker ? (
+              <div className="relative z-10 text-center">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-slate-400 text-xs uppercase tracking-widest animate-pulse">🎰 Spinning...</p>
+                  {!spinnerRolling && selectedSpinnerTicker && (
+                    <button
+                      onClick={() => {
+                        setSelectedSpinnerTicker(null);
+                        setDisplaySymbol("????");
+                        setDisplayName("");
+                        setDisplayPrice(undefined);
+                      }}
+                      className="text-slate-400 hover:text-white hover:bg-slate-800 p-1.5 rounded-lg transition"
+                      title="Reset"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 font-mono mb-3 animate-bounce">
+                  {displaySymbol}
+                </div>
+                {displayName && <p className="text-slate-300 text-sm font-semibold mb-1">🏢 {displayName}</p>}
+                {displayPrice && <p className="text-emerald-400 text-xl font-bold">💵 ${displayPrice.toFixed(2)}</p>}
+              </div>
+            ) : (
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200 font-bold">🎰 Instant Pick</p>
+                    <h3 className="text-xl font-black text-white mt-1">Stock Spinner</h3>
+                    <p className="text-xs text-purple-200 font-semibold mt-1">Lucky dip analysis</p>
+                  </div>
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-600/40 to-blue-600/20 border border-purple-400/50 flex items-center justify-center shadow-lg shadow-purple-900/30">
+                    <span className="text-3xl animate-spin">🎲</span>
+                  </div>
+                </div>
+                <p className="text-slate-100 text-sm leading-relaxed mb-3">Spin the wheel and discover your next investment idea instantly. Fortune favors the brave!</p>
+                <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+                  <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">⚡ MSFT</span>
+                  <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">🚀 AMZN</span>
+                  <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">📈 TSLA</span>
+                  <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">💎 AAPL</span>
+                </div>
+              </div>
+            )}
+
+            {/* Spin Button */}
+            <button
+              onClick={spinTicker}
+              disabled={spinnerRolling}
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-purple-900/30 disabled:opacity-70 relative z-10"
+            >
+              <span className="text-lg">🎰</span>
+              {spinnerRolling ? "Spinning..." : "Spin Now"}
+            </button>
+
+            {/* Action Buttons */}
+            {selectedSpinnerTicker && !spinnerRolling && (
+              <div className="flex gap-2 relative z-10">
+                <button onClick={() => handleSpinnerAnalyze()} disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 rounded-lg transition disabled:opacity-60">
+                  📊 Analyze (1C)
+                </button>
+                <button onClick={() => router.push(`/news?ticker=${selectedSpinnerTicker}`)} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold py-2 rounded-lg transition">
+                  📰 News
+                </button>
+                <button onClick={() => setSelectedSpinnerTicker(null)} className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-2 px-3 rounded-lg transition" title="Hide options">
+                  ✕
+                </button>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Stock Battle Card */}
+          <motion.div
+            whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 50px -25px rgba(16,185,129,0.45)" }}
+            className="relative overflow-hidden bg-gradient-to-br from-emerald-900/30 via-slate-900 to-[#0f172a] border border-emerald-500/30 rounded-2xl p-5 flex flex-col gap-3 shadow-xl"
+          >
+            <div className="absolute -left-12 -bottom-12 w-32 h-32 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
+            <div className="absolute -right-10 -top-10 w-28 h-28 bg-emerald-500/5 blur-2xl" aria-hidden="true" />
+            
+            <div className="flex items-center justify-between relative z-10">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300 font-bold">⚔️ Battle Arena</p>
+                <h3 className="text-xl font-black text-white mt-1">Stock Battle</h3>
+                <p className="text-xs text-emerald-200 font-semibold mt-1">Head-to-head verdict</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600/30 to-emerald-400/10 border border-emerald-400/40 flex items-center justify-center shadow-lg">
+                <TrendingUp className="text-emerald-100" size={24} />
+              </div>
+            </div>
+            
+            <p className="text-slate-200 text-sm leading-relaxed">Face off any two tickers. AI gives you momentum edge, risk notes & the final verdict.</p>
+            
+            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">⚡ TSLA vs F</span>
+              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 Momentum</span>
+              <span className="bg-red-600/25 border border-red-400/50 rounded-lg px-2.5 py-1.5 text-center text-red-100 hover:bg-red-600/35 transition">⚠️ Risk Notes</span>
+              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">✅ AI Verdict</span>
+            </div>
+            
+            <button
+              onClick={() => setShowCompareModal(true)}
+              className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-900/30"
+            >
+              <span className="text-lg">⚔️</span>
+              Launch Battle <ArrowRight size={16} />
+            </button>
+          </motion.div>
         </div>
+
         {/* 👇 Recent Analyses👇 */}
         <RecentAnalyses
           recentAnalyses={recentAnalyses}
@@ -808,20 +1120,6 @@ export default function Home() {
           handleAnalyze={handleAnalyze}
         />
         {/* X Recent Analyses X */}
-
-        {/* 👇 Loading Animation 👇 */}
-        {loading && !result && (
-          <div className="flex flex-col items-center mt-20 gap-4 animate-in fade-in">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            <div className="w-full max-w-xs bg-slate-800 rounded-full h-2 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 animate-pulse" style={{width: `${((progressMessageIndex + 1) / progressMessages.length) * 100}%`}}></div>
-            </div>
-            <p className="text-blue-400 text-xs md:text-sm font-bold animate-pulse text-center px-6 max-w-md leading-relaxed">
-              {ticker ? progressMessages[progressMessageIndex].replace('${ticker}', ticker.toUpperCase()) : progressMessages[progressMessageIndex]}
-            </p>
-          </div>
-        )}
-
 
         {/* 👇 radar sentiment icon 👇 */}
         <MarketDashboard sentiment={sentiment} sectors={sectors} lang={lang} t={t} />
@@ -1066,98 +1364,99 @@ export default function Home() {
           t={t}
         />
 
-        {/* Footer Component */}
-<footer className="bg-[#0b1121] border-t border-slate-800 pt-16 pb-8 mt-20">
-  <div className="max-w-7xl mx-auto px-6">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 text-left">
-      
-      {/* العمود الأول: الهوية */}
-      <div className="col-span-1 md:col-span-1">
-        <div className="flex items-center gap-2 mb-4">
-          <BarChart3 className="text-blue-500 w-6 h-6" />
-          <span className="font-bold text-xl text-white">TamtechAI <span className="text-blue-500">Pro</span></span>
-        </div>
-        <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-          {isRTL ? "منصة رائدة لتحليل الأسهم باستخدام أحدث تقنيات الذكاء الاصطناعي." : "Leading stock analysis platform powered by advanced AI technology."}
-        </p>
-        <div className="flex gap-4">
-          <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all"><Twitter className="w-5 h-5" /></a>
-          <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-600 transition-all"><Linkedin className="w-5 h-5" /></a>
-          <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all"><Send className="w-5 h-5" /></a>
-        </div>
-      </div>
-
-      {/* العمود الثاني: المنصة - صفحات مهمة */}
-      <div>
-        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "المنصة" : "Platform"}</h4>
-        <ul className="space-y-4 text-sm text-slate-400">
-          <li><Link href="/about" className="hover:text-blue-500">{isRTL ? "من نحن" : "About Us"}</Link></li>
-          <li><Link href="/pricing" className="hover:text-blue-500">{isRTL ? "الخطط والأسعار" : "Pricing Plans"}</Link></li>
-          <li><Link href="/contact" className="hover:text-blue-500">{isRTL ? "اتصل بنا" : "Contact Support"}</Link></li>
-        </ul>
-      </div>
-
-      {/* العمود الثالث: القانونية - التي أنشأناها */}
-      <div>
-        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "قانوني" : "Legal"}</h4>
-        <ul className="space-y-4 text-sm text-slate-400">
-          <li><Link href="/terms" className="hover:text-blue-500">{isRTL ? "الشروط والأحكام" : "Terms of Service"}</Link></li>
-          <li><Link href="/privacy" className="hover:text-blue-500">{isRTL ? "الخصوصية" : "Privacy Policy"}</Link></li>
-          <li><Link href="/risk" className="text-red-400 hover:text-red-500 font-medium">{isRTL ? "تحذير المخاطر" : "Risk Disclosure"}</Link></li>
-        </ul>
-      </div>
-
-      {/* العمود الرابع: بطاقة الثقة */}
-      <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl shadow-inner">
-        <h4 className="text-white font-bold mb-2 text-sm flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-green-500" />
-          Enterprise Grade
-        </h4>
-        <p className="text-slate-500 text-[11px] leading-relaxed">
-          {isRTL ? "تشفير بيانات بمستوى بنكي عالمي لضمان حماية خصوصيتك المالية." : "Bank-grade encryption to ensure your financial privacy is fully protected."}
-        </p>
-      </div>
-    </div>
-
-{/* إخلاء المسؤولية المالي الاحترافي والصارم */}
-    <div className="border-t border-slate-800/50 pt-12 mt-12 text-center">
-      <div className="max-w-4xl mx-auto mb-10 p-6 rounded-2xl bg-slate-900/30 border border-red-900/20 backdrop-blur-sm">
-        <div className="flex items-center justify-center gap-2 mb-4 text-red-500/80">
-          <AlertTriangle className="w-4 h-4" />
-          <span className="text-[11px] font-black uppercase tracking-[0.2em]">
-            {isRTL ? "تحذير قانوني صارم" : "Strict Legal Disclaimer"}
-          </span>
-        </div>
-        
-        <p className="text-slate-500 text-[11px] md:text-[12px] leading-relaxed italic text-justify md:text-center px-4">
-          {isRTL 
-            ? "يعد استخدام TamtechAI Pro إقراراً بأنك تدرك تماماً أن جميع التحليلات والبيانات والتقارير الصادرة هي نتاج خوارزميات ذكاء اصطناعي لأغراض معلوماتية وبحثية فقط. لا تشكل هذه البيانات بأي حال من الأحوال نصيحة استثمارية، مالية، أو قانونية. ينطوي الاستثمار في الأسواق المالية على مخاطر جوهرية قد تؤدي لفقدان رأس المال بالكامل. نحن لا نتحمل أدنى مسؤولية عن أي قرارات استثمارية تُتخذ بناءً على هذه التقارير." 
-            : "The use of TamtechAI Pro constitutes an acknowledgment that all generated analyses and reports are the product of AI algorithms for informational and research purposes only. This information does not, under any circumstances, constitute financial, investment, or legal advice. Trading in financial markets involves substantial risk, including the potential loss of all invested principal. TamtechAI Pro and its affiliates are not liable for any financial losses or decisions made based on the provided data."}
-        </p>
-      </div>
-
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4">
-        <div className="text-slate-600 text-[10px] font-mono tracking-widest uppercase">
-          © 2026 TamtechAI Pro <span className="mx-2">|</span> 
-          {isRTL ? "جميع الحقوق محفوظة" : "All Rights Reserved"}
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/5 border border-green-500/20">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter">
-              System: Operational
-            </span>
-          </div>
-          <div className="text-slate-700 text-[10px] font-bold uppercase tracking-tighter">
-            v2.4.0-Stable
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
       </main>
+
+      {/* Footer Component */}
+      <footer className="bg-[#0b1121] border-t border-slate-800 pt-16 pb-8 mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 text-left">
+            
+            {/* العمود الأول: الهوية */}
+            <div className="col-span-1 md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="text-blue-500 w-6 h-6" />
+                <span className="font-bold text-xl text-white">TamtechAI <span className="text-blue-500">Pro</span></span>
+              </div>
+              <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+                {isRTL ? "منصة رائدة لتحليل الأسهم باستخدام أحدث تقنيات الذكاء الاصطناعي." : "Leading stock analysis platform powered by advanced AI technology."}
+              </p>
+              <div className="flex gap-4">
+                <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all"><Twitter className="w-5 h-5" /></a>
+                <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-600 transition-all"><Linkedin className="w-5 h-5" /></a>
+                <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all"><Send className="w-5 h-5" /></a>
+              </div>
+            </div>
+
+            {/* العمود الثاني: المنصة - صفحات مهمة */}
+            <div>
+              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "المنصة" : "Platform"}</h4>
+              <ul className="space-y-4 text-sm text-slate-400">
+                <li><Link href="/about" className="hover:text-blue-500">{isRTL ? "من نحن" : "About Us"}</Link></li>
+                <li><Link href="/pricing" className="hover:text-blue-500">{isRTL ? "الخطط والأسعار" : "Pricing Plans"}</Link></li>
+                <li><Link href="/contact" className="hover:text-blue-500">{isRTL ? "اتصل بنا" : "Contact Support"}</Link></li>
+              </ul>
+            </div>
+
+            {/* العمود الثالث: القانونية - التي أنشأناها */}
+            <div>
+              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "قانوني" : "Legal"}</h4>
+              <ul className="space-y-4 text-sm text-slate-400">
+                <li><Link href="/terms" className="hover:text-blue-500">{isRTL ? "الشروط والأحكام" : "Terms of Service"}</Link></li>
+                <li><Link href="/privacy" className="hover:text-blue-500">{isRTL ? "الخصوصية" : "Privacy Policy"}</Link></li>
+                <li><Link href="/risk" className="text-red-400 hover:text-red-500 font-medium">{isRTL ? "تحذير المخاطر" : "Risk Disclosure"}</Link></li>
+              </ul>
+            </div>
+
+            {/* العمود الرابع: بطاقة الثقة */}
+            <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl shadow-inner">
+              <h4 className="text-white font-bold mb-2 text-sm flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-green-500" />
+                Enterprise Grade
+              </h4>
+              <p className="text-slate-500 text-[11px] leading-relaxed">
+                {isRTL ? "تشفير بيانات بمستوى بنكي عالمي لضمان حماية خصوصيتك المالية." : "Bank-grade encryption to ensure your financial privacy is fully protected."}
+              </p>
+            </div>
+          </div>
+
+          {/* إخلاء المسؤولية المالي الاحترافي والصارم */}
+          <div className="border-t border-slate-800/50 pt-12 mt-12 text-center">
+            <div className="max-w-4xl mx-auto mb-10 p-6 rounded-2xl bg-slate-900/30 border border-red-900/20 backdrop-blur-sm">
+              <div className="flex items-center justify-center gap-2 mb-4 text-red-500/80">
+                <AlertTriangle className="w-4 h-4" />
+                <span className="text-[11px] font-black uppercase tracking-[0.2em]">
+                  {isRTL ? "تحذير قانوني صارم" : "Strict Legal Disclaimer"}
+                </span>
+              </div>
+              
+              <p className="text-slate-500 text-[11px] md:text-[12px] leading-relaxed italic text-justify md:text-center px-4">
+                {isRTL 
+                  ? "يعد استخدام TamtechAI Pro إقراراً بأنك تدرك تماماً أن جميع التحليلات والبيانات والتقارير الصادرة هي نتاج خوارزميات ذكاء اصطناعي لأغراض معلوماتية وبحثية فقط. لا تشكل هذه البيانات بأي حال من الأحوال نصيحة استثمارية، مالية، أو قانونية. ينطوي الاستثمار في الأسواق المالية على مخاطر جوهرية قد تؤدي لفقدان رأس المال بالكامل. نحن لا نتحمل أدنى مسؤولية عن أي قرارات استثمارية تُتخذ بناءً على هذه التقارير." 
+                  : "The use of TamtechAI Pro constitutes an acknowledgment that all generated analyses and reports are the product of AI algorithms for informational and research purposes only. This information does not, under any circumstances, constitute financial, investment, or legal advice. Trading in financial markets involves substantial risk, including the potential loss of all invested principal. TamtechAI Pro and its affiliates are not liable for any financial losses or decisions made based on the provided data."}
+              </p>
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4">
+              <div className="text-slate-600 text-[10px] font-mono tracking-widest uppercase">
+                © 2026 TamtechAI Pro <span className="mx-2">|</span> 
+                {isRTL ? "جميع الحقوق محفوظة" : "All Rights Reserved"}
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/5 border border-green-500/20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                  <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter">
+                    System: Operational
+                  </span>
+                </div>
+                <div className="text-slate-700 text-[10px] font-bold uppercase tracking-tighter">
+                  v2.4.0-Stable
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

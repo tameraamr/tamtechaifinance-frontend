@@ -186,20 +186,12 @@ export default function AnalysisPage() {
   const t = translations[lang] || translations.en;
   const isRTL = lang === "ar";
 
-  // SECURITY: Strict token check at component start - wait for AuthContext to load
+  // Allow both guests and logged-in users - check happens in data loading
   useEffect(() => {
-    // Don't proceed until AuthContext has finished loading
+    // Wait for auth to finish loading, but allow guests
     if (authLoading) return;
-
-    // If no token exists after AuthContext has loaded, redirect immediately
-    if (!token) {
-      router.replace('/');
-      return;
-    }
-
-    // Mark auth as checked
     setAuthChecked(true);
-  }, [token, authLoading, router]);
+  }, [authLoading]);
 
   // Load analysis result from localStorage or fetch from backend
   useEffect(() => {
@@ -211,7 +203,7 @@ export default function AnalysisPage() {
         const storedTicker = localStorage.getItem('analysis_ticker');
 
         if (storedResult && storedTicker === ticker) {
-          // Use stored data from recent analysis
+          // Use stored data from recent analysis (works for both guests and users)
           const parsedResult = JSON.parse(storedResult);
           setResult(parsedResult);
           setLoading(false);
@@ -222,35 +214,18 @@ export default function AnalysisPage() {
           sessionStorage.removeItem('analysis_result');
           sessionStorage.removeItem('analysis_ticker');
         } else {
-          // No stored result - fetch from backend (shouldn't charge credits)
-          setLoading(true);
-          const headers: any = { "Authorization": token ? `Bearer ${token}` : "" };
-          const res = await fetch(`${BASE_URL}/analyze/${ticker}?lang=en`, { headers });
-
-          if (res.status === 402) {
-            // Payment required - redirect to home
-            router.replace('/');
-            return;
-          }
-
-          if (!res.ok) {
-            // Other error - redirect to home
-            router.replace('/');
-            return;
-          }
-
-          const data = await res.json();
-          setResult(data);
-          setLoading(false);
+          // No stored result - redirect back to analyzer instead of refetching
+          router.replace('/stock-analyzer');
+          return;
         }
       } catch (err) {
-        // Error - redirect to home
-        router.replace('/');
+        // Error - redirect to analyzer
+        router.replace('/stock-analyzer');
       }
     };
 
     loadAnalysisResult();
-  }, [authChecked, ticker, router, token]);
+  }, [authChecked, ticker, router]);
 
   // Dynamic progress messages during loading
   useEffect(() => {

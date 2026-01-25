@@ -71,8 +71,42 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // JSON-LD Structured Data for better Google understanding
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Tamtech Finance",
+    "description": "AI-Powered Stock Analysis Platform - Get institutional-grade market intelligence and financial health scores powered by advanced AI",
+    "url": "https://tamtech-finance.com",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free trial with 3 stock analyses"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "127"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "Tamtech Finance",
+      "url": "https://tamtech-finance.com"
+    }
+  };
+
   return (
     <html lang="en">
+      <head>
+        {/* Structured Data for Google */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

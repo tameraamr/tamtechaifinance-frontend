@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   
   // الأيقونة
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon.ico",
+    apple: "/favicon.png",
   },
 
   // كود التحقق من جوجل سيرتش كونسول (من الملف الذي رفعته)
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     siteName: "Tamtech Finance",
     images: [
       {
-        url: "/logo.png",
+        url: "/favicon.png",
         width: 1200,
         height: 630,
         alt: "Tamtech Finance Preview",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tamtech Finance | AI Stock Analysis",
     description: "Institutional-grade market intelligence powered by AI.",
-    images: ["/logo.png"],
+    images: ["/favicon.png"],
   },
 
   // إعدادات إضافية لجوجل

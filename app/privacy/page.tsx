@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Shield, Database, Eye, Lock, FileText } from "lucide-react";
+import { ArrowLeft, Shield, Database, Eye, Lock, FileText, Cookie } from "lucide-react";
 import { useEffect, useState } from "react";
 import Navbar from "../../src/components/Navbar";
 import { useTranslation } from "../../src/context/TranslationContext";

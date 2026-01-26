@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, MessageSquare, Send, ArrowLeft, Clock, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslation } from '../../src/context/TranslationContext';
+import LanguageSelector from '../../src/components/LanguageSelector';
 
 export default function ContactPage() {
-  const [isRTL, setIsRTL] = useState(false);
+  const { t, isRTL } = useTranslation();
 
   useEffect(() => {
     document.title = "Contact Us | Get Support - Tamtech Finance";
@@ -32,11 +34,12 @@ export default function ContactPage() {
   return (
     <div className={`min-h-screen bg-[#0b1121] text-slate-200 pb-20 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 mb-12">
+      <div className="max-w-7xl mx-auto px-6 pt-10 mb-12 flex items-center justify-between">
         <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-white transition-all group">
           <ArrowLeft className={`w-4 h-4 transition-transform ${isRTL ? 'rotate-180 group-hover:translate-x-1' : 'group-hover:-translate-x-1'}`} /> 
-          <span className="text-sm font-bold uppercase tracking-widest">{isRTL ? "العودة للرئيسية" : "Back to Home"}</span>
+          <span className="text-sm font-bold uppercase tracking-widest">{t.backToHome}</span>
         </Link>
+        <LanguageSelector />
       </div>
 
       <main className="max-w-5xl mx-auto px-6">
@@ -45,13 +48,11 @@ export default function ContactPage() {
           {/* الجانب الأيسر: معلومات التواصل */}
           <div>
             <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
-              {isRTL ? "نحن هنا" : "We are here"} <br /> 
-              <span className="text-blue-500">{isRTL ? "لمساعدتك" : "to help you"}</span>
+              {t.contactWeAreHere} <br /> 
+              <span className="text-blue-500">{t.contactToHelpYou}</span>
             </h1>
             <p className="text-slate-400 text-lg mb-12 leading-relaxed">
-              {isRTL 
-                ? "لديك استفسار حول رصيدك أو مفاتيح الترخيص؟ فريق الدعم جاهز للإجابة على جميع تساؤلاتك."
-                : "Have questions about your credits or license keys? Our support team is ready to answer all your inquiries."}
+              {t.contactSubtitle}
             </p>
 
             <div className="space-y-8">
@@ -60,8 +61,8 @@ export default function ContactPage() {
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-lg">{isRTL ? "البريد الإلكتروني" :  "Email"}</h4>
-                  <p className="text-slate-400">your mail app to send us a message directly.</p>
+                  <h4 className="font-bold text-white text-lg">{t.emailLabel}</h4>
+                  <p className="text-slate-400">{t.contactEmailDesc}</p>
                 </div>
               </div>
 
@@ -70,8 +71,8 @@ export default function ContactPage() {
                   <Clock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-lg">{isRTL ? "وقت الاستجابة" : "Response Time"}</h4>
-                  <p className="text-slate-400">{isRTL ? "خلال 24 ساعة عمل" : "Usually within 24 business hours"}</p>
+                  <h4 className="font-bold text-white text-lg">{t.responseTime}</h4>
+                  <p className="text-slate-400">{t.responseTimeDesc}</p>
                 </div>
               </div>
             </div>
@@ -83,14 +84,12 @@ export default function ContactPage() {
             <div className="relative bg-slate-900 border border-slate-800 p-10 rounded-[2rem] shadow-2xl">
               <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
                 <MessageSquare className="w-6 h-6 text-blue-500" />
-                {isRTL ? "أرسل لنا رسالة" : "Send a Message"}
+                {t.sendMessage}
               </h3>
               
               <div className="space-y-5">
                 <p className="text-slate-400 text-sm italic mb-6">
-                  {isRTL 
-                    ? "عند الضغط على الزر، سيفتح تطبيق البريد الخاص بك لإرسال الرسالة إلينا مباشرة."
-                    : "Clicking the button will open your mail app to send us a message directly."}
+                  {t.openMailApp}
                 </p>
 
                 <button 
@@ -98,12 +97,12 @@ export default function ContactPage() {
                   className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-blue-600/20"
                 >
                   <Send className="w-5 h-5" />
-                  {isRTL ? "تواصل عبر البريد" : "CONTACT VIA EMAIL"}
+                  {t.sendEmail}
                 </button>
 
                 <div className="pt-6 flex items-center justify-center gap-2 text-slate-600">
                   <ShieldCheck className="w-4 h-4 text-green-500" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest">Verified Support Channel</span>
+                  <span className="text-[10px] uppercase font-bold tracking-widest">{t.contactSecureChannel}</span>
                 </div>
               </div>
             </div>

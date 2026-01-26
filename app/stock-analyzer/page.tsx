@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, Zap, AlertTriangle, XCircle, ArrowLeft, ChevronDown, Brain, TrendingUp, Shield, Lightbulb, Target, BarChart3, PieChart, Activity, DollarSign, Dices } from "lucide-react";
 import { useAuth } from "../../src/context/AuthContext";
+import { useTranslation } from "../../src/context/TranslationContext";
 import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
 import toast from 'react-hot-toast';
@@ -14,6 +15,7 @@ const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 export default function StockAnalyzerPage() {
   const router = useRouter();
   const { token, credits, updateCredits } = useAuth();
+  const { t, lang } = useTranslation();
   const [ticker, setTicker] = useState("");
   const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -39,7 +41,6 @@ export default function StockAnalyzerPage() {
   const [guestTrials, setGuestTrials] = useState(3);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authError, setAuthError] = useState("");
-  const [lang, setLang] = useState("en");
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
   const [userTyping, setUserTyping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -169,11 +170,13 @@ export default function StockAnalyzerPage() {
 
       const data = await res.json();
       
-      // Save to BOTH localStorage AND sessionStorage for navigation
+      // Save to BOTH localStorage AND sessionStorage for navigation (with language)
       localStorage.setItem("analysis_result", JSON.stringify(data));
       localStorage.setItem("analysis_ticker", targetTicker);
+      localStorage.setItem("analysis_lang", lang);
       sessionStorage.setItem("analysis_result", JSON.stringify(data));
       sessionStorage.setItem("analysis_ticker", targetTicker);
+      sessionStorage.setItem("analysis_lang", lang);
 
       // Update credits/trials
       if (token) {
@@ -196,30 +199,30 @@ export default function StockAnalyzerPage() {
 
   const faqItems = [
     {
-      question: "What's included in the AI stock analysis report?",
-      answer: "Our comprehensive report includes: Real-time stock pricing, 14 key financial metrics (P/E, PEG, ROE, Debt/Equity, etc.), AI Radar chart scoring 6 categories, Business DNA analysis, Financial Health assessment, Valuation Analysis, News Sentiment with real headlines, Complete SWOT Analysis, Bull & Bear case scenarios, Price Forecasts, and professional PDF export."
+      question: t.faq1Q,
+      answer: t.faq1A
     },
     {
-      question: "How accurate are the AI predictions?",
-      answer: "Our AI analyzes millions of data points including technical indicators, financial metrics, news sentiment, and historical patterns. While no prediction can guarantee future results, our model achieves 73% directional accuracy on 30-day forecasts. Always use this as one tool in your investment research, not the sole decision factor."
+      question: t.faq2Q,
+      answer: t.faq2A
     },
     {
-      question: "How much does analysis cost?",
-      answer: "Guests get 3 free analyses to try the platform. Registered users pay 1 credit per analysis. Credits start at $0.99 each with bulk discounts available. Each analysis is comprehensive and includes all sections: metrics, AI insights, news, SWOT, and downloadable PDF report."
+      question: t.faq3Q,
+      answer: t.faq3A
     },
     {
-      question: "Can I export and share the analysis?",
-      answer: "Yes! Every analysis includes a professional PDF export button. The report is beautifully formatted with your company branding, all charts, metrics, and AI insights. Perfect for sharing with colleagues, clients, or keeping for your investment records."
+      question: t.faq4Q,
+      answer: t.faq4A
     },
     {
-      question: "Which stocks can I analyze?",
-      answer: "Our platform covers 5,000+ stocks across major exchanges including NYSE, NASDAQ, S&P 500, and more. We support US equities, major ETFs, and index funds. If a ticker is tradable on major US exchanges, we can analyze it with real-time data."
+      question: t.faq5Q,
+      answer: t.faq5A
     }
   ];
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col">
-      <Navbar lang={lang} setLang={setLang} guestTrials={guestTrials} />
+      <Navbar guestTrials={guestTrials} />
 
       <main className="flex-1 w-full">
         {/* Top Back Button */}
@@ -227,7 +230,7 @@ export default function StockAnalyzerPage() {
           <div className="max-w-6xl mx-auto">
             <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-              Back to Home
+              {t.backToHome}
             </Link>
           </div>
         </div>
@@ -242,8 +245,8 @@ export default function StockAnalyzerPage() {
                 <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
 
                 <div className="relative z-10 flex flex-col items-center text-center mb-4">
-                  <p className="text-xs uppercase tracking-[0.25em] text-blue-300 font-bold">⚡ Primary Engine</p>
-                  <h2 className="text-lg md:text-2xl font-black text-white mt-1">AI Stock Analyzer</h2>
+                  <p className="text-xs uppercase tracking-[0.25em] text-blue-300 font-bold">⚡ {t.primaryEngine}</p>
+                  <h2 className="text-lg md:text-2xl font-black text-white mt-1">{t.aiStockAnalyzer}</h2>
                 </div>
 
                 <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
@@ -265,7 +268,7 @@ export default function StockAnalyzerPage() {
                         id="ticker-input"
                         name="ticker"
                         type="text"
-                        placeholder="Enter Ticker (e.g. NVDA)..."
+                        placeholder={t.searchPlaceholder}
                         className="w-full bg-transparent p-3 text-sm outline-none uppercase font-mono text-white"
                         value={ticker}
                         onChange={(e) => {
@@ -281,9 +284,9 @@ export default function StockAnalyzerPage() {
                         }}
                       />
                       <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-5 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
-                        {loading ? "..." : "Analyze"}
+                        {loading ? "..." : t.analyze}
                       </button>
-                      <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch">
+                      <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch" title={t.getRandomStock}>
                         <Dices className="w-5 h-5 text-purple-400" />
                       </button>
                     </div>
@@ -331,10 +334,10 @@ export default function StockAnalyzerPage() {
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400">
-                AI-Powered Stock Analysis Tool
+                {t.aiPoweredStockTool}
               </h1>
               <p className="text-slate-400 text-sm md:text-base max-w-2xl">
-                Get institutional-grade stock analysis in seconds. Our AI reviews financials, news, technicals, and market sentiment to deliver comprehensive investment insights.
+                {t.aiToolDescription}
               </p>
             </motion.div>
           </div>
@@ -344,57 +347,57 @@ export default function StockAnalyzerPage() {
         <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">What's Included in Every Analysis</h2>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.whatsIncludedTitle}</h2>
               <p className="text-slate-300 text-lg mb-12 max-w-3xl mx-auto text-center">
-                Each 1-credit analysis delivers a comprehensive report with institutional-grade data and AI-powered insights
+                {t.whatsIncludedDesc}
               </p>
               
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[
                   {
                     icon: <Activity className="w-10 h-10 text-blue-400" />,
-                    title: "14 Key Financial Metrics",
-                    desc: "P/E Ratio, PEG, Price/Sales, Price/Book, EPS, Profit Margin, Operating Margin, ROE, Dividend Yield, Beta, Debt/Equity, Current Ratio, Revenue Growth, Market Cap"
+                    title: t.feature14Metrics,
+                    desc: t.feature14MetricsDesc
                   },
                   {
                     icon: <BarChart3 className="w-10 h-10 text-purple-400" />,
-                    title: "AI Radar Score",
-                    desc: "Visual radar chart scoring the stock across 6 critical categories: Valuation, Growth, Profitability, Financial Health, Momentum, and Sentiment"
+                    title: t.featureRadarScore,
+                    desc: t.featureRadarScoreDesc
                   },
                   {
                     icon: <Target className="w-10 h-10 text-green-400" />,
-                    title: "Business DNA Analysis",
-                    desc: "AI-generated narrative explaining the company's core business model, competitive advantages, revenue streams, and market positioning"
+                    title: t.featureBusinessDNA,
+                    desc: t.featureBusinessDNADesc
                   },
                   {
                     icon: <Shield className="w-10 h-10 text-cyan-400" />,
-                    title: "Financial Health Check",
-                    desc: "Deep dive into balance sheet strength, cash flow sustainability, debt levels, and financial stability metrics with AI commentary"
+                    title: t.featureFinancialHealth,
+                    desc: t.featureFinancialHealthDesc
                   },
                   {
                     icon: <DollarSign className="w-10 h-10 text-yellow-400" />,
-                    title: "Valuation Assessment",
-                    desc: "AI evaluation of whether the stock is overvalued, undervalued, or fairly priced based on multiples, peer comparison, and growth prospects"
+                    title: t.featureValuation,
+                    desc: t.featureValuationDesc
                   },
                   {
                     icon: <TrendingUp className="w-10 h-10 text-orange-400" />,
-                    title: "News Sentiment Analysis",
-                    desc: "Real-time analysis of latest news headlines with sentiment scoring (Bullish/Bearish/Neutral) and clickable links to source articles"
+                    title: t.featureNewsSentiment,
+                    desc: t.featureNewsSentimentDesc
                   },
                   {
                     icon: <PieChart className="w-10 h-10 text-pink-400" />,
-                    title: "Complete SWOT Matrix",
-                    desc: "Strengths, Weaknesses, Opportunities, and Threats identified and explained by our AI based on company data and market conditions"
+                    title: t.featureSWOTMatrix,
+                    desc: t.featureSWOTMatrixDesc
                   },
                   {
                     icon: <Brain className="w-10 h-10 text-indigo-400" />,
-                    title: "Bull & Bear Cases",
-                    desc: "Detailed bull case (reasons to buy) and bear case (reasons to sell) scenarios with specific data points supporting each argument"
+                    title: t.featureBullBear,
+                    desc: t.featureBullBearDesc
                   },
                   {
                     icon: <Lightbulb className="w-10 h-10 text-emerald-400" />,
-                    title: "AI Verdict & Forecasts",
-                    desc: "Clear BUY/HOLD/SELL recommendation with confidence level, plus price forecasts for 7-day, 30-day, and 90-day timeframes"
+                    title: t.featureAIVerdict,
+                    desc: t.featureAIVerdictDesc
                   }
                 ].map((item, idx) => (
                   <motion.div key={idx} whileHover={{ y: -6 }} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:border-blue-500/30 transition group">
@@ -408,7 +411,7 @@ export default function StockAnalyzerPage() {
               <div className="mt-12 text-center">
                 <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-2xl px-6 py-4">
                   <Zap className="w-6 h-6 text-yellow-400 fill-yellow-400/20" />
-                  <p className="text-white font-bold">Plus: Professional PDF Export with all charts, metrics, and analysis</p>
+                  <p className="text-white font-bold">{t.professionalPdfExport}</p>
                 </div>
               </div>
             </motion.div>
@@ -419,14 +422,14 @@ export default function StockAnalyzerPage() {
         <section className="w-full px-4 py-16 border-b border-slate-800">
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">How Our AI Analysis Works</h2>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.howAnalysisWorksTitle}</h2>
               
               <div className="grid md:grid-cols-4 gap-6">
                 {[
-                  { num: "1", title: "Enter Ticker", desc: "Type any stock symbol from NYSE, NASDAQ, or S&P 500" },
-                  { num: "2", title: "AI Processing", desc: "Our AI scans 50+ data sources: financials, news, technicals, sentiment" },
-                  { num: "3", title: "Generate Report", desc: "Comprehensive analysis compiled in 15-30 seconds with all sections" },
-                  { num: "4", title: "Export & Act", desc: "Download professional PDF or use insights to make informed decisions" }
+                  { num: "1", title: t.howStep1Title, desc: t.howStep1Desc },
+                  { num: "2", title: t.howStep2Title, desc: t.howStep2Desc },
+                  { num: "3", title: t.howStep3Title, desc: t.howStep3Desc },
+                  { num: "4", title: t.howStep4Title, desc: t.howStep4Desc }
                 ].map((step, idx) => (
                   <div key={idx} className="relative bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:border-blue-500/30 transition">
                     <div className="text-4xl font-black text-blue-400 mb-4">{step.num}</div>
@@ -443,24 +446,24 @@ export default function StockAnalyzerPage() {
         <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">Why Traders Use AI Stock Analysis</h2>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.whyUseAITitle}</h2>
               
               <div className="grid md:grid-cols-3 gap-8">
                 {[
                   {
                     icon: <Brain className="w-12 h-12 text-blue-400" />,
-                    title: "Speed & Efficiency",
-                    desc: "What takes human analysts hours or days, our AI completes in seconds. Get comprehensive insights instantly instead of manually researching financials, news, and charts across multiple platforms."
+                    title: t.whyAI1Title,
+                    desc: t.whyAI1Desc
                   },
                   {
                     icon: <Shield className="w-12 h-12 text-green-400" />,
-                    title: "Remove Emotional Bias",
-                    desc: "AI doesn't fall in love with stocks or panic sell. Get objective, data-driven analysis free from confirmation bias, FOMO, or fear. Make decisions based on facts, not feelings."
+                    title: t.whyAI2Title,
+                    desc: t.whyAI2Desc
                   },
                   {
                     icon: <TrendingUp className="w-12 h-12 text-purple-400" />,
-                    title: "Institutional-Grade Data",
-                    desc: "Access the same quality analysis that hedge funds and institutions use, but at a fraction of the cost. Our AI processes millions of data points to find hidden opportunities and risks."
+                    title: t.whyAI3Title,
+                    desc: t.whyAI3Desc
                   }
                 ].map((item, idx) => (
                   <motion.div key={idx} whileHover={{ y: -6 }} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 hover:border-blue-500/30 transition group">
@@ -478,7 +481,7 @@ export default function StockAnalyzerPage() {
         <section className="w-full px-4 py-16 border-b border-slate-800">
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">Frequently Asked Questions</h2>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">{t.frequentlyAskedQuestions}</h2>
               
               <div className="space-y-4">
                 {faqItems.map((item, idx) => (
@@ -522,16 +525,10 @@ export default function StockAnalyzerPage() {
                 <div className="flex items-start gap-4">
                   <Shield className="w-8 h-8 text-orange-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h2 className="text-2xl font-black text-white mb-4">Important: AI Analysis Is a Tool, Not Financial Advice</h2>
-                    <p className="text-slate-300 mb-4">
-                      Our AI stock analysis is designed to <strong>enhance your research process</strong>, not replace it. While our models achieve 73% directional accuracy on 30-day forecasts, <strong>no prediction can guarantee future results</strong>. Markets are inherently unpredictable and influenced by countless variables.
-                    </p>
-                    <p className="text-slate-300 mb-4">
-                      <strong>Best Practice:</strong> Use our analysis as <strong>one data point</strong> in your decision-making process. Review the SWOT analysis, bull/bear cases, and financial metrics to understand the full picture. Combine our insights with your own research, risk tolerance, and investment goals.
-                    </p>
-                    <p className="text-slate-400 text-sm">
-                      <strong>Disclaimer:</strong> This tool is for educational and informational purposes only. TamtechAI is not a licensed financial advisor or broker. Always consult with a qualified financial professional before making investment decisions. Past performance does not guarantee future results. All investments carry risk of loss.
-                    </p>
+                    <h2 className="text-2xl font-black text-white mb-4">{t.riskWarningTitle}</h2>
+                    <p className="text-slate-300 mb-4">{t.riskWarningP1}</p>
+                    <p className="text-slate-300 mb-4">{t.riskWarningP2}</p>
+                    <p className="text-slate-400 text-sm">{t.riskWarningDisclaimer}</p>
                   </div>
                 </div>
               </div>
@@ -543,11 +540,11 @@ export default function StockAnalyzerPage() {
         <section className="w-full px-4 py-16 bg-gradient-to-r from-blue-900/30 via-slate-900/50 to-purple-900/30">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-2xl md:text-3xl font-black text-white mb-6">Ready to Analyze Your Next Stock?</h2>
-              <p className="text-slate-300 text-lg mb-8">Get instant AI-powered insights. Analyze smarter, invest wiser.</p>
+              <h2 className="text-2xl md:text-3xl font-black text-white mb-6">{t.readyToAnalyzeTitle}</h2>
+              <p className="text-slate-300 text-lg mb-8">{t.readyToAnalyzeDesc}</p>
               <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg shadow-blue-900/30">
                 <Search size={20} />
-                Back to Analyzer
+                {t.backToAnalyzer}
               </a>
             </motion.div>
           </div>

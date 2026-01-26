@@ -3,8 +3,12 @@ import React from 'react';
 import { Check, Zap, ShieldCheck, Key, ShoppingCart, ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { useTranslation } from '../../src/context/TranslationContext';
+import LanguageSelector from '../../src/components/LanguageSelector';
 
 export default function PricingPage() {
+  const { t, isRTL } = useTranslation();
+  
   useEffect(() => {
     document.title = "Pricing | Affordable AI Stock Analysis Credits - Tamtech Finance";
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -22,22 +26,23 @@ export default function PricingPage() {
     canonical.setAttribute('href', 'https://tamtech-finance.com/pricing');
   }, []);
   return (
-    <div className="min-h-screen bg-[#0b1121] text-slate-200 pb-20 selection:bg-blue-500/30">
+    <div className="min-h-screen bg-[#0b1121] text-slate-200 pb-20 selection:bg-blue-500/30" dir={isRTL ? "rtl" : "ltr"}>
       {/* Navigation Header */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 mb-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-white transition-all group mb-8">
+      <div className="max-w-7xl mx-auto px-6 pt-10 mb-12 flex items-center justify-between">
+        <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-white transition-all group">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
-          <span className="text-sm font-bold uppercase tracking-widest">Back to Dashboard</span>
+          <span className="text-sm font-bold uppercase tracking-widest">{t.backToDashboard}</span>
         </Link>
+        <LanguageSelector />
       </div>
 
       <main className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-6xl font-black text-white mb-6">
-            Get Your <span className="text-blue-500 text-glow">License Key</span>
+            {t.pricingTitle}
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Top up your account with <span className="text-white font-bold text-xl">50 Credits</span> using our secure Gumroad integration.
+            {t.pricingSubtitle}
           </p>
         </div>
 
@@ -51,32 +56,32 @@ export default function PricingPage() {
               <div>
                 <h3 className="text-2xl font-black text-white flex items-center gap-2">
                   <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-                  Full Analysis Pack
+                  {t.fullAnalysisPack}
                 </h3>
-                <p className="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">Official License</p>
+                <p className="text-slate-500 text-sm mt-1 uppercase tracking-widest font-bold">{t.officialLicense}</p>
               </div>
               <div className="bg-blue-600/10 text-blue-500 px-4 py-1 rounded-full text-xs font-black uppercase">
-                Instant Delivery
+                {t.instantDelivery}
               </div>
             </div>
 
             <div className="mb-8">
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-black text-white">50</span>
-                <span className="text-xl font-bold text-slate-400">Credits</span>
+                <span className="text-6xl font-black text-white">{t.fiftyCredits}</span>
+                <span className="text-xl font-bold text-slate-400">{t.creditsLabel}</span>
               </div>
               <p className="text-slate-400 mt-4 leading-relaxed">
-                Unlock professional AI analysis for any stock ticker. Each credit gives you a deep-dive report.
+                {t.unlockProfessional}
               </p>
             </div>
 
             <ul className="space-y-4 mb-10">
               {[
-                "Instant License Key Delivery",
-                "Secured by Gumroad",
-                "Full PDF Report Access",
-                "No Expiration Date",
-                "Priority AI Processing"
+                t.feature_instantDelivery,
+                t.feature_securedBy,
+                t.feature_pdfAccess,
+                t.feature_noExpiration,
+                t.feature_priorityAI
               ].map((feature, i) => (
                 <li key={i} className="flex items-center gap-3 text-slate-300">
                   <div className="bg-blue-500/20 p-1 rounded-full">
@@ -95,7 +100,7 @@ export default function PricingPage() {
               className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-600/20 group"
             >
               <ShoppingCart className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              BUY VIA GUMROAD
+              {t.buyNowGumroad}
             </a>
           </div>
         </div>
@@ -106,22 +111,22 @@ export default function PricingPage() {
             <div className="bg-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-slate-800 shadow-lg">
               <ShoppingCart className="text-blue-500 w-8 h-8" />
             </div>
-            <h4 className="font-bold text-white mb-2">1. Purchase</h4>
-            <p className="text-sm text-slate-500 leading-relaxed italic">Complete your payment securely through Gumroad.</p>
+            <h4 className="font-bold text-white mb-2">{t.purchase}</h4>
+            <p className="text-sm text-slate-500 leading-relaxed italic">{t.purchaseDesc}</p>
           </div>
           <div className="text-center p-6">
             <div className="bg-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-slate-800 shadow-lg">
               <Key className="text-blue-500 w-8 h-8" />
             </div>
-            <h4 className="font-bold text-white mb-2">2. Get Key</h4>
-            <p className="text-sm text-slate-500 leading-relaxed italic">Check your email for your unique 16-digit license key.</p>
+            <h4 className="font-bold text-white mb-2">{t.getKey}</h4>
+            <p className="text-sm text-slate-500 leading-relaxed italic">{t.getKeyDesc}</p>
           </div>
           <div className="text-center p-6">
             <div className="bg-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-slate-800 shadow-lg">
               <Zap className="text-blue-500 w-8 h-8" />
             </div>
-            <h4 className="font-bold text-white mb-2">3. Redeem</h4>
-            <p className="text-sm text-slate-500 leading-relaxed italic">Paste the key in the "Redeem" section to add 50 credits.</p>
+            <h4 className="font-bold text-white mb-2">{t.redeem}</h4>
+            <p className="text-sm text-slate-500 leading-relaxed italic">{t.redeemDesc}</p>
           </div>
         </div>
 
@@ -129,7 +134,7 @@ export default function PricingPage() {
         <div className="mt-20 flex flex-col items-center gap-4 py-8 border-t border-slate-800/50">
           <div className="flex items-center gap-2 text-slate-500">
             <ShieldCheck className="w-5 h-5 text-green-500" />
-            <span className="text-sm font-bold uppercase tracking-tighter">Secured & Verified Transactions</span>
+            <span className="text-sm font-bold uppercase tracking-tighter">{t.securedTransactions}</span>
           </div>
         </div>
       </main>

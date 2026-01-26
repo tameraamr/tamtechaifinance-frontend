@@ -5,10 +5,11 @@ import { ArrowLeft, Newspaper, Clock, Star, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
+import { useTranslation } from '../../src/context/TranslationContext';
 
 export default function NewsPage() {
   const [guestTrials, setGuestTrials] = useState(3);
-  const [lang, setLang] = useState("en");
+  const { t } = useTranslation();
   
   useEffect(() => {
     document.title = "Market News & Analysis | Real-time Financial Insights - Tamtech Finance";
@@ -29,7 +30,7 @@ export default function NewsPage() {
   
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 flex flex-col">
-      <Navbar lang={lang} setLang={setLang} guestTrials={guestTrials} />
+      <Navbar guestTrials={guestTrials} />
 
       <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 flex flex-col items-center justify-center px-4 py-12 flex-1">
         {/* Background effects */}

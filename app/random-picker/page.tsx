@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Zap, AlertTriangle, XCircle, ArrowLeft, ChevronDown, CheckCircle, TrendingUp, Shield, Lightbulb, Brain } from "lucide-react";
 import { useAuth } from "../../src/context/AuthContext";
+import { useTranslation } from "../../src/context/TranslationContext";
 import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
 import toast from 'react-hot-toast';
@@ -14,6 +15,7 @@ const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 export default function RandomPickerPage() {
   const router = useRouter();
   const { token, credits, isLoggedIn, logout, updateCredits } = useAuth();
+  const { t } = useTranslation();
   const [displaySymbol, setDisplaySymbol] = useState("????");
   const [displayName, setDisplayName] = useState("");
   const [displayPrice, setDisplayPrice] = useState<number | undefined>();
@@ -23,7 +25,6 @@ export default function RandomPickerPage() {
   const [guestTrials, setGuestTrials] = useState(3);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authError, setAuthError] = useState("");
-  const [lang, setLang] = useState("en");
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
   const rollerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -157,26 +158,26 @@ export default function RandomPickerPage() {
 
   const faqItems = [
     {
-      question: "Is this tool free?",
-      answer: "Yes! You can use the Random Stock Picker to generate stock ideas completely free. Basic analysis is limited to 3 free trials as a guest user. Create a free account to unlock unlimited access and advanced AI analysis features starting at just 1 credit per analysis."
+      question: t.randomPickerFAQ1Q,
+      answer: t.randomPickerFAQ1A
     },
     {
-      question: "Which markets are covered?",
-      answer: "Our random picker covers stocks from the S&P 500, NASDAQ, and NYSE. This includes thousands of equities from various sectors including technology, healthcare, finance, energy, and consumer goods. The tool uses institutional-grade data to ensure you're picking from a curated list of liquid, tradable stocks."
+      question: t.randomPickerFAQ2Q,
+      answer: t.randomPickerFAQ2A
     },
     {
-      question: "Can I analyze the stock after picking it?",
-      answer: "Absolutely! Once you pick a stock, you can click 'Analyze (1C)' to get an instant AI-powered analysis including technical indicators, sentiment analysis, risk assessment, and investment recommendations. Our AI reviews news, financial metrics, and market trends to give you comprehensive insights."
+      question: t.randomPickerFAQ3Q,
+      answer: t.randomPickerFAQ3A
     },
     {
-      question: "Should I invest based solely on random picks?",
-      answer: "No. Random picking is designed for discovery and overcoming selection bias, not as a standalone investment strategy. Always use our AI Analysis feature and conduct additional due diligence before making investment decisions. Random picks work best as part of a diversified portfolio research process."
+      question: t.randomPickerFAQ4Q,
+      answer: t.randomPickerFAQ4A
     }
   ];
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col">
-      <Navbar lang={lang} setLang={setLang} guestTrials={guestTrials} />
+      <Navbar guestTrials={guestTrials} />
 
       <main className="flex-1 w-full">
         {/* Top Back Button */}
@@ -227,7 +228,7 @@ export default function RandomPickerPage() {
                         <XCircle className="w-5 h-5" />
                       </button>
                     )}
-                    <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">Your Ticker</p>
+                    <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">{t.yourTicker}</p>
                     <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 font-mono mb-4">
                       {displaySymbol}
                     </div>
@@ -242,7 +243,7 @@ export default function RandomPickerPage() {
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl text-lg transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-purple-900/30"
                   >
                     <Zap size={20} />
-                    {rolling ? "Spinning..." : "Spin Again"}
+                    {rolling ? t.spinning : t.spinAgain}
                   </button>
                 </div>
               </div>
@@ -256,18 +257,18 @@ export default function RandomPickerPage() {
                   disabled={loading}
                   className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition disabled:opacity-60"
                 >
-                  {loading ? "Analyzing..." : "Analyze (1C)"}
+                  {loading ? t.analyzing : t.analyzeOneCredit}
                 </button>
                 <button
                   onClick={() => router.push(`/news?ticker=${selectedTicker}`)}
                   className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl transition"
                 >
-                  See News
+                  {t.seeNews}
                 </button>
                 <button
                   onClick={() => setSelectedTicker(null)}
                   className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-6 rounded-xl transition"
-                  title="Hide options"
+                  title={t.hideOptions}
                 >
                   ✕
                 </button>
@@ -281,10 +282,10 @@ export default function RandomPickerPage() {
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400">
-                Professional Random Stock Picker
+                {t.randomPickerTitle}
               </h1>
               <p className="text-slate-400 text-sm md:text-base max-w-2xl">
-                Break free from choice paralysis. Discover opportunities across 5,000+ equities in seconds.
+                {t.randomPickerDesc}
               </p>
             </motion.div>
           </div>
@@ -294,17 +295,17 @@ export default function RandomPickerPage() {
         <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">How It Works</h2>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.howItWorksTitle}</h2>
               <p className="text-slate-300 text-lg mb-8 max-w-3xl mx-auto text-center">
-                Our professional-grade random stock picker leverages institutional data sources to intelligently select from thousands of tradable equities across the S&P 500, NASDAQ, NYSE, and other major exchanges. Here's the process:
+                {t.howItWorksDesc}
               </p>
               
               <div className="grid md:grid-cols-4 gap-6">
                 {[
-                  { num: "1", title: "Data Collection", desc: "Real-time access to 5,000+ liquid equities from major exchanges" },
-                  { num: "2", title: "Smart Randomization", desc: "AI filters for tradability and removes penny stocks or delisted securities" },
-                  { num: "3", title: "Instant Selection", desc: "Get a random ticker with live pricing and company information in seconds" },
-                  { num: "4", title: "AI Analysis", desc: "Optionally dive deeper with institutional-grade technical & sentiment analysis" }
+                  { num: "1", title: t.step1Title, desc: t.step1Desc },
+                  { num: "2", title: t.step2Title, desc: t.step2Desc },
+                  { num: "3", title: t.step3Title, desc: t.step3Desc },
+                  { num: "4", title: t.step4Title, desc: t.step4Desc }
                 ].map((step, idx) => (
                   <div key={idx} className="relative bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:border-blue-500/30 transition">
                     <div className="text-4xl font-black text-blue-400 mb-4">{step.num}</div>
@@ -321,24 +322,24 @@ export default function RandomPickerPage() {
         <section className="w-full px-4 py-16 border-b border-slate-800">
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">Why Traders Use Random Stock Pickers</h2>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.whyUseTitle}</h2>
               
               <div className="grid md:grid-cols-3 gap-8">
                 {[
                   {
                     icon: <Brain className="w-12 h-12 text-blue-400" />,
-                    title: "Overcome Cognitive Bias",
-                    desc: "Humans are naturally biased toward familiar stocks and trending sectors. Random selection removes emotional decision-making and exposes you to opportunities you might otherwise overlook."
+                    title: t.whyUse1Title,
+                    desc: t.whyUse1Desc
                   },
                   {
                     icon: <TrendingUp className="w-12 h-12 text-green-400" />,
-                    title: "Portfolio Diversification",
-                    desc: "Random picks help you break out of concentrated bets in your favorite sectors. Discover companies in industries you haven't considered, reducing concentration risk and improving portfolio balance."
+                    title: t.whyUse2Title,
+                    desc: t.whyUse2Desc
                   },
                   {
                     icon: <Lightbulb className="w-12 h-12 text-yellow-400" />,
-                    title: "Discover Hidden Gems",
-                    desc: "Among 5,000+ equities, many underrated stocks never make it to analyst reports or financial news. Random selection is your shortcut to finding quality companies flying under Wall Street's radar."
+                    title: t.whyUse3Title,
+                    desc: t.whyUse3Desc
                   }
                 ].map((item, idx) => (
                   <motion.div key={idx} whileHover={{ y: -6 }} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 hover:border-blue-500/30 transition group">
@@ -360,15 +361,15 @@ export default function RandomPickerPage() {
                 <div className="flex items-start gap-4">
                   <Shield className="w-8 h-8 text-orange-400 flex-shrink-0 mt-1" />
                   <div>
-                    <h2 className="text-2xl font-black text-white mb-4">Important: Random Picking Is For Discovery, Not Investment Alone</h2>
+                    <h2 className="text-2xl font-black text-white mb-4">{t.randomPickerDisclaimerTitle}</h2>
                     <p className="text-slate-300 mb-4">
-                      A random stock picker is an excellent tool for <strong>generating ideas and discovering new opportunities</strong>, but it should <strong>never be the sole basis for an investment decision</strong>. Random selection inherently lacks context about company fundamentals, market conditions, or your personal investment goals.
+                      {t.randomPickerDisclaimerP1}
                     </p>
                     <p className="text-slate-300 mb-4">
-                      <strong>Best Practice:</strong> Use random picks to spark exploration, then follow up with our <strong>AI Analysis feature</strong> to understand the stock's technicals, sentiment, and financial health. Review the company's recent news, earnings reports, and competitive positioning before committing any capital.
+                      {t.randomPickerDisclaimerP2}
                     </p>
                     <p className="text-slate-400 text-sm">
-                      <strong>Disclaimer:</strong> This tool is for educational and research purposes only. TamtechAI is not a licensed financial advisor. Always consult with a qualified financial professional before making investment decisions. Past performance does not guarantee future results. Investing involves risk of loss.
+                      {t.randomPickerDisclaimerP3}
                     </p>
                   </div>
                 </div>
@@ -381,7 +382,7 @@ export default function RandomPickerPage() {
         <section className="w-full px-4 py-16 border-b border-slate-800">
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">Frequently Asked Questions</h2>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">{t.randomPickerFAQTitle}</h2>
               
               <div className="space-y-4">
                 {faqItems.map((item, idx) => (

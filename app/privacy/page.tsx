@@ -1,12 +1,15 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Brain, Shield, Database, Cookie, Menu, X } from "lucide-react";
+import { ArrowLeft, Shield, Database, Eye, Lock, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
+import Navbar from "../../src/components/Navbar";
+import { useTranslation } from "../../src/context/TranslationContext";
 
 export default function PrivacyPage() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [guestTrials] = useState(3);
 
   useEffect(() => {
     document.title = "Privacy Policy | Data Protection & Security - Tamtech Finance";
@@ -25,73 +28,22 @@ export default function PrivacyPage() {
     canonical.setAttribute('href', 'https://tamtech-finance.com/privacy');
   }, []);
 
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans">
-      {/* Navigation Header */}
-      <nav className="border-b border-slate-800 bg-[#0b1121]/95 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="h-16 flex items-center justify-between">
-            {/* Left: Back Button */}
-            <button
-              onClick={() => router.push('/')}
-              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors flex-shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm font-medium hidden sm:inline">Back to Search</span>
-              <span className="text-sm font-medium sm:hidden">Back</span>
-            </button>
-
-            {/* Center: Logo */}
-            <div className="flex items-center gap-2">
-              <Brain className="text-blue-500 w-5 h-5 md:w-6 md:h-6" />
-              <span className="font-bold text-base md:text-xl tracking-tight">
-                <span className="hidden sm:inline">Tamtech </span>
-                <span className="sm:hidden">T</span>
-                <span className="text-blue-500">AI</span>
-              </span>
-            </div>
-
-            {/* Right: Navigation Links (Desktop) / Menu Toggle (Mobile) */}
-            <div className="flex items-center gap-3">
-              <Link href="/" className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                Home
-              </Link>
-              <Link href="/terms" className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                Terms
-              </Link>
-              
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
-                aria-label="Toggle menu"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu Dropdown */}
-          {mobileMenuOpen && (
-            <div className="md:hidden border-t border-slate-800 py-3 space-y-2">
-              <Link 
-                href="/" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-2.5 rounded-lg transition-all text-slate-300"
-              >
-                🏠 Home
-              </Link>
-              <Link 
-                href="/terms" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-2.5 rounded-lg transition-all text-slate-300"
-              >
-                📋 Terms of Service
-              </Link>
-            </div>
-          )}
+      {/* Add Navbar for language selection */}
+      <Navbar guestTrials={guestTrials} />
+      
+      {/* Back Button */}
+      <div className="border-b border-slate-800 bg-[#0b1121]/50">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 md:py-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors py-2 px-1 -ml-1 touch-manipulation">
+            <ArrowLeft className="w-5 h-5 md:w-4 md:h-4" />
+            <span className="text-base md:text-sm font-bold">{t.backToHome}</span>
+          </Link>
         </div>
-      </nav>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">

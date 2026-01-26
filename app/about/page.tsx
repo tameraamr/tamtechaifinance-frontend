@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Lightbulb, TrendingUp, ShieldCheck, Cpu, UserCheck, Menu, X } from 'lucide-react';
 import { useEffect } from 'react';
+import { useTranslation } from '../../src/context/TranslationContext';
+import LanguageSelector from '../../src/components/LanguageSelector';
 
 export default function AboutUsPage() {
-  const isRTL = false;
+  const { t, isRTL } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -33,12 +35,12 @@ export default function AboutUsPage() {
           <div className="h-16 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors flex-shrink-0">
               <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm font-bold hidden sm:inline">Back to Home</span>
-              <span className="text-sm font-bold sm:hidden">Back</span>
+              <span className="text-sm font-bold hidden sm:inline">{t.backToHome}</span>
+              <span className="text-sm font-bold sm:hidden">{t.back}</span>
             </Link>
             <div className="flex items-center gap-2">
               <Lightbulb className="text-blue-500 w-5 h-5" />
-              <span className="font-bold text-base md:text-lg">About Us</span>
+              <span className="font-bold text-base md:text-lg">{t.aboutUs}</span>
             </div>
             
             {/* Mobile Menu Toggle */}
@@ -53,8 +55,9 @@ export default function AboutUsPage() {
             {/* Desktop Links */}
             <div className="hidden md:flex items-center gap-3">
               <Link href="/" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                Home
+                {t.home}
               </Link>
+              <LanguageSelector />
             </div>
           </div>
 
@@ -66,8 +69,11 @@ export default function AboutUsPage() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-2.5 rounded-lg transition-all text-slate-300"
               >
-                🏠 Home
+                🏠 {t.home}
               </Link>
+              <div className="pt-2">
+                <LanguageSelector />
+              </div>
             </div>
           )}
         </div>
@@ -80,15 +86,13 @@ export default function AboutUsPage() {
           <div className="absolute inset-0 bg-pattern opacity-5 pointer-events-none z-0"></div>
           <div className="relative z-10">
             <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400 mb-8 leading-tight animate-gradient">
-              {isRTL ? "مستقبل الاستثمار بين يديك" : "Empowering Your Investment Journey"}
+              {t.aboutHeroTitle}
             </h1>
             <p className="text-slate-300 text-xl max-w-4xl mx-auto leading-relaxed mb-10">
-              {isRTL 
-                ? "في TamtechAI Pro، نؤمن بأن الوصول إلى البيانات المالية الدقيقة والتحليلات العميقة يجب أن يكون متاحاً للجميع. نحن هنا لنسخر قوة الذكاء الاصطناعي لتزويدك بالرؤى التي تحتاجها لاتخاذ قرارات استثمارية أكثر ذكاءً وثقة."
-                : "At TamtechAI Pro, we believe that access to precise financial data and deep analytical insights should be available to everyone. We harness the power of AI to equip you with the foresight needed for smarter, more confident investment decisions."}
+              {t.aboutHeroDesc}
             </p>
             <Link href="/" className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-bold rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-all transform hover:scale-105">
-              {isRTL ? "ابدأ التحليل الآن" : "Start Your Analysis"}
+              {t.startAnalysis}
             </Link>
           </div>
         </section>
@@ -98,17 +102,15 @@ export default function AboutUsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               <h2 className="text-4xl font-bold text-white mb-6">
-                {isRTL ? "رؤيتنا: دقة مدعومة بالذكاء الاصطناعي" : "Our Vision: Precision Powered by AI"}
+                {t.aboutVisionTitle}
               </h2>
               <p className="text-slate-400 leading-relaxed text-lg mb-6">
-                {isRTL 
-                  ? "منذ البداية، كان هدفنا واضحاً: إعادة تعريف طريقة تفاعل المستثمرين مع الأسواق المالية. نحن نبني جسراً بين تعقيدات البيانات ووضوح الرؤى، مستخدمين أحدث نماذج الذكاء الاصطناعي لتحليل كميات هائلة من المعلومات بسرعة ودقة لا يمكن أن يضاهيها التحليل البشري وحده."
-                  : "From the outset, our goal has been clear: to redefine how investors interact with financial markets. We are building a bridge between data complexity and insightful clarity, utilizing cutting-edge AI models to process vast amounts of information with speed and accuracy unmatched by human analysis alone."}
+                {t.aboutVisionDesc}
               </p>
               <ul className="space-y-3 text-slate-300 text-base">
-                <li className="flex items-start gap-3"><TrendingUp className="w-5 h-5 text-teal-400 mt-1 flex-shrink-0" /> {isRTL ? "تحليلات فورية ومدعومة بالبيانات." : "Real-time, data-driven analytics."}</li>
-                <li className="flex items-start gap-3"><Cpu className="w-5 h-5 text-purple-400 mt-1 flex-shrink-0" /> {isRTL ? "نظام ذكاء اصطناعي يتعلم ويتطور باستمرار." : "Continuously learning and evolving AI."}</li>
-                <li className="flex items-start gap-3"><UserCheck className="w-5 h-5 text-orange-400 mt-1 flex-shrink-0" /> {isRTL ? "تمكين المستثمر الفردي والمؤسسي." : "Empowering both individual and institutional investors."}</li>
+                <li className="flex items-start gap-3"><TrendingUp className="w-5 h-5 text-teal-400 mt-1 flex-shrink-0" /> {t.aboutVisionPoint1}</li>
+                <li className="flex items-start gap-3"><Cpu className="w-5 h-5 text-purple-400 mt-1 flex-shrink-0" /> {t.aboutVisionPoint2}</li>
+                <li className="flex items-start gap-3"><UserCheck className="w-5 h-5 text-orange-400 mt-1 flex-shrink-0" /> {t.aboutVisionPoint3}</li>
               </ul>
             </div>
             <div className="order-1 md:order-2 flex justify-center items-center">
@@ -125,31 +127,31 @@ export default function AboutUsPage() {
         {/* Our Values Section */}
         <section className="mb-24">
           <h2 className="text-4xl font-bold text-center text-white mb-16">
-            {isRTL ? "قيمنا الأساسية" : "Our Core Values"}
+            {t.aboutCoreValues}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Value 1 */}
             <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl text-center shadow-lg">
               <Lightbulb className="w-12 h-12 text-blue-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-white mb-4">Innovation</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">{t.aboutInnovation}</h3>
               <p className="text-slate-400 leading-relaxed">
-                {isRTL ? "نسعى باستمرار لتطوير حلول جديدة ودمج أحدث تقنيات الذكاء الاصطناعي لتقديم أدوات استثمارية متطورة." : "Continuously seeking new solutions and integrating the latest AI technologies to offer advanced investment tools."}
+                {t.aboutInnovationDesc}
               </p>
             </div>
             {/* Value 2 */}
             <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl text-center shadow-lg">
               <ShieldCheck className="w-12 h-12 text-green-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-white mb-4">Integrity</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">{t.aboutIntegrity}</h3>
               <p className="text-slate-400 leading-relaxed">
-                {isRTL ? "الشفافية والصدق هما أساس تعاملنا مع بيانات السوق ومع مستخدمينا، مع الالتزام بأعلى معايير الأمان." : "Transparency and honesty are the cornerstones of our interaction with market data and our users, upholding the highest security standards."}
+                {t.aboutIntegrityDesc}
               </p>
             </div>
             {/* Value 3 */}
             <div className="bg-slate-900/40 border border-slate-800 p-8 rounded-3xl text-center shadow-lg">
               <UserCheck className="w-12 h-12 text-purple-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-white mb-4">Empowerment</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">{t.aboutEmpowerment}</h3>
               <p className="text-slate-400 leading-relaxed">
-                {isRTL ? "مهمتنا هي تمكين المستثمرين من جميع المستويات بالمعرفة والأدوات اللازمة لاتخاذ قرارات مستنيرة." : "Our mission is to empower investors of all levels with the knowledge and tools needed to make informed decisions."}
+                {t.aboutEmpowermentDesc}
               </p>
             </div>
           </div>
@@ -158,10 +160,10 @@ export default function AboutUsPage() {
         {/* Call to Action */}
         <section className="text-center bg-blue-600/20 border border-blue-600/40 p-12 rounded-3xl shadow-inner mb-16">
             <h2 className="text-4xl font-bold text-white mb-6">
-                {isRTL ? "هل أنت مستعد لمستقبل الاستثمار؟" : "Ready to Transform Your Trading?"}
+                {t.aboutCTA}
             </h2>
             <Link href="/" className="inline-flex items-center justify-center px-10 py-4 border border-transparent text-base font-bold rounded-full shadow-sm text-blue-600 bg-white hover:bg-slate-100 transition-all transform hover:scale-105">
-              {isRTL ? "ابدأ رحلتك مع TamtechAI Pro" : "Join TamtechAI Pro Today"}
+              {t.aboutCTABtn}
             </Link>
         </section>
       </main>

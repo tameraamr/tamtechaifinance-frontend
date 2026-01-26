@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target,
-  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Download, Dices, ArrowLeft
+  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Download, Dices, ArrowLeft, Info
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 import NewsAnalysis from '../../../src/components/NewsAnalysis';
 import Forecasts from '../../../src/components/Forecasts';
 import { useAuth } from '../../../src/context/AuthContext';
+import { useTranslation } from '../../../src/context/TranslationContext';
 
 const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 
@@ -132,6 +133,9 @@ const analysisProgressMessages = [
 ];
 
 const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: any) => {
+  const { t } = useTranslation();
+  const [showTooltip, setShowTooltip] = useState(false);
+  
   const getMetricStatus = (key: string, value: number) => {
     // Check for invalid zeros that should be N/A
     const zeroIsInvalid = ['pe', 'peg', 'ps', 'pb', 'eps', 'margin', 'roe', 'beta'];
@@ -155,9 +159,31 @@ const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: any) =
     }
   };
 
+  const tooltipText = tooltipKey && t.tooltips && t.tooltips[tooltipKey] ? t.tooltips[tooltipKey] : "";
+
   return (
-    <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-3 md:p-4 hover:bg-slate-800/50 transition-all group">
-      <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">{label}</div>
+    <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-3 md:p-4 hover:bg-slate-800/50 transition-all group relative">
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider">{label}</div>
+        {tooltipText && (
+          <div className="relative">
+            <button
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+              onTouchStart={() => setShowTooltip(!showTooltip)}
+              className="text-slate-500 hover:text-blue-400 transition-colors touch-manipulation"
+            >
+              <Info className="w-3 h-3 md:w-4 md:h-4" />
+            </button>
+            {showTooltip && (
+              <div className="absolute z-50 bottom-full right-0 mb-2 w-64 md:w-72 bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-2xl text-xs text-slate-300 leading-relaxed">
+                {tooltipText}
+                <div className="absolute -bottom-1 right-4 w-2 h-2 bg-slate-900 border-r border-b border-slate-700 transform rotate-45"></div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       <div className={`text-lg md:text-xl font-mono font-bold ${getMetricStatus(metricKey, value)}`}>
         {value !== null && value !== undefined ? `${formatMetricValue(value, metricKey)}${suffix}` : "N/A"}
       </div>
@@ -177,14 +203,12 @@ export default function AnalysisPage() {
   const [error, setError] = useState<string | null>(null);
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
   const [timeRange, setTimeRange] = useState('1Y');
-  const [lang, setLang] = useState('en');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Authentication state
   const [authChecked, setAuthChecked] = useState(false);
 
-  const t = translations[lang] || translations.en;
-  const isRTL = lang === "ar";
+  const { t, lang, isRTL } = useTranslation();
 
   // Allow both guests and logged-in users - check happens in data loading
   useEffect(() => {

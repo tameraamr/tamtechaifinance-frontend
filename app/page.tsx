@@ -15,7 +15,9 @@ import NewsAnalysis from '../src/components/NewsAnalysis';
 import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
 import RecentAnalyses from '../src/components/RecentAnalyses';
+import LanguageSelector from '../src/components/LanguageSelector';
 import { useAuth } from '../src/context/AuthContext';
+import { useTranslation } from '../src/context/TranslationContext';
 
 const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 
@@ -37,133 +39,6 @@ function SearchParamsHandler({ setShowAuthModal, setShowPaywall }: { setShowAuth
 
   return null;
 }
-
-const translations: any = {
-  en: {
-    loginTitle: "Login to Continue",
-    signupTitle: "Create Account to Purchase",
-    email: "Email Address",
-    pass: "Password (Min 8 chars, 1 number)",
-    loginBtn: "Login",
-    signupBtn: "Sign Up",
-    switchSign: "No account? Register",
-    switchLog: "Have an account? Login",
-    logout: "Logout",
-    guestBadge: "Guest Mode",
-    freeLeft: "Credits",
-    registerToContinue: "Register to Continue",
-    registerDesc: "You've used your 3 guest scans. Create an account to purchase credits.",
-    paywallTitle: "Limit Reached",
-    paywallDesc: "You have 0 credits. Purchase a Pro Key to unlock 50 deep scans.",
-    searchPlaceholder: "Enter Ticker (e.g. NVDA)...",
-    scan: "Running deep analysis... This might take a moment to ensure institutional accuracy.",
-    analyze: "Analyze",
-    verdict: "AI Verdict",
-    confidence: "Confidence",
-    analyst: "Analyst",
-    targetPrice: "Target Price",
-    low: "Low", high: "High", trend: "Trend", radar: "Radar", swot: "SWOT", bull: "Bull", bear: "Bear",
-    forecasts: "AI Forecasts", oneYear: "1 Year Outlook", fiveYears: "5 Years Outlook",
-    pe: "P/E Ratio", mcap: "Market Cap", growth: "Rev Growth", debt: "Debt/Eq",
-    strengths: "Strengths", weaknesses: "Weaknesses", opportunities: "Opportunities", threats: "Threats",
-    upgradeBtn: "Buy Pro Key ($5)", redeemBtn: "Redeem", inputKey: "License Key...", haveKey: "HAVE A KEY?",
-    heroTitle: "Institutional-Grade Market Intelligence",
-    heroSubtitle: "Harness the power of generative AI to decode balance sheets, valuations, and market sentiment in seconds.",
-    feat1Title: "Deep Dive Valuation", feat1Desc: "Intrinsic value calculation vs market price.",
-    feat2Title: "Predictive Forecasting", feat2Desc: "1-5 year price outlook based on macro trends.",
-    feat3Title: "Risk & Moat Analysis", feat3Desc: "Detailed SWOT and competitive advantage breakdown.",
-    metricsTitle: "Advanced Financial Metrics",
-    download: "Download Report",
-    disclaimerTitle: "Disclaimer",
-    disclaimerText: "TamtechAI is an AI-powered analytical tool, not a financial advisor. All data and analysis are for informational purposes only. Investments carry risks.",
-    reportTitle: "Investment Analysis Report",
-    randomBtn: "Inspire Me",
-    randomTitle: "AI Investment Pick",
-    randomDesc: "Our AI brain suggests this high-potential stock. Use 1 credit to analyze:",
-    cancel: "Cancel",
-    tooltips: {
-      pe: "Price-to-Earnings Ratio: Measures current share price relative to per-share earnings.",
-      peg: "PEG Ratio: P/E ratio adjusted for growth. Under 1.0 is considered undervalued.",
-      pb: "Price-to-Book: Valuation ratio comparing market cap to book value.",
-      ps: "Price-to-Sales: Valuation ratio comparing stock price to revenues.",
-      beta: "Beta: Measures volatility vs the market (1.0). High beta means high risk.",
-      div: "Dividend Yield: Annual dividend payments relative to price.",
-      roe: "Return on Equity: Measures profitability relative to shareholder equity.",
-      margin: "Profit Margin: Percentage of revenue that turns into profit.",
-      debt: "Debt-to-Equity: Measure of financial leverage/risk.",
-      curr: "Current Ratio: Ability to pay short-term obligations."
-    }
-  },
-  ar: {
-    loginTitle: "سجل دخولك للمتابعة",
-    signupTitle: "أنشئ حساباً للشراء",
-    email: "البريد الإلكتروني",
-    pass: "كلمة المرور",
-    loginBtn: "دخول",
-    signupBtn: "تسجيل",
-    switchSign: "ليس لديك حساب؟ سجل الآن",
-    switchLog: "لديك حساب؟ سجل دخول",
-    logout: "خروج",
-    guestBadge: "زائر",
-    freeLeft: "رصيد",
-    registerToContinue: "سجل حسابك للمتابعة",
-    registerDesc: "لقد استهلكت 3 محاولات تجريبية. أنشئ حساباً الآن لشراء الرصيد.",
-    paywallTitle: "نفذ رصيدك",
-    paywallDesc: "رصيدك الحالي 0. اشترِ مفتاح Pro للحصول على 50 تحليل.",
-    searchPlaceholder: "أدخل رمز السهم (مثلاً: NVDA)...",
-    scan: " جاري التحليل العميق... قد يستغرق ذلك بضع ثوانٍ لضمان أدق النتائج",
-    analyze: "حلل الآن",
-    verdict: "حكم الذكاء الاصطناعي",
-    confidence: "نسبة الثقة",
-    analyst: "توصية المحللين",
-    targetPrice: "السعر المستهدف",
-    low: "أدنى", high: "أعلى", trend: "الاتجاه", radar: "الرادار", swot: "SWOT", bull: "إيجابيات", bear: "سلبيات",
-    forecasts: "توقعات مستقبلية", oneYear: "توقع سنة", fiveYears: "توقع 5 سنوات",
-    pe: "مكرر الربحية", mcap: "القيمة السوقية", growth: "النمو", debt: "الديون",
-    strengths: "ن. قوة", weaknesses: "ن. ضعف", opportunities: "فرص", threats: "تهديدات",
-    upgradeBtn: "شراء رصيد ($5)", redeemBtn: "تفعيل", inputKey: "كود التفعيل...", haveKey: "لديك كود؟",
-    heroTitle: "ذكاء سوقي بمستوى المؤسسات المالية",
-    heroSubtitle: "استخدم قوة الذكاء الاصطناعي لفك شفرة الميزانيات العمومية والتقييمات.",
-    feat1Title: "تقييم عميق", feat1Desc: "حساب القيمة الجوهرية.",
-    feat2Title: "تنبؤات مستقبلية", feat2Desc: "توقعات لأسعار 1-5 سنوات.",
-    feat3Title: "تحليل المخاطر", feat3Desc: "تفصيل شامل لنقاط القوة والضعش.",
-    metricsTitle: "المؤشرات المالية المتقدمة",
-    download: "تحميل التقرير",
-    disclaimerTitle: "إخلاء مسؤولية",
-    disclaimerText: "منصة TamtechAI هي أداة تحليل مدعومة بالذكاء الاصطناعي وليست مستشاراً مالياً. جميع البيانات هي لأغراض تعليمية فقط. الاستثمار ينطوي على مخاطر.",
-    reportTitle: "تقرير التحليل الاستثماري",
-    randomBtn: "ألهمني",
-    randomTitle: "اقتراح الذكاء الاصطناعي",
-    randomDesc: "عقلنا الاصطناعي يقترح هذا السهم الواعد. هل تريد استهلاك 1 رصيد لتحليل:",
-    cancel: "إلغاء",
-    tooltips: {
-      pe: "مكرر الربحية (P/E): يقيس سعر السهم الحالي بالنسبة لربحيته.",
-      peg: "نسبة PEG: مكرر الربحية معدلاً للنمو. أقل من 1.0 يعتبر رخيصاً.",
-      pb: "السعر للقيمة الدفترية (P/B): يقارن القيمة السوقية بالقيمة الدفترية.",
-      ps: "السعر للمبيعات (P/S): يقيم سعر السهم بالنسبة للإيرادات.",
-      beta: "بيتا (Beta): مقياس للتذبذب مقارنة بالسوق. أعلى من 1 يعني مخاطرة أعلى.",
-      div: "عائد التوزيعات: النسبة المئوية للأرباح الموزعة سنوياً.",
-      roe: "العائد على حقوق الملكية (ROE): يقيس ربحية الشركة بالنسبة لحقوق المساهمين.",
-      margin: "هامش الربح: النسبة المئوية للإيرادات التي تتحول لربح صافي.",
-      debt: "الديون للملكية: مقياس للرافعة المالية والمخاطر.",
-      curr: "النسبة الحالية: قدرة الشركة على سداد التزاماتها قصيرة الأجل."
-    }
-  },
-  it: {
-    loginTitle: "Accedi", signupTitle: "Crea Account", email: "Email", pass: "Password", loginBtn: "Accedi", signupBtn: "Iscriviti",
-    switchSign: "Non hai un account? Iscriviti", switchLog: "Hai un account? Accedi", logout: "Esci", guestBadge: "Ospite", freeLeft: "Crediti",
-    registerToContinue: "Registrati", registerDesc: "Crea un account per acquistare crediti.", paywallTitle: "Limite Raggiunto",
-    paywallDesc: "Crediti esauriti. Passa a Pro.", searchPlaceholder: "Inserisci Ticker (es. NVDA)...", scan: "Analisi profonda in corso... Potrebbe volerci un momento per garantire la massima precisione.", analyze: "Analizza",
-    verdict: "Verdetto IA", confidence: "Fiducia", analyst: "Analista", targetPrice: "Prezzo Target", low: "Min", high: "Max", trend: "Trend", radar: "Radar", swot: "SWOT", bull: "Rialzista", bear: "Ribassista",
-    forecasts: "Previsioni IA", oneYear: "1 Anno", fiveYears: "5 Anni", pe: "P/E", mcap: "Cap. Mercato", growth: "Crescita", debt: "Debito",
-    strengths: "Punti di Forza", weaknesses: "Debolezze", opportunities: "Opportunità", threats: "Minacce", upgradeBtn: "Ottieni Chiave ($5)", redeemBtn: "Riscatta", inputKey: "Codice...", haveKey: "HAI UN CODICE?",
-    heroTitle: "Intelligenza di Mercato", heroSubtitle: "Analisi finanziaria con IA.", feat1Title: "Valutazione", feat1Desc: "Valore intrinseco vs mercato.",
-    feat2Title: "Previsioni", feat2Desc: "Outlook prezzi 1-5 anni.", feat3Title: "Rischi", feat3Desc: "Analisi SWOT dettagliata.", metricsTitle: "Metriche Finanziarie",
-    download: "Scarica Report", disclaimerTitle: "Disclaimer", disclaimerText: "TamtechAI è uno strumento di analisi basato su IA, non un consulente finanziario. Dati a solo scopo informativo.",
-    reportTitle: "Rapporto di Analisi Finanziaria", randomBtn: "Ispirami", randomTitle: "Scelta IA", randomDesc: "La nostra IA suggerisce questo titolo. Vuoi usare 1 credito?", cancel: "Annulla",
-    tooltips: { pe: "P/E Ratio", peg: "PEG Ratio", pb: "P/B Ratio", ps: "P/S Ratio", beta: "Beta", div: "Dividend Yield", roe: "ROE", margin: "Margine", debt: "Debito", curr: "Current Ratio" }
-  }
-};
 
 const progressMessages = [
   "Gathering real-time market data...",
@@ -220,6 +95,7 @@ interface Sector {
 
 export default function Home() {
   const { user, token, credits, isLoggedIn, isLoading: authLoading, login, logout, updateCredits, refreshUserData } = useAuth();
+  const { lang, setLang, t, isRTL } = useTranslation();
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [guestTrials, setGuestTrials] = useState(3);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -235,10 +111,7 @@ export default function Home() {
   const [result, setResult] = useState<any>(null);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
-  const [lang, setLang] = useState("en");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const t = translations[lang] || translations.en;
-  const isRTL = lang === 'ar';
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -839,22 +712,22 @@ export default function Home() {
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
               <BarChart3 className="text-blue-500 w-5 h-5 md:w-6 md:h-6" />
               <span className="font-bold text-base md:text-xl tracking-tight">
-                <span className="hidden sm:inline">TamtechAI </span>
+                <span className="hidden sm:inline">{t.brandName} </span>
                 <span className="sm:hidden">T</span>
-                <span className="text-blue-500">Pro</span>
+                <span className="text-blue-500">{t.brandPro}</span>
               </span>
             </Link>
 
             {/* Center: Desktop Navigation Links */}
             <div className="hidden md:flex items-center gap-3 lg:gap-4">
               <Link href="/stock-analyzer" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
-                Analyzer
+                {t.analyzer}
               </Link>
               <Link href="/random-picker" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
-                Random Picker
+                {t.randomPicker}
               </Link>
               <Link href="/news" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
-                News
+                {t.news}
               </Link>
             </div>
 
@@ -875,18 +748,8 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Language Selector - Hidden on very small screens */}
-              <div className="hidden sm:flex bg-slate-900 border border-slate-700 rounded-full p-0.5">
-                {['en', 'ar', 'it'].map((l) => (
-                  <button 
-                    key={l} 
-                    onClick={() => setLang(l)} 
-                    className={`px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase transition-all ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
-                  >
-                    {l}
-                  </button>
-                ))}
-              </div>
+              {/* Language Selector */}
+              <LanguageSelector />
 
               {/* Logout/Login Button - Desktop */}
               {token ? (
@@ -919,38 +782,24 @@ export default function Home() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
               >
-                📊 Stock Analyzer
+                📊 {t.analyzer}
               </Link>
               <Link 
                 href="/random-picker" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
               >
-                🎲 Random Picker
+                🎲 {t.randomPicker}
               </Link>
               <Link 
                 href="/news" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
               >
-                📰 News
+                📰 {t.news}
               </Link>
 
-              {/* Language Selector - Mobile */}
-              <div className="sm:hidden flex items-center justify-center gap-2 pt-2">
-                <span className="text-xs text-slate-400">Language:</span>
-                <div className="flex bg-slate-900 border border-slate-700 rounded-full p-0.5">
-                  {['en', 'ar', 'it'].map((l) => (
-                    <button 
-                      key={l} 
-                      onClick={() => setLang(l)} 
-                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase transition-all ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-400'}`}
-                    >
-                      {l}
-                    </button>
-                  ))}
-                </div>
-              </div>
+
 
               {/* Logout/Login Button - Mobile */}
               {token ? (
@@ -962,7 +811,7 @@ export default function Home() {
                   className="w-full flex items-center justify-center gap-2 text-sm font-bold bg-red-900/20 hover:bg-red-900/40 border border-red-700/50 px-4 py-3 rounded-lg transition-all text-red-400"
                 >
                   <LogOut className="w-4 h-4" />
-                  Logout
+                  {t.logout}
                 </button>
               ) : (
                 <button 
@@ -1005,7 +854,7 @@ export default function Home() {
             ))
           ) : (
             <span className="text-[10px] text-slate-600 animate-pulse font-bold tracking-widest uppercase px-4">
-              Loading Global Market Data...
+              {t.loadingMarketData}
             </span>
           )}
         </motion.div>
@@ -1018,8 +867,8 @@ export default function Home() {
           <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
 
           <div className="relative z-10 flex flex-col items-center text-center mb-4">
-            <p className="text-xs uppercase tracking-[0.25em] text-blue-300 font-bold">⚡ Primary Engine</p>
-            <h2 className="text-lg md:text-2xl font-black text-white mt-1">AI Stock Analyzer</h2>
+            <p className="text-xs uppercase tracking-[0.25em] text-blue-300 font-bold">⚡ {t.primaryEngine}</p>
+            <h2 className="text-lg md:text-2xl font-black text-white mt-1">{t.aiStockAnalyzer}</h2>
           </div>
 
           <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
@@ -1112,26 +961,26 @@ export default function Home() {
             
             <div className="flex items-center justify-between relative z-10">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">📰 News Desk</p>
-                <h3 className="text-xl font-black text-white mt-1">News Terminal</h3>
-                <p className="text-xs text-blue-200 font-semibold mt-1">Real-time market signals</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">📰 {t.newsDesk}</p>
+                <h3 className="text-xl font-black text-white mt-1">{t.newsTerminal}</h3>
+                <p className="text-xs text-blue-200 font-semibold mt-1">{t.realTimeMarketSignals}</p>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-400/10 border border-blue-400/40 flex items-center justify-center shadow-lg">
                 <Newspaper className="text-blue-100" size={24} />
               </div>
             </div>
             
-            <p className="text-slate-200 text-sm leading-relaxed">Breaking news, earnings surprises, Fed moves & M&A chatter that moves markets.</p>
+            <p className="text-slate-200 text-sm leading-relaxed">{t.marketMoversDesc}</p>
             
             <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 Fed Updates</span>
-              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">💰 Earnings</span>
-              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">🤝 M&A Deals</span>
+              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 {t.fedUpdatesLabel}</span>
+              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">💰 {t.earningsLabel}</span>
+              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">🤝 {t.mnaDealsLabel}</span>
               <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">🎯 NVDA, AAPL</span>
             </div>
             
             <button disabled className="inline-flex items-center justify-center gap-2 bg-slate-700 text-slate-400 font-bold px-4 py-2.5 rounded-xl text-sm shadow-lg mt-auto cursor-not-allowed">
-              Launch Terminal <ArrowRight size={16} />
+              {t.launchTerminal} <ArrowRight size={16} />
             </button>
           </motion.div>
 
@@ -1147,7 +996,7 @@ export default function Home() {
             {spinnerRolling || selectedSpinnerTicker ? (
               <div className="relative z-10 text-center">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-slate-400 text-xs uppercase tracking-widest animate-pulse">🎰 Spinning...</p>
+                  <p className="text-slate-400 text-xs uppercase tracking-widest animate-pulse">🎰 {t.spinning}</p>
                   {!spinnerRolling && selectedSpinnerTicker && (
                     <button
                       onClick={() => {
@@ -1173,15 +1022,15 @@ export default function Home() {
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200 font-bold">🎰 Instant Pick</p>
-                    <h3 className="text-xl font-black text-white mt-1">Stock Spinner</h3>
-                    <p className="text-xs text-purple-200 font-semibold mt-1">Lucky dip analysis</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200 font-bold">🎰 {t.instantPick}</p>
+                    <h3 className="text-xl font-black text-white mt-1">{t.stockSpinner}</h3>
+                    <p className="text-xs text-purple-200 font-semibold mt-1">{t.luckyDipAnalysis}</p>
                   </div>
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-600/40 to-blue-600/20 border border-purple-400/50 flex items-center justify-center shadow-lg shadow-purple-900/30">
                     <span className="text-3xl animate-spin">🎲</span>
                   </div>
                 </div>
-                <p className="text-slate-100 text-sm leading-relaxed mb-3">Spin the wheel and discover your next investment idea instantly. Fortune favors the brave!</p>
+                <p className="text-slate-100 text-sm leading-relaxed mb-3">{t.spinWheelDesc}</p>
                 <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
                   <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">⚡ MSFT</span>
                   <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">🚀 AMZN</span>
@@ -1198,7 +1047,7 @@ export default function Home() {
               className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-purple-900/30 disabled:opacity-70 relative z-10"
             >
               <span className="text-lg">🎰</span>
-              {spinnerRolling ? "Spinning..." : "Spin Now"}
+              {spinnerRolling ? t.spinning : t.spinAgain}
             </button>
 
             {/* Action Buttons */}
@@ -1227,16 +1076,16 @@ export default function Home() {
             
             <div className="flex items-center justify-between relative z-10">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300 font-bold">⚔️ Battle Arena</p>
-                <h3 className="text-xl font-black text-white mt-1">Stock Battle</h3>
-                <p className="text-xs text-emerald-200 font-semibold mt-1">Head-to-head verdict</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300 font-bold">⚔️ {t.battleArena}</p>
+                <h3 className="text-xl font-black text-white mt-1">{t.stockBattle}</h3>
+                <p className="text-xs text-emerald-200 font-semibold mt-1">{t.headToHeadVerdict}</p>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600/30 to-emerald-400/10 border border-emerald-400/40 flex items-center justify-center shadow-lg">
                 <TrendingUp className="text-emerald-100" size={24} />
               </div>
             </div>
             
-            <p className="text-slate-200 text-sm leading-relaxed">Face off any two tickers. AI gives you momentum edge, risk notes & the final verdict.</p>
+            <p className="text-slate-200 text-sm leading-relaxed">{t.battleDesc}</p>
             
             <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
               <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">⚡ TSLA vs F</span>
@@ -1518,10 +1367,10 @@ export default function Home() {
             <div className="col-span-1 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="text-blue-500 w-6 h-6" />
-                <span className="font-bold text-xl text-white">TamtechAI <span className="text-blue-500">Pro</span></span>
+                <span className="font-bold text-xl text-white">{t.brandName} <span className="text-blue-500">{t.brandPro}</span></span>
               </div>
               <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                {isRTL ? "منصة رائدة لتحليل الأسهم باستخدام أحدث تقنيات الذكاء الاصطناعي." : "Leading stock analysis platform powered by advanced AI technology."}
+                {t.footerDescription}
               </p>
               <div className="flex gap-4">
                 <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all"><Twitter className="w-5 h-5" /></a>
@@ -1532,21 +1381,21 @@ export default function Home() {
 
             {/* العمود الثاني: المنصة - صفحات مهمة */}
             <div>
-              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "المنصة" : "Platform"}</h4>
+              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{t.footerPlatform}</h4>
               <ul className="space-y-4 text-sm text-slate-400">
-                <li><Link href="/about" className="hover:text-blue-500">{isRTL ? "من نحن" : "About Us"}</Link></li>
-                <li><Link href="/pricing" className="hover:text-blue-500">{isRTL ? "الخطط والأسعار" : "Pricing Plans"}</Link></li>
-                <li><Link href="/contact" className="hover:text-blue-500">{isRTL ? "اتصل بنا" : "Contact Support"}</Link></li>
+                <li><Link href="/about" className="hover:text-blue-500">{t.about}</Link></li>
+                <li><Link href="/pricing" className="hover:text-blue-500">{t.pricing}</Link></li>
+                <li><Link href="/contact" className="hover:text-blue-500">{t.contact}</Link></li>
               </ul>
             </div>
 
             {/* العمود الثالث: القانونية - التي أنشأناها */}
             <div>
-              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{isRTL ? "قانوني" : "Legal"}</h4>
+              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">{t.footerLegal}</h4>
               <ul className="space-y-4 text-sm text-slate-400">
-                <li><Link href="/terms" className="hover:text-blue-500">{isRTL ? "الشروط والأحكام" : "Terms of Service"}</Link></li>
-                <li><Link href="/privacy" className="hover:text-blue-500">{isRTL ? "الخصوصية" : "Privacy Policy"}</Link></li>
-                <li><Link href="/risk" className="text-red-400 hover:text-red-500 font-medium">{isRTL ? "تحذير المخاطر" : "Risk Disclosure"}</Link></li>
+                <li><Link href="/terms" className="hover:text-blue-500">{t.termsOfService}</Link></li>
+                <li><Link href="/privacy" className="hover:text-blue-500">{t.privacyPolicy}</Link></li>
+                <li><Link href="/risk" className="text-red-400 hover:text-red-500 font-medium">{t.footerRiskDisclosure}</Link></li>
               </ul>
             </div>
 
@@ -1554,10 +1403,10 @@ export default function Home() {
             <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl shadow-inner">
               <h4 className="text-white font-bold mb-2 text-sm flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-green-500" />
-                Enterprise Grade
+                {t.footerSecurityBadge}
               </h4>
               <p className="text-slate-500 text-[11px] leading-relaxed">
-                {isRTL ? "تشفير بيانات بمستوى بنكي عالمي لضمان حماية خصوصيتك المالية." : "Bank-grade encryption to ensure your financial privacy is fully protected."}
+                {t.footerSecurityDesc}
               </p>
             </div>
           </div>
@@ -1568,32 +1417,30 @@ export default function Home() {
               <div className="flex items-center justify-center gap-2 mb-4 text-red-500/80">
                 <AlertTriangle className="w-4 h-4" />
                 <span className="text-[11px] font-black uppercase tracking-[0.2em]">
-                  {isRTL ? "تحذير قانوني صارم" : "Strict Legal Disclaimer"}
+                  {t.footerRiskDisclosure}
                 </span>
               </div>
               
               <p className="text-slate-500 text-[11px] md:text-[12px] leading-relaxed italic text-justify md:text-center px-4">
-                {isRTL 
-                  ? "يعد استخدام TamtechAI Pro إقراراً بأنك تدرك تماماً أن جميع التحليلات والبيانات والتقارير الصادرة هي نتاج خوارزميات ذكاء اصطناعي لأغراض معلوماتية وبحثية فقط. لا تشكل هذه البيانات بأي حال من الأحوال نصيحة استثمارية، مالية، أو قانونية. ينطوي الاستثمار في الأسواق المالية على مخاطر جوهرية قد تؤدي لفقدان رأس المال بالكامل. نحن لا نتحمل أدنى مسؤولية عن أي قرارات استثمارية تُتخذ بناءً على هذه التقارير." 
-                  : "The use of TamtechAI Pro constitutes an acknowledgment that all generated analyses and reports are the product of AI algorithms for informational and research purposes only. This information does not, under any circumstances, constitute financial, investment, or legal advice. Trading in financial markets involves substantial risk, including the potential loss of all invested principal. TamtechAI Pro and its affiliates are not liable for any financial losses or decisions made based on the provided data."}
+                {t.footerDisclaimerText}
               </p>
             </div>
 
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4">
               <div className="text-slate-600 text-[10px] font-mono tracking-widest uppercase">
-                © 2026 TamtechAI Pro <span className="mx-2">|</span> 
-                {isRTL ? "جميع الحقوق محفوظة" : "All Rights Reserved"}
+                {t.footerCopyright} <span className="mx-2">|</span> 
+                {t.footerAllRightsReserved}
               </div>
               
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/5 border border-green-500/20">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
                   <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter">
-                    System: Operational
+                    {t.systemOperational}
                   </span>
                 </div>
                 <div className="text-slate-700 text-[10px] font-bold uppercase tracking-tighter">
-                  v2.4.0-Stable
+                  {t.versionStable}
                 </div>
               </div>
             </div>

@@ -1,9 +1,14 @@
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ShieldAlert, Info, Scale, AlertTriangle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import Navbar from '../../src/components/Navbar';
+import { useTranslation } from '../../src/context/TranslationContext';
 
 export default function RiskDisclosure() {
+  const [guestTrials] = useState(3);
+  const { t } = useTranslation();
+  
   useEffect(() => {
     document.title = "Risk Disclosure & Disclaimer | Investment Warning - Tamtech Finance";
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -23,16 +28,16 @@ export default function RiskDisclosure() {
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-200 font-sans pb-20">
-      <div className="border-b border-slate-800 bg-[#0b1121]/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-bold">Back to Home</span>
+      {/* Add Navbar for language selection */}
+      <Navbar guestTrials={guestTrials} />
+      
+      {/* Back Button */}
+      <div className="border-b border-slate-800 bg-[#0b1121]/50">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-3 md:py-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors py-2 px-1 -ml-1 touch-manipulation">
+            <ArrowLeft className="w-5 h-5 md:w-4 md:h-4" />
+            <span className="text-base md:text-sm font-bold">{t.backToHome}</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="text-red-500 w-5 h-5" />
-            <span className="font-bold text-lg">Legal Disclosure</span>
-          </div>
         </div>
       </div>
 

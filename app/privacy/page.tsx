@@ -196,7 +196,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold text-white mb-4">6. Cookies and Local Storage</h2>
             <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-6">
-              <div className="mb-4">
+              <div className="mb-6">
                 <h3 className="text-lg font-semibold text-purple-400 mb-3 flex items-center gap-2">
                   <Cookie className="w-5 h-5" />
                   How We Use Cookies and Local Storage
@@ -206,13 +206,46 @@ export default function PrivacyPage() {
                 </p>
               </div>
 
+              {/* Google Analytics Disclosure */}
+              <div className="mb-6 bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
+                <h4 className="font-semibold text-amber-400 mb-3">📊 Google Analytics (GA4)</h4>
+                <p className="text-slate-200 mb-3 text-sm">
+                  We use <strong>Google Analytics 4 (GA4)</strong> to understand how visitors interact with our platform. 
+                  This service uses cookies to collect anonymous usage data.
+                </p>
+                <ul className="space-y-2 ml-4 text-sm text-slate-300">
+                  <li>• <strong>Cookie Names:</strong> _ga, _gid, _ga_6DD71GL8SC</li>
+                  <li>• <strong>Purpose:</strong> Analytics, user behavior tracking, site improvement</li>
+                  <li>• <strong>Duration:</strong> Up to 2 years</li>
+                  <li>• <strong>Third Party:</strong> Google LLC (data transferred to US servers)</li>
+                  <li>• <strong>Your Control:</strong> You can accept or reject analytics cookies via our cookie banner</li>
+                </ul>
+                <div className="mt-3 pt-3 border-t border-amber-500/20">
+                  <p className="text-sm text-slate-300">
+                    <strong>Opt-Out:</strong> You can opt out anytime by rejecting analytics cookies in the banner or using{" "}
+                    <a 
+                      href="https://tools.google.com/dlpage/gaoptout" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 underline"
+                    >
+                      Google Analytics Opt-out Browser Add-on
+                    </a>.
+                  </p>
+                </div>
+              </div>
+
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-white mb-2">Session Management</h4>
+                  <h4 className="font-semibold text-white mb-2">🔐 Strictly Necessary Storage (Always Active)</h4>
+                  <p className="text-slate-300 text-sm mb-2">
+                    These are essential for the website to function and cannot be disabled:
+                  </p>
                   <ul className="space-y-1 ml-4 text-sm">
-                    <li>• Authentication tokens for secure login</li>
-                    <li>• User preferences and language settings</li>
-                    <li>• Temporary analysis data during sessions</li>
+                    <li>• <strong>Authentication tokens:</strong> Secure login sessions (localStorage: access_token)</li>
+                    <li>• <strong>Language preference:</strong> Your selected language (localStorage: lang)</li>
+                    <li>• <strong>Analysis cache:</strong> Temporary AI report data (localStorage: analysis_result, analysis_ticker)</li>
+                    <li>• <strong>Session data:</strong> Temporary analysis during active sessions (sessionStorage)</li>
                   </ul>
                 </div>
 
@@ -230,7 +263,8 @@ export default function PrivacyPage() {
                   <ul className="space-y-1 ml-4 text-sm">
                     <li>• Session data is cleared when you log out</li>
                     <li>• Local storage is used for user convenience only</li>
-                    <li>• You can clear cookies and local storage anytime</li>
+                    <li>• You can clear cookies and local storage anytime in browser settings</li>
+                    <li>• Cookie consent preferences are stored for 1 year</li>
                   </ul>
                 </div>
               </div>

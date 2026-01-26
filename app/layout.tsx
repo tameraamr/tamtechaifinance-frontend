@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// استيراد مكتبة التحليلات
-import { GoogleAnalytics } from '@next/third-parties/google';
 import { AuthProvider } from '../src/context/AuthContext';
 import { TranslationProvider } from '../src/context/TranslationContext';
 import { Toaster } from 'react-hot-toast';
+import CookieBanner from '../src/components/CookieBanner';
+import ConditionalAnalytics from '../src/components/ConditionalAnalytics';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -123,10 +123,11 @@ export default function RootLayout({
           <TranslationProvider>
             {children}
             <Toaster position="top-center" reverseOrder={false} />
+            <CookieBanner />
           </TranslationProvider>
         </AuthProvider>
-        {/* إضافة تتبع جوجل هنا */}
-        <GoogleAnalytics gaId="G-6DD71GL8SC" />        
+        {/* Google Analytics loads conditionally based on consent */}
+        <ConditionalAnalytics gaId="G-6DD71GL8SC" />
       </body>
     </html>
   );

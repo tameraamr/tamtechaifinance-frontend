@@ -48,7 +48,7 @@ export default function Footer() {
             <ul className="space-y-4 text-sm text-slate-400">
               <li><Link href="/terms" className="hover:text-blue-500">{t.termsOfService}</Link></li>
               <li><Link href="/privacy" className="hover:text-blue-500">{t.privacyPolicy}</Link></li>
-              <li><Link href="/risk" className="text-red-400 hover:text-red-500 font-medium">{t.footerRiskDisclosure || t.footerRiskDisclaimer}</Link></li>
+              <li><Link href="/risk" className="text-red-400 hover:text-red-500 font-medium">{t.footerRiskDisclosure}</Link></li>
             </ul>
           </div>
 

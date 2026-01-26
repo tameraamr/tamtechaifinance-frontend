@@ -34,7 +34,7 @@ interface ComparisonBattleProps {
   loadingCompare: boolean;
   handleCompare: () => void;
   compareError: string | null;
-  token: string | null;
+  isLoggedIn: boolean;
   setAuthMode: (mode: string) => void;
   setShowAuthModal: (show: boolean) => void;
 }
@@ -82,7 +82,7 @@ export default function ComparisonBattle({
   loadingCompare,
   handleCompare,
   compareError,
-  token,
+  isLoggedIn,
   setAuthMode,
   setShowAuthModal
 }: ComparisonBattleProps) {
@@ -100,7 +100,7 @@ export default function ComparisonBattle({
 
   // Handle Battle Launch
   const onLaunchBattle = () => {
-    if (!token) {
+    if (!isLoggedIn) {
       handleClose();
       setAuthMode("signup");
       setShowAuthModal(true);

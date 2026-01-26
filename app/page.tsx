@@ -94,7 +94,7 @@ interface Sector {
 
 
 export default function Home() {
-  const { user, token, credits, isLoggedIn, isLoading: authLoading, login, logout, updateCredits, refreshUserData } = useAuth();
+  const { user, credits, isLoggedIn, isLoading: authLoading, login, logout, updateCredits, refreshUserData } = useAuth();
   const { lang, setLang, t, isRTL } = useTranslation();
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [guestTrials, setGuestTrials] = useState(3);
@@ -292,7 +292,12 @@ export default function Home() {
     }
 
     try {
-      const res = await fetch(url, { method: "POST", headers, body });
+      const res = await fetch(url, { 
+        method: "POST", 
+        headers, 
+        body,
+        credentials: 'include' // 🔥 Send/receive httpOnly cookies
+      });
 
       // 👇 التعديل الجوهري: التحقق من نوع الاستجابة قبل محاولة قراءة JSON
       const contentType = res.headers.get("content-type");
@@ -327,8 +332,8 @@ export default function Home() {
       // ✅ النجاح
       if (authMode === "login") {
   // البيانات الآن تأتي جاهزة من السيرفر داخل data.user و data.credits
-  // لا داعي للتخمين أو القيم الافتراضية
-       login(data.access_token, data.user, data.credits); 
+  // Token is now in httpOnly cookie, no need to pass it
+       login(data.user, data.credits); 
   
         setShowAuthModal(false);
         toast.success(`Welcome back, ${data.user.first_name || 'User'}! 💰 Balance: ${data.credits} credits`, {
@@ -490,7 +495,7 @@ export default function Home() {
   const handleSpinnerAnalyze = async () => {
     if (!selectedSpinnerTicker) return;
 
-    if (!token && guestTrials <= 0) {
+    if (!isLoggedIn && guestTrials <= 0) {
       setAuthMode("signup");
       setShowAuthModal(true);
       return;
@@ -500,8 +505,9 @@ export default function Home() {
     setAuthError("");
 
     try {
-      const headers: any = { Authorization: token ? `Bearer ${token}` : "" };
-      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}`, { headers });
+      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}`, { 
+        credentials: 'include' // 🔒 httpOnly cookie sent automatically
+      });
 
       if (res.status === 403) {
         setAuthMode("signup");
@@ -527,7 +533,7 @@ export default function Home() {
       setResult(data);
       setAnalysisComplete(true);
 
-      if (token) {
+      if (isLoggedIn) {
         updateCredits(data.credits_left);
       } else {
         const ng = guestTrials - 1;
@@ -560,14 +566,15 @@ export default function Home() {
     setAnalysisComplete(false);
 
     // 1. فحص الرصيد محلياً للمسجلين
-    if (token && credits <= 0) { setShowPaywall(true); setLoading(false); return; }
+    if (isLoggedIn && credits <= 0) { setShowPaywall(true); setLoading(false); return; }
 
     // 2. فحص أولي للزوار (بناءً على المتصفح)
-    if (!token && guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; }
+    if (!isLoggedIn && guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; }
 
     try {
-      const headers: any = { "Authorization": token ? `Bearer ${token}` : "" };
-      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { headers });
+      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { 
+        credentials: 'include' // 🔒 httpOnly cookie sent automatically
+      });
 
       // 👇 التعديل الجديد: التعامل مع حظر الـ IP القادم من السيرفر
       if (res.status === 403) {
@@ -594,7 +601,7 @@ export default function Home() {
 
       setAnalysisComplete(true);
 
-      if (token) {
+      if (isLoggedIn) {
         updateCredits(data.credits_left);
       } else {
         // تحديث عداد المتصفح المحلي
@@ -643,7 +650,7 @@ export default function Home() {
     setLoadingCompare(true);
     try {
       const res = await fetch(`${BASE_URL}/analyze-compare/${compareTickers.t1}/${compareTickers.t2}?lang=${lang}`, {
-        headers: { "Authorization": token ? `Bearer ${token}` : "" }
+        credentials: 'include' // 🔒 httpOnly cookie sent automatically
       });
 
       // 👇 التعديل الجديد: إذا استنفد الزائر محاولات الـ IP (403)
@@ -667,7 +674,7 @@ export default function Home() {
 
       const data = await res.json();
       setCompareResult(data);
-      if (token) updateCredits(data.credits_left);
+      if (isLoggedIn) updateCredits(data.credits_left);
 
     } catch (err: any) {
       setCompareError(err.message || "Something went wrong. Check tickers.");
@@ -682,7 +689,8 @@ export default function Home() {
     try {
       const res = await fetch(`${BASE_URL}/verify-license`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include', // 🔒 httpOnly cookie sent automatically
         body: JSON.stringify({ license_key: licenseKey.trim() }),
       });
       const data = await res.json();
@@ -736,7 +744,7 @@ export default function Home() {
               {/* Credits Display */}
               {authLoading ? (
                 <div className="w-16 h-8 bg-slate-800/50 rounded-full animate-pulse"></div>
-              ) : token ? (
+              ) : isLoggedIn ? (
                 <div className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-300">
                   <Star className="w-3 h-3 text-yellow-400" />
                   <span>{credits}</span>
@@ -752,7 +760,7 @@ export default function Home() {
               <LanguageSelector />
 
               {/* Logout/Login Button - Desktop */}
-              {token ? (
+              {isLoggedIn ? (
                 <button onClick={logout} className="hidden md:block p-2 text-slate-400 hover:text-red-400 transition-colors">
                   <LogOut className="w-5 h-5" />
                 </button>
@@ -802,7 +810,7 @@ export default function Home() {
 
 
               {/* Logout/Login Button - Mobile */}
-              {token ? (
+              {isLoggedIn ? (
                 <button 
                   onClick={() => {
                     logout();
@@ -1349,7 +1357,7 @@ export default function Home() {
           loadingCompare={loadingCompare}
           compareError={compareError}
           handleCompare={handleCompare}
-          token={token}
+          isLoggedIn={isLoggedIn}
           setAuthMode={setAuthMode}
           setShowAuthModal={setShowAuthModal}
         />

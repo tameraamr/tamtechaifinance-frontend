@@ -14,7 +14,7 @@ const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 
 export default function StockAnalyzerPage() {
   const router = useRouter();
-  const { token, credits, updateCredits } = useAuth();
+  const { credits, isLoggedIn, updateCredits } = useAuth();
   const { t, lang } = useTranslation();
   const [ticker, setTicker] = useState("");
   const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
@@ -147,8 +147,9 @@ export default function StockAnalyzerPage() {
     }
 
     try {
-      const headers: any = { Authorization: token ? `Bearer ${token}` : "" };
-      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { headers });
+      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { 
+        credentials: 'include' // 🔒 httpOnly cookie sent automatically
+      });
 
       // IP-based guest trial limit (server-side)
       if (res.status === 403) {

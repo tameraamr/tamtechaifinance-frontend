@@ -14,12 +14,11 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   credits: number;
   isLoggedIn: boolean;
   isLoading: boolean;
-  login: (token: string, userData: User, credits: number) => void;
-  logout: () => void;
+  login: (userData: User, credits: number) => void;
+  logout: () => Promise<void>;
   updateCredits: (newCredits: number) => void;
   refreshUserData: () => Promise<void>;
   retryValidation: () => Promise<void>;
@@ -41,18 +40,27 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [credits, setCredits] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const isLoggedIn = !!token && !!user;
+  const isLoggedIn = isAuthenticated && !!user;
 
-  // Fetch user data from API
-  const fetchUserData = async (authToken: string): Promise<{ user: User; credits: number } | null> => {
+  // 🧹 Clean up old localStorage token on mount (one-time migration)
+  useEffect(() => {
+    const oldToken = localStorage.getItem('access_token');
+    if (oldToken) {
+      console.log('🧹 Cleaning up old localStorage token...');
+      localStorage.removeItem('access_token');
+    }
+  }, []);
+
+  // Fetch user data from API (cookie is sent automatically)
+  const fetchUserData = async (): Promise<{ user: User; credits: number } | null> => {
     try {
       const response = await fetch(`${BASE_URL}/users/me`, {
+        credentials: 'include', // 🔥 Critical: Send httpOnly cookie automatically
         headers: {
-          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
       });
@@ -71,18 +79,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           credits: data.credits,
         };
       } else if (response.status === 401) {
-        // Only logout on explicit 401 (Unauthorized) - token is invalid
-        localStorage.removeItem('access_token');
+        // Token invalid or expired
         return null;
       } else {
-        // For other errors (5xx, network issues, timeouts), don't logout
-        // Just return null to indicate validation failed, but keep the token
-        console.warn('Auth validation failed, but keeping token:', response.status);
+        // For other errors (5xx, network issues), don't clear auth state
+        console.warn('Auth validation failed, but keeping session:', response.status);
         return null;
       }
     } catch (error) {
-      // Network errors, timeouts, etc. - don't logout, just return null
-      console.warn('Auth validation network error, keeping token:', error);
+      // Network errors - keep session
+      console.warn('Auth validation network error, keeping session:', error);
       return null;
     }
   };
@@ -90,51 +96,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Initialize auth state on app load
   useEffect(() => {
     const initializeAuth = async () => {
-      const savedToken = localStorage.getItem('access_token');
-
-      if (savedToken) {
-        const userData = await fetchUserData(savedToken);
-        if (userData) {
-          // Token is valid and user data fetched successfully
-          setToken(savedToken);
-          setUser(userData.user);
-          setCredits(userData.credits);
-        } else {
-          // Check if token still exists in localStorage (only removed on 401)
-          const tokenStillExists = localStorage.getItem('access_token') !== null;
-          if (tokenStillExists) {
-            // Token exists but validation failed (network/server issues)
-            // Keep the token but don't set user data - user will be prompted to retry
-            setToken(savedToken);
-            setUser(null);
-            setCredits(0);
-          } else {
-            // Token was removed (401 error) - clear all state
-            setToken(null);
-            setUser(null);
-            setCredits(0);
-          }
-        }
+      const userData = await fetchUserData();
+      if (userData) {
+        setUser(userData.user);
+        setCredits(userData.credits);
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setCredits(0);
+        setIsAuthenticated(false);
       }
-
       setIsLoading(false);
     };
 
     initializeAuth();
   }, []);
 
-  const login = (newToken: string, userData: User, userCredits: number) => {
-    localStorage.setItem('access_token', newToken);
-    setToken(newToken);
+  const login = (userData: User, userCredits: number) => {
+    // No need to store token - it's in httpOnly cookie
     setUser(userData);
     setCredits(userCredits);
+    setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    setToken(null);
+  const logout = async () => {
+    try {
+      // Call backend logout to clear cookie
+      await fetch(`${BASE_URL}/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Logout request failed:', error);
+    }
+    
+    // Clear frontend state regardless of backend response
     setUser(null);
     setCredits(0);
+    setIsAuthenticated(false);
   };
 
   const updateCredits = (newCredits: number) => {
@@ -142,45 +141,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const refreshUserData = async () => {
-    if (!token) return;
-
-    const userData = await fetchUserData(token);
+    const userData = await fetchUserData();
     if (userData) {
       setUser(userData.user);
       setCredits(userData.credits);
+      setIsAuthenticated(true);
     } else {
       // Token became invalid during refresh
-      logout();
+      await logout();
     }
   };
 
   const retryValidation = async () => {
-    const savedToken = localStorage.getItem('access_token');
-    if (!savedToken) return;
-
     setIsLoading(true);
-    const userData = await fetchUserData(savedToken);
+    const userData = await fetchUserData();
     if (userData) {
-      setToken(savedToken);
       setUser(userData.user);
       setCredits(userData.credits);
+      setIsAuthenticated(true);
     } else {
-      // Check if token still exists (only removed on 401)
-      const tokenStillExists = localStorage.getItem('access_token') !== null;
-      if (!tokenStillExists) {
-        // Token was removed (401 error) - clear all state
-        setToken(null);
-        setUser(null);
-        setCredits(0);
-      }
-      // If token still exists, keep current state (validation failed but token is valid)
+      setUser(null);
+      setCredits(0);
+      setIsAuthenticated(false);
     }
     setIsLoading(false);
   };
 
   const value: AuthContextType = {
     user,
-    token,
     credits,
     isLoggedIn,
     isLoading,

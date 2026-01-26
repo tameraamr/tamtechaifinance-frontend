@@ -14,7 +14,7 @@ const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
 
 export default function RandomPickerPage() {
   const router = useRouter();
-  const { token, credits, isLoggedIn, logout, updateCredits } = useAuth();
+  const { credits, isLoggedIn, logout, updateCredits } = useAuth();
   const { t } = useTranslation();
   const [displaySymbol, setDisplaySymbol] = useState("????");
   const [displayName, setDisplayName] = useState("");
@@ -109,15 +109,16 @@ export default function RandomPickerPage() {
     if (!selectedTicker) return;
 
     // Check guest limit
-    if (!token && guestTrials <= 0) {
+    if (!isLoggedIn && guestTrials <= 0) {
       setShowAuthModal(true);
       return;
     }
 
     setLoading(true);
     try {
-      const headers: any = { Authorization: token ? `Bearer ${token}` : "" };
-      const res = await fetch(`${BASE_URL}/analyze/${selectedTicker}`, { headers });
+      const res = await fetch(`${BASE_URL}/analyze/${selectedTicker}`, { 
+        credentials: 'include' // 🔒 httpOnly cookie sent automatically
+      });
 
       if (res.status === 403) {
         setShowAuthModal(true);

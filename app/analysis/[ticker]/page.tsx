@@ -196,7 +196,7 @@ export default function AnalysisPage() {
   const router = useRouter();
   const ticker = params.ticker as string;
 
-  const { token, credits, isLoggedIn, isLoading: authLoading } = useAuth();
+  const { credits, isLoggedIn, isLoading: authLoading } = useAuth();
 
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);

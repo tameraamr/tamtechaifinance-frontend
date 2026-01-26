@@ -11,7 +11,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ guestTrials }: NavbarProps) {
-  const { token, credits, logout } = useAuth();
+  const { isLoggedIn, credits, logout } = useAuth();
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -46,7 +46,7 @@ export default function Navbar({ guestTrials }: NavbarProps) {
           {/* Right: Credits, Language, User Actions */}
           <div className="flex items-center gap-2 md:gap-3">
             {/* Credits Display */}
-            {token ? (
+            {isLoggedIn ? (
               <div className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-300">
                 <Star className="w-3 h-3 text-yellow-400" />
                 <span>{credits}</span>
@@ -62,7 +62,7 @@ export default function Navbar({ guestTrials }: NavbarProps) {
             <LanguageSelector />
 
             {/* Logout Button - Desktop */}
-            {token && (
+            {isLoggedIn && (
               <button onClick={logout} className="hidden md:block p-2 text-slate-400 hover:text-red-400 transition-colors">
                 <LogOut className="w-5 h-5" />
               </button>
@@ -111,7 +111,7 @@ export default function Navbar({ guestTrials }: NavbarProps) {
             </div>
 
             {/* Logout Button - Mobile */}
-            {token && (
+            {isLoggedIn && (
               <button 
                 onClick={() => {
                   logout();

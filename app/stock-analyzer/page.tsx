@@ -180,7 +180,7 @@ export default function StockAnalyzerPage() {
       sessionStorage.setItem("analysis_lang", lang);
 
       // Update credits/trials
-      if (token) {
+      if (isLoggedIn) {
         updateCredits(data.credits_left);
       } else {
         const ng = guestTrials - 1;

@@ -141,7 +141,7 @@ export default function RandomPickerPage() {
       sessionStorage.setItem("analysis_result", JSON.stringify(data));
       sessionStorage.setItem("analysis_ticker", selectedTicker);
 
-      if (token) {
+      if (isLoggedIn) {
         updateCredits(data.credits_left);
       } else {
         const ng = guestTrials - 1;

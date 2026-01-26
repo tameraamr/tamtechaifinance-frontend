@@ -1352,8 +1352,6 @@ export default function Home() {
           token={token}
           setAuthMode={setAuthMode}
           setShowAuthModal={setShowAuthModal}
-          lang={lang}
-          t={t}
         />
 
       </main>

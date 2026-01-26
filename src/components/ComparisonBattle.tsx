@@ -1,5 +1,6 @@
 import React from "react";
 import { XCircle, Zap, Trophy, Brain, TrendingUp, AlertTriangle } from "lucide-react";
+import { useTranslation } from "../context/TranslationContext";
 
 // --- Types & Interfaces ---
 interface StockData {
@@ -36,8 +37,6 @@ interface ComparisonBattleProps {
   token: string | null;
   setAuthMode: (mode: string) => void;
   setShowAuthModal: (show: boolean) => void;
-  lang: string;
-  t: any; // Translation object passed from parent
 }
 
 // --- Helper Functions ---
@@ -85,14 +84,13 @@ export default function ComparisonBattle({
   compareError,
   token,
   setAuthMode,
-  setShowAuthModal,
-  lang,
-  t
+  setShowAuthModal
 }: ComparisonBattleProps) {
+  
+  const { t, isRTL } = useTranslation();
   
   if (!showCompareModal) return null;
 
-  const isRTL = lang === "ar";
   const dir = isRTL ? "rtl" : "ltr";
 
   // Handle Close & Reset
@@ -132,10 +130,10 @@ export default function ComparisonBattle({
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
               <Zap className="w-3 h-3 fill-emerald-500" /> 
-              {isRTL ? "محرك المعركة • 2 رصيد" : "Premium Battle Engine • 2 Credits"}
+              {t.battleEngine}
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter italic leading-none">
-              Financial <span className="text-emerald-500">{isRTL ? "مواجهة" : "Showdown"}</span>
+              {t.battleTitle} <span className="text-emerald-500">{t.battleShowdown}</span>
             </h2>
           </div>
           
@@ -143,7 +141,7 @@ export default function ComparisonBattle({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-blue-400 mx-4 uppercase tracking-[0.2em] block">
-                {isRTL ? "المتحدي (1)" : "Aggressive Challenger"}
+                {t.battleChallenger}
               </label>
               <input 
                 type="text" 
@@ -155,7 +153,7 @@ export default function ComparisonBattle({
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-emerald-400 mx-4 uppercase tracking-[0.2em] block">
-                {isRTL ? "المدافع (2)" : "Value Defender"}
+                {t.battleDefender}
               </label>
               <input 
                 type="text" 
@@ -180,11 +178,11 @@ export default function ComparisonBattle({
               className="w-full bg-white text-black hover:bg-emerald-500 hover:text-white py-6 rounded-2xl font-black text-xl md:text-2xl transition-all disabled:opacity-50 shadow-2xl active:scale-[0.98] uppercase tracking-tighter cursor-pointer flex items-center justify-center gap-3"
             >
               {loadingCompare ? (
-                 <span className="animate-pulse">{isRTL ? "جاري استخراج البيانات..." : "Extracting Alpha..."}</span>
+                 <span className="animate-pulse">{t.battleLoading}</span>
               ) : (
                 <>
                   <TrendingUp className="w-6 h-6" />
-                  {isRTL ? "ابدأ المقارنة العميقة" : "Launch Deep Comparison"}
+                  {t.battleLaunch}
                 </>
               )}
             </button>
@@ -192,7 +190,7 @@ export default function ComparisonBattle({
             <div className="flex justify-center items-center gap-2 opacity-60">
                <Zap className="w-3 h-3 text-emerald-500 fill-emerald-500" />
                <p className="text-center text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">
-                  {isRTL ? "تحليل مدفوع: يخصم 2 رصيد" : "Premium Analysis: 2 Strategy Credits"}
+                  {t.battleCredits}
                </p>
             </div>
           </div>
@@ -206,7 +204,7 @@ export default function ComparisonBattle({
                 {/* Stock 1 */}
                 <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-[2rem] text-center group hover:border-blue-500/30 transition-all relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-blue-500/50"></div>
-                  <span className="block text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest">{compareResult.stock1.symbol} Price</span>
+                  <span className="block text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest">{compareResult.stock1.symbol} {t.battlePrice}</span>
                   <span className="text-4xl font-black text-blue-400 font-mono">${formatNumber(compareResult.stock1.price)}</span>
                 </div>
 
@@ -220,49 +218,52 @@ export default function ComparisonBattle({
                 {/* Stock 2 */}
                 <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-[2rem] text-center group hover:border-emerald-500/30 transition-all relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500/50"></div>
-                  <span className="block text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest">{compareResult.stock2.symbol} Price</span>
+                  <span className="block text-[10px] text-slate-500 font-black uppercase mb-2 tracking-widest">{compareResult.stock2.symbol} {t.battlePrice}</span>
                   <span className="text-4xl font-black text-emerald-400 font-mono">${formatNumber(compareResult.stock2.price)}</span>
                 </div>
               </div>
 
               {/* 2. Professional Metric Matrix Table */}
               <div className="bg-slate-950/50 border border-slate-800 rounded-[2.5rem] overflow-hidden backdrop-blur-md">
-                <table className="w-full text-left">
-                  <thead className="bg-slate-900/80 border-b border-slate-800">
-                    <tr>
-                      <th className={`p-6 text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] ${isRTL ? 'text-right' : 'text-left'}`}>
-                        {isRTL ? "المؤشرات المالية" : "Institutional Matrix"}
-                      </th>
-                      <th className="p-6 text-blue-400 font-black text-center text-xl bg-blue-500/5 font-mono border-l border-slate-800/50">
-                        {compareResult.stock1.symbol}
-                      </th>
-                      <th className="p-6 text-emerald-400 font-black text-center text-xl bg-emerald-500/5 font-mono border-l border-slate-800/50">
-                        {compareResult.stock2.symbol}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/50 font-mono">
-                    {[
-                      { label: "P/E Ratio (Valuation)", v1: compareResult.stock1.pe_ratio, v2: compareResult.stock2.pe_ratio },
-                      { label: "ROE (Profitability)", v1: compareResult.stock1.return_on_equity, v2: compareResult.stock2.return_on_equity, suffix: "%" },
-                      { label: "Rev Growth (YoY)", v1: compareResult.stock1.revenue_growth, v2: compareResult.stock2.revenue_growth, suffix: "%" },
-                      { label: "Net Margin", v1: compareResult.stock1.profit_margins, v2: compareResult.stock2.profit_margins, suffix: "%" },
-                      { label: "Market Cap", v1: (compareResult.stock1.market_cap / 1e9).toFixed(2), v2: (compareResult.stock2.market_cap / 1e9).toFixed(2), suffix: "B" }
-                    ].map((row, i) => (
-                      <tr key={i} className="hover:bg-white/[0.02] transition-colors">
-                        <td className={`p-6 text-slate-400 font-bold text-xs uppercase tracking-widest ${isRTL ? 'text-right' : 'text-left'}`}>
-                          {row.label}
-                        </td>
-                        <td className="p-6 text-white text-center text-lg border-l border-slate-800/50">
-                          {formatNumber(Number(row.v1) || 0)}{row.suffix}
-                        </td>
-                        <td className="p-6 text-white text-center text-lg border-l border-slate-800/50">
-                          {formatNumber(Number(row.v2) || 0)}{row.suffix}
-                        </td>
+                {/* Mobile: Horizontal scroll wrapper */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left min-w-[600px]">
+                    <thead className="bg-slate-900/80 border-b border-slate-800">
+                      <tr>
+                        <th className={`p-4 md:p-6 text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] ${isRTL ? 'text-right' : 'text-left'}`}>
+                          {t.battleMatrix}
+                        </th>
+                        <th className="p-4 md:p-6 text-blue-400 font-black text-center text-lg md:text-xl bg-blue-500/5 font-mono border-l border-slate-800/50">
+                          {compareResult.stock1.symbol}
+                        </th>
+                        <th className="p-4 md:p-6 text-emerald-400 font-black text-center text-lg md:text-xl bg-emerald-500/5 font-mono border-l border-slate-800/50">
+                          {compareResult.stock2.symbol}
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/50 font-mono">
+                      {[
+                        { label: t.battlePERatio, v1: compareResult.stock1.pe_ratio, v2: compareResult.stock2.pe_ratio },
+                        { label: t.battleROE, v1: compareResult.stock1.return_on_equity, v2: compareResult.stock2.return_on_equity, suffix: "%" },
+                        { label: t.battleRevGrowth, v1: compareResult.stock1.revenue_growth, v2: compareResult.stock2.revenue_growth, suffix: "%" },
+                        { label: t.battleNetMargin, v1: compareResult.stock1.profit_margins, v2: compareResult.stock2.profit_margins, suffix: "%" },
+                        { label: t.battleMarketCap, v1: (compareResult.stock1.market_cap / 1e9).toFixed(2), v2: (compareResult.stock2.market_cap / 1e9).toFixed(2), suffix: "B" }
+                      ].map((row, i) => (
+                        <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                          <td className={`p-4 md:p-6 text-slate-400 font-bold text-xs uppercase tracking-widest ${isRTL ? 'text-right' : 'text-left'}`}>
+                            {row.label}
+                          </td>
+                          <td className="p-4 md:p-6 text-white text-center text-base md:text-lg border-l border-slate-800/50">
+                            {formatNumber(Number(row.v1) || 0)}{row.suffix}
+                          </td>
+                          <td className="p-4 md:p-6 text-white text-center text-base md:text-lg border-l border-slate-800/50">
+                            {formatNumber(Number(row.v2) || 0)}{row.suffix}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {/* 3. Deep Analysis Verdict (The Big Winner) */}
@@ -276,10 +277,10 @@ export default function ComparisonBattle({
                    </div>
                    <div>
                      <h4 className="text-white text-xl md:text-3xl font-black uppercase tracking-tighter italic">
-                        {isRTL ? "الحكم النهائي" : "AI Analysis Verdict"}
+                        {t.battleVerdict}
                      </h4>
                      <p className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.4em]">
-                        {isRTL ? "أطروحة الفوز الحصرية" : "Proprietary Winning Thesis"}
+                        {t.battleThesis}
                      </p>
                    </div>
                 </div>
@@ -294,15 +295,11 @@ export default function ComparisonBattle({
   <div className="flex items-center gap-2 mb-3 text-red-500">
     <AlertTriangle className="w-5 h-5" />
     <span className="font-black uppercase text-[10px] tracking-widest">
-      {isRTL ? "تحذير مخاطر وإخلاء مسؤولية" : "Risk Disclosure & Disclaimer"}
+      {t.battleRiskTitle}
     </span>
   </div>
   <p className="text-[10px] md:text-xs text-slate-500 leading-relaxed font-medium italic">
-    {isRTL ? (
-      "هذا التقرير تم إنشاؤه بواسطة الذكاء الاصطناعي لأغراض تعليمية ومعلوماتية فقط، ولا يشكل نصيحة استثمارية أو دعوة للشراء أو البيع. الاستثمار في الأسواق المالية ينطوي على مخاطر عالية قد تؤدي لفقدان رأس المال. منصة TamtechAI والشركات التابعة لها لا تتحمل أي مسؤولية عن القرارات المالية المتخذة بناءً على هذا التحليل. يرجى دائماً استشارة مستشار مالي مرخص قبل اتخاذ أي قرار استثماري."
-    ) : (
-      "This AI-generated report is for educational and informational purposes only and does not constitute financial, investment, or legal advice. Trading and investing in financial markets involve significant risk of loss. TamtechAI and its affiliates are not responsible for any financial decisions made based on this analysis. Past performance is not indicative of future results. Always consult with a licensed financial advisor before making investment decisions."
-    )}
+    {t.battleRiskDesc}
   </p>
 </div>
                 </div>
@@ -312,11 +309,11 @@ export default function ComparisonBattle({
                   <div className="bg-slate-950 border border-slate-800 px-8 py-4 rounded-full flex items-center gap-3 shadow-lg">
                     <div className="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></div>
                     <span className="text-white font-black uppercase text-xs tracking-widest">
-                      {isRTL ? "الفائز:" : "Winner:"} <span className="text-emerald-400">{compareResult.analysis.winner}</span>
+                      {t.battleWinner} <span className="text-emerald-400">{compareResult.analysis.winner}</span>
                     </span>
                   </div>
                   <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest flex items-center gap-2">
-                    <Zap className="w-3 h-3" /> Verified Institutional Data Stream
+                    <Zap className="w-3 h-3" /> {t.battleDataStream}
                   </div>
                 </div>
               </div>

@@ -394,6 +394,8 @@ export const fullTranslations = {
     footerDescription: "Leading stock analysis platform powered by advanced AI technology.",
     footerSecurityBadge: "Enterprise Grade",
     footerSecurityDesc: "Bank-grade encryption to ensure your financial privacy is fully protected.",
+    footerEnterpriseGrade: "Enterprise Grade Security",
+    footerEncryptionDesc: "Bank-grade encryption to ensure your financial privacy is fully protected.",
     
     // News Page
     newsDesk: "News Desk",
@@ -863,6 +865,8 @@ export const fullTranslations = {
     footerDescription: "منصة رائدة لتحليل الأسهم باستخدام أحدث تقنيات الذكاء الاصطناعي.",
     footerSecurityBadge: "مستوى مؤسسي",
     footerSecurityDesc: "تشفير بيانات بمستوى بنكي عالمي لضمان حماية خصوصيتك المالية.",
+    footerEnterpriseGrade: "أمان بمستوى مؤسسي",
+    footerEncryptionDesc: "تشفير بيانات بمستوى بنكي عالمي لضمان حماية خصوصيتك المالية.",
     
     // Tooltips
     tooltips: {
@@ -1298,6 +1302,8 @@ export const fullTranslations = {
     footerDescription: "Plataforma líder de análisis de acciones impulsada por tecnología de IA avanzada.",
     footerSecurityBadge: "Grado Empresarial",
     footerSecurityDesc: "Cifrado de grado bancario para garantizar que su privacidad financiera esté completamente protegida.",
+    footerEnterpriseGrade: "Seguridad de Nivel Empresarial",
+    footerEncryptionDesc: "Cifrado de grado bancario para garantizar que su privacidad financiera esté completamente protegida.",
     
     // Tooltips
     tooltips: {
@@ -1735,6 +1741,8 @@ export const fullTranslations = {
     footerDescription: "פלטפורמה מובילה לניתוח מניות מונעת על ידי טכנולוגיית בינה מלאכותית מתקדמת.",
     footerSecurityBadge: "רמה משרדית",
     footerSecurityDesc: "הצפנה ברמה בנקאית כדי להבטיח שפרטיותך הפיננסית מוגנת באופן מלא.",
+    footerEnterpriseGrade: "אבטחה ברמה ארגונית",
+    footerEncryptionDesc: "הצפנה ברמה בנקאית כדי להבטיח שפרטיותך הפיננסית מוגנת באופן מלא.",
     
     // Tooltips
     tooltips: {
@@ -2136,6 +2144,8 @@ export const fullTranslations = {
     footerDescription: "Ведущая платформа анализа акций на основе передовых технологий ИИ.",
     footerSecurityBadge: "Корпоративный уровень",
     footerSecurityDesc: "Шифрование банковского уровня для полной защиты вашей финансовой конфиденциальности.",
+    footerEnterpriseGrade: "Безопасность корпоративного уровня",
+    footerEncryptionDesc: "Шифрование банковского уровня для полной защиты вашей финансовой конфиденциальности.",
     
     // News Page
     newsDesk: "Отдел новостей",
@@ -2571,6 +2581,8 @@ export const fullTranslations = {
     footerDescription: "Piattaforma leader di analisi azionaria potenziata da tecnologia di IA avanzata.",
     footerSecurityBadge: "Livello Aziendale",
     footerSecurityDesc: "Crittografia di grado bancario per garantire che la tua privacy finanziaria sia completamente protetta.",
+    footerEnterpriseGrade: "Sicurezza di livello aziendale",
+    footerEncryptionDesc: "Crittografia di grado bancario per garantire che la tua privacy finanziaria sia completamente protetta.",
     
     // News Page
     newsDesk: "Redazione Notizie",

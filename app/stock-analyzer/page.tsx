@@ -26,6 +26,15 @@ export default function StockAnalyzerPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Analyze any stock instantly with our advanced AI engine. Get comprehensive financial health scores, risk assessments, and investment insights for free.');
     }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/stock-analyzer');
   }, []);
   const [guestTrials, setGuestTrials] = useState(3);
   const [showAuthModal, setShowAuthModal] = useState(false);

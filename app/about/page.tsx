@@ -14,6 +14,15 @@ export default function AboutUsPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Learn about Tamtech Finance\'s mission to democratize institutional-grade market intelligence through advanced AI technology. Empowering investors worldwide.');
     }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/about');
   }, []);
 
   return (

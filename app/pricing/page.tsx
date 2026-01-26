@@ -11,6 +11,15 @@ export default function PricingPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Get unlimited access to AI-powered stock analysis. Flexible credit packages starting at $9. Try 3 analyses free. No subscription required.');
     }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/pricing');
   }, []);
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-200 pb-20 selection:bg-blue-500/30">

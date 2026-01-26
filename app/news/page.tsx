@@ -16,6 +16,15 @@ export default function NewsPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Stay updated with AI-curated market news, stock analysis, and financial insights. Real-time coverage of major market movements and trends.');
     }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/news');
   }, []);
   
   return (

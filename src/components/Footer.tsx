@@ -34,6 +34,7 @@ export default function Footer() {
             <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Platform</h4>
             <ul className="space-y-4 text-sm text-slate-400">
               <li><Link href="/" className="hover:text-blue-500">Home</Link></li>
+              <li><Link href="/about" className="hover:text-blue-500">About Us</Link></li>
               <li><Link href="/pricing" className="hover:text-blue-500">Pricing</Link></li>
               <li><Link href="/contact" className="hover:text-blue-500">Contact</Link></li>
             </ul>

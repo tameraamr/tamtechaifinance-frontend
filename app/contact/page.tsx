@@ -12,6 +12,15 @@ export default function ContactPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Need help with AI stock analysis? Contact Tamtech Finance support team. Fast response within 24 hours. Email us at tamtecht@gmail.com');
     }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/contact');
   }, []);
 
   const handleEmailSend = () => {

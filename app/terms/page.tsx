@@ -14,6 +14,15 @@ export default function TermsPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Terms and conditions for using Tamtech Finance AI stock analysis platform. Read our user agreement and service terms.');
     }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/terms');
   }, []);
 
   return (

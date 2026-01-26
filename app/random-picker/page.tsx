@@ -31,6 +31,22 @@ export default function RandomPickerPage() {
     const savedGuest = localStorage.getItem("guest_trials");
     if (savedGuest) setGuestTrials(parseInt(savedGuest));
     else localStorage.setItem("guest_trials", "3");
+    
+    // SEO: Set page metadata
+    document.title = "Random Stock Picker | Discover New Investment Opportunities - Tamtech Finance";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Discover random stocks with AI analysis. Explore new investment opportunities and get instant stock health scores with our random stock picker tool.');
+    }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/random-picker');
   }, []);
 
   const spinTicker = async () => {

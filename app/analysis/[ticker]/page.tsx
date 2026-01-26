@@ -207,6 +207,23 @@ export default function AnalysisPage() {
           const parsedResult = JSON.parse(storedResult);
           setResult(parsedResult);
           setLoading(false);
+          
+          // SEO: Update page metadata dynamically
+          const companyName = parsedResult?.company_name || ticker.toUpperCase();
+          document.title = `${companyName} (${ticker.toUpperCase()}) Analysis | AI Stock Report - Tamtech Finance`;
+          const metaDescription = document.querySelector('meta[name="description"]');
+          if (metaDescription) {
+            metaDescription.setAttribute('content', `Comprehensive AI analysis for ${companyName} (${ticker.toUpperCase()}). Get financial health score, risk assessment, SWOT analysis, and investment insights.`);
+          }
+          
+          // Add canonical tag
+          let canonical = document.querySelector('link[rel="canonical"]');
+          if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonical);
+          }
+          canonical.setAttribute('href', `https://tamtech-finance.com/analysis/${ticker.toLowerCase()}`);
 
           // Clean up both localStorage and sessionStorage after successful load
           localStorage.removeItem('analysis_result');

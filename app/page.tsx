@@ -321,6 +321,23 @@ export default function Home() {
     };
     fetchPulse();
     const interval = setInterval(fetchPulse, 60000);
+    
+    // SEO: Set page metadata and canonical
+    document.title = "Tamtech Finance | AI-Powered Stock Analysis & Insights";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.');
+    }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com');
+    
     return () => clearInterval(interval);
   }, []);
 

@@ -14,6 +14,15 @@ export default function PrivacyPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Learn how Tamtech Finance protects your data. Comprehensive privacy policy covering data collection, usage, and security measures.');
     }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/privacy');
   }, []);
 
   return (

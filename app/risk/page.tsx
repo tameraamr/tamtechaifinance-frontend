@@ -1,9 +1,26 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ShieldAlert, Info, Scale, AlertTriangle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RiskDisclosure() {
+  useEffect(() => {
+    document.title = "Risk Disclosure & Disclaimer | Investment Warning - Tamtech Finance";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Important risk disclosure and legal disclaimer for AI stock analysis. Investing involves risk. Read our full disclaimer before using Tamtech Finance.');
+    }
+    
+    // Add canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', 'https://tamtech-finance.com/risk');
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-200 font-sans pb-20">
       <div className="border-b border-slate-800 bg-[#0b1121]/50 backdrop-blur-md sticky top-0 z-50">

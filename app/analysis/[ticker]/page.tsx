@@ -132,7 +132,7 @@ const analysisProgressMessages = [
   "Finalizing comprehensive report..."
 ];
 
-const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: any) => {
+const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: { label: string; value: number; metricKey: string; tooltipKey?: string; suffix?: string }) => {
   const { t } = useTranslation();
   const [showTooltip, setShowTooltip] = useState(false);
   
@@ -159,7 +159,7 @@ const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: any) =
     }
   };
 
-  const tooltipText = tooltipKey && t.tooltips && t.tooltips[tooltipKey] ? t.tooltips[tooltipKey] : "";
+  const tooltipText = tooltipKey && t.tooltips && (t.tooltips as any)[tooltipKey] ? (t.tooltips as any)[tooltipKey] : "";
 
   return (
     <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-3 md:p-4 hover:bg-slate-800/50 transition-all group relative">

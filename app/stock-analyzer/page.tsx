@@ -133,14 +133,14 @@ export default function StockAnalyzerPage() {
     setUserTyping(false);
 
     // Check credits locally for logged-in users
-    if (token && credits <= 0) {
+    if (isLoggedIn && credits <= 0) {
       router.push("/?paywall=true");
       setLoading(false);
       return;
     }
 
     // Check guest trials
-    if (!token && guestTrials <= 0) {
+    if (!isLoggedIn && guestTrials <= 0) {
       setShowAuthModal(true);
       setLoading(false);
       return;

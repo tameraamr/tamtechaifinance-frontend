@@ -1,11 +1,12 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Lightbulb, TrendingUp, ShieldCheck, Cpu, UserCheck } from 'lucide-react';
+import { ArrowLeft, Lightbulb, TrendingUp, ShieldCheck, Cpu, UserCheck, Menu, X } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function AboutUsPage() {
   const isRTL = false;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     document.title = "About Us | AI-Powered Financial Intelligence - Tamtech Finance";
@@ -17,17 +18,49 @@ export default function AboutUsPage() {
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-slate-200 font-sans pb-20">
-      {/* Header (يمكنك استبداله بالـ Navbar الرئيسي لموقعك إذا كان متاحاً كمكون) */}
-      <div className="border-b border-slate-800 bg-[#0b1121]/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-bold">Back to Home</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Lightbulb className="text-blue-500 w-5 h-5" />
-            <span className="font-bold text-lg">About Us</span>
+      {/* Header */}
+      <div className="border-b border-slate-800 bg-[#0b1121]/95 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="h-16 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors flex-shrink-0">
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-bold hidden sm:inline">Back to Home</span>
+              <span className="text-sm font-bold sm:hidden">Back</span>
+            </Link>
+            <div className="flex items-center gap-2">
+              <Lightbulb className="text-blue-500 w-5 h-5" />
+              <span className="font-bold text-base md:text-lg">About Us</span>
+            </div>
+            
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            
+            {/* Desktop Links */}
+            <div className="hidden md:flex items-center gap-3">
+              <Link href="/" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                Home
+              </Link>
+            </div>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-slate-800 py-3 space-y-2">
+              <Link 
+                href="/" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-2.5 rounded-lg transition-all text-slate-300"
+              >
+                🏠 Home
+              </Link>
+            </div>
+          )}
         </div>
       </div>
       {/* End Header */}

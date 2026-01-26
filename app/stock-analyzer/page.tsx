@@ -79,8 +79,18 @@ export default function StockAnalyzerPage() {
 
   const fetchRandomStock = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/suggest-stock`);
+      // ✅ NEW ENDPOINT V2 - GUARANTEED FRESH
+      const res = await fetch(`${BASE_URL}/get-random-ticker-v2?bust=${Date.now()}_${Math.random()}`, {
+        cache: 'no-store',
+        next: { revalidate: 0 },
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
       const data = await res.json();
+      console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
       if (data.ticker) {
         setTicker(data.ticker);
         toast.success(`Random pick: ${data.ticker}`, { icon: '🎲' });

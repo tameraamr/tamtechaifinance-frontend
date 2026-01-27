@@ -77,11 +77,19 @@ export default function Navbar({ guestTrials }: NavbarProps) {
             {/* Language Selector - Hidden on very small screens */}
             <LanguageSelector />
 
-            {/* Logout Button - Desktop */}
-            {isLoggedIn && (
-              <button onClick={logout} className="hidden md:block p-2 text-slate-400 hover:text-red-400 transition-colors">
+            {/* Auth Buttons - Desktop */}
+            {isLoggedIn ? (
+              <button onClick={logout} className="hidden md:block p-2 text-slate-400 hover:text-red-400 transition-colors" title="Logout">
                 <LogOut className="w-5 h-5" />
               </button>
+            ) : (
+              <Link 
+                href="/#auth-section" 
+                className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-4 py-2 rounded-lg transition-all text-white text-xs font-bold"
+              >
+                <User className="w-3.5 h-3.5" />
+                Login
+              </Link>
             )}
 
             {/* Mobile Menu Toggle */}
@@ -138,8 +146,8 @@ export default function Navbar({ guestTrials }: NavbarProps) {
               <LanguageSelector />
             </div>
 
-            {/* Logout Button - Mobile */}
-            {isLoggedIn && (
+            {/* Auth Buttons - Mobile */}
+            {isLoggedIn ? (
               <button 
                 onClick={() => {
                   logout();
@@ -150,6 +158,15 @@ export default function Navbar({ guestTrials }: NavbarProps) {
                 <LogOut className="w-4 h-4" />
                 {t.logout}
               </button>
+            ) : (
+              <Link 
+                href="/#auth-section" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-4 py-3 rounded-lg transition-all text-white"
+              >
+                <User className="w-4 h-4" />
+                Login / Sign Up
+              </Link>
             )}
           </div>
         )}

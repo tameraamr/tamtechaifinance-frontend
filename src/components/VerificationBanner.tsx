@@ -13,7 +13,8 @@ export default function VerificationBanner() {
 
   // Only show banner if user is logged in but not verified
   // Don't show during initial auth loading to prevent flicker
-  if (isLoading || !isLoggedIn || isVerified) {
+  // Explicit check: user must exist, be logged in, NOT verified, and auth must be done loading
+  if (!user || isLoading || !isLoggedIn || isVerified || user.is_verified === 1) {
     return null;
   }
 

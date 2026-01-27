@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://tamtechaifinance-backend-production.up.railway.app/:path*',
+        destination: 'http://localhost:8000/:path*',
       },
     ];
   },

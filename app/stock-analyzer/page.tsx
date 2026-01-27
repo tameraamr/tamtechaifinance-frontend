@@ -10,7 +10,7 @@ import Footer from "../../src/components/Footer";
 import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
 
-const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
+const BASE_URL = "http://localhost:8000";
 
 export default function StockAnalyzerPage() {
   const router = useRouter();
@@ -147,9 +147,16 @@ export default function StockAnalyzerPage() {
     }
 
     try {
+      // Add timeout to prevent indefinite hanging (60 seconds for AI generation)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      
       const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { 
-        credentials: 'include' // 🔒 httpOnly cookie sent automatically
+        credentials: 'include', // 🔒 httpOnly cookie sent automatically
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       // IP-based guest trial limit (server-side)
       if (res.status === 403) {
@@ -165,11 +172,24 @@ export default function StockAnalyzerPage() {
       }
 
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.detail || "Analysis failed");
+        let errorMessage = "Analysis failed";
+        try {
+          const error = await res.json();
+          errorMessage = error.detail || errorMessage;
+        } catch {
+          // Response is not JSON (likely HTML error page)
+          const text = await res.text();
+          errorMessage = text.substring(0, 100) || `Server error (${res.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonError) {
+        throw new Error("Invalid response from server. Please try again.");
+      }
       
       // Save to BOTH localStorage AND sessionStorage for navigation (with language)
       localStorage.setItem("analysis_result", JSON.stringify(data));
@@ -191,8 +211,14 @@ export default function StockAnalyzerPage() {
       // Navigate to results page
       router.push(`/analysis/${targetTicker}`);
     } catch (err: any) {
-      setAuthError(err.message);
-      toast.error(err.message || "Analysis failed");
+      // Handle abort/timeout errors
+      if (err.name === 'AbortError') {
+        setAuthError("Request timed out. The server is taking too long to respond.");
+        toast.error("Request timed out. Please try again.");
+      } else {
+        setAuthError(err.message);
+        toast.error(err.message || "Analysis failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -264,6 +290,19 @@ export default function StockAnalyzerPage() {
                   )}
 
                   <div className="w-full relative">
+                    {/* 💳 Credit Warning Badge */}
+                    <div className="mb-3 bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5 flex items-center gap-2">
+                      <div className="bg-amber-500/20 rounded-full p-1.5">
+                        <Zap className="w-3.5 h-3.5 text-amber-400" />
+                      </div>
+                      <span className="text-amber-200 text-xs font-semibold">
+                        {isLoggedIn 
+                          ? `Each analysis costs 1 credit • You have ${credits} ${credits === 1 ? 'credit' : 'credits'} remaining`
+                          : `Free trial: ${guestTrials} ${guestTrials === 1 ? 'analysis' : 'analyses'} left • Register for more`
+                        }
+                      </span>
+                    </div>
+
                     <div className="flex items-center bg-slate-950/70 border border-slate-800 rounded-xl overflow-hidden shadow-lg focus-within:border-blue-500/50 transition-all">
                       <input
                         id="ticker-input"

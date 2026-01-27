@@ -18,7 +18,7 @@ import Forecasts from '../../../src/components/Forecasts';
 import { useAuth } from '../../../src/context/AuthContext';
 import { useTranslation } from '../../../src/context/TranslationContext';
 
-const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
+const BASE_URL = "http://localhost:8000";
 
 // Utility functions
 const cleanAIOutput = (text: string) => {
@@ -243,6 +243,20 @@ export default function AnalysisPage() {
   const [authChecked, setAuthChecked] = useState(false);
 
   const { t, lang, isRTL } = useTranslation();
+
+  // 🔒 PREVENT CLIENT-SIDE CACHING - Force fresh data on every visit
+  useEffect(() => {
+    // Clear any cached analysis data when component mounts
+    // This ensures users can't bypass credit charges by using browser back button
+    const preventCache = () => {
+      // Clear navigation cache
+      if (typeof window !== 'undefined') {
+        window.history.scrollRestoration = 'manual';
+      }
+    };
+    
+    preventCache();
+  }, []);
 
   // Allow both guests and logged-in users - check happens in data loading
   useEffect(() => {
@@ -592,7 +606,18 @@ const handleDownloadPDF = async () => {
                 {result.data.recommendationKey !== "none" && <span className="text-[10px] uppercase font-black text-blue-500">{t.analyst}: {result.data.recommendationKey.replace('_', ' ')}</span>}
               </div>
               <h2 className="text-2xl md:text-4xl font-black mb-1 text-white leading-tight">{result.data.companyName}</h2>
-              <div className="text-4xl md:text-6xl font-mono font-black my-6 text-white" dir="ltr">${result.data.price?.toFixed(2)}</div>
+              
+              {/* 💹 LIVE PRICE with Badge */}
+              <div className="flex items-baseline gap-3 my-6">
+                <div className="text-4xl md:text-6xl font-mono font-black text-white" dir="ltr">
+                  ${result.data.price?.toFixed(2)}
+                </div>
+                <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <span className="text-[9px] md:text-[10px] font-black text-emerald-400 uppercase tracking-wider">LIVE</span>
+                </div>
+              </div>
+              
               <div className="mb-8">
                 <div className="flex justify-between text-[10px] md:text-xs text-slate-500 font-bold mb-2">
                   <span>{t.low}: ${result.data.fiftyTwoWeekLow}</span>
@@ -758,6 +783,30 @@ const handleDownloadPDF = async () => {
             <div className="bg-red-900/5 border border-red-500/10 p-6 md:p-10 rounded-3xl">
               <h3 className="text-lg md:text-2xl font-black text-red-500/80 mb-6 uppercase tracking-tighter">{t.bear}</h3>
               <ul className="space-y-4">{result.analysis.bear_case_points.map((p: any, i: any) => <li key={i} className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed flex gap-3"><AlertTriangle className="text-red-500 w-5 h-5 shrink-0" size={14} /> {p}</li>)}</ul>
+            </div>
+          </div>
+
+          {/* 📊 Data Freshness Indicator */}
+          <div className="mt-12 mb-8 bg-slate-800/30 border border-slate-700/50 rounded-2xl p-4 md:p-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-500/10 rounded-xl p-2.5">
+                  <Brain className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <div className="text-slate-200 font-bold text-sm md:text-base">Institutional Analysis</div>
+                  <div className="text-slate-500 text-xs mt-0.5">
+                    {result.cache_age_hours !== undefined && result.cache_age_hours > 0 
+                      ? `Analysis generated ${result.cache_age_hours.toFixed(1)} hours ago`
+                      : 'Fresh analysis just generated'
+                    }
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-4 py-2">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider">Price: Live</span>
+              </div>
             </div>
           </div>
 

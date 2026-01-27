@@ -122,11 +122,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = (userData: User, userCredits: number) => {
     // No need to store token - it's in httpOnly cookie
+    console.log('🔐 LOGIN - User data received:', userData);
+    console.log('🔐 LOGIN - is_verified value:', userData.is_verified, 'Type:', typeof userData.is_verified);
     setUser(userData);
     setCredits(userCredits);
     setIsAuthenticated(true);
     setSuppressBanner(true);
-    setTimeout(() => setSuppressBanner(false), 1000);
+    setTimeout(() => setSuppressBanner(false), 2000); // Increased to 2 seconds
   };
 
   const logout = async () => {

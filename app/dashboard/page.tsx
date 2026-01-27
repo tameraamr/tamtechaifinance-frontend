@@ -6,7 +6,7 @@ import {
   TrendingUp, TrendingDown, RefreshCw, Eye, Clock, 
   AlertTriangle, CheckCircle, XCircle, Zap, BarChart3, 
   User, CreditCard, ShieldCheck, ShieldAlert, Calendar,
-  ArrowLeft, Activity, Brain, ChevronDown
+  ArrowLeft, Activity, Brain, ChevronDown, Settings, Lock, Mail, UserCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from 'react-hot-toast';
@@ -27,6 +27,14 @@ interface AnalysisItem {
   created_at: string;
   is_expired: boolean;
   hours_ago: number;
+}
+
+interface UserProfile {
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  credits: number;
+  is_verified: boolean;
 }
 
 interface RefreshConfirmModalProps {
@@ -133,11 +141,22 @@ export default function DashboardPage() {
   const { user, credits, isLoggedIn, isVerified, isLoading, updateCredits } = useAuth();
   const { t } = useTranslation();
   
+  const [activeTab, setActiveTab] = useState<'history' | 'settings'>('history');
   const [history, setHistory] = useState<AnalysisItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshingTicker, setRefreshingTicker] = useState<string | null>(null);
   const [showRefreshModal, setShowRefreshModal] = useState(false);
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null);
+  
+  // Settings state
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // Fetch analysis history
   useEffect(() => {
@@ -158,7 +177,28 @@ export default function DashboardPage() {
     }
 
     fetchHistory();
+    fetchUserProfile();
   }, [isLoggedIn, isVerified, isLoading, router]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/users/me`, {
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to load user profile");
+      }
+
+      const data = await res.json();
+      setUserProfile(data);
+      setFirstName(data.first_name || "");
+      setLastName(data.last_name || "");
+    } catch (err: any) {
+      console.error("Profile fetch error:", err);
+      toast.error("Failed to load user profile");
+    }
+  };
 
   const fetchHistory = async () => {
     try {
@@ -244,6 +284,84 @@ export default function DashboardPage() {
     }
   };
 
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingProfile(true);
+
+    try {
+      const res = await fetch(`${BASE_URL}/users/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          first_name: firstName,
+          last_name: lastName,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to update profile");
+      }
+
+      const data = await res.json();
+      toast.success("✅ Profile updated successfully!");
+      await fetchUserProfile();
+    } catch (err: any) {
+      console.error("Profile update error:", err);
+      toast.error(err.message || "Failed to update profile");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match!");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long!");
+      return;
+    }
+
+    setChangingPassword(true);
+
+    try {
+      const res = await fetch(`${BASE_URL}/users/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to change password");
+      }
+
+      toast.success("✅ Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      console.error("Password change error:", err);
+      toast.error(err.message || "Failed to change password");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   const getVerdictColor = (verdict: string) => {
     const v = verdict.toUpperCase();
     if (v.includes('BUY') || v.includes('STRONG BUY')) return 'text-green-400';
@@ -294,67 +412,100 @@ export default function DashboardPage() {
             <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
               Your Dashboard
             </h1>
-            <p className="text-slate-400">Track your AI stock analysis history</p>
+            <p className="text-slate-400">Manage your account and track your AI stock analysis</p>
           </motion.div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mt-6 border-b border-slate-800">
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`px-6 py-3 font-bold text-sm transition-all ${
+                activeTab === 'history'
+                  ? 'text-blue-400 border-b-2 border-blue-400'
+                  : 'text-slate-400 hover:text-slate-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <BarChart3 size={18} />
+                Analysis History
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`px-6 py-3 font-bold text-sm transition-all ${
+                activeTab === 'settings'
+                  ? 'text-purple-400 border-b-2 border-purple-400'
+                  : 'text-slate-400 hover:text-slate-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Settings size={18} />
+                Settings
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          {/* Credits Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-gradient-to-br from-blue-900/40 via-slate-900 to-blue-900/20 border border-blue-500/30 rounded-2xl p-6 shadow-xl"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <p className="text-slate-400 text-sm uppercase tracking-wide font-bold">Available Credits</p>
-                <p className="text-4xl font-black text-blue-400 mt-1">{credits}</p>
-              </div>
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-400/10 border border-blue-400/40 flex items-center justify-center">
-                <CreditCard className="text-blue-400" size={28} />
-              </div>
-            </div>
-            <Link 
-              href="/pricing"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-bold transition"
+        {activeTab === 'history' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {/* Credits Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-gradient-to-br from-blue-900/40 via-slate-900 to-blue-900/20 border border-blue-500/30 rounded-2xl p-6 shadow-xl"
             >
-              Get More Credits →
-            </Link>
-          </motion.div>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-slate-400 text-sm uppercase tracking-wide font-bold">Available Credits</p>
+                  <p className="text-4xl font-black text-blue-400 mt-1">{credits}</p>
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-400/10 border border-blue-400/40 flex items-center justify-center">
+                  <CreditCard className="text-blue-400" size={28} />
+                </div>
+              </div>
+              <Link 
+                href="/pricing"
+                className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-bold transition"
+              >
+                Get More Credits →
+              </Link>
+            </motion.div>
 
-          {/* Account Status Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className={`bg-gradient-to-br ${isVerified ? 'from-green-900/40 via-slate-900 to-green-900/20 border-green-500/30' : 'from-orange-900/40 via-slate-900 to-orange-900/20 border-orange-500/30'} border rounded-2xl p-6 shadow-xl`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <p className="text-slate-400 text-sm uppercase tracking-wide font-bold">Account Status</p>
-                <p className={`text-xl font-black mt-1 ${isVerified ? 'text-green-400' : 'text-orange-400'}`}>
-                  {isVerified ? 'Verified' : 'Unverified'}
-                </p>
+            {/* Account Status Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className={`bg-gradient-to-br ${isVerified ? 'from-green-900/40 via-slate-900 to-green-900/20 border-green-500/30' : 'from-orange-900/40 via-slate-900 to-orange-900/20 border-orange-500/30'} border rounded-2xl p-6 shadow-xl`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-slate-400 text-sm uppercase tracking-wide font-bold">Account Status</p>
+                  <p className={`text-xl font-black mt-1 ${isVerified ? 'text-green-400' : 'text-orange-400'}`}>
+                    {isVerified ? 'Verified' : 'Unverified'}
+                  </p>
+                </div>
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${isVerified ? 'from-green-600/30 to-green-400/10 border-green-400/40' : 'from-orange-600/30 to-orange-400/10 border-orange-400/40'} border flex items-center justify-center`}>
+                  {isVerified ? <ShieldCheck className="text-green-400" size={28} /> : <ShieldAlert className="text-orange-400" size={28} />}
+                </div>
               </div>
-              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${isVerified ? 'from-green-600/30 to-green-400/10 border-green-400/40' : 'from-orange-600/30 to-orange-400/10 border-orange-400/40'} border flex items-center justify-center`}>
-                {isVerified ? <ShieldCheck className="text-green-400" size={28} /> : <ShieldAlert className="text-orange-400" size={28} />}
-              </div>
-            </div>
-            <p className="text-slate-300 text-sm">
-              {user?.email}
-            </p>
-          </motion.div>
-        </div>
+              <p className="text-slate-300 text-sm">
+                {user?.email}
+              </p>
+            </motion.div>
+          </div>
+        )}
 
         {/* Analysis History */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="bg-gradient-to-br from-slate-900 via-slate-900 to-purple-900/20 border border-slate-800 rounded-2xl p-6 shadow-2xl"
-        >
+        {activeTab === 'history' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="bg-gradient-to-br from-slate-900 via-slate-900 to-purple-900/20 border border-slate-800 rounded-2xl p-6 shadow-2xl"
+          >
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-black text-white">Analysis History</h2>
@@ -543,6 +694,194 @@ export default function DashboardPage() {
             </div>
           )}
         </motion.div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
+            {/* User Profile Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900/20 border border-slate-800 rounded-2xl p-6 shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600/30 to-blue-400/10 border border-blue-400/40 flex items-center justify-center">
+                  <UserCircle className="text-blue-400" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-white">Profile Information</h2>
+                  <p className="text-slate-400 text-sm">Update your personal details</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSaveProfile} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-300 text-sm font-bold mb-2">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-300 text-sm font-bold mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 text-sm font-bold mb-2">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                    <input
+                      type="email"
+                      value={userProfile?.email || user?.email || ""}
+                      disabled
+                      className="w-full bg-slate-800/30 border border-slate-700/50 rounded-lg pl-12 pr-4 py-3 text-slate-400 cursor-not-allowed"
+                    />
+                  </div>
+                  <p className="text-slate-500 text-xs mt-1">Email cannot be changed</p>
+                </div>
+
+                <div className="flex items-center gap-2 p-4 bg-green-900/20 border border-green-500/30 rounded-xl">
+                  <ShieldCheck className="text-green-400" size={20} />
+                  <div>
+                    <p className="text-green-400 font-bold text-sm">Account Verified</p>
+                    <p className="text-slate-400 text-xs">Your email has been verified</p>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={savingProfile}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {savingProfile ? (
+                    <>
+                      <RefreshCw size={18} className="animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle size={18} />
+                      Save Profile
+                    </>
+                  )}
+                </button>
+              </form>
+            </motion.div>
+
+            {/* Password Change Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-gradient-to-br from-slate-900 via-slate-900 to-purple-900/20 border border-slate-800 rounded-2xl p-6 shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600/30 to-purple-400/10 border border-purple-400/40 flex items-center justify-center">
+                  <Lock className="text-purple-400" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-white">Change Password</h2>
+                  <p className="text-slate-400 text-sm">Update your account password</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleChangePassword} className="space-y-4">
+                <div>
+                  <label className="block text-slate-300 text-sm font-bold mb-2">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition"
+                    placeholder="Enter your current password"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 text-sm font-bold mb-2">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition"
+                    placeholder="Enter new password (min 8 characters)"
+                    required
+                    minLength={8}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 text-sm font-bold mb-2">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition"
+                    placeholder="Confirm your new password"
+                    required
+                    minLength={8}
+                  />
+                </div>
+
+                <div className="flex items-start gap-2 p-4 bg-blue-900/20 border border-blue-500/30 rounded-xl">
+                  <AlertTriangle className="text-blue-400 flex-shrink-0 mt-0.5" size={18} />
+                  <div>
+                    <p className="text-blue-400 font-bold text-sm">Password Requirements</p>
+                    <ul className="text-slate-400 text-xs mt-1 space-y-1">
+                      <li>• Minimum 8 characters long</li>
+                      <li>• Use a strong, unique password</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={changingPassword}
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-bold py-3 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {changingPassword ? (
+                    <>
+                      <RefreshCw size={18} className="animate-spin" />
+                      Changing Password...
+                    </>
+                  ) : (
+                    <>
+                      <Lock size={18} />
+                      Change Password
+                    </>
+                  )}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
       </main>
 
       <Footer />

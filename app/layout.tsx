@@ -24,10 +24,14 @@ export const metadata: Metadata = {
   description: "Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.",
   keywords: ["Stock Analysis", "AI Finance", "Market Intelligence", "Investment Tool", "Tamtech Finance", "Financial Analysis AI"],
   
-  // الأيقونة
+  // الأيقونة - Using logo.PNG for maximum compatibility
   icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo.PNG", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/logo.PNG",
+    shortcut: "/favicon.ico",
   },
 
   // كود التحقق من جوجل سيرتش كونسول (من الملف الذي رفعته)
@@ -116,6 +120,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        {/* Explicit Favicon Links for Maximum Browser Compatibility */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/logo.PNG" />
+        <link rel="apple-touch-icon" href="/logo.PNG" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

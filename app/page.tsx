@@ -416,19 +416,29 @@ export default function Home() {
           if (loginResponse.ok) {
             const loginData = await loginResponse.json();
             login(loginData.user, loginData.credits);
-            toast.success("✅ Account created! Please verify your email to use the analyzer.", {
-              duration: 6000,
+            toast.success("✅ Account created! Please check your email to verify your account.", {
+              duration: 7000,
               icon: "📧"
             });
+            setShowAuthModal(false);
+          } else {
+            const errorData = await loginResponse.json();
+            console.error("Auto-login failed:", errorData);
+            toast.success("✅ Account created! Please log in to continue.", {
+              duration: 5000
+            });
+            setShowAuthModal(false);
+            // Switch to login mode so user can log in
+            setAuthMode("login");
+            setTimeout(() => setShowAuthModal(true), 1000);
           }
         } catch (error) {
-          console.error("Auto-login failed:", error);
+          console.error("Auto-login error:", error);
           toast.success("✅ Account created! Please log in and verify your email.", {
             duration: 5000
           });
+          setShowAuthModal(false);
         }
-        
-        setShowAuthModal(false);
       }
 
     } catch (err: any) {

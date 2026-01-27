@@ -106,19 +106,27 @@ export default function RandomPickerPage() {
   };
 
   const handleAnalyze = async () => {
-    if (!selectedTicker) return;
+    console.log('handleAnalyze called, selectedTicker:', selectedTicker);
+    if (!selectedTicker) {
+      console.log('No ticker selected, returning');
+      return;
+    }
 
     // Check guest limit
     if (!isLoggedIn && guestTrials <= 0) {
+      console.log('Guest trials exhausted, showing auth modal');
       setShowAuthModal(true);
       return;
     }
 
+    console.log('Starting analysis for:', selectedTicker);
     setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}/analyze/${selectedTicker}`, { 
         credentials: 'include' // 🔒 httpOnly cookie sent automatically
       });
+
+      console.log('Response status:', res.status);
 
       if (res.status === 403) {
         const errorData = await res.json();
@@ -126,6 +134,7 @@ export default function RandomPickerPage() {
         // Check if it's an email verification error
         if (errorData.detail && errorData.detail.includes("verify your email")) {
           // User is logged in but not verified
+          console.log('Email verification required - showing toast');
           toast.error("📧 Please verify your email first! Check your inbox.", {
             duration: 5000,
             icon: "⚠️"
@@ -134,6 +143,7 @@ export default function RandomPickerPage() {
           return;
         }
         // Otherwise it's IP exhaustion
+        console.log('Guest IP exhausted - showing auth modal');
         setShowAuthModal(true);
         setLoading(false);
         return;
@@ -147,11 +157,14 @@ export default function RandomPickerPage() {
 
       if (!res.ok) {
         const error = await res.json();
+        console.log('Error response:', error);
         toast.error(error.detail || "Analysis failed");
+        setLoading(false);
         return;
       }
 
       const data = await res.json();
+      console.log('Analysis successful, navigating...');
       sessionStorage.setItem("analysis_result", JSON.stringify(data));
       sessionStorage.setItem("analysis_ticker", selectedTicker);
 
@@ -165,6 +178,7 @@ export default function RandomPickerPage() {
 
       router.push(`/analysis/${selectedTicker}`);
     } catch (err) {
+      console.error('handleAnalyze error:', err);
       toast.error("Error connecting to server");
     } finally {
       setLoading(false);

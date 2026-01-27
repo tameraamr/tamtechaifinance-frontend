@@ -121,6 +121,19 @@ export default function RandomPickerPage() {
       });
 
       if (res.status === 403) {
+        const errorData = await res.json();
+        console.log('Random Picker 403 Error:', errorData);
+        // Check if it's an email verification error
+        if (errorData.detail && errorData.detail.includes("verify your email")) {
+          // User is logged in but not verified
+          toast.error("📧 Please verify your email first! Check your inbox.", {
+            duration: 5000,
+            icon: "⚠️"
+          });
+          setLoading(false);
+          return;
+        }
+        // Otherwise it's IP exhaustion
         setShowAuthModal(true);
         setLoading(false);
         return;
@@ -128,6 +141,7 @@ export default function RandomPickerPage() {
 
       if (res.status === 402) {
         router.push("/?paywall=true");
+        setLoading(false);
         return;
       }
 

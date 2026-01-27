@@ -20,8 +20,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   isVerified: boolean;
   isLoading: boolean;
-  suppressBanner: boolean;
-  login: (userData: User, credits: number) => void;
+  login: (userData: User, credits: number) => Promise<void>;
   logout: () => Promise<void>;
   updateCredits: (newCredits: number) => void;
   refreshUserData: () => Promise<void>;
@@ -47,7 +46,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [credits, setCredits] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [suppressBanner, setSuppressBanner] = useState(false);
 
   const isLoggedIn = isAuthenticated && !!user;
   // Handle both boolean true and number 1 for is_verified
@@ -121,19 +119,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (userData: User, userCredits: number) => {
-    // No need to store token - it's in httpOnly cookie
-    console.log('🔐 LOGIN - User data received:', userData);
-    console.log('🔐 LOGIN - is_verified value:', userData.is_verified, 'Type:', typeof userData.is_verified);
-    
     // If is_verified is missing, fetch complete user data from /users/me
     if (userData.is_verified === undefined) {
-      console.log('⚠️ is_verified missing, fetching from /users/me...');
       const completeUserData = await fetchUserData();
       if (completeUserData) {
         setUser(completeUserData.user);
         setCredits(completeUserData.credits);
         setIsAuthenticated(true);
-        console.log('✅ Complete user data loaded:', completeUserData.user);
         return;
       }
     }
@@ -141,8 +133,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(userData);
     setCredits(userCredits);
     setIsAuthenticated(true);
-    setSuppressBanner(true);
-    setTimeout(() => setSuppressBanner(false), 2000);
+  };
   };
 
   const logout = async () => {
@@ -199,7 +190,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoggedIn,
     isVerified,
     isLoading,
-    suppressBanner,
     login,
     logout,
     updateCredits,

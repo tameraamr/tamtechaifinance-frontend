@@ -404,22 +404,6 @@ export default function Home() {
         setShowAuthModal(false);
         // Optionally switch to login mode or close modal
       }
-        toast.success(`Welcome back, ${data.user.first_name || 'User'}! 💰 Balance: ${data.credits} credits`, {
-          duration: 5000,
-          icon: '🚀',
-          style: {
-           borderRadius: '12px',
-          background: '#1e293b',
-           color: '#fff',
-           border: '1px solid #334155',
-          fontSize: '14px',
-          fontWeight: 'bold',
-      },
-    });
-      } else {
-        alert("✅ Account created successfully! Please login.");
-        setAuthMode("login");
-      }
 
     } catch (err: any) {
       console.error("Auth Error:", err);

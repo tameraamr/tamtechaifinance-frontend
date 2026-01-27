@@ -19,7 +19,8 @@ import LanguageSelector from '../src/components/LanguageSelector';
 import { useAuth } from '../src/context/AuthContext';
 import { useTranslation } from '../src/context/TranslationContext';
 
-const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
+// 🔥 Use relative path to leverage Vercel rewrite (makes cookies first-party)
+const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
 // Component to handle search params with Suspense
 function SearchParamsHandler({ setShowAuthModal, setShowPaywall }: { setShowAuthModal: (show: boolean) => void, setShowPaywall: (show: boolean) => void }) {

@@ -1,7 +1,8 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-const BASE_URL = "https://tamtechaifinance-backend-production.up.railway.app";
+// 🔥 Use relative path to leverage Vercel rewrite (makes cookies first-party)
+const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
 interface User {
   email: string;

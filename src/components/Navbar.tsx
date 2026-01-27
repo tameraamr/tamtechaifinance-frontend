@@ -113,6 +113,15 @@ export default function Navbar({ guestTrials }: NavbarProps) {
             >
               🎲 {t.randomPicker}
             </Link>
+            <Link 
+              href="/news" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
+            >
+              📰 {t.news}
+            </Link>
+
+            {/* Dashboard Link - Before Language Selector */}
             {isLoggedIn && (
               <Link 
                 href="/dashboard" 
@@ -123,13 +132,6 @@ export default function Navbar({ guestTrials }: NavbarProps) {
                 📊 Dashboard
               </Link>
             )}
-            <Link 
-              href="/news" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
-            >
-              📰 {t.news}
-            </Link>
 
             {/* Language Selector - Mobile */}
             <div className="pt-2">

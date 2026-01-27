@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Zap, AlertTriangle, XCircle, ArrowLeft, ChevronDown, CheckCircle, TrendingUp, Shield, Lightbulb, Brain } from "lucide-react";
+import { Zap, AlertTriangle, XCircle, ArrowLeft, ChevronDown, CheckCircle, TrendingUp, Shield, Lightbulb, Brain, Activity } from "lucide-react";
 import { useAuth } from "../../src/context/AuthContext";
 import { useTranslation } from "../../src/context/TranslationContext";
 import Navbar from "../../src/components/Navbar";
@@ -282,52 +282,148 @@ export default function RandomPickerPage() {
                   </div>
 
                   {/* Spin Button */}
-                  <button
+                  <motion.button
                     onClick={spinTicker}
-                    disabled={rolling}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl text-lg transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-purple-900/30"
+                    disabled={rolling || loading}
+                    whileHover={{ scale: rolling || loading ? 1 : 1.02 }}
+                    whileTap={{ scale: rolling || loading ? 1 : 0.98 }}
+                    className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-size-200 hover:bg-pos-100 text-white font-bold py-4 rounded-xl text-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-purple-900/50 hover:shadow-purple-500/50 relative overflow-hidden group"
                   >
-                    <Zap size={20} />
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    
+                    <motion.div
+                      animate={rolling ? { rotate: 360 } : {}}
+                      transition={rolling ? { duration: 0.5, repeat: Infinity, ease: "linear" } : {}}
+                    >
+                      <Zap size={20} />
+                    </motion.div>
                     {rolling ? t.spinning : t.spinAgain}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
 
             {/* Action Buttons */}
-            {selectedTicker && !rolling && (
-              <div className="max-w-2xl mx-auto flex gap-4">
+            {selectedTicker && !rolling && !loading && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="max-w-2xl mx-auto flex gap-4"
+              >
                 <button
                   onClick={handleAnalyze}
                   disabled={loading}
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-105 disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
                 >
-                  {loading ? (
-                    <>
-                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      {t.analyzing}
-                    </>
-                  ) : (
-                    t.analyzeOneCredit
-                  )}
+                  <Brain className="w-5 h-5" />
+                  {t.analyzeOneCredit}
                 </button>
                 <button
                   onClick={() => router.push(`/news?ticker=${selectedTicker}`)}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl transition"
+                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg"
                 >
                   {t.seeNews}
                 </button>
                 <button
                   onClick={() => setSelectedTicker(null)}
-                  className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-6 rounded-xl transition"
+                  className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg"
                   title={t.hideOptions}
                 >
                   ✕
                 </button>
-              </div>
+              </motion.div>
+            )}
+
+            {/* Loading State - AI Analysis in Progress */}
+            {loading && selectedTicker && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="max-w-2xl mx-auto"
+              >
+                <div className="bg-gradient-to-br from-blue-900/40 via-purple-900/40 to-blue-900/40 border-2 border-blue-500/30 rounded-2xl p-8 text-center relative overflow-hidden">
+                  {/* Animated background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10 animate-pulse" />
+                  
+                  {/* Floating particles effect */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    {[...Array(20)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
+                        style={{
+                          left: `${Math.random() * 100}%`,
+                          top: `${Math.random() * 100}%`,
+                          animationDelay: `${Math.random() * 3}s`,
+                          animationDuration: `${3 + Math.random() * 4}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="relative z-10">
+                    {/* Main spinner */}
+                    <div className="flex justify-center mb-6">
+                      <div className="relative">
+                        <div className="w-20 h-20 border-4 border-blue-500/20 rounded-full"></div>
+                        <div className="absolute top-0 left-0 w-20 h-20 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+                        <div className="absolute top-2 left-2 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin-slow"></div>
+                        <Brain className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-blue-400 animate-pulse" />
+                      </div>
+                    </div>
+
+                    {/* Loading text */}
+                    <h3 className="text-2xl font-bold text-white mb-3">
+                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                        AI Analysis in Progress
+                      </span>
+                    </h3>
+                    <p className="text-slate-300 text-sm mb-4">
+                      Analyzing {selectedTicker} with advanced AI algorithms...
+                    </p>
+
+                    {/* Progress steps */}
+                    <div className="space-y-2 max-w-md mx-auto">
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="flex items-center gap-3 text-left"
+                      >
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        <span className="text-slate-300 text-sm">Fetching real-time market data</span>
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className="flex items-center gap-3 text-left"
+                      >
+                        <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-slate-300 text-sm">Running AI financial models</span>
+                      </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1.0 }}
+                        className="flex items-center gap-3 text-left opacity-50"
+                      >
+                        <div className="w-5 h-5 border-2 border-slate-600 rounded-full"></div>
+                        <span className="text-slate-400 text-sm">Generating comprehensive report</span>
+                      </motion.div>
+                    </div>
+
+                    {/* Estimated time */}
+                    <p className="text-slate-400 text-xs mt-6 flex items-center justify-center gap-2">
+                      <Activity className="w-4 h-4 animate-pulse" />
+                      Estimated time: 3-5 seconds
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
             )}
           </div>
         </section>

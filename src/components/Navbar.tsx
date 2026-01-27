@@ -8,9 +8,10 @@ import LanguageSelector from "./LanguageSelector";
 
 interface NavbarProps {
   guestTrials: number;
+  setShowAuthModal?: (show: boolean) => void;
 }
 
-export default function Navbar({ guestTrials }: NavbarProps) {
+export default function Navbar({ guestTrials, setShowAuthModal }: NavbarProps) {
   const { isLoggedIn, credits, logout } = useAuth();
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -83,13 +84,13 @@ export default function Navbar({ guestTrials }: NavbarProps) {
                 <LogOut className="w-5 h-5" />
               </button>
             ) : (
-              <Link 
-                href="/#auth-section" 
+              <button
+                onClick={() => setShowAuthModal?.(true)}
                 className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-4 py-2 rounded-lg transition-all text-white text-xs font-bold"
               >
                 <User className="w-3.5 h-3.5" />
                 Login
-              </Link>
+              </button>
             )}
 
             {/* Mobile Menu Toggle */}
@@ -159,14 +160,13 @@ export default function Navbar({ guestTrials }: NavbarProps) {
                 {t.logout}
               </button>
             ) : (
-              <Link 
-                href="/#auth-section" 
-                onClick={() => setMobileMenuOpen(false)}
+              <button
+                onClick={() => { setShowAuthModal?.(true); setMobileMenuOpen(false); }}
                 className="w-full flex items-center justify-center gap-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-4 py-3 rounded-lg transition-all text-white"
               >
                 <User className="w-4 h-4" />
                 Login / Sign Up
-              </Link>
+              </button>
             )}
           </div>
         )}

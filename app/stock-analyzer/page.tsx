@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, Zap, AlertTriangle, XCircle, ArrowLeft, ChevronDown, Brain, TrendingUp, Shield, Lightbulb, Target, BarChart3, PieChart, Activity, DollarSign, Dices } from "lucide-react";
+import { Search, Zap, AlertTriangle, XCircle, ArrowLeft, ChevronDown, Brain, TrendingUp, Shield, Lightbulb, Target, BarChart3, PieChart, Activity, DollarSign, Dices, CheckCircle } from "lucide-react";
 import { useAuth } from "../../src/context/AuthContext";
 import { useTranslation } from "../../src/context/TranslationContext";
 import Navbar from "../../src/components/Navbar";

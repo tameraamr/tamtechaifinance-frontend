@@ -636,7 +636,12 @@ export default function Home() {
   };
 
   const confirmRandomAnalysis = () => {
-    if (randomTicker) { setTicker(randomTicker); setRandomTicker(null); setTimeout(() => handleAnalyze(randomTicker), 100); }
+    if (randomTicker) { 
+      setTicker(randomTicker); 
+      const tickerToAnalyze = randomTicker;
+      setRandomTicker(null); // Close modal first
+      setTimeout(() => handleAnalyze(tickerToAnalyze), 100); 
+    }
   };
 
   const handleAnalyze = async (overrideTicker?: string) => {
@@ -667,9 +672,11 @@ export default function Home() {
       // 👇 التعديل الجديد: التعامل مع حظر الـ IP القادم من السيرفر
       if (res.status === 403) {
         const errorData = await res.json();
+        console.log('403 Error received:', errorData);
         // Check if it's an email verification error
         if (errorData.detail && errorData.detail.includes("verify your email")) {
           // User is logged in but not verified - banner is already showing
+          console.log('Email verification required - showing toast');
           toast.error("📧 Please verify your email first! Check your inbox.", {
             duration: 5000,
             icon: "⚠️"
@@ -678,6 +685,7 @@ export default function Home() {
           return;
         }
         // Otherwise it's IP exhaustion for guests
+        console.log('Guest IP exhausted - showing auth modal');
         setAuthMode("signup");
         setShowAuthModal(true);
         setLoading(false);

@@ -103,7 +103,10 @@ export default function StockAnalyzerPage() {
       console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
       if (data.ticker) {
         setTicker(data.ticker);
+        setUserTyping(false);
+        setShowSuggestions(false);
         toast.success(`Random pick: ${data.ticker}`, { icon: '🎲' });
+        // Don't auto-analyze - let user click analyze button to prevent bypassing verification
       }
     } catch {
       toast.error("Error fetching random stock");
@@ -158,26 +161,25 @@ export default function StockAnalyzerPage() {
       
       clearTimeout(timeoutId);
 
-      // IP-based guest trial limit (server-side)
+      // Check for email verification or IP-based guest trial limit (403)
       if (res.status === 403) {
-        setShowAuthModal(true);
+        const errorData = await res.json();
+        if (errorData.detail && errorData.detail.includes("verify your email")) {
+          // User is logged in but not verified
+          toast.error("📧 Please verify your email first! Check your inbox.", {
+            duration: 5000,
+            icon: "⚠️"
+          });
+        } else {
+          // Guest IP exhausted
+          setShowAuthModal(true);
+        }
         setLoading(false);
         return;
       }
 
       if (res.status === 402) {
         router.push("/?paywall=true");
-        setLoading(false);
-        return;
-      }
-
-      // Check for email verification required (403)
-      if (res.status === 403) {
-        const errorData = await res.json();
-        setAuthError(errorData.detail);
-        toast.error("📧 Email verification required. Check your inbox!", {
-          duration: 6000
-        });
         setLoading(false);
         return;
       }

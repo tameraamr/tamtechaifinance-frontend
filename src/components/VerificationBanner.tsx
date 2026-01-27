@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
 export default function VerificationBanner() {
-  const { user, isLoggedIn, isVerified, isLoading } = useAuth();
+  const { user, isLoggedIn, isVerified, isLoading, suppressBanner } = useAuth();
   const [isResending, setIsResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -22,7 +22,8 @@ export default function VerificationBanner() {
   // 2. Auth is still loading
   // 3. User is not logged in
   // 4. User is verified
-  if (!isClient || isLoading || !isLoggedIn || isVerified) {
+  // 5. Banner is temporarily suppressed (just logged in)
+  if (!isClient || isLoading || !isLoggedIn || isVerified || suppressBanner) {
     return null;
   }
 

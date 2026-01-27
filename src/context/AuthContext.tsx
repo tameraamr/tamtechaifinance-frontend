@@ -20,6 +20,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   isVerified: boolean;
   isLoading: boolean;
+  suppressBanner: boolean;
   login: (userData: User, credits: number) => void;
   logout: () => Promise<void>;
   updateCredits: (newCredits: number) => void;
@@ -46,6 +47,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [credits, setCredits] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [suppressBanner, setSuppressBanner] = useState(false);
+  const [suppressBanner, setSuppressBanner] = useState(false);
 
   const isLoggedIn = isAuthenticated && !!user;
   // Handle both boolean true and number 1 for is_verified
@@ -123,6 +126,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(userData);
     setCredits(userCredits);
     setIsAuthenticated(true);
+    setSuppressBanner(true);
+    setTimeout(() => setSuppressBanner(false), 1000);
   };
 
   const logout = async () => {
@@ -179,6 +184,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoggedIn,
     isVerified,
     isLoading,
+    suppressBanner,
     login,
     logout,
     updateCredits,

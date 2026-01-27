@@ -13,7 +13,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: NavbarProps) {
-  const { isLoggedIn, credits, logout } = useAuth();
+  const { isLoggedIn, credits, logout, isLoading } = useAuth();
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -60,7 +60,12 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             )}
             
             {/* Credits Display */}
-            {isLoggedIn ? (
+            {isLoading ? (
+              <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-400">
+                <Star className="w-3 h-3 text-slate-500 animate-pulse" />
+                <span className="animate-pulse">...</span>
+              </div>
+            ) : isLoggedIn ? (
               <Link
                 href="/dashboard"
                 className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-300 hover:border-blue-500/50 transition-all cursor-pointer"

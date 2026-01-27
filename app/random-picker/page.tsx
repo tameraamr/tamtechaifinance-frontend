@@ -415,12 +415,6 @@ export default function RandomPickerPage() {
                         <span className="text-slate-400 text-sm">Generating comprehensive report</span>
                       </motion.div>
                     </div>
-
-                    {/* Estimated time */}
-                    <p className="text-slate-400 text-xs mt-6 flex items-center justify-center gap-2">
-                      <Activity className="w-4 h-4 animate-pulse" />
-                      Estimated time: 3-5 seconds
-                    </p>
                   </div>
                 </div>
               </motion.div>

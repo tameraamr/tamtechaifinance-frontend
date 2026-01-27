@@ -370,12 +370,88 @@ export default function StockAnalyzerPage() {
                   </div>
                 </div>
 
-                {/* Loading State */}
+                {/* Loading State - Premium AI Analysis Animation */}
                 {loading && (
-                  <div className="text-center py-4 mt-4">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                    <p className="text-slate-400 text-sm mt-2">Running deep analysis...</p>
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="mt-4"
+                  >
+                    <div className="bg-gradient-to-br from-blue-900/40 via-purple-900/40 to-blue-900/40 border-2 border-blue-500/30 rounded-2xl p-6 text-center relative overflow-hidden">
+                      {/* Animated background gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10 animate-pulse" />
+                      
+                      {/* Floating particles effect */}
+                      <div className="absolute inset-0 overflow-hidden">
+                        {[...Array(15)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
+                            style={{
+                              left: `${Math.random() * 100}%`,
+                              top: `${Math.random() * 100}%`,
+                              animationDelay: `${Math.random() * 3}s`,
+                              animationDuration: `${3 + Math.random() * 4}s`
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      <div className="relative z-10">
+                        {/* Main spinner */}
+                        <div className="flex justify-center mb-4">
+                          <div className="relative">
+                            <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
+                            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+                            <div className="absolute top-2 left-2 w-12 h-12 border-4 border-transparent border-t-purple-500 rounded-full animate-spin-slow"></div>
+                            <Brain className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-blue-400 animate-pulse" />
+                          </div>
+                        </div>
+
+                        {/* Loading text */}
+                        <h3 className="text-xl font-bold text-white mb-2">
+                          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                            AI Analysis in Progress
+                          </span>
+                        </h3>
+                        <p className="text-slate-300 text-xs mb-3">
+                          {ticker ? `Analyzing ${ticker} with advanced AI algorithms...` : 'Running deep analysis...'}
+                        </p>
+
+                        {/* Progress steps */}
+                        <div className="space-y-1.5 max-w-md mx-auto">
+                          <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="flex items-center gap-2 text-left text-xs"
+                          >
+                            <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                            <span className="text-slate-300">Fetching real-time market data</span>
+                          </motion.div>
+                          <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.6 }}
+                            className="flex items-center gap-2 text-left text-xs"
+                          >
+                            <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                            <span className="text-slate-300">Running AI financial models</span>
+                          </motion.div>
+                          <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 1.0 }}
+                            className="flex items-center gap-2 text-left text-xs opacity-50"
+                          >
+                            <div className="w-4 h-4 border-2 border-slate-600 rounded-full shrink-0"></div>
+                            <span className="text-slate-400">Generating comprehensive report</span>
+                          </motion.div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
                 )}
               </div>
             </motion.div>

@@ -297,11 +297,13 @@ export default function AnalysisPage() {
           }
           canonical.setAttribute('href', `https://tamtech-finance.com/analysis/${ticker.toLowerCase()}`);
 
-          // Clean up both localStorage and sessionStorage after successful load
-          localStorage.removeItem('analysis_result');
-          localStorage.removeItem('analysis_ticker');
-          sessionStorage.removeItem('analysis_result');
-          sessionStorage.removeItem('analysis_ticker');
+          // Clean up localStorage AFTER a short delay to prevent re-render issues
+          setTimeout(() => {
+            localStorage.removeItem('analysis_result');
+            localStorage.removeItem('analysis_ticker');
+            sessionStorage.removeItem('analysis_result');
+            sessionStorage.removeItem('analysis_ticker');
+          }, 100);
         } else {
           // No stored result - redirect back to analyzer instead of refetching
           router.replace('/stock-analyzer');

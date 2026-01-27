@@ -164,13 +164,16 @@ export default function RandomPickerPage() {
       }
 
       const data = await res.json();
-      console.log('Analysis successful, navigating...');
+      console.log('Analysis successful, data received:', data);
       
       // Store analysis data with language for the analysis page
-      sessionStorage.setItem("analysis_result", JSON.stringify(data));
+      const analysisData = JSON.stringify(data);
+      sessionStorage.setItem("analysis_result", analysisData);
       sessionStorage.setItem("analysis_ticker", selectedTicker);
-      localStorage.setItem("analysis_result", JSON.stringify(data));
+      localStorage.setItem("analysis_result", analysisData);
       localStorage.setItem("analysis_ticker", selectedTicker);
+      
+      console.log('Data stored in storage, navigating to:', `/analysis/${selectedTicker}`);
 
       if (isLoggedIn) {
         updateCredits(data.credits_left);
@@ -180,14 +183,15 @@ export default function RandomPickerPage() {
         localStorage.setItem("guest_trials", ng.toString());
       }
 
-      // Show success toast and navigate
+      // Show success toast
       toast.success("✅ Analysis complete! Opening report...", {
         duration: 2000
       });
       
-      // Navigate to analysis page
+      // Use window.location for reliable navigation
       setTimeout(() => {
-        router.push(`/analysis/${selectedTicker}`);
+        console.log('Navigating now...');
+        window.location.href = `/analysis/${selectedTicker}`;
       }, 500);
     } catch (err) {
       console.error('handleAnalyze error:', err);

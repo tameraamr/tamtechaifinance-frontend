@@ -10,12 +10,19 @@ export default function VerificationBanner() {
   const { user, isLoggedIn, isVerified, isLoading } = useAuth();
   const [isResending, setIsResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure component only renders on client after hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Don't show banner if:
-  // 1. Auth is still loading
-  // 2. User is not logged in
-  // 3. User is verified
-  if (isLoading || !isLoggedIn || isVerified) {
+  // 1. Not yet hydrated on client
+  // 2. Auth is still loading
+  // 3. User is not logged in
+  // 4. User is verified
+  if (!isClient || isLoading || !isLoggedIn || isVerified) {
     return null;
   }
 

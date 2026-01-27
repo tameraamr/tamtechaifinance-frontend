@@ -21,42 +21,14 @@ export default function VerificationBanner() {
     return () => clearTimeout(timer);
   }, []);
 
-  // DEBUG: Log all state values
-  useEffect(() => {
-    if (isMounted) {
-      console.log('🐛 VerificationBanner Debug:', {
-        isMounted,
-        isLoading,
-        isLoggedIn,
-        isVerified,
-        user_is_verified: user?.is_verified,
-        user_email: user?.email,
-        full_user: user
-      });
-    }
-  }, [isMounted, isLoading, isLoggedIn, isVerified, user]);
-
   // Don't show banner if:
   // 1. Component hasn't mounted yet (prevents flash)
   // 2. Auth is still loading
   // 3. User is not logged in
   // 4. User is verified
-  if (!isMounted || isLoading || !isLoggedIn || isVerified || user?.is_verified === 1) {
-    console.log('🚫 Banner hidden because:', {
-      isMounted,
-      isLoading,
-      isLoggedIn,
-      isVerified,
-      user_is_verified: user?.is_verified
-    });
+  if (!isMounted || isLoading || !isLoggedIn || isVerified) {
     return null;
   }
-
-  console.log('⚠️ BANNER SHOWING - This should NOT happen for verified users!', {
-    user,
-    isVerified,
-    user_is_verified: user?.is_verified
-  });
 
   const handleResend = async () => {
     setIsResending(true);

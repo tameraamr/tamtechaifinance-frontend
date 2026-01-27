@@ -11,7 +11,7 @@ interface User {
   phone_number?: string;
   country?: string;
   address?: string;
-  is_verified?: number;  // 0 = not verified, 1 = verified
+  is_verified?: number | boolean;  // 0/1 or false/true
 }
 
 interface AuthContextType {
@@ -48,7 +48,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const isLoggedIn = isAuthenticated && !!user;
-  const isVerified = user?.is_verified === 1;
+  // Handle both boolean true and number 1 for is_verified
+  const isVerified = user?.is_verified === 1 || user?.is_verified === true;
 
   // 🧹 Clean up old localStorage token on mount (one-time migration)
   useEffect(() => {

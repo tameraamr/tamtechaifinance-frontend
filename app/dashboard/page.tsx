@@ -130,7 +130,7 @@ function SkeletonLoader() {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, credits, isLoggedIn, isVerified, updateCredits } = useAuth();
+  const { user, credits, isLoggedIn, isVerified, isLoading, updateCredits } = useAuth();
   const { t } = useTranslation();
   
   const [history, setHistory] = useState<AnalysisItem[]>([]);
@@ -141,6 +141,11 @@ export default function DashboardPage() {
 
   // Fetch analysis history
   useEffect(() => {
+    // Wait for auth to load before redirecting
+    if (isLoading) {
+      return;
+    }
+    
     if (!isLoggedIn) {
       router.push('/');
       return;
@@ -153,7 +158,7 @@ export default function DashboardPage() {
     }
 
     fetchHistory();
-  }, [isLoggedIn, isVerified]);
+  }, [isLoggedIn, isVerified, isLoading, router]);
 
   const fetchHistory = async () => {
     try {
@@ -255,6 +260,18 @@ export default function DashboardPage() {
 
   if (!isLoggedIn) {
     return null;
+  }
+
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0b1121] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p className="text-slate-400">Loading dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

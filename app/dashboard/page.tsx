@@ -300,6 +300,10 @@ export default function DashboardPage() {
         updateCredits(data.credits_left);
       }
 
+      // Store the fresh analysis data in localStorage for the analysis page
+      localStorage.setItem('analysis_result', JSON.stringify(data));
+      localStorage.setItem('analysis_ticker', selectedTicker);
+
       toast.success(`✅ ${selectedTicker} analysis refreshed successfully!`, { duration: 3000 });
       
       // Navigate to the updated analysis

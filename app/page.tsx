@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target,
-  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper, Menu, X, LayoutDashboard
+  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from 'react-hot-toast';
@@ -15,7 +15,8 @@ import NewsAnalysis from '../src/components/NewsAnalysis';
 import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
 import RecentAnalyses from '../src/components/RecentAnalyses';
-import LanguageSelector from '../src/components/LanguageSelector';
+import Navbar from '../src/components/Navbar';
+import Footer from '../src/components/Footer';
 import { useAuth } from '../src/context/AuthContext';
 import { useTranslation } from '../src/context/TranslationContext';
 
@@ -164,7 +165,6 @@ export default function Home() {
   const [result, setResult] = useState<any>(null);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -856,153 +856,8 @@ export default function Home() {
       <Suspense fallback={null}>
         <SearchParamsHandler setShowAuthModal={setShowAuthModal} setShowPaywall={setShowPaywall} />
       </Suspense>
-      <nav className="border-b border-slate-800 bg-[#0b1121]/95 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          {/* Main Navbar */}
-          <div className="h-16 flex items-center justify-between">
-            {/* Left: Logo */}
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
-              <BarChart3 className="text-blue-500 w-5 h-5 md:w-6 md:h-6" />
-              <span className="font-bold text-base md:text-xl tracking-tight">
-                <span className="hidden sm:inline">{t.brandName} </span>
-                <span className="sm:hidden">T</span>
-                <span className="text-blue-500">{t.brandPro}</span>
-              </span>
-            </Link>
-
-            {/* Center: Desktop Navigation Links */}
-            <div className="hidden md:flex items-center gap-3 lg:gap-4">
-              <Link href="/stock-analyzer" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
-                {t.analyzer}
-              </Link>
-              <Link href="/random-picker" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
-                {t.randomPicker}
-              </Link>
-              <Link href="/news" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
-                {t.news}
-              </Link>
-            </div>
-
-            {/* Right: Credits, Language, User Actions */}
-            <div className="flex items-center gap-2 md:gap-3">
-              {/* Dashboard Button - Desktop */}
-              {isLoggedIn && (
-                <Link 
-                  href="/dashboard" 
-                  className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/50 hover:border-purple-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-purple-300 hover:text-purple-200 text-xs font-bold"
-                  title="View your dashboard"
-                >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
-                  <span className="hidden lg:inline">Dashboard</span>
-                </Link>
-              )}
-
-              {/* Credits Display */}
-              {authLoading ? (
-                <div className="w-16 h-8 bg-slate-800/50 rounded-full animate-pulse"></div>
-              ) : isLoggedIn ? (
-                <div className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-300">
-                  <Star className="w-3 h-3 text-yellow-400" />
-                  <span>{credits}</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-400">
-                  <User className="w-3 h-3" />
-                  <span>{guestTrials}</span>
-                </div>
-              )}
-
-              {/* Language Selector */}
-              <LanguageSelector />
-
-              {/* Logout/Login Button - Desktop */}
-              {isLoggedIn ? (
-                <button onClick={logout} className="hidden md:block p-2 text-slate-400 hover:text-red-400 transition-colors">
-                  <LogOut className="w-5 h-5" />
-                </button>
-              ) : (
-                <button onClick={() => { setAuthMode("login"); setShowAuthModal(true); }} className="hidden md:block text-xs font-bold bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-600 hover:border-blue-600/50 transition-all">
-                  {t.loginBtn}
-                </button>
-              )}
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
-                aria-label="Toggle menu"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu Dropdown */}
-          {mobileMenuOpen && (
-            <div className="md:hidden border-t border-slate-800 py-4 space-y-3 animate-in slide-in-from-top duration-200">
-              {/* Navigation Links */}
-              <Link 
-                href="/stock-analyzer" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
-              >
-                📊 {t.analyzer}
-              </Link>
-              <Link 
-                href="/random-picker" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
-              >
-                🎲 {t.randomPicker}
-              </Link>
-              {isLoggedIn && (
-                <Link 
-                  href="/dashboard" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 px-4 py-3 rounded-lg transition-all text-purple-300 flex items-center gap-2"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  📊 Dashboard
-                </Link>
-              )}
-              <Link 
-                href="/news" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
-              >
-                📰 {t.news}
-              </Link>
-
-
-
-              {/* Logout/Login Button - Mobile */}
-              {isLoggedIn ? (
-                <button 
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center justify-center gap-2 text-sm font-bold bg-red-900/20 hover:bg-red-900/40 border border-red-700/50 px-4 py-3 rounded-lg transition-all text-red-400"
-                >
-                  <LogOut className="w-4 h-4" />
-                  {t.logout}
-                </button>
-              ) : (
-                <button 
-                  onClick={() => {
-                    setAuthMode("login");
-                    setShowAuthModal(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-sm font-bold bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg transition-all text-white"
-                >
-                  {t.loginBtn}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </nav>
+      
+      <Navbar guestTrials={guestTrials} />
 
       {/* الحاوية المتحركة المحدثة */}
       <div className="flex overflow-hidden relative ml-4 flex-1 items-center h-full">

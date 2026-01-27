@@ -448,12 +448,36 @@ export default function DashboardPage() {
 
         {/* Stats Cards */}
         {activeTab === 'history' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {/* Credits Card */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {/* User Info Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-gradient-to-br from-purple-900/40 via-slate-900 to-purple-900/20 border border-purple-500/30 rounded-2xl p-6 shadow-xl"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex-1">
+                  <p className="text-slate-400 text-sm uppercase tracking-wide font-bold">Welcome Back</p>
+                  <p className="text-2xl font-black text-purple-400 mt-1 truncate">
+                    {userProfile?.first_name || user?.email?.split('@')[0] || 'User'}
+                  </p>
+                  {userProfile?.last_name && (
+                    <p className="text-lg font-bold text-purple-300 truncate">{userProfile.last_name}</p>
+                  )}
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600/30 to-purple-400/10 border border-purple-400/40 flex items-center justify-center">
+                  <UserCircle className="text-purple-400" size={28} />
+                </div>
+              </div>
+              <p className="text-slate-400 text-xs truncate">{user?.email}</p>
+            </motion.div>
+
+            {/* Credits Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
               className="bg-gradient-to-br from-blue-900/40 via-slate-900 to-blue-900/20 border border-blue-500/30 rounded-2xl p-6 shadow-xl"
             >
               <div className="flex items-center justify-between mb-3">
@@ -491,9 +515,13 @@ export default function DashboardPage() {
                   {isVerified ? <ShieldCheck className="text-green-400" size={28} /> : <ShieldAlert className="text-orange-400" size={28} />}
                 </div>
               </div>
-              <p className="text-slate-300 text-sm">
-                {user?.email}
-              </p>
+              <Link
+                href="/dashboard?tab=settings"
+                onClick={() => setActiveTab('settings')}
+                className="text-slate-300 text-sm hover:text-white transition inline-flex items-center gap-1"
+              >
+                Manage Account →
+              </Link>
             </motion.div>
           </div>
         )}

@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target,
-  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper, Menu, X
+  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper, Menu, X, LayoutDashboard
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from 'react-hot-toast';
@@ -885,6 +885,18 @@ export default function Home() {
 
             {/* Right: Credits, Language, User Actions */}
             <div className="flex items-center gap-2 md:gap-3">
+              {/* Dashboard Button - Desktop */}
+              {isLoggedIn && (
+                <Link 
+                  href="/dashboard" 
+                  className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/50 hover:border-purple-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-purple-300 hover:text-purple-200 text-xs font-bold"
+                  title="View your dashboard"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span className="hidden lg:inline">Dashboard</span>
+                </Link>
+              )}
+
               {/* Credits Display */}
               {authLoading ? (
                 <div className="w-16 h-8 bg-slate-800/50 rounded-full animate-pulse"></div>
@@ -943,6 +955,16 @@ export default function Home() {
               >
                 🎲 {t.randomPicker}
               </Link>
+              {isLoggedIn && (
+                <Link 
+                  href="/dashboard" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 px-4 py-3 rounded-lg transition-all text-purple-300 flex items-center gap-2"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  📊 Dashboard
+                </Link>
+              )}
               <Link 
                 href="/news" 
                 onClick={() => setMobileMenuOpen(false)}

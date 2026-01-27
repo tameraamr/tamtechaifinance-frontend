@@ -59,10 +59,14 @@ export default function Navbar({ guestTrials }: NavbarProps) {
             
             {/* Credits Display */}
             {isLoggedIn ? (
-              <div className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-300">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-300 hover:border-blue-500/50 transition-all cursor-pointer"
+                title="View dashboard"
+              >
                 <Star className="w-3 h-3 text-yellow-400" />
                 <span>{credits}</span>
-              </div>
+              </Link>
             ) : (
               <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-400">
                 <User className="w-3 h-3" />

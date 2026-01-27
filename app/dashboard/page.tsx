@@ -222,7 +222,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleView = (ticker: string, isExpired: boolean) => {
+  const handleView = async (ticker: string, isExpired: boolean) => {
     if (isExpired) {
       toast.error("⏰ This report has expired. Use Instant Refresh to get the latest analysis.", {
         duration: 4000,
@@ -231,7 +231,40 @@ export default function DashboardPage() {
       return;
     }
     
-    router.push(`/analysis/${ticker}`);
+    // Show loading toast
+    const loadingToast = toast.loading(`Loading ${ticker} analysis...`);
+    
+    try {
+      // Fetch the historical analysis from backend
+      const res = await fetch(`${BASE_URL}/dashboard/analysis/${ticker}`, {
+        credentials: 'include',
+      });
+      
+      if (res.status === 410) {
+        toast.error("⏰ This report has expired. Use Instant Refresh instead.", { id: loadingToast });
+        return;
+      }
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to load analysis");
+      }
+      
+      const analysisData = await res.json();
+      
+      // Store the analysis data in localStorage for the analysis page to read
+      localStorage.setItem('analysis_result', JSON.stringify(analysisData));
+      localStorage.setItem('analysis_ticker', ticker);
+      
+      toast.success(`✅ Opening ${ticker} analysis`, { id: loadingToast });
+      
+      // Navigate to the analysis page
+      router.push(`/analysis/${ticker}`);
+      
+    } catch (err: any) {
+      console.error("View analysis error:", err);
+      toast.error(err.message || "Failed to load analysis", { id: loadingToast });
+    }
   };
 
   const handleRefreshClick = (ticker: string) => {

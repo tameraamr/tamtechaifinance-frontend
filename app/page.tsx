@@ -398,10 +398,37 @@ export default function Home() {
         login(data.user, data.credits); 
         setShowAuthModal(false);
       } else {
-        // Registration successful - show verification message
+        // Registration successful - auto login and show verification banner
         setAuthError("");
+        
+        // Auto-login the newly registered user
+        try {
+          const loginResponse = await fetch(`${BASE_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            credentials: "include",
+            body: new URLSearchParams({
+              username: email,
+              password: password
+            })
+          });
+          
+          if (loginResponse.ok) {
+            const loginData = await loginResponse.json();
+            login(loginData.user, loginData.credits);
+            toast.success("✅ Account created! Please verify your email to use the analyzer.", {
+              duration: 6000,
+              icon: "📧"
+            });
+          }
+        } catch (error) {
+          console.error("Auto-login failed:", error);
+          toast.success("✅ Account created! Please log in and verify your email.", {
+            duration: 5000
+          });
+        }
+        
         setShowAuthModal(false);
-        // User will see the verification banner after registration
       }
 
     } catch (err: any) {

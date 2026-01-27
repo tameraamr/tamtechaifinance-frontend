@@ -41,49 +41,49 @@ export default function VerificationBanner() {
   };
 
   return (
-    <div className="bg-gradient-to-r from-amber-600/20 to-orange-600/20 border border-amber-500/30 rounded-xl p-6 mb-6">
-      <div className="flex items-start gap-4">
-        <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-          <Mail className="w-6 h-6 text-amber-400" />
-        </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-bold text-amber-400 mb-2">
-            📧 Email Verification Required
-          </h3>
-          <p className="text-slate-300 text-sm mb-4">
-            You need to verify your email address <strong className="text-white">{user?.email}</strong> to use the AI Stock Analyzer.
-            <br />
-            Check your inbox for a verification link we sent you during registration.
-          </p>
+    <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-600/95 to-orange-600/95 backdrop-blur-sm border-b border-amber-500/30 shadow-2xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-4 py-4">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Mail className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-semibold text-sm sm:text-base">
+                📧 Email Verification Required
+              </p>
+              <p className="text-white/90 text-xs sm:text-sm mt-0.5">
+                Check your inbox at <strong>{user?.email}</strong> and verify to start analyzing stocks!
+              </p>
+            </div>
+          </div>
 
           {!resent ? (
             <button
               onClick={handleResend}
               disabled={isResending}
-              className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-shrink-0 inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-amber-700 px-4 py-2 rounded-lg font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
               {isResending ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  Sending...
+                  <span className="hidden sm:inline">Sending...</span>
                 </>
               ) : (
                 <>
                   <Mail className="w-4 h-4" />
-                  Resend Verification Email
+                  <span className="hidden sm:inline">Resend Email</span>
+                  <span className="sm:hidden">Resend</span>
                 </>
               )}
             </button>
           ) : (
-            <div className="inline-flex items-center gap-2 text-green-400 font-semibold">
-              <CheckCircle className="w-5 h-5" />
-              Email sent! Check your inbox.
+            <div className="flex-shrink-0 inline-flex items-center gap-2 text-white font-semibold text-sm bg-green-600 px-4 py-2 rounded-lg">
+              <CheckCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Email Sent!</span>
+              <span className="sm:hidden">Sent!</span>
             </div>
           )}
-
-          <p className="text-xs text-slate-400 mt-3">
-            💡 Tip: Check your spam folder if you don't see the email within a few minutes.
-          </p>
         </div>
       </div>
     </div>

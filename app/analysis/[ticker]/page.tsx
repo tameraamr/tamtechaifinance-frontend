@@ -18,7 +18,7 @@ import Forecasts from '../../../src/components/Forecasts';
 import { useAuth } from '../../../src/context/AuthContext';
 import { useTranslation } from '../../../src/context/TranslationContext';
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
 // Utility functions
 const cleanAIOutput = (text: string) => {

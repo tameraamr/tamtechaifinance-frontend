@@ -10,7 +10,7 @@ import Footer from "../../src/components/Footer";
 import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
 export default function StockAnalyzerPage() {
   const router = useRouter();

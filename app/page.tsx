@@ -48,40 +48,92 @@ const progressMessages = [
 ];
 
 const countriesList = [
-  // الدول العربية
-  { code: "JO", name: "Jordan / الأردن" },
-  { code: "SA", name: "Saudi Arabia / السعودية" },
-  { code: "AE", name: "UAE / الإمارات" },
-  { code: "EG", name: "Egypt / مصر" },
-  { code: "PS", name: "Palestine / فلسطين" },
-  { code: "KW", name: "Kuwait / الكويت" },
-  { code: "QA", name: "Qatar / قطر" },
-  { code: "BH", name: "Bahrain / البحرين" },
-  { code: "OM", name: "Oman / عمان" },
-  { code: "LB", name: "Lebanon / لبنان" },
-  { code: "SY", name: "Syria / سوريا" },
-  { code: "IQ", name: "Iraq / العراق" },
-  { code: "MA", name: "Morocco / المغرب" },
-  { code: "DZ", name: "Algeria / الجزائر" },
-  { code: "TN", name: "Tunisia / تونس" },
-  { code: "LY", name: "Libya / ليبيا" },
-  // أهم دول العالم
-  { code: "US", name: "USA / أمريكا" },
-  { code: "UK", name: "UK / بريطانيا" },
-  { code: "IT", name: "Italy / إيطاليا" },
-  { code: "DE", name: "Germany / ألمانيا" },
-  { code: "FR", name: "France / فرنسا" },
-  { code: "ES", name: "Spain / إسبانيا" },
-  { code: "TR", name: "Turkey / تركيا" },
-  { code: "CA", name: "Canada / كندا" },
-  { code: "AU", name: "Australia / أستراليا" },
-  { code: "CH", name: "Switzerland / سويسرا" },
-  { code: "SE", name: "Sweden / السويد" },
-  { code: "NL", name: "Netherlands / هولندا" },
-  { code: "RU", name: "Russia / روسيا" },
-  { code: "CN", name: "China / الصين" },
-  { code: "JP", name: "Japan / اليابان" },
-  { code: "BR", name: "Brazil / البرازيل" }
+  // North America
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+  { code: "MX", name: "Mexico" },
+  
+  // Europe
+  { code: "GB", name: "United Kingdom" },
+  { code: "DE", name: "Germany" },
+  { code: "FR", name: "France" },
+  { code: "IT", name: "Italy" },
+  { code: "ES", name: "Spain" },
+  { code: "NL", name: "Netherlands" },
+  { code: "BE", name: "Belgium" },
+  { code: "CH", name: "Switzerland" },
+  { code: "SE", name: "Sweden" },
+  { code: "NO", name: "Norway" },
+  { code: "DK", name: "Denmark" },
+  { code: "FI", name: "Finland" },
+  { code: "PL", name: "Poland" },
+  { code: "AT", name: "Austria" },
+  { code: "IE", name: "Ireland" },
+  { code: "PT", name: "Portugal" },
+  { code: "GR", name: "Greece" },
+  { code: "CZ", name: "Czech Republic" },
+  { code: "RO", name: "Romania" },
+  { code: "HU", name: "Hungary" },
+  { code: "UA", name: "Ukraine" },
+  { code: "RU", name: "Russia" },
+  { code: "TR", name: "Turkey" },
+  
+  // Middle East & North Africa
+  { code: "SA", name: "Saudi Arabia" },
+  { code: "AE", name: "United Arab Emirates" },
+  { code: "QA", name: "Qatar" },
+  { code: "KW", name: "Kuwait" },
+  { code: "BH", name: "Bahrain" },
+  { code: "OM", name: "Oman" },
+  { code: "JO", name: "Jordan" },
+  { code: "LB", name: "Lebanon" },
+  { code: "EG", name: "Egypt" },
+  { code: "MA", name: "Morocco" },
+  { code: "DZ", name: "Algeria" },
+  { code: "TN", name: "Tunisia" },
+  { code: "LY", name: "Libya" },
+  { code: "IQ", name: "Iraq" },
+  { code: "SY", name: "Syria" },
+  { code: "PS", name: "Palestine" },
+  { code: "IL", name: "Israel" },
+  { code: "IR", name: "Iran" },
+  
+  // Asia-Pacific
+  { code: "CN", name: "China" },
+  { code: "JP", name: "Japan" },
+  { code: "IN", name: "India" },
+  { code: "KR", name: "South Korea" },
+  { code: "SG", name: "Singapore" },
+  { code: "HK", name: "Hong Kong" },
+  { code: "TW", name: "Taiwan" },
+  { code: "MY", name: "Malaysia" },
+  { code: "TH", name: "Thailand" },
+  { code: "ID", name: "Indonesia" },
+  { code: "PH", name: "Philippines" },
+  { code: "VN", name: "Vietnam" },
+  { code: "PK", name: "Pakistan" },
+  { code: "BD", name: "Bangladesh" },
+  { code: "AU", name: "Australia" },
+  { code: "NZ", name: "New Zealand" },
+  
+  // South America
+  { code: "BR", name: "Brazil" },
+  { code: "AR", name: "Argentina" },
+  { code: "CL", name: "Chile" },
+  { code: "CO", name: "Colombia" },
+  { code: "PE", name: "Peru" },
+  { code: "VE", name: "Venezuela" },
+  { code: "EC", name: "Ecuador" },
+  
+  // Africa
+  { code: "ZA", name: "South Africa" },
+  { code: "NG", name: "Nigeria" },
+  { code: "KE", name: "Kenya" },
+  { code: "ET", name: "Ethiopia" },
+  { code: "GH", name: "Ghana" },
+  
+  // Other
+  { code: "OTHER", name: "Other" }
 ];
 
 
@@ -120,6 +172,7 @@ export default function Home() {
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("");
   const [address, setAddress] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
   const [authError, setAuthError] = useState("");
   const [showCompareModal, setShowCompareModal] = useState(false);
@@ -268,6 +321,14 @@ export default function Home() {
   const handleAuth = async () => {
     setIsSubmittingAuth(true); // 👈 تفعيل التحميل
     setAuthError(""); // تنظيف الأخطاء السابقة
+    
+    // Validate Terms acceptance for signup
+    if (authMode === "signup" && !acceptTerms) {
+      setAuthError("You must accept the Terms of Service and Privacy Policy to register.");
+      setIsSubmittingAuth(false);
+      return;
+    }
+    
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
 
     let body, headers: any = {};
@@ -1274,6 +1335,29 @@ export default function Home() {
                   <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Password <span className="text-red-500">*</span></label>
                   <input type="password" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
+
+                {/* Terms & Conditions Checkbox - Only for Signup */}
+                {authMode === "signup" && (
+                  <div className="flex items-start gap-3 p-4 bg-slate-900/50 border border-slate-700 rounded-lg animate-in slide-in-from-bottom-5">
+                    <input 
+                      type="checkbox" 
+                      id="acceptTerms"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-800 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <label htmlFor="acceptTerms" className="text-xs text-slate-300 leading-relaxed cursor-pointer">
+                      I agree to the{" "}
+                      <Link href="/terms" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-semibold">
+                        Terms of Service
+                      </Link>
+                      {" "}and{" "}
+                      <Link href="/privacy" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-semibold">
+                        Privacy Policy
+                      </Link>
+                    </label>
+                  </div>
+                )}
 
 <button 
   onClick={handleAuth} 

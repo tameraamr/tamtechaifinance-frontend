@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Mail, RefreshCw, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -10,11 +10,23 @@ export default function VerificationBanner() {
   const { user, isLoggedIn, isVerified, isLoading } = useAuth();
   const [isResending, setIsResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Only show banner if user is logged in but not verified
-  // Don't show during initial auth loading to prevent flicker
-  // Explicit check: user must exist, be logged in, NOT verified, and auth must be done loading
-  if (!user || isLoading || !isLoggedIn || isVerified || user.is_verified === 1) {
+  // Wait for component to mount and auth to load before showing banner
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 500); // Small delay to ensure auth is loaded
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Don't show banner if:
+  // 1. Component hasn't mounted yet (prevents flash)
+  // 2. Auth is still loading
+  // 3. User is not logged in
+  // 4. User is verified
+  if (!isMounted || isLoading || !isLoggedIn || isVerified || user?.is_verified === 1) {
     return null;
   }
 

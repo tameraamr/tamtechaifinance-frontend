@@ -171,6 +171,17 @@ export default function StockAnalyzerPage() {
         return;
       }
 
+      // Check for email verification required (403)
+      if (res.status === 403) {
+        const errorData = await res.json();
+        setAuthError(errorData.detail);
+        toast.error("📧 Email verification required. Check your inbox!", {
+          duration: 6000
+        });
+        setLoading(false);
+        return;
+      }
+
       if (!res.ok) {
         let errorMessage = "Analysis failed";
         try {

@@ -11,12 +11,14 @@ interface User {
   phone_number?: string;
   country?: string;
   address?: string;
+  is_verified?: number;  // 0 = not verified, 1 = verified
 }
 
 interface AuthContextType {
   user: User | null;
   credits: number;
   isLoggedIn: boolean;
+  isVerified: boolean;
   isLoading: boolean;
   login: (userData: User, credits: number) => void;
   logout: () => Promise<void>;
@@ -46,6 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const isLoggedIn = isAuthenticated && !!user;
+  const isVerified = user?.is_verified === 1;
 
   // 🧹 Clean up old localStorage token on mount (one-time migration)
   useEffect(() => {
@@ -76,6 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             phone_number: data.phone_number,
             country: data.country,
             address: data.address,
+            is_verified: data.is_verified,
           },
           credits: data.credits,
         };
@@ -172,6 +176,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     credits,
     isLoggedIn,
+    isVerified,
     isLoading,
     login,
     logout,

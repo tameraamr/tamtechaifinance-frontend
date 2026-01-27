@@ -393,11 +393,17 @@ export default function Home() {
 
       // ✅ النجاح
       if (authMode === "login") {
-  // البيانات الآن تأتي جاهزة من السيرفر داخل data.user و data.credits
-  // Token is now in httpOnly cookie, no need to pass it
-       login(data.user, data.credits); 
-  
+        // البيانات الآن تأتي جاهزة من السيرفر داخل data.user و data.credits
+        // Token is now in httpOnly cookie, no need to pass it
+        login(data.user, data.credits); 
         setShowAuthModal(false);
+      } else {
+        // Registration successful - show verification message
+        setAuthError("");
+        alert(`✅ Account created! Please check your email (${email}) to verify your account before logging in.`);
+        setShowAuthModal(false);
+        // Optionally switch to login mode or close modal
+      }
         toast.success(`Welcome back, ${data.user.first_name || 'User'}! 💰 Balance: ${data.credits} credits`, {
           duration: 5000,
           icon: '🚀',

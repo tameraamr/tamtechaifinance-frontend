@@ -9,9 +9,10 @@ import LanguageSelector from "./LanguageSelector";
 interface NavbarProps {
   guestTrials: number;
   setShowAuthModal?: (show: boolean) => void;
+  setAuthMode?: (mode: string) => void;
 }
 
-export default function Navbar({ guestTrials, setShowAuthModal }: NavbarProps) {
+export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: NavbarProps) {
   const { isLoggedIn, credits, logout } = useAuth();
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -85,7 +86,7 @@ export default function Navbar({ guestTrials, setShowAuthModal }: NavbarProps) {
               </button>
             ) : (
               <button
-                onClick={() => setShowAuthModal?.(true)}
+                onClick={() => { setAuthMode?.("login"); setShowAuthModal?.(true); }}
                 className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-4 py-2 rounded-lg transition-all text-white text-xs font-bold"
               >
                 <User className="w-3.5 h-3.5" />
@@ -161,7 +162,7 @@ export default function Navbar({ guestTrials, setShowAuthModal }: NavbarProps) {
               </button>
             ) : (
               <button
-                onClick={() => { setShowAuthModal?.(true); setMobileMenuOpen(false); }}
+                onClick={() => { setAuthMode?.("login"); setShowAuthModal?.(true); setMobileMenuOpen(false); }}
                 className="w-full flex items-center justify-center gap-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-4 py-3 rounded-lg transition-all text-white"
               >
                 <User className="w-4 h-4" />

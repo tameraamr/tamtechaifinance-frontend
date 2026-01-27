@@ -857,7 +857,7 @@ export default function Home() {
         <SearchParamsHandler setShowAuthModal={setShowAuthModal} setShowPaywall={setShowPaywall} />
       </Suspense>
       
-      <Navbar guestTrials={guestTrials} setShowAuthModal={setShowAuthModal} />
+      <Navbar guestTrials={guestTrials} setShowAuthModal={setShowAuthModal} setAuthMode={setAuthMode} />
 
       {/* الحاوية المتحركة المحدثة */}
       <div className="flex overflow-hidden relative ml-4 flex-1 items-center h-full">

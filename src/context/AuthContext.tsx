@@ -50,6 +50,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isLoggedIn = isAuthenticated && !!user;
   // Handle both boolean true and number 1 for is_verified
   const isVerified = user?.is_verified === 1 || user?.is_verified === true;
+  
+  // DEBUG: Log isVerified calculation
+  useEffect(() => {
+    console.log('🔍 isVerified calculation:', {
+      user_is_verified: user?.is_verified,
+      type: typeof user?.is_verified,
+      isVerified,
+      check1: user?.is_verified === 1,
+      check2: user?.is_verified === true,
+      truthyCheck: !!user?.is_verified
+    });
+  }, [user, isVerified]);
 
   // 🧹 Clean up old localStorage token on mount (one-time migration)
   useEffect(() => {

@@ -548,8 +548,17 @@ export default function Home() {
           'Expires': '0'
         }
       });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
       const data = await res.json();
       console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
+      
+      if (!data.ticker) {
+        throw new Error('No ticker returned from server');
+      }
 
       // Wait before stopping animation
       await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));

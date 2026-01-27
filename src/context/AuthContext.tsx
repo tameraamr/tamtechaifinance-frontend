@@ -72,6 +72,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 API Response from /users/me:', data);
+        console.log('🔍 is_verified value:', data.is_verified, 'type:', typeof data.is_verified);
         return {
           user: {
             email: data.email,

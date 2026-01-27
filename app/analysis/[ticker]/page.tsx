@@ -161,24 +161,58 @@ const MetricCard = ({ label, value, metricKey, tooltipKey, suffix = "" }: { labe
 
   const tooltipText = tooltipKey && t.tooltips && (t.tooltips as any)[tooltipKey] ? (t.tooltips as any)[tooltipKey] : "";
 
+  // Handle touch events properly for mobile
+  const handleTouch = (e: React.TouchEvent) => {
+    e.preventDefault();
+    setShowTooltip(!showTooltip);
+  };
+
+  // Close tooltip when clicking outside on mobile
+  useEffect(() => {
+    if (!showTooltip) return;
+    
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.tooltip-container')) {
+        setShowTooltip(false);
+      }
+    };
+
+    document.addEventListener('touchstart', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTooltip]);
+
   return (
-    <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-3 md:p-4 hover:bg-slate-800/50 transition-all group relative">
+    <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-3 md:p-4 hover:bg-slate-800/50 transition-all group">
       <div className="flex items-center justify-between mb-1">
         <div className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-wider">{label}</div>
         {tooltipText && (
-          <div className="relative">
+          <div className="relative tooltip-container">
             <button
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
-              onTouchStart={() => setShowTooltip(!showTooltip)}
-              className="text-slate-500 hover:text-blue-400 transition-colors touch-manipulation"
+              onTouchStart={handleTouch}
+              onClick={(e) => e.preventDefault()}
+              className="text-slate-500 hover:text-blue-400 transition-colors touch-manipulation p-1 -m-1"
+              aria-label="Show tooltip"
+              type="button"
             >
               <Info className="w-3 h-3 md:w-4 md:h-4" />
             </button>
             {showTooltip && (
-              <div className="absolute z-50 bottom-full right-0 mb-2 w-64 md:w-72 bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-2xl text-xs text-slate-300 leading-relaxed">
+              <div 
+                className="fixed md:absolute z-[9999] left-1/2 -translate-x-1/2 bottom-16 md:left-auto md:translate-x-0 md:bottom-full md:right-0 mb-2 w-[calc(100vw-2rem)] max-w-xs md:w-72 bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-2xl text-xs text-slate-300 leading-relaxed"
+                style={{
+                  animation: 'fadeIn 0.2s ease-in-out'
+                }}
+              >
                 {tooltipText}
-                <div className="absolute -bottom-1 right-4 w-2 h-2 bg-slate-900 border-r border-b border-slate-700 transform rotate-45"></div>
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-4 w-2 h-2 bg-slate-900 border-r border-b border-slate-700 transform rotate-45"></div>
               </div>
             )}
           </div>

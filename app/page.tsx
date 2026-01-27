@@ -400,9 +400,8 @@ export default function Home() {
       } else {
         // Registration successful - show verification message
         setAuthError("");
-        alert(`✅ Account created! Please check your email (${email}) to verify your account before logging in.`);
         setShowAuthModal(false);
-        // Optionally switch to login mode or close modal
+        // User will see the verification banner after registration
       }
 
     } catch (err: any) {

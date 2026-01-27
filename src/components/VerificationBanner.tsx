@@ -2,16 +2,19 @@
 import { useState } from 'react';
 import { Mail, RefreshCw, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
-interface VerificationBannerProps {
-  userEmail?: string;
-}
-
-export default function VerificationBanner({ userEmail }: VerificationBannerProps) {
+export default function VerificationBanner() {
+  const { user, isLoggedIn, isVerified } = useAuth();
   const [isResending, setIsResending] = useState(false);
   const [resent, setResent] = useState(false);
+
+  // Only show banner if user is logged in but not verified
+  if (!isLoggedIn || isVerified) {
+    return null;
+  }
 
   const handleResend = async () => {
     setIsResending(true);
@@ -48,7 +51,7 @@ export default function VerificationBanner({ userEmail }: VerificationBannerProp
             📧 Email Verification Required
           </h3>
           <p className="text-slate-300 text-sm mb-4">
-            You need to verify your email address <strong className="text-white">{userEmail}</strong> to use the AI Stock Analyzer.
+            You need to verify your email address <strong className="text-white">{user?.email}</strong> to use the AI Stock Analyzer.
             <br />
             Check your inbox for a verification link we sent you during registration.
           </p>

@@ -6,6 +6,7 @@ import { TranslationProvider } from '../src/context/TranslationContext';
 import { Toaster } from 'react-hot-toast';
 import CookieBanner from '../src/components/CookieBanner';
 import ConditionalAnalytics from '../src/components/ConditionalAnalytics';
+import VerificationBanner from '../src/components/VerificationBanner';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -121,6 +122,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <TranslationProvider>
+            <VerificationBanner />
             {children}
             <Toaster position="top-center" reverseOrder={false} />
             <CookieBanner />

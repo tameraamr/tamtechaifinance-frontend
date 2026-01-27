@@ -576,7 +576,10 @@ export default function Home() {
     } catch (err) {
       if (rollerRef.current) clearInterval(rollerRef.current);
       setSpinnerRolling(false);
-      toast.error("Failed to pick a stock");
+      console.error('Random stock fetch error:', err);
+      toast.error("Failed to pick a stock. Please try again.", {
+        duration: 3000
+      });
     }
   };
 
@@ -598,6 +601,19 @@ export default function Home() {
       });
 
       if (res.status === 403) {
+        const errorData = await res.json();
+        console.log('Spinner 403 Error:', errorData);
+        // Check if it's an email verification error
+        if (errorData.detail && errorData.detail.includes("verify your email")) {
+          // User is logged in but not verified
+          toast.error("📧 Please verify your email first! Check your inbox.", {
+            duration: 5000,
+            icon: "⚠️"
+          });
+          setLoading(false);
+          return;
+        }
+        // Otherwise it's IP exhaustion
         setAuthMode("signup");
         setShowAuthModal(true);
         setLoading(false);

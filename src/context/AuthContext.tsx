@@ -134,7 +134,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setCredits(userCredits);
     setIsAuthenticated(true);
   };
-  };
 
   const logout = async () => {
     try {

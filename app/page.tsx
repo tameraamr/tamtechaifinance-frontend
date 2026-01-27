@@ -666,7 +666,18 @@ export default function Home() {
 
       // 👇 التعديل الجديد: التعامل مع حظر الـ IP القادم من السيرفر
       if (res.status === 403) {
-        // إذا أرجع السيرفر 403، فهذا يعني أن IP الجهاز استهلك محاولاته حتى لو تلاعب بالمتصفح
+        const errorData = await res.json();
+        // Check if it's an email verification error
+        if (errorData.detail && errorData.detail.includes("verify your email")) {
+          // User is logged in but not verified - banner is already showing
+          toast.error("📧 Please verify your email first! Check your inbox.", {
+            duration: 5000,
+            icon: "⚠️"
+          });
+          setLoading(false);
+          return;
+        }
+        // Otherwise it's IP exhaustion for guests
         setAuthMode("signup");
         setShowAuthModal(true);
         setLoading(false);
@@ -743,6 +754,18 @@ export default function Home() {
 
       // 👇 التعديل الجديد: إذا استنفد الزائر محاولات الـ IP (403)
       if (res.status === 403) {
+        const errorData = await res.json();
+        // Check if it's an email verification error
+        if (errorData.detail && errorData.detail.includes("verify your email")) {
+          setShowCompareModal(false);
+          toast.error("📧 Please verify your email first! Check your inbox.", {
+            duration: 5000,
+            icon: "⚠️"
+          });
+          setLoadingCompare(false);
+          return;
+        }
+        // Otherwise it's IP exhaustion
         setShowCompareModal(false); // إغلاق نافذة المقارنة
         setAuthMode("signup");      // تحويل لنمط التسجيل
         setShowAuthModal(true);     // إظهار شاشة التسجيل

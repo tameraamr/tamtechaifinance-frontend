@@ -395,7 +395,7 @@ export default function Home() {
       if (authMode === "login") {
         // البيانات الآن تأتي جاهزة من السيرفر داخل data.user و data.credits
         // Token is now in httpOnly cookie, no need to pass it
-        login(data.user, data.credits); 
+        await login(data.user, data.credits); 
         setShowAuthModal(false);
       } else {
         // Registration successful - auto login and show verification banner
@@ -415,7 +415,7 @@ export default function Home() {
           
           if (loginResponse.ok) {
             const loginData = await loginResponse.json();
-            login(loginData.user, loginData.credits);
+            await login(loginData.user, loginData.credits);
             toast.success("✅ Account created! Please check your email to verify your account.", {
               duration: 7000,
               icon: "📧"

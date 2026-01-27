@@ -120,15 +120,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const login = (userData: User, userCredits: number) => {
+  const login = async (userData: User, userCredits: number) => {
     // No need to store token - it's in httpOnly cookie
     console.log('🔐 LOGIN - User data received:', userData);
     console.log('🔐 LOGIN - is_verified value:', userData.is_verified, 'Type:', typeof userData.is_verified);
+    
+    // If is_verified is missing, fetch complete user data from /users/me
+    if (userData.is_verified === undefined) {
+      console.log('⚠️ is_verified missing, fetching from /users/me...');
+      const completeUserData = await fetchUserData();
+      if (completeUserData) {
+        setUser(completeUserData.user);
+        setCredits(completeUserData.credits);
+        setIsAuthenticated(true);
+        console.log('✅ Complete user data loaded:', completeUserData.user);
+        return;
+      }
+    }
+    
     setUser(userData);
     setCredits(userCredits);
     setIsAuthenticated(true);
     setSuppressBanner(true);
-    setTimeout(() => setSuppressBanner(false), 2000); // Increased to 2 seconds
+    setTimeout(() => setSuppressBanner(false), 2000);
   };
 
   const logout = async () => {

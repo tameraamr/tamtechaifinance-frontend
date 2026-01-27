@@ -85,7 +85,12 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             <LanguageSelector />
 
             {/* Auth Buttons - Desktop */}
-            {isLoggedIn ? (
+            {isLoading ? (
+              <div className="hidden md:flex items-center gap-1.5 bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-xs font-bold text-slate-400">
+                <User className="w-3.5 h-3.5 animate-pulse" />
+                <span className="animate-pulse">...</span>
+              </div>
+            ) : isLoggedIn ? (
               <button onClick={logout} className="hidden md:block p-2 text-slate-400 hover:text-red-400 transition-colors" title="Logout">
                 <LogOut className="w-5 h-5" />
               </button>
@@ -154,7 +159,12 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             </div>
 
             {/* Auth Buttons - Mobile */}
-            {isLoggedIn ? (
+            {isLoading ? (
+              <div className="w-full flex items-center justify-center gap-2 text-sm font-bold bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg text-slate-400">
+                <User className="w-4 h-4 animate-pulse" />
+                <span className="animate-pulse">Loading...</span>
+              </div>
+            ) : isLoggedIn ? (
               <button 
                 onClick={() => {
                   logout();

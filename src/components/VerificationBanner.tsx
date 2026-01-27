@@ -7,12 +7,13 @@ import { useAuth } from '../context/AuthContext';
 const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
 export default function VerificationBanner() {
-  const { user, isLoggedIn, isVerified } = useAuth();
+  const { user, isLoggedIn, isVerified, isLoading } = useAuth();
   const [isResending, setIsResending] = useState(false);
   const [resent, setResent] = useState(false);
 
   // Only show banner if user is logged in but not verified
-  if (!isLoggedIn || isVerified) {
+  // Don't show during initial auth loading to prevent flicker
+  if (isLoading || !isLoggedIn || isVerified) {
     return null;
   }
 

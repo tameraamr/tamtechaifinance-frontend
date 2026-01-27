@@ -259,7 +259,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0b1121] text-white">
-      <Navbar />
+      <Navbar guestTrials={0} />
       
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}

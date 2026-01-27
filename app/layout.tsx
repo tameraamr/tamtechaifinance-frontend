@@ -38,14 +38,6 @@ export const metadata: Metadata = {
   verification: {
     google: "google7c0ae22a0cf47c58", 
   },
-  
-  // Mobile Optimization
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
 
   // لظهور الرابط بشكل احترافي عند المشاركة (Social Media)
   openGraph: {
@@ -78,6 +70,14 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   }
+};
+
+// Separate viewport export (Next.js 15 requirement)
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({

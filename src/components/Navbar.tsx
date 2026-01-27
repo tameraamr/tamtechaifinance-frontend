@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { BarChart3, LogOut, User, Star, Menu, X } from "lucide-react";
+import { BarChart3, LogOut, User, Star, Menu, X, LayoutDashboard } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../context/TranslationContext";
 import LanguageSelector from "./LanguageSelector";
@@ -38,6 +38,12 @@ export default function Navbar({ guestTrials }: NavbarProps) {
             <Link href="/random-picker" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
               {t.randomPicker}
             </Link>
+            {isLoggedIn && (
+              <Link href="/dashboard" className="text-xs font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/50 hover:border-purple-400/70 px-4 py-2 rounded-lg transition-all duration-300 text-purple-300 hover:text-purple-200 flex items-center gap-1.5">
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                Dashboard
+              </Link>
+            )}
             <Link href="/news" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
               {t.news}
             </Link>
@@ -97,6 +103,16 @@ export default function Navbar({ guestTrials }: NavbarProps) {
             >
               🎲 {t.randomPicker}
             </Link>
+            {isLoggedIn && (
+              <Link 
+                href="/dashboard" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-sm font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 px-4 py-3 rounded-lg transition-all text-purple-300 flex items-center gap-2"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                📊 Dashboard
+              </Link>
+            )}
             <Link 
               href="/news" 
               onClick={() => setMobileMenuOpen(false)}

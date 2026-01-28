@@ -49,6 +49,10 @@ export default function PortfolioPage() {
   const [newQuantity, setNewQuantity] = useState('');
   const [newAvgPrice, setNewAvgPrice] = useState('');
   
+  // Edit ticker state
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTicker, setEditTicker] = useState('');
+  
   useEffect(() => {
     if (isLoggedIn) {
       fetchPortfolio();
@@ -176,6 +180,65 @@ export default function PortfolioPage() {
     } finally {
       setAuditLoading(false);
     }
+  };
+  
+  const updateTicker = async (holdingId: number, oldTicker: string, newTicker: string) => {
+    const loadingToast = toast.loading(`Updating ${oldTicker} to ${newTicker}...`);
+    
+    try {
+      // Delete old holding
+      await fetch(`/api/portfolio/${holdingId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      // Get the holding details to preserve quantity and avg_buy_price
+      const holding = holdings.find(h => h.id === holdingId);
+      if (!holding) throw new Error('Holding not found');
+      
+      // Add new holding with updated ticker
+      const response = await fetch('/api/portfolio/add', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          ticker: newTicker,
+          quantity: holding.quantity.toString(),
+          ...(holding.avg_buy_price && { avg_buy_price: holding.avg_buy_price.toString() })
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to update ticker');
+      }
+      
+      toast.success(`✅ Updated to ${newTicker}`, { id: loadingToast });
+      setEditingId(null);
+      setEditTicker('');
+      fetchPortfolio();
+    } catch (error: any) {
+      console.error('Error updating ticker:', error);
+      toast.error(error.message || 'Failed to update ticker', { id: loadingToast });
+    }
+  };
+  
+  const getSuggestedTickers = (baseTicker: string) => {
+    const exchanges = [
+      { suffix: '.AS', name: 'Amsterdam' },
+      { suffix: '.DE', name: 'XETRA/Germany' },
+      { suffix: '.L', name: 'London' },
+      { suffix: '.PA', name: 'Paris' },
+      { suffix: '.SW', name: 'Switzerland' },
+      { suffix: '.MI', name: 'Milan' },
+      { suffix: '.BR', name: 'Brussels' },
+      { suffix: '.LS', name: 'Lisbon' },
+      { suffix: '.MC', name: 'Madrid' },
+      { suffix: '.VI', name: 'Vienna' }
+    ];
+    return exchanges.map(ex => ({ ticker: `${baseTicker}${ex.suffix}`, exchange: ex.name }));
   };
   
   if (!user) {
@@ -383,12 +446,53 @@ export default function PortfolioPage() {
                           <div className="font-bold text-white flex items-center gap-2">
                             {holding.ticker}
                             {holding.price_error && (
-                              <span className="text-xs bg-yellow-900/50 text-yellow-400 px-2 py-1 rounded" title="Price data unavailable. Try adding exchange suffix (e.g., .AS, .DE)">
+                              <span className="text-xs bg-yellow-900/50 text-yellow-400 px-2 py-1 rounded" title="Price data unavailable. Click Fix Ticker to update">
                                 ⚠️ No Price
                               </span>
                             )}
                           </div>
                           <div className="text-sm text-slate-400">{holding.company_name}</div>
+                          
+                          {/* Edit Mode */}
+                          {editingId === holding.id && holding.price_error && (
+                            <div className="mt-3 bg-slate-800 rounded-lg p-3 border border-yellow-500/30">
+                              <div className="text-xs text-yellow-400 mb-2">💡 Try these exchange suffixes:</div>
+                              <div className="flex flex-wrap gap-2 mb-3">
+                                {getSuggestedTickers(holding.ticker).map((suggestion) => (
+                                  <button
+                                    key={suggestion.ticker}
+                                    onClick={() => updateTicker(holding.id, holding.ticker, suggestion.ticker)}
+                                    className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors"
+                                    title={suggestion.exchange}
+                                  >
+                                    {suggestion.ticker}
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="text-xs text-slate-400 mb-2">Or enter custom ticker:</div>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={editTicker}
+                                  onChange={(e) => setEditTicker(e.target.value.toUpperCase())}
+                                  placeholder="e.g., VWCE.AS"
+                                  className="flex-1 px-3 py-1.5 bg-slate-700 border border-slate-600 rounded text-white text-sm"
+                                />
+                                <button
+                                  onClick={() => editTicker && updateTicker(holding.id, holding.ticker, editTicker)}
+                                  className="px-4 py-1.5 bg-green-600 hover:bg-green-500 rounded text-white text-sm font-semibold"
+                                >
+                                  Update
+                                </button>
+                                <button
+                                  onClick={() => { setEditingId(null); setEditTicker(''); }}
+                                  className="px-4 py-1.5 bg-slate-600 hover:bg-slate-500 rounded text-white text-sm"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="py-4 px-4 text-white">{holding.quantity}</td>
@@ -409,7 +513,12 @@ export default function PortfolioPage() {
                       </td>
                       <td className="py-4 px-4">
                         {holding.price_error ? (
-                          <span className="text-yellow-400 text-sm">Needs valid ticker</span>
+                          <button
+                            onClick={() => { setEditingId(holding.id); setEditTicker(''); }}
+                            className="text-sm bg-yellow-600 hover:bg-yellow-500 text-white px-3 py-1 rounded font-semibold"
+                          >
+                            Fix Ticker
+                          </button>
                         ) : (
                           <div className={`font-semibold ${holding.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                             {holding.pnl >= 0 ? '+' : ''}${holding.pnl.toFixed(2)}

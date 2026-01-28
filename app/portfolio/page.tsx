@@ -65,6 +65,10 @@ export default function PortfolioPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTicker, setEditTicker] = useState('');
   
+  // Currency selection
+  const [currency, setCurrency] = useState('USD');
+  const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
+  
   const debouncedTicker = useDebounce(newTicker, 300);
   
   useEffect(() => {
@@ -72,6 +76,32 @@ export default function PortfolioPage() {
       fetchPortfolio();
     }
   }, [isLoggedIn]);
+  
+  // Fetch exchange rates
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error('Failed to fetch exchange rates:', error);
+        // Fallback rates if API fails
+        setExchangeRates({
+          USD: 1,
+          EUR: 0.92,
+          GBP: 0.79,
+          JPY: 149.50,
+          CAD: 1.35,
+          AUD: 1.52,
+          CHF: 0.87,
+          CNY: 7.24,
+          INR: 83.12
+        });
+      }
+    };
+    fetchRates();
+  }, []);
   
   // Autocomplete for ticker
   useEffect(() => {
@@ -270,20 +300,19 @@ export default function PortfolioPage() {
     }
   };
   
-  const getSuggestedTickers = (baseTicker: string) => {
-    const exchanges = [
-      { suffix: '.AS', name: 'Amsterdam' },
-      { suffix: '.DE', name: 'XETRA/Germany' },
-      { suffix: '.L', name: 'London' },
-      { suffix: '.PA', name: 'Paris' },
-      { suffix: '.SW', name: 'Switzerland' },
-      { suffix: '.MI', name: 'Milan' },
-      { suffix: '.BR', name: 'Brussels' },
-      { suffix: '.LS', name: 'Lisbon' },
-      { suffix: '.MC', name: 'Madrid' },
-      { suffix: '.VI', name: 'Vienna' }
-    ];
-    return exchanges.map(ex => ({ ticker: `${baseTicker}${ex.suffix}`, exchange: ex.name }));
+  const convertCurrency = (amountUSD: number) => {
+    const rate = exchangeRates[currency] || 1;
+    return amountUSD * rate;
+  };
+  
+  const formatPrice = (amountUSD: number) => {
+    const converted = convertCurrency(amountUSD);
+    const symbols: {[key: string]: string} = {
+      USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: 'C$', 
+      AUD: 'A$', CHF: 'CHF', CNY: '¥', INR: '₹'
+    };
+    const symbol = symbols[currency] || currency + ' ';
+    return `${symbol}${converted.toFixed(2)}`;
   };
   
   if (!user) {
@@ -317,6 +346,33 @@ export default function PortfolioPage() {
           <p className="text-slate-400">Track your investments with live P&L calculations</p>
         </motion.div>
         
+        {/* Currency Selector */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-4 flex justify-end"
+        >
+          <div className="bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-slate-400" />
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="bg-slate-700 text-white px-3 py-1.5 rounded border border-slate-600 focus:outline-none focus:border-blue-500 cursor-pointer"
+            >
+              <option value="USD">🇺🇸 USD</option>
+              <option value="EUR">🇪🇺 EUR</option>
+              <option value="GBP">🇬🇧 GBP</option>
+              <option value="JPY">🇯🇵 JPY</option>
+              <option value="CAD">🇨🇦 CAD</option>
+              <option value="AUD">🇦🇺 AUD</option>
+              <option value="CHF">🇨🇭 CHF</option>
+              <option value="CNY">🇨🇳 CNY</option>
+              <option value="INR">🇮🇳 INR</option>
+            </select>
+          </div>
+        </motion.div>
+        
         {/* Summary Cards */}
         {summary && (
           <motion.div
@@ -327,19 +383,19 @@ export default function PortfolioPage() {
           >
             <div className="bg-gradient-to-br from-blue-900/50 to-slate-900 border border-blue-500/30 rounded-xl p-6">
               <div className="text-slate-400 text-sm mb-1">Total Value</div>
-              <div className="text-3xl font-bold text-white">${summary.total_value.toFixed(2)}</div>
+              <div className="text-3xl font-bold text-white">{formatPrice(summary.total_value)}</div>
             </div>
             
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-xl p-6">
               <div className="text-slate-400 text-sm mb-1">Total Cost</div>
-              <div className="text-3xl font-bold text-white">${summary.total_cost.toFixed(2)}</div>
+              <div className="text-3xl font-bold text-white">{formatPrice(summary.total_cost)}</div>
             </div>
             
             <div className={`bg-gradient-to-br ${summary.total_pnl >= 0 ? 'from-green-900/50' : 'from-red-900/50'} to-slate-900 border ${summary.total_pnl >= 0 ? 'border-green-500/30' : 'border-red-500/30'} rounded-xl p-6`}>
               <div className="text-slate-400 text-sm mb-1">Total P&L</div>
               <div className={`text-3xl font-bold ${summary.total_pnl >= 0 ? 'text-green-400' : 'text-red-400'} flex items-center gap-2`}>
                 {summary.total_pnl >= 0 ? <TrendingUp className="w-6 h-6" /> : <TrendingDown className="w-6 h-6" />}
-                ${Math.abs(summary.total_pnl).toFixed(2)}
+                {formatPrice(Math.abs(summary.total_pnl))}
               </div>
             </div>
             
@@ -485,28 +541,6 @@ export default function PortfolioPage() {
                   Add to Portfolio
                 </button>
               </div>
-              
-              {/* Exchange Suffix Suggestions */}
-              {newTicker && newTicker.length > 0 && !newTicker.includes('.') && (
-                <div className="bg-slate-900/50 rounded-lg p-3 border border-blue-500/30">
-                  <div className="text-xs text-blue-400 mb-2">
-                    💡 Can't find "{newTicker}"? Try adding an exchange suffix:
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {getSuggestedTickers(newTicker).map((suggestion) => (
-                      <button
-                        key={suggestion.ticker}
-                        onClick={() => setNewTicker(suggestion.ticker)}
-                        className="text-xs bg-blue-600/80 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors"
-                        title={`${suggestion.exchange} exchange`}
-                      >
-                        {suggestion.ticker}
-                        <span className="text-blue-200 ml-1">({suggestion.exchange})</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
           
@@ -551,20 +585,7 @@ export default function PortfolioPage() {
                           {/* Edit Mode */}
                           {editingId === holding.id && holding.price_error && (
                             <div className="mt-3 bg-slate-800 rounded-lg p-3 border border-yellow-500/30">
-                              <div className="text-xs text-yellow-400 mb-2">💡 Try these exchange suffixes:</div>
-                              <div className="flex flex-wrap gap-2 mb-3">
-                                {getSuggestedTickers(holding.ticker).map((suggestion) => (
-                                  <button
-                                    key={suggestion.ticker}
-                                    onClick={() => updateTicker(holding.id, holding.ticker, suggestion.ticker)}
-                                    className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors"
-                                    title={suggestion.exchange}
-                                  >
-                                    {suggestion.ticker}
-                                  </button>
-                                ))}
-                              </div>
-                              <div className="text-xs text-slate-400 mb-2">Or enter custom ticker:</div>
+                              <div className="text-xs text-slate-400 mb-2">Enter correct ticker symbol:</div>
                               <div className="flex gap-2">
                                 <input
                                   type="text"
@@ -591,19 +612,19 @@ export default function PortfolioPage() {
                         </div>
                       </td>
                       <td className="py-4 px-4 text-white">{holding.quantity}</td>
-                      <td className="py-4 px-4 text-white">${holding.avg_buy_price?.toFixed(2) || 'N/A'}</td>
+                      <td className="py-4 px-4 text-white">{holding.avg_buy_price ? formatPrice(holding.avg_buy_price) : 'N/A'}</td>
                       <td className="py-4 px-4 text-white">
                         {holding.price_error ? (
                           <span className="text-yellow-400">Price Error</span>
                         ) : (
-                          `$${holding.current_price.toFixed(2)}`
+                          formatPrice(holding.current_price)
                         )}
                       </td>
                       <td className="py-4 px-4 text-white font-semibold">
                         {holding.price_error ? (
                           <span className="text-yellow-400">N/A</span>
                         ) : (
-                          `$${holding.market_value.toFixed(2)}`
+                          formatPrice(holding.market_value)
                         )}
                       </td>
                       <td className="py-4 px-4">
@@ -616,7 +637,7 @@ export default function PortfolioPage() {
                           </button>
                         ) : (
                           <div className={`font-semibold ${holding.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {holding.pnl >= 0 ? '+' : ''}${holding.pnl.toFixed(2)}
+                            {holding.pnl >= 0 ? '+' : ''}{formatPrice(holding.pnl)}
                             <div className="text-sm">({holding.pnl_percent >= 0 ? '+' : ''}{holding.pnl_percent.toFixed(2)}%)</div>
                           </div>
                         )}

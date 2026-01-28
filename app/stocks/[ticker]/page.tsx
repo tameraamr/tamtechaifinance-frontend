@@ -21,8 +21,9 @@ export async function generateStaticParams() {
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { ticker: string } }): Promise<Metadata> {
-  const ticker = params.ticker.toUpperCase();
+export async function generateMetadata({ params }: { params: Promise<{ ticker: string }> }): Promise<Metadata> {
+  const { ticker: tickerParam } = await params;
+  const ticker = tickerParam.toUpperCase();
   
   try {
     // Fetch cached analysis data for metadata
@@ -105,8 +106,9 @@ export async function generateMetadata({ params }: { params: { ticker: string } 
 }
 
 // Main page component - Server Component with ISR
-export default async function StockPage({ params }: { params: { ticker: string } }) {
-  const ticker = params.ticker.toUpperCase();
+export default async function StockPage({ params }: { params: Promise<{ ticker: string }> }) {
+  const { ticker: tickerParam } = await params;
+  const ticker = tickerParam.toUpperCase();
   
   try {
     // Fetch analysis data server-side

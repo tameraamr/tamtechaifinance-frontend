@@ -59,72 +59,72 @@ const TICKER_POOL = [
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date();
   
-  // Static pages
-  const staticPages = [
+  // Static pages - fix type inference
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: 'https://tamtech-finance.com',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 1.0,
     },
     {
       url: 'https://tamtech-finance.com/stock-analyzer',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: 'https://tamtech-finance.com/about',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: 'https://tamtech-finance.com/pricing',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: 'https://tamtech-finance.com/news',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.7,
     },
     {
       url: 'https://tamtech-finance.com/random-picker',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.7,
     },
     {
       url: 'https://tamtech-finance.com/risk',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: 'https://tamtech-finance.com/contact',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: 'https://tamtech-finance.com/privacy',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'yearly',
       priority: 0.5,
     },
     {
       url: 'https://tamtech-finance.com/terms',
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'yearly',
       priority: 0.5,
     },
   ];
   
   // Dynamic stock pages - All 270 tickers (HIGH PRIORITY FOR SEO)
-  const stockPages = TICKER_POOL.map((ticker) => ({
+  const stockPages: MetadataRoute.Sitemap = TICKER_POOL.map((ticker) => ({
     url: `https://tamtech-finance.com/stocks/${ticker}`,
     lastModified: currentDate,
     changeFrequency: 'daily' as const,

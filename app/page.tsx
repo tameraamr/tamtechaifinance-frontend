@@ -1431,7 +1431,7 @@ export default function Home() {
               <h2 className="text-xl md:text-3xl font-bold mb-2 text-white">{t.paywallTitle}</h2>
               <p className="text-slate-400 mb-8 text-xs md:text-sm">{t.paywallDesc}</p>
 
-              <a href="https://tamtechfinance.gumroad.com/l/tool" target="_blank" className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 md:py-4 rounded-xl mb-6 text-sm md:text-base cursor-pointer">
+              <a href="https://tamtechfinance.gumroad.com/l/tool" className="gumroad-button block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 md:py-4 rounded-xl mb-6 text-sm md:text-base cursor-pointer hover:from-blue-500 hover:to-purple-500 transition-all">
                 {t.upgradeBtn}
               </a>
 

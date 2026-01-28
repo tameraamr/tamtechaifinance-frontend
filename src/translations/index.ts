@@ -95,7 +95,7 @@ export const fullTranslations = {
     threats: "Threats",
     
     // Purchase
-    upgradeBtn: "Buy Pro Key ($5)",
+    upgradeBtn: "Buy Credits",
     redeemBtn: "Redeem",
     inputKey: "License Key...",
     haveKey: "HAVE A KEY?",
@@ -152,7 +152,7 @@ export const fullTranslations = {
     
     // Pricing Page
     pricingTitle: "Get Your License Key",
-    pricingSubtitle: "Top up your account with 50 Credits using our secure Gumroad integration.",
+    pricingSubtitle: "Choose your credit package: 10 Credits for $4.99 or 50 Credits for $9.99. Secure payment via Gumroad.",
     fullAnalysisPack: "Full Analysis Pack",
     officialLicense: "Official License",
     instantDelivery: "Instant Delivery",
@@ -552,7 +552,7 @@ export const fullTranslations = {
     threats: "تهديدات",
     
     // Purchase
-    upgradeBtn: "شراء رصيد ($5)",
+    upgradeBtn: "شراء رصيد",
     redeemBtn: "تفعيل",
     inputKey: "كود التفعيل...",
     haveKey: "لديك كود؟",
@@ -609,7 +609,7 @@ export const fullTranslations = {
     
     // Pricing Page
     pricingTitle: "احصل على مفتاح الترخيص",
-    pricingSubtitle: "أضف رصيداً إلى حسابك بـ 50 رصيد باستخدام تكامل Gumroad الآمن.",
+    pricingSubtitle: "اختر حزمة رصيدك: 10 رصيد بـ $4.99 أو 50 رصيد بـ $9.99. دفع آمن عبر Gumroad.",
     fullAnalysisPack: "حزمة التحليل الكامل",
     officialLicense: "ترخيص رسمي",
     instantDelivery: "تسليم فوري",

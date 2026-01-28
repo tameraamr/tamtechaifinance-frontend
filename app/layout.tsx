@@ -120,6 +120,8 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        {/* Gumroad Overlay Script */}
+        <script src="https://gumroad.com/js/gumroad.js"></script>
         {/* Explicit Favicon Links for Maximum Browser Compatibility */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="512x512" href="/logo.PNG" />

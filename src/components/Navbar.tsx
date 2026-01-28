@@ -7,7 +7,7 @@ import { useTranslation } from "../context/TranslationContext";
 import LanguageSelector from "./LanguageSelector";
 
 interface NavbarProps {
-  guestTrials: number;
+  guestTrials?: number;
   setShowAuthModal?: (show: boolean) => void;
   setAuthMode?: (mode: string) => void;
 }
@@ -77,7 +77,7 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             ) : (
               <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-400">
                 <User className="w-3 h-3" />
-                <span>{guestTrials}</span>
+                <span>{guestTrials ?? 0}</span>
               </div>
             )}
 

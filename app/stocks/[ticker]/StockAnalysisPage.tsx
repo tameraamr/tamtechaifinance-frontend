@@ -1,16 +1,14 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   TrendingUp, TrendingDown, DollarSign, BarChart3, 
-  ArrowLeft, Calendar, Share2, Download, Target,
-  CheckCircle, XCircle, AlertTriangle, Brain, Activity
+  ArrowLeft, Share2, Download, Target,
+  AlertTriangle, Brain, Activity
 } from 'lucide-react';
 import Navbar from '../../../src/components/Navbar';
 import Footer from '../../../src/components/Footer';
-import { useAuth } from '../../../src/context/AuthContext';
 import { useTranslation } from '../../../src/context/TranslationContext';
 
 interface StockAnalysisPageProps {
@@ -19,11 +17,9 @@ interface StockAnalysisPageProps {
 }
 
 export default function StockAnalysisPage({ ticker, initialData }: StockAnalysisPageProps) {
-  const router = useRouter();
-  const { t, lang } = useTranslation();
-  const { isLoggedIn } = useAuth();
+  const { t } = useTranslation();
   
-  const [data, setData] = useState(initialData);
+  const [data] = useState(initialData);
   const analysis = data.analysis;
   const stockData = data.data;
   

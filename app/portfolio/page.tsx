@@ -53,6 +53,24 @@ export default function PortfolioPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [auditResult, setAuditResult] = useState<any>(null);
   const [auditLoading, setAuditLoading] = useState(false);
+  const [loadingMessageIdx, setLoadingMessageIdx] = useState(0);
+  const loadingMessages = [
+    '🧠 AI is analyzing sector correlations...',
+    '📊 Calculating portfolio risk & volatility...',
+    '🔍 Comparing your holdings with 10-year market data...',
+    '✨ Generating your personalized health score...'
+  ];
+  useEffect(() => {
+    let interval;
+    if (auditLoading) {
+      interval = setInterval(() => {
+        setLoadingMessageIdx((idx) => (idx + 1) % loadingMessages.length);
+      }, 2000);
+    } else {
+      setLoadingMessageIdx(0);
+    }
+    return () => clearInterval(interval);
+  }, [auditLoading]);
   
   // Add form state
   const [newTicker, setNewTicker] = useState('');
@@ -236,10 +254,8 @@ export default function PortfolioPage() {
       return;
     }
     
-    const loadingToast = toast.loading('🤖 AI analyzing your portfolio...');
-    
+    setAuditLoading(true);
     try {
-      setAuditLoading(true);
       const response = await fetch('/api/portfolio/audit', {
         method: 'POST',
         credentials: 'include',
@@ -257,14 +273,22 @@ export default function PortfolioPage() {
       }
       
       const data = await response.json();
-      setAuditResult(data.audit);
-      toast.success(`✅ Portfolio audit complete! Health Score: ${data.audit.portfolio_health_score}/100`, { id: loadingToast, duration: 5000 });
+      // Fade-in animation for results
+      setTimeout(() => {
+        setAuditResult(data.audit);
+        toast.success(`✅ Portfolio audit complete! Health Score: ${data.audit.portfolio_health_score}/100`, { duration: 5000 });
+        window.location.reload();
+      }, 600);
       
       // Refresh user credits
       window.location.reload();
     } catch (error: any) {
       console.error('Error running audit:', error);
-      toast.error(error.message || 'Failed to run portfolio audit', { id: loadingToast });
+      toast.error(error.message || 'Failed to run portfolio audit', {
+        duration: 5000,
+        icon: '⚠️',
+        style: { background: '#1e293b', color: '#fff', border: '1px solid #f43f5e' }
+      });
     } finally {
       setAuditLoading(false);
     }
@@ -486,14 +510,38 @@ export default function PortfolioPage() {
           </motion.div>
         )}
         
-        {/* AI Audit CTA */}
+        {/* AI Audit CTA + Sophisticated Loader */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-xl p-6 mb-6"
+          className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-xl p-6 mb-6 relative"
         >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          {auditLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-black/60 backdrop-blur-sm rounded-xl">
+              {/* Circular Progress Indicator - premium animation */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.4 }}
+                className="mb-6"
+              >
+                <svg className="animate-spin-slow h-16 w-16 text-purple-400" viewBox="0 0 50 50">
+                  <circle className="opacity-20" cx="25" cy="25" r="20" stroke="#a78bfa" strokeWidth="6" fill="none" />
+                  <path d="M25 5 a20 20 0 0 1 0 40" stroke="#f472b6" strokeWidth="6" fill="none" strokeLinecap="round" />
+                </svg>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-lg font-semibold text-white text-center"
+              >
+                {loadingMessages[loadingMessageIdx]}
+              </motion.div>
+            </div>
+          )}
+          <div className={`flex flex-col md:flex-row items-center justify-between gap-4 ${auditLoading ? 'opacity-30 pointer-events-none' : ''}`}> 
             <div className="flex items-center gap-4">
               <div className="bg-purple-600/20 p-3 rounded-lg">
                 <Brain className="w-8 h-8 text-purple-400" />
@@ -524,7 +572,13 @@ export default function PortfolioPage() {
               }`}
             >
               {auditLoading ? (
-                <>Processing...</>
+                <>
+                  <svg className="animate-spin h-5 w-5 text-purple-300" viewBox="0 0 24 24">
+                    <circle className="opacity-20" cx="12" cy="12" r="10" stroke="#a78bfa" strokeWidth="4" fill="none" />
+                    <path d="M12 2 a10 10 0 0 1 0 20" stroke="#f472b6" strokeWidth="4" fill="none" strokeLinecap="round" />
+                  </svg>
+                  Loading...
+                </>
               ) : credits >= 5 ? (
                 <>
                   <Sparkles className="w-5 h-5" />
@@ -882,6 +936,7 @@ export default function PortfolioPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
             className="bg-gradient-to-br from-purple-900/20 to-slate-900 border border-purple-500/30 rounded-xl p-8"
           >
             <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">

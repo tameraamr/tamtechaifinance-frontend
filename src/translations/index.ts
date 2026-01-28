@@ -2111,7 +2111,7 @@ export const fullTranslations = {
     faq2Q: "Какие акции я могу анализировать?",
     faq2A: "Вы можете анализировать любую акцию, котирующуюся на основных американских биржах (NYSE, NASDAQ, S&P 500). Это включает отдельные акции, но не ETF, взаимные фонды или криптовалюту в настоящее время. Просто введите символ тикера (например, AAPL, TSLA, MSFT).",
     faq3Q: "Сколько стоит каждый анализ?",
-    faq3A: "Каждый анализ стоит 1 кредит. Гостевые пользователи получают 3 бесплатных пробных анализа. После этого вы можете приобрести лицензионный ключ на 50 кредитов за $5 через нашу безопасную интеграцию с Gumroad. Кредиты никогда не истекают.",
+    faq3A: "Каждый анализ стоит 1 кредит. Гостевые пользователи получают 3 бесплатных пробных анализа. После этого вы можете приобрести кредиты: 10 кредитов за $4.99 или 50 кредитов за $9.99 через нашу безопасную интеграцию с Gumroad. Кредиты никогда не истекают.",
     faq4Q: "Могу ли я скачать отчет об анализе?",
     faq4A: "Да! Каждый анализ включает функцию профессионального экспорта PDF. Нажмите кнопку 'Скачать PDF' на странице результатов, чтобы сохранить комплексный отчет со всеми метриками, графиками, SWOT-анализом, бычьими/медвежьими сценариями и вердиктом ИИ. Идеально подходит для обмена или ведения записей.",
     faq5Q: "Это финансовый совет?",
@@ -2341,7 +2341,7 @@ export const fullTranslations = {
     registerToContinue: "Registrati per Continuare",
     registerDesc: "Hai usato le 3 scansioni gratuite. Crea un account per acquistare crediti.",
     paywallTitle: "Limite Raggiunto",
-    paywallDesc: "Hai 0 crediti. Acquista una Chiave Pro per sbloccare 50 scansioni.",
+    paywallDesc: "Hai 0 crediti. Acquista 10 crediti a $4.99 o 50 crediti a $9.99.",
     
     // Analysis Loading Messages
     gatheringData: "Raccolta dati di mercato in tempo reale...",
@@ -2569,7 +2569,7 @@ export const fullTranslations = {
     faq2Q: "Quali azioni posso analizzare?",
     faq2A: "Puoi analizzare qualsiasi azione quotata sulle principali borse statunitensi (NYSE, NASDAQ, S&P 500). Questo include singole azioni, ma non ETF, fondi comuni o criptovalute al momento. Basta inserire il simbolo del ticker (es. AAPL, TSLA, MSFT).",
     faq3Q: "Quanto costa ogni analisi?",
-    faq3A: "Ogni analisi costa 1 credito. Gli utenti ospiti ottengono 3 prove gratuite. Dopo di che, puoi acquistare una chiave di licenza per 50 crediti a $5 tramite la nostra integrazione sicura con Gumroad. I crediti non scadono mai.",
+    faq3A: "Ogni analisi costa 1 credito. Gli utenti ospiti ottengono 3 prove gratuite. Dopo di che, puoi acquistare crediti: 10 crediti a $4.99 o 50 crediti a $9.99 tramite la nostra integrazione sicura con Gumroad. I crediti non scadono mai.",
     faq4Q: "Posso scaricare il report dell'analisi?",
     faq4A: "Sì! Ogni analisi include una funzione di esportazione PDF professionale. Clicca sul pulsante 'Scarica PDF' nella pagina dei risultati per salvare un report completo con tutte le metriche, grafici, analisi SWOT, casi rialzisti/ribassisti e verdetto IA. Perfetto per condividere o tenere traccia.",
     faq5Q: "Questo è un consiglio finanziario?",

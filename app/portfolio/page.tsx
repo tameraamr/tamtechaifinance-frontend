@@ -69,6 +69,9 @@ export default function PortfolioPage() {
   const [currency, setCurrency] = useState('USD');
   const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
   
+  // Sorting state
+  const [sortBy, setSortBy] = useState<'value' | 'pnl' | 'ticker'>('value');
+  
   const debouncedTicker = useDebounce(newTicker, 300);
   
   useEffect(() => {
@@ -235,7 +238,13 @@ export default function PortfolioPage() {
       setAuditLoading(true);
       const response = await fetch('/api/portfolio/audit', {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          language: navigator.language.split('-')[0] || 'en'
+        })
       });
       
       if (!response.ok) {
@@ -334,7 +343,16 @@ export default function PortfolioPage() {
     };
     const symbol = symbols[stockCurrency] || stockCurrency + ' ';
     return { formatted: `${symbol}${price.toFixed(2)}`, currency: stockCurrency };
-  };;
+  };
+  
+  const sortedHoldings = [...holdings].sort((a, b) => {
+    if (sortBy === 'value') return b.market_value - a.market_value;
+    if (sortBy === 'pnl') return b.pnl_percent - a.pnl_percent;
+    return a.ticker.localeCompare(b.ticker);
+  });
+  
+  const topWinner = holdings.filter(h => !h.price_error && h.pnl > 0).sort((a, b) => b.pnl_percent - a.pnl_percent)[0];
+  const topLoser = holdings.filter(h => !h.price_error && h.pnl < 0).sort((a, b) => a.pnl_percent - b.pnl_percent)[0];
   
   if (!user) {
     return (
@@ -429,6 +447,41 @@ export default function PortfolioPage() {
           </motion.div>
         )}
         
+        {/* Top Winner & Loser */}
+        {holdings.length > 0 && (topWinner || topLoser) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+          >
+            {topWinner && (
+              <div className="bg-gradient-to-br from-green-900/30 to-slate-900 border border-green-500/30 rounded-xl p-5 flex items-center gap-4">
+                <div className="bg-green-600/20 p-3 rounded-lg">
+                  <TrendingUp className="w-6 h-6 text-green-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-slate-400 text-xs mb-1">\ud83c\udfc6 Top Performer</div>
+                  <div className="font-bold text-white text-lg">{topWinner.ticker}</div>
+                  <div className="text-green-400 font-semibold">+{topWinner.pnl_percent.toFixed(2)}%</div>
+                </div>
+              </div>
+            )}
+            {topLoser && (
+              <div className="bg-gradient-to-br from-red-900/30 to-slate-900 border border-red-500/30 rounded-xl p-5 flex items-center gap-4">
+                <div className="bg-red-600/20 p-3 rounded-lg">
+                  <TrendingDown className="w-6 h-6 text-red-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-slate-400 text-xs mb-1">\ud83d\udcc9 Needs Attention</div>
+                  <div className="font-bold text-white text-lg">{topLoser.ticker}</div>
+                  <div className="text-red-400 font-semibold">{topLoser.pnl_percent.toFixed(2)}%</div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+        
         {/* AI Audit CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -492,13 +545,24 @@ export default function PortfolioPage() {
         >
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-white">Holdings</h2>
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-white flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Add Stock
-            </button>
+            <div className="flex items-center gap-3">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'value' | 'pnl' | 'ticker')}
+                className="px-3 py-2 bg-slate-800 text-white border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+              >
+                <option value="value">\ud83d\udcb0 Sort by Value</option>
+                <option value="pnl">\ud83d\udcc8 Sort by Performance</option>
+                <option value="ticker">\ud83d\udd24 Sort by Ticker</option>
+              </select>
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-white flex items-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                Add Stock
+              </button>
+            </div>
           </div>
           
           {/* Add Form */}
@@ -628,7 +692,7 @@ export default function PortfolioPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {holdings.map((holding) => (
+                  {sortedHoldings.map((holding) => (
                     <tr key={holding.id} className="border-b border-slate-800 hover:bg-slate-800/50">
                       <td className="py-4 px-4">
                         <div>

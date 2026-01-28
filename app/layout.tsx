@@ -24,13 +24,13 @@ export const metadata: Metadata = {
   description: "Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.",
   keywords: ["Stock Analysis", "AI Finance", "Market Intelligence", "Investment Tool", "Tamtech Finance", "Financial Analysis AI"],
   
-  // الأيقونة - Using logo.PNG for maximum compatibility
+  // الأيقونة - Using logo.png for maximum compatibility
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/logo.PNG", type: "image/png", sizes: "512x512" },
+      { url: "/logo.png", type: "image/png", sizes: "512x512" },
     ],
-    apple: "/logo.PNG",
+    apple: "/logo.png",
     shortcut: "/favicon.ico",
   },
 
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     siteName: "Tamtech Finance",
     images: [
       {
-        url: "/favicon.png",
+        url: "/logo.png",
         width: 1200,
         height: 630,
         alt: "Tamtech Finance Preview",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tamtech Finance | AI Stock Analysis",
     description: "Institutional-grade market intelligence powered by AI.",
-    images: ["/favicon.png"],
+    images: ["/logo.png"],
   },
 
   // إعدادات إضافية لجوجل

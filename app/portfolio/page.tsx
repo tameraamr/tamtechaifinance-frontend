@@ -14,9 +14,42 @@
   import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
   // --- MISSING FUNCTION STUBS ---
-  const runAIAudit = () => {
-    // TODO: Implement AI audit logic here
-    toast('AI Audit triggered (stub)', { icon: '🧠' });
+
+  const runAIAudit = async () => {
+    if (holdings.length === 0) {
+      toast.error('Add stocks to your portfolio first');
+      return;
+    }
+    if (credits < 5) {
+      toast.error('Not enough credits to run audit');
+      return;
+    }
+    setAuditLoading(true);
+    toast.loading('Running AI audit...');
+    try {
+      const response = await fetch('/api/portfolio/audit', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          holdings,
+          lang: navigator.language || 'en'
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Audit failed');
+      }
+      const result = await response.json();
+      setAuditResult(result);
+      setReportTimestamp(Date.now());
+      toast.success('AI audit complete!');
+    } catch (error: any) {
+      toast.error(error.message || 'Audit failed');
+    } finally {
+      setAuditLoading(false);
+    }
   };
 
   const deleteHolding = (id: number, ticker: string) => {
@@ -408,12 +441,24 @@ export default function PortfolioPage() {
           </motion.div>
         </motion.div>
       )}
-        {/* Portfolio Value Graph */}
+        {/* Summary Cards */}
+        {summary && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
+          >
+            {/* ...existing summary cards code... */}
+          </motion.div>
+        )}
+
+        {/* Portfolio Value Graph - moved below summary cards */}
         {holdings.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
+            transition={{ delay: 0.15 }}
             className="mb-8 bg-slate-900 border border-blue-500/30 rounded-xl p-6"
           >
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">

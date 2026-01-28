@@ -106,14 +106,50 @@ export default function PortfolioPage() {
     }
   };
 
-  const deleteHolding = (id: number, ticker: string) => {
-    // TODO: Implement delete logic here
-    toast(`Delete ${ticker} (stub)`, { icon: '🗑️' });
+  const deleteHolding = async (id: number, ticker: string) => {
+    const loadingToast = toast.loading(`Deleting ${ticker} from portfolio...`);
+    try {
+      const response = await fetch(`/api/portfolio/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to delete holding');
+      }
+      toast.success(`✅ ${ticker} removed from portfolio`, { id: loadingToast });
+      // Refresh portfolio
+      fetchPortfolio();
+    } catch (error: any) {
+      console.error('Error deleting holding:', error);
+      toast.error((error as Error).message || 'Failed to delete stock from portfolio', { id: loadingToast });
+    }
   };
 
-  const updateTicker = (id: number, oldTicker: string, newTicker: string) => {
-    // TODO: Implement update logic here
-    toast(`Update ${oldTicker} to ${newTicker} (stub)`, { icon: '✏️' });
+  const updateTicker = async (id: number, oldTicker: string, newTicker: string) => {
+    const loadingToast = toast.loading(`Updating ${oldTicker} to ${newTicker}...`);
+    try {
+      const response = await fetch(`/api/portfolio/${id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          ticker: newTicker.toUpperCase()
+        })
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to update ticker');
+      }
+      toast.success(`✅ Updated ${oldTicker} to ${newTicker}`, { id: loadingToast });
+      // Refresh portfolio
+      fetchPortfolio();
+    } catch (error: any) {
+      console.error('Error updating ticker:', error);
+      toast.error((error as Error).message || 'Failed to update ticker', { id: loadingToast });
+    }
   };
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -451,7 +487,39 @@ export default function PortfolioPage() {
             transition={{ delay: 0.1 }}
             className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
           >
-            {/* ...existing summary cards code... */}
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <DollarSign className="w-6 h-6 text-green-400" />
+                <span className="text-slate-400 text-sm">Total Value</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{formatPrice(summary.total_value)}</div>
+            </div>
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <TrendingUp className="w-6 h-6 text-blue-400" />
+                <span className="text-slate-400 text-sm">Total Cost</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{formatPrice(summary.total_cost)}</div>
+            </div>
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-2">
+                {summary.total_pnl >= 0 ? <TrendingUp className="w-6 h-6 text-green-400" /> : <TrendingDown className="w-6 h-6 text-red-400" />}
+                <span className="text-slate-400 text-sm">Total P&L</span>
+              </div>
+              <div className={`text-2xl font-bold ${summary.total_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {summary.total_pnl >= 0 ? '+' : ''}{formatPrice(summary.total_pnl)}
+              </div>
+              <div className={`text-sm ${summary.total_pnl_percent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {summary.total_pnl_percent >= 0 ? '+' : ''}{summary.total_pnl_percent.toFixed(2)}%
+              </div>
+            </div>
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <PieChart className="w-6 h-6 text-purple-400" />
+                <span className="text-slate-400 text-sm">Holdings</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{summary.holdings_count}</div>
+            </div>
           </motion.div>
         )}
 

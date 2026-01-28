@@ -5,6 +5,7 @@ import { useTranslation } from '../../src/context/TranslationContext';
 import Navbar from '../../src/components/Navbar';
 import Footer from '../../src/components/Footer';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import {
   TrendingUp, TrendingDown, Plus, Trash2, Brain, 
   DollarSign, PieChart, AlertTriangle, Lock, Sparkles
@@ -74,9 +75,11 @@ export default function PortfolioPage() {
   
   const addHolding = async () => {
     if (!newTicker || !newQuantity) {
-      alert('Please enter ticker and quantity');
+      toast.error('Please enter ticker and quantity');
       return;
     }
+    
+    const loadingToast = toast.loading(`Adding ${newTicker.toUpperCase()} to portfolio...`);
     
     try {
       const response = await fetch('/api/portfolio/add', {
@@ -92,7 +95,13 @@ export default function PortfolioPage() {
         })
       });
       
-      if (!response.ok) throw new Error('Failed to add holding');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to add holding');
+      }
+      
+      const data = await response.json();
+      toast.success(`✅ ${newTicker.toUpperCase()} added to portfolio`, { id: loadingToast });
       
       // Reset form
       setNewTicker('');
@@ -102,14 +111,16 @@ export default function PortfolioPage() {
       
       // Refresh portfolio
       fetchPortfolio();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding holding:', error);
-      alert('Failed to add stock to portfolio');
+      toast.error(error.message || 'Failed to add stock to portfolio', { id: loadingToast });
     }
   };
   
-  const deleteHolding = async (holdingId: number) => {
-    if (!confirm('Remove this stock from your portfolio?')) return;
+  const deleteHolding = async (holdingId: number, ticker: string) => {
+    if (!confirm(`Remove ${ticker} from your portfolio?`)) return;
+    
+    const loadingToast = toast.loading(`Removing ${ticker}...`);
     
     try {
       const response = await fetch(`/api/portfolio/${holdingId}`, {
@@ -117,21 +128,28 @@ export default function PortfolioPage() {
         credentials: 'include'
       });
       
-      if (!response.ok) throw new Error('Failed to delete holding');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to delete holding');
+      }
       
+      toast.success(`✅ ${ticker} removed from portfolio`, { id: loadingToast });
       fetchPortfolio();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting holding:', error);
+      toast.error(error.message || 'Failed to remove stock', { id: loadingToast });
     }
   };
   
   const runAIAudit = async () => {
     if (!user || credits < 5) {
-      alert('You need 5 credits to run an AI Portfolio Audit. Visit Pricing to buy credits!');
+      toast.error('You need 5 credits to run an AI Portfolio Audit. Visit Pricing to buy credits!', { duration: 5000 });
       return;
     }
     
     if (!confirm('Run AI Portfolio Audit for 5 credits?')) return;
+    
+    const loadingToast = toast.loading('🤖 AI analyzing your portfolio...');
     
     try {
       setAuditLoading(true);
@@ -147,12 +165,13 @@ export default function PortfolioPage() {
       
       const data = await response.json();
       setAuditResult(data.audit);
+      toast.success(`✅ Portfolio audit complete! Health Score: ${data.audit.portfolio_health_score}/100`, { id: loadingToast, duration: 5000 });
       
       // Refresh user credits
       window.location.reload();
     } catch (error: any) {
       console.error('Error running audit:', error);
-      alert(error.message || 'Failed to run portfolio audit');
+      toast.error(error.message || 'Failed to run portfolio audit', { id: loadingToast });
     } finally {
       setAuditLoading(false);
     }
@@ -376,7 +395,7 @@ export default function PortfolioPage() {
                       </td>
                       <td className="py-4 px-4 text-right">
                         <button
-                          onClick={() => deleteHolding(holding.id)}
+                          onClick={() => deleteHolding(holding.id, holding.ticker)}
                           className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />

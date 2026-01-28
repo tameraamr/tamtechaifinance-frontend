@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, Suspense, FormEvent, useRef } from "react";
+import { useState, useEffect, Suspense, FormEvent, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -19,6 +19,7 @@ import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
 import { useAuth } from '../src/context/AuthContext';
 import { useTranslation } from '../src/context/TranslationContext';
+import { useDebounce } from '../src/hooks/useDebounce';
 
 // 🔥 Use relative path to leverage Vercel rewrite (makes cookies first-party)
 const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
@@ -197,8 +198,8 @@ export default function Home() {
   const [selectedSpinnerTicker, setSelectedSpinnerTicker] = useState<string | null>(null);
   const rollerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // دالة لجلب التحليلات الأخيرة من الباك-إند
-  const fetchRecentAnalyses = async () => {
+  // دالة لجلب التحليلات الأخيرة من الباك-إند (memoized to prevent recreating on every render)
+  const fetchRecentAnalyses = useCallback(async () => {
     try {
       const res = await fetch(`${BASE_URL}/recent-analyses`);
       const data = await res.json();
@@ -206,11 +207,11 @@ export default function Home() {
     } catch (err) {
       console.error("Error fetching recent analyses:", err);
     }
-  };
+  }, []);
 
   const [sentiment, setSentiment] = useState({ sentiment: "Neutral", score: 50 });
 
-  const fetchMarketDashboardData = async () => {
+  const fetchMarketDashboardData = useCallback(async () => {
     try {
       // نستخدم BASE_URL المعرف عندك مسبقاً لضمان عمله لايف ولوكال
       const [sentRes, sectRes] = await Promise.all([
@@ -223,15 +224,15 @@ export default function Home() {
     } catch (err) {
       console.log("Dashboard sync waiting for connection...");
     }
-  };
+  }, []);
 
-  // تحديث الـ useEffect ليعمل عند فتح الصفحة أو عند أي تحليل جديد
+  // تحديث الـ useEffect ليعمل عند فتح الصفحة أو عند أي تحليل جديد - with dependency array fix
   useEffect(() => {
     fetchMarketDashboardData();
-  }, [recentAnalyses]);
+  }, [fetchMarketDashboardData, recentAnalyses]);
 
 
-  // Hook 1: جلب بيانات المستخدم والنبض العلوي
+  // Hook 1: جلب بيانات المستخدم والنبض العلوي - Optimized with proper cleanup
   useEffect(() => {
     const savedGuest = localStorage.getItem("guest_trials");
     if (savedGuest) setGuestTrials(parseInt(savedGuest));
@@ -246,33 +247,38 @@ export default function Home() {
         if (Array.isArray(data) && data.length > 0) setMarketPulse(data);
       } catch (err) { console.log("Pulse error"); }
     };
-    fetchPulse();
-    const interval = setInterval(fetchPulse, 60000);
     
-    // SEO: Set page metadata and canonical
-    document.title = "Tamtech Finance | AI-Powered Stock Analysis & Insights";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.');
-    }
+    fetchPulse(); // Initial fetch
+    const interval = setInterval(fetchPulse, 120000); // 2 minutes instead of 1 to reduce load
     
-    // Add canonical tag
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonical);
+    // SEO: Set page metadata and canonical (only runs once)
+    if (typeof document !== 'undefined') {
+      document.title = "Tamtech Finance | AI-Powered Stock Analysis & Insights";
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', 'Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.');
+      }
+      
+      // Add canonical tag
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute('href', 'https://tamtech-finance.com');
     }
-    canonical.setAttribute('href', 'https://tamtech-finance.com');
     
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchRecentAnalyses]); // Added dependency
 
-  // ✅ هذا هو الكود الصحيح والوحيد للاقتراحات
+  // ✅ Debounced ticker search - Optimized to prevent excessive API calls
+  const debouncedTicker = useDebounce(ticker, 300); // 300ms debounce
+  
   useEffect(() => {
     const getSuggestions = async () => {
       // 1. إذا النص قصير جداً، لا تبحث وأخفِ القائمة
-      if (!ticker || ticker.length < 2) {
+      if (!debouncedTicker || debouncedTicker.length < 2) {
         setSuggestions([]);
         setShowSuggestions(false);
         return;
@@ -282,7 +288,7 @@ export default function Home() {
       if (loading || analysisComplete || !userTyping) return;
 
       try {
-        const response = await fetch(`${BASE_URL}/search-ticker/${ticker}`);
+        const response = await fetch(`${BASE_URL}/search-ticker/${debouncedTicker}`);
         if (response.ok) {
           const data = await response.json();
           setSuggestions(data);
@@ -291,10 +297,8 @@ export default function Home() {
       } catch (error) { console.error("Search error:", error); }
     };
 
-    // نستخدم Delay بسيط (100ms) عشان نظهر الاقتراحات أسرع
-    const timer = setTimeout(getSuggestions, 100);
-    return () => clearTimeout(timer);
-  }, [ticker, loading, analysisComplete]); // أضفنا analysisComplete للمصفوفة
+    getSuggestions();
+  }, [debouncedTicker, loading, analysisComplete, userTyping]); // Proper dependencies
 
   // Hook 3: إغلاق القائمة عند الضغط في أي مكان خارج المربع
   useEffect(() => {

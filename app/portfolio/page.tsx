@@ -32,7 +32,7 @@ interface PortfolioSummary {
 }
 
 export default function PortfolioPage() {
-  const { user, token } = useAuth();
+  const { user, credits, isLoggedIn } = useAuth();
   const { t } = useTranslation();
   
   const [holdings, setHoldings] = useState<Holding[]>([]);
@@ -48,18 +48,16 @@ export default function PortfolioPage() {
   const [newAvgPrice, setNewAvgPrice] = useState('');
   
   useEffect(() => {
-    if (token) {
+    if (isLoggedIn) {
       fetchPortfolio();
     }
-  }, [token]);
+  }, [isLoggedIn]);
   
   const fetchPortfolio = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://tamtechaifinance-backend-production.up.railway.app/portfolio', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await fetch('/api/portfolio', {
+        credentials: 'include'
       });
       
       if (!response.ok) throw new Error('Failed to fetch portfolio');
@@ -81,10 +79,10 @@ export default function PortfolioPage() {
     }
     
     try {
-      const response = await fetch('https://tamtechaifinance-backend-production.up.railway.app/portfolio/add', {
+      const response = await fetch('/api/portfolio/add', {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
@@ -114,11 +112,9 @@ export default function PortfolioPage() {
     if (!confirm('Remove this stock from your portfolio?')) return;
     
     try {
-      const response = await fetch(`https://tamtechaifinance-backend-production.up.railway.app/portfolio/${holdingId}`, {
+      const response = await fetch(`/api/portfolio/${holdingId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
       
       if (!response.ok) throw new Error('Failed to delete holding');
@@ -130,7 +126,7 @@ export default function PortfolioPage() {
   };
   
   const runAIAudit = async () => {
-    if (!user || user.credits < 5) {
+    if (!user || credits < 5) {
       alert('You need 5 credits to run an AI Portfolio Audit. Visit Pricing to buy credits!');
       return;
     }
@@ -139,11 +135,9 @@ export default function PortfolioPage() {
     
     try {
       setAuditLoading(true);
-      const response = await fetch('https://tamtechaifinance-backend-production.up.railway.app/portfolio/audit', {
+      const response = await fetch('/api/portfolio/audit', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -245,12 +239,12 @@ export default function PortfolioPage() {
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   AI Portfolio Audit
-                  {user.credits < 5 && <Lock className="w-5 h-5 text-yellow-400" />}
+                  {credits < 5 && <Lock className="w-5 h-5 text-yellow-400" />}
                 </h3>
                 <p className="text-slate-300">
                   {holdings.length === 0 
                     ? "Add stocks to your portfolio first" 
-                    : user.credits >= 5 
+                    : credits >= 5 
                       ? "Get AI-powered risk analysis, correlations & health score" 
                       : "Your portfolio is tracked, but is it safe? Get a full AI Risk Audit for 5 credits."}
                 </p>
@@ -262,14 +256,14 @@ export default function PortfolioPage() {
               className={`px-8 py-4 rounded-lg font-bold text-white transition-all flex items-center gap-2 ${
                 holdings.length === 0 || auditLoading
                   ? 'bg-slate-600 cursor-not-allowed'
-                  : user.credits >= 5
+                  : credits >= 5
                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
                     : 'bg-yellow-600 hover:bg-yellow-700'
               }`}
             >
               {auditLoading ? (
                 <>Processing...</>
-              ) : user.credits >= 5 ? (
+              ) : credits >= 5 ? (
                 <>
                   <Sparkles className="w-5 h-5" />
                   Run Audit (5 Credits)

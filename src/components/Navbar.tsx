@@ -154,14 +154,23 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
 
             {/* Dashboard Link - Before Language Selector */}
             {isLoggedIn && (
-              <Link 
-                href="/dashboard" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 px-4 py-3 rounded-lg transition-all text-purple-300 flex items-center gap-2"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                📊 Dashboard
-              </Link>
+              <>
+                <Link 
+                  href="/dashboard" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 px-4 py-3 rounded-lg transition-all text-purple-300 flex items-center gap-2"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  📊 Dashboard
+                </Link>
+                <Link 
+                  href="/portfolio" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-bold bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/50 px-4 py-3 rounded-lg transition-all text-green-300 flex items-center gap-2"
+                >
+                  📊 Portfolio Tracker
+                </Link>
+              </>
             )}
 
             {/* Language Selector - Mobile */}

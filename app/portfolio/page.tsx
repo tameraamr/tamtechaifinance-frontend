@@ -65,6 +65,10 @@ export default function PortfolioPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTicker, setEditTicker] = useState('');
   
+  // Confirmation state
+  const [confirmDelete, setConfirmDelete] = useState<{id: number, ticker: string} | null>(null);
+  const [showAuditConfirm, setShowAuditConfirm] = useState(false);
+  
   // Currency selection
   const [currency, setCurrency] = useState('USD');
   const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
@@ -77,6 +81,10 @@ export default function PortfolioPage() {
   useEffect(() => {
     if (isLoggedIn) {
       fetchPortfolio();
+      // Welcome toast
+      if (user) {
+        toast.success(`Welcome back! You have ${credits} credits`, { duration: 4000, icon: '👋' });
+      }
     }
   }, [isLoggedIn]);
   
@@ -201,8 +209,6 @@ export default function PortfolioPage() {
   };
   
   const deleteHolding = async (holdingId: number, ticker: string) => {
-    if (!confirm(`Remove ${ticker} from your portfolio?`)) return;
-    
     const loadingToast = toast.loading(`Removing ${ticker}...`);
     
     try {
@@ -229,8 +235,6 @@ export default function PortfolioPage() {
       toast.error('You need 5 credits to run an AI Portfolio Audit. Visit Pricing to buy credits!', { duration: 5000 });
       return;
     }
-    
-    if (!confirm('Run AI Portfolio Audit for 5 credits?')) return;
     
     const loadingToast = toast.loading('🤖 AI analyzing your portfolio...');
     
@@ -509,7 +513,7 @@ export default function PortfolioPage() {
               </div>
             </div>
             <button
-              onClick={runAIAudit}
+              onClick={() => credits >= 5 ? setShowAuditConfirm(true) : window.location.href = '/pricing'}
               disabled={holdings.length === 0 || auditLoading}
               className={`px-8 py-4 rounded-lg font-bold text-white transition-all flex items-center gap-2 ${
                 holdings.length === 0 || auditLoading
@@ -535,6 +539,90 @@ export default function PortfolioPage() {
             </button>
           </div>
         </motion.div>
+        
+        {/* Delete Confirmation Modal */}
+        {confirmDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setConfirmDelete(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-slate-900 border border-red-500/30 rounded-xl p-6 max-w-md w-full"
+            >
+              <h3 className="text-xl font-bold text-white mb-3">Remove {confirmDelete.ticker}?</h3>
+              <p className="text-slate-300 mb-6">Are you sure you want to remove {confirmDelete.ticker} from your portfolio?</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    deleteHolding(confirmDelete.id, confirmDelete.ticker);
+                    setConfirmDelete(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 rounded-lg font-semibold text-white transition-all"
+                >
+                  Remove
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(null)}
+                  className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold text-white transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        
+        {/* Audit Confirmation Modal */}
+        {showAuditConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowAuditConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-slate-900 border border-purple-500/30 rounded-xl p-6 max-w-md w-full"
+            >
+              <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                <Brain className="w-6 h-6 text-purple-400" />
+                Run AI Portfolio Audit?
+              </h3>
+              <p className="text-slate-300 mb-2">This will use 5 credits to analyze:</p>
+              <ul className="text-sm text-slate-400 mb-6 space-y-1">
+                <li>✓ Portfolio health & risk assessment</li>
+                <li>✓ Diversification analysis</li>
+                <li>✓ Correlation risks</li>
+                <li>✓ Personalized recommendations</li>
+              </ul>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowAuditConfirm(false);
+                    runAIAudit();
+                  }}
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Run Audit (5 Credits)
+                </button>
+                <button
+                  onClick={() => setShowAuditConfirm(false)}
+                  className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold text-white transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
         
         {/* Holdings Table */}
         <motion.div
@@ -775,7 +863,7 @@ export default function PortfolioPage() {
                       </td>
                       <td className="py-4 px-4 text-right">
                         <button
-                          onClick={() => deleteHolding(holding.id, holding.ticker)}
+                          onClick={() => setConfirmDelete({id: holding.id, ticker: holding.ticker})}
                           className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />

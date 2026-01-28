@@ -414,48 +414,57 @@ export default function PortfolioPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <div className="text-slate-400 text-sm mb-1">Portfolio Health</div>
-                <div className="text-3xl font-bold text-purple-400">{auditResult.audit?.portfolio_health_score || auditResult.portfolio_health_score}/100</div>
+                <div className="text-3xl font-bold text-purple-400">{auditResult.audit?.portfolio_health_score ?? auditResult.portfolio_health_score ?? 0}/100</div>
               </div>
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <div className="text-slate-400 text-sm mb-1">Diversification</div>
-                <div className="text-3xl font-bold text-blue-400">{auditResult.audit?.diversification_score || auditResult.diversification_score}/100</div>
+                <div className="text-3xl font-bold text-blue-400">{auditResult.audit?.diversification_score ?? auditResult.diversification_score ?? 0}/100</div>
               </div>
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <div className="text-slate-400 text-sm mb-1">Risk Level</div>
                 <div className={`text-3xl font-bold ${
                   (auditResult.audit?.risk_level || auditResult.risk_level) === 'LOW' ? 'text-green-400' : 
                   (auditResult.audit?.risk_level || auditResult.risk_level) === 'MEDIUM' ? 'text-yellow-400' : 'text-red-400'
-                }`}>{auditResult.audit?.risk_level || auditResult.risk_level}</div>
+                }`}>{auditResult.audit?.risk_level ?? auditResult.risk_level ?? 'UNKNOWN'}</div>
               </div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-6 mb-6">
               <h3 className="text-xl font-bold text-white mb-3">Summary</h3>
-              <p className="text-slate-200">{auditResult.audit?.summary || auditResult.summary}</p>
+              <p className="text-slate-200">{auditResult.audit?.summary ?? auditResult.summary ?? 'No summary available'}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-slate-800/50 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-green-400 mb-3">✅ Strengths</h3>
                 <ul className="space-y-2">
-                  {(auditResult.audit?.strengths || auditResult.strengths || []).map((strength: string, i: number) => (
-                    <li key={i} className="text-slate-200">• {strength}</li>
-                  ))}
+                  {Array.isArray(auditResult.audit?.strengths || auditResult.strengths) 
+                    ? (auditResult.audit?.strengths || auditResult.strengths).map((strength: string, i: number) => (
+                        <li key={i} className="text-slate-200">• {strength}</li>
+                      ))
+                    : <li className="text-slate-400">No strengths data available</li>
+                  }
                 </ul>
               </div>
               <div className="bg-slate-800/50 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-red-400 mb-3">⚠️ Weaknesses</h3>
                 <ul className="space-y-2">
-                  {(auditResult.audit?.weaknesses || auditResult.weaknesses || []).map((weakness: string, i: number) => (
-                    <li key={i} className="text-slate-200">• {weakness}</li>
-                  ))}
+                  {Array.isArray(auditResult.audit?.weaknesses || auditResult.weaknesses) 
+                    ? (auditResult.audit?.weaknesses || auditResult.weaknesses).map((weakness: string, i: number) => (
+                        <li key={i} className="text-slate-200">• {weakness}</li>
+                      ))
+                    : <li className="text-slate-400">No weaknesses data available</li>
+                  }
                 </ul>
               </div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-6 mt-6">
               <h3 className="text-xl font-bold text-blue-400 mb-3">💡 Recommendations</h3>
               <ul className="space-y-2">
-                {(auditResult.audit?.recommendations || auditResult.recommendations || []).map((rec: string, i: number) => (
-                  <li key={i} className="text-slate-200">• {rec}</li>
-                ))}
+                {Array.isArray(auditResult.audit?.recommendations || auditResult.recommendations) 
+                  ? (auditResult.audit?.recommendations || auditResult.recommendations).map((rec: string, i: number) => (
+                      <li key={i} className="text-slate-200">• {rec}</li>
+                    ))
+                  : <li className="text-slate-400">No recommendations data available</li>
+                }
               </ul>
             </div>
             <div className="flex justify-end mt-8 gap-4">

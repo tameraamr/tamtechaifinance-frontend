@@ -277,11 +277,7 @@ export default function PortfolioPage() {
       setTimeout(() => {
         setAuditResult(data.audit);
         toast.success(`✅ Portfolio audit complete! Health Score: ${data.audit.portfolio_health_score}/100`, { duration: 5000 });
-        window.location.reload();
       }, 600);
-      
-      // Refresh user credits
-      window.location.reload();
     } catch (error: any) {
       console.error('Error running audit:', error);
       toast.error(error.message || 'Failed to run portfolio audit', {

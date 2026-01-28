@@ -1,3 +1,18 @@
+
+  "use client";
+  import { useState, useEffect } from 'react';
+  import { useAuth } from '../../src/context/AuthContext';
+  import { useTranslation } from '../../src/context/TranslationContext';
+  import Navbar from '../../src/components/Navbar';
+  import Footer from '../../src/components/Footer';
+  import { motion } from 'framer-motion';
+  import toast from 'react-hot-toast';
+  import {
+    TrendingUp, TrendingDown, Plus, Trash2, Brain, 
+    DollarSign, PieChart, AlertTriangle, Lock, Sparkles, Search
+  } from 'lucide-react';
+  import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+
   // --- MISSING FUNCTION STUBS ---
   const runAIAudit = () => {
     // TODO: Implement AI audit logic here
@@ -13,19 +28,6 @@
     // TODO: Implement update logic here
     toast(`Update ${oldTicker} to ${newTicker} (stub)`, { icon: '✏️' });
   };
-"use client";
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../src/context/AuthContext';
-import { useTranslation } from '../../src/context/TranslationContext';
-import Navbar from '../../src/components/Navbar';
-import Footer from '../../src/components/Footer';
-import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
-import {
-  TrendingUp, TrendingDown, Plus, Trash2, Brain, 
-  DollarSign, PieChart, AlertTriangle, Lock, Sparkles, Search
-} from 'lucide-react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 // Debounce hook
 const useDebounce = (value: string, delay: number) => {

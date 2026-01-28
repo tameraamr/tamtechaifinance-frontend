@@ -305,6 +305,17 @@ export default function PortfolioPage() {
     return amountUSD * rate;
   };
   
+  const getStockCurrency = (ticker: string): string => {
+    // Detect currency based on exchange suffix
+    if (ticker.includes('.AS') || ticker.includes('.DE') || ticker.includes('.PA') || ticker.includes('.MI') || ticker.includes('.BR') || ticker.includes('.LS') || ticker.includes('.MC') || ticker.includes('.VI')) return 'EUR';
+    if (ticker.includes('.L')) return 'GBP';
+    if (ticker.includes('.SW')) return 'CHF';
+    if (ticker.includes('.T')) return 'JPY';
+    if (ticker.includes('.TO')) return 'CAD';
+    if (ticker.includes('.AX')) return 'AUD';
+    return 'USD'; // Default to USD for US stocks
+  };
+  
   const formatPrice = (amountUSD: number) => {
     const converted = convertCurrency(amountUSD);
     const symbols: {[key: string]: string} = {
@@ -314,6 +325,16 @@ export default function PortfolioPage() {
     const symbol = symbols[currency] || currency + ' ';
     return `${symbol}${converted.toFixed(2)}`;
   };
+  
+  const formatStockPrice = (price: number, ticker: string) => {
+    const stockCurrency = getStockCurrency(ticker);
+    const symbols: {[key: string]: string} = {
+      USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: 'C$', 
+      AUD: 'A$', CHF: 'CHF', CNY: '¥', INR: '₹'
+    };
+    const symbol = symbols[stockCurrency] || stockCurrency + ' ';
+    return { formatted: `${symbol}${price.toFixed(2)}`, currency: stockCurrency };
+  };;
   
   if (!user) {
     return (
@@ -596,6 +617,7 @@ export default function PortfolioPage() {
                   <tr className="border-b border-slate-700">
                     <th className="text-left py-3 px-4 text-slate-400 font-semibold">Ticker</th>
                     <th className="text-left py-3 px-4 text-slate-400 font-semibold">Shares</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Currency</th>
                     <th className="text-left py-3 px-4 text-slate-400 font-semibold">Avg Price</th>
                     <th className="text-left py-3 px-4 text-slate-400 font-semibold">Current Price</th>
                     <th className="text-left py-3 px-4 text-slate-400 font-semibold">Market Value</th>
@@ -648,19 +670,26 @@ export default function PortfolioPage() {
                         </div>
                       </td>
                       <td className="py-4 px-4 text-white">{holding.quantity}</td>
-                      <td className="py-4 px-4 text-white">{holding.avg_buy_price ? formatPrice(holding.avg_buy_price) : 'N/A'}</td>
+                      <td className="py-4 px-4">
+                        <span className="text-xs font-semibold text-blue-400 bg-blue-900/30 px-2 py-1 rounded">
+                          {getStockCurrency(holding.ticker)}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-white">
+                        {holding.avg_buy_price ? formatStockPrice(holding.avg_buy_price, holding.ticker).formatted : 'N/A'}
+                      </td>
                       <td className="py-4 px-4 text-white">
                         {holding.price_error ? (
                           <span className="text-yellow-400">Price Error</span>
                         ) : (
-                          formatPrice(holding.current_price)
+                          formatStockPrice(holding.current_price, holding.ticker).formatted
                         )}
                       </td>
                       <td className="py-4 px-4 text-white font-semibold">
                         {holding.price_error ? (
                           <span className="text-yellow-400">N/A</span>
                         ) : (
-                          formatPrice(holding.market_value)
+                          formatStockPrice(holding.market_value, holding.ticker).formatted
                         )}
                       </td>
                       <td className="py-4 px-4">
@@ -673,7 +702,7 @@ export default function PortfolioPage() {
                           </button>
                         ) : (
                           <div className={`font-semibold ${holding.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {holding.pnl >= 0 ? '+' : ''}{formatPrice(holding.pnl)}
+                            {holding.pnl >= 0 ? '+' : ''}{formatStockPrice(holding.pnl, holding.ticker).formatted}
                             <div className="text-sm">({holding.pnl_percent >= 0 ? '+' : ''}{holding.pnl_percent.toFixed(2)}%)</div>
                           </div>
                         )}

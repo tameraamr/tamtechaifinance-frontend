@@ -10,6 +10,7 @@ import {
   TrendingUp, TrendingDown, Plus, Trash2, Brain, 
   DollarSign, PieChart, AlertTriangle, Lock, Sparkles, Search
 } from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 // Debounce hook
 const useDebounce = (value: string, delay: number) => {
@@ -263,7 +264,7 @@ export default function PortfolioPage() {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
-          language: navigator.language.split('-')[0] || 'en'
+          language: 'en'
         })
       });
       
@@ -276,7 +277,14 @@ export default function PortfolioPage() {
       // Fade-in animation for results
       setTimeout(() => {
         setAuditResult(data.audit);
-        toast.success(`✅ Portfolio audit complete! Health Score: ${data.audit.portfolio_health_score}/100`, { duration: 5000 });
+        toast.success(
+          <div>
+            <div className="font-bold text-lg text-purple-400 mb-1">AI Portfolio Audit Complete</div>
+            <div className="text-slate-200">Health Score: <span className="font-bold text-blue-400">{data.audit.portfolio_health_score}/100</span></div>
+            <div className="text-xs text-slate-400 mt-1">See full results below.</div>
+          </div>,
+          { duration: 6000, icon: '📈', style: { background: '#18181b', color: '#fff', border: '1px solid #a78bfa' } }
+        );
       }, 600);
     } catch (error: any) {
       console.error('Error running audit:', error);
@@ -374,6 +382,12 @@ export default function PortfolioPage() {
     if (sortBy === 'pnl') return b.pnl_percent - a.pnl_percent;
     return a.ticker.localeCompare(b.ticker);
   });
+
+  // Prepare data for portfolio value graph
+  const graphData = holdings.map(h => ({
+    name: h.ticker,
+    value: h.market_value
+  }));
   
   const topWinner = holdings.filter(h => !h.price_error && h.pnl > 0).sort((a, b) => b.pnl_percent - a.pnl_percent)[0];
   const topLoser = holdings.filter(h => !h.price_error && h.pnl < 0).sort((a, b) => a.pnl_percent - b.pnl_percent)[0];
@@ -397,8 +411,30 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <Navbar />
-      
       <main className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Portfolio Value Graph */}
+        {holdings.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mb-8 bg-slate-900 border border-blue-500/30 rounded-xl p-6"
+          >
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <PieChart className="w-6 h-6 text-blue-400" />
+              Portfolio Value by Ticker
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
+                <YAxis stroke="#94a3b8" fontSize={12} />
+                <Tooltip contentStyle={{ background: '#1e293b', color: '#fff', border: '1px solid #a78bfa' }} />
+                <Line type="monotone" dataKey="value" stroke="#a78bfa" strokeWidth={3} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </motion.div>
+        )}
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

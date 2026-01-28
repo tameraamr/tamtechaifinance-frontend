@@ -1436,8 +1436,9 @@ export default function Home() {
                 {/* 10 Credits - $4.99 */}
                 <a 
                   href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=10%20Credits" 
-                  className="gumroad-button block bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold py-4 px-4 rounded-xl text-sm cursor-pointer hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg"
-                  data-gumroad-overlay-checkout="true"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold py-4 px-4 rounded-xl text-sm hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg"
                 >
                   <div className="text-2xl font-black mb-1">$4.99</div>
                   <div className="text-xs opacity-90">10 Credits</div>
@@ -1446,8 +1447,9 @@ export default function Home() {
                 {/* 50 Credits - $9.99 */}
                 <a 
                   href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=50%20Credits" 
-                  className="gumroad-button block bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-bold py-4 px-4 rounded-xl text-sm cursor-pointer hover:from-yellow-500 hover:to-orange-500 transition-all shadow-lg border-2 border-yellow-500/50"
-                  data-gumroad-overlay-checkout="true"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-bold py-4 px-4 rounded-xl text-sm hover:from-yellow-500 hover:to-orange-500 transition-all shadow-lg border-2 border-yellow-500/50"
                 >
                   <div className="text-xs uppercase tracking-wide mb-1">Best Value</div>
                   <div className="text-2xl font-black mb-1">$9.99</div>

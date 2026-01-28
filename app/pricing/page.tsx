@@ -87,8 +87,9 @@ export default function PricingPage() {
 
               <a 
                 href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=10%20Credits" 
-                className="gumroad-button w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-600/20 group"
-                data-gumroad-overlay-checkout="true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-600/20 group"
               >
                 <ShoppingCart className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 Buy Now - $4.99
@@ -145,8 +146,9 @@ export default function PricingPage() {
 
               <a 
                 href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=50%20Credits" 
-                className="gumroad-button w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-yellow-600/20 group"
-                data-gumroad-overlay-checkout="true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-yellow-600/20 group"
               >
                 <ShoppingCart className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 Buy Now - $9.99

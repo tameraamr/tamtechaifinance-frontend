@@ -414,29 +414,29 @@ export default function PortfolioPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <div className="text-slate-400 text-sm mb-1">Portfolio Health</div>
-                <div className="text-3xl font-bold text-purple-400">{auditResult.portfolio_health_score}/100</div>
+                <div className="text-3xl font-bold text-purple-400">{auditResult.audit?.portfolio_health_score || auditResult.portfolio_health_score}/100</div>
               </div>
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <div className="text-slate-400 text-sm mb-1">Diversification</div>
-                <div className="text-3xl font-bold text-blue-400">{auditResult.diversification_score}/100</div>
+                <div className="text-3xl font-bold text-blue-400">{auditResult.audit?.diversification_score || auditResult.diversification_score}/100</div>
               </div>
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <div className="text-slate-400 text-sm mb-1">Risk Level</div>
                 <div className={`text-3xl font-bold ${
-                  auditResult.risk_level === 'LOW' ? 'text-green-400' : 
-                  auditResult.risk_level === 'MEDIUM' ? 'text-yellow-400' : 'text-red-400'
-                }`}>{auditResult.risk_level}</div>
+                  (auditResult.audit?.risk_level || auditResult.risk_level) === 'LOW' ? 'text-green-400' : 
+                  (auditResult.audit?.risk_level || auditResult.risk_level) === 'MEDIUM' ? 'text-yellow-400' : 'text-red-400'
+                }`}>{auditResult.audit?.risk_level || auditResult.risk_level}</div>
               </div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-6 mb-6">
               <h3 className="text-xl font-bold text-white mb-3">Summary</h3>
-              <p className="text-slate-200">{auditResult.summary}</p>
+              <p className="text-slate-200">{auditResult.audit?.summary || auditResult.summary}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-slate-800/50 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-green-400 mb-3">✅ Strengths</h3>
                 <ul className="space-y-2">
-                  {auditResult.strengths.map((strength: string, i: number) => (
+                  {(auditResult.audit?.strengths || auditResult.strengths || []).map((strength: string, i: number) => (
                     <li key={i} className="text-slate-200">• {strength}</li>
                   ))}
                 </ul>
@@ -444,7 +444,7 @@ export default function PortfolioPage() {
               <div className="bg-slate-800/50 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-red-400 mb-3">⚠️ Weaknesses</h3>
                 <ul className="space-y-2">
-                  {auditResult.weaknesses.map((weakness: string, i: number) => (
+                  {(auditResult.audit?.weaknesses || auditResult.weaknesses || []).map((weakness: string, i: number) => (
                     <li key={i} className="text-slate-200">• {weakness}</li>
                   ))}
                 </ul>
@@ -453,7 +453,7 @@ export default function PortfolioPage() {
             <div className="bg-slate-800/50 rounded-lg p-6 mt-6">
               <h3 className="text-xl font-bold text-blue-400 mb-3">💡 Recommendations</h3>
               <ul className="space-y-2">
-                {auditResult.recommendations.map((rec: string, i: number) => (
+                {(auditResult.audit?.recommendations || auditResult.recommendations || []).map((rec: string, i: number) => (
                   <li key={i} className="text-slate-200">• {rec}</li>
                 ))}
               </ul>

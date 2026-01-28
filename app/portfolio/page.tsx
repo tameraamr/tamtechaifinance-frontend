@@ -85,11 +85,10 @@ export default function PortfolioPage() {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: JSON.stringify({
-          holdings,
-          lang: navigator.language || 'en'
+        body: new URLSearchParams({
+          language: navigator.language || 'en'
         })
       });
       if (!response.ok) {

@@ -61,7 +61,7 @@ export default function PortfolioPage() {
     '✨ Generating your personalized health score...'
   ];
   useEffect(() => {
-    let interval;
+    let interval: NodeJS.Timeout;
     if (auditLoading) {
       interval = setInterval(() => {
         setLoadingMessageIdx((idx) => (idx + 1) % loadingMessages.length);

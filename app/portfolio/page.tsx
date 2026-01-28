@@ -8,8 +8,18 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import {
   TrendingUp, TrendingDown, Plus, Trash2, Brain, 
-  DollarSign, PieChart, AlertTriangle, Lock, Sparkles
+  DollarSign, PieChart, AlertTriangle, Lock, Sparkles, Search
 } from 'lucide-react';
+
+// Debounce hook
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+};
 
 interface Holding {
   id: number;
@@ -48,16 +58,51 @@ export default function PortfolioPage() {
   const [newTicker, setNewTicker] = useState('');
   const [newQuantity, setNewQuantity] = useState('');
   const [newAvgPrice, setNewAvgPrice] = useState('');
+  const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   
   // Edit ticker state
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTicker, setEditTicker] = useState('');
+  
+  const debouncedTicker = useDebounce(newTicker, 300);
   
   useEffect(() => {
     if (isLoggedIn) {
       fetchPortfolio();
     }
   }, [isLoggedIn]);
+  
+  // Autocomplete for ticker
+  useEffect(() => {
+    const getSuggestions = async () => {
+      if (!debouncedTicker || debouncedTicker.length < 2) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/search-ticker/${debouncedTicker}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSuggestions(data);
+          setShowSuggestions(true);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+      }
+    };
+
+    getSuggestions();
+  }, [debouncedTicker]);
+  
+  // Close suggestions on outside click
+  useEffect(() => {
+    const closeSuggestions = () => setShowSuggestions(false);
+    window.addEventListener('click', closeSuggestions);
+    return () => window.removeEventListener('click', closeSuggestions);
+  }, []);
   
   const fetchPortfolio = async () => {
     try {
@@ -389,8 +434,34 @@ export default function PortfolioPage() {
                     placeholder="Ticker (e.g., AAPL)"
                     value={newTicker}
                     onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
+                    onFocus={() => newTicker.length >= 2 && setShowSuggestions(true)}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
                   />
+                  
+                  {/* Autocomplete Suggestions */}
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50 max-h-60 overflow-y-auto">
+                      {suggestions.map((s, i) => (
+                        <button
+                          key={i}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setNewTicker(s.symbol);
+                            setShowSuggestions(false);
+                          }}
+                          className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-600/20 border-b border-slate-700 last:border-0 transition-all text-left"
+                        >
+                          <div className="flex flex-col items-start">
+                            <span className="text-blue-400 font-bold text-sm">{s.symbol}</span>
+                            <span className="text-slate-400 text-xs truncate max-w-[200px]">{s.name}</span>
+                          </div>
+                          <Search size={12} className="text-slate-600" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <input
                   type="number"

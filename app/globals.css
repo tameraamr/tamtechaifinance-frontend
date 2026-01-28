@@ -138,3 +138,19 @@ body {
 .bg-pos-100 {
   background-position: 100% 0;
 }
+
+/* Gumroad Overlay Fix - Ensure proper z-index and backdrop */
+.gumroad-overlay-iframe {
+  z-index: 9999 !important;
+}
+
+.gumroad-overlay {
+  z-index: 9999 !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Ensure Gumroad overlay content is properly styled */
+.gumroad-loading-indicator {
+  z-index: 10000 !important;
+}

@@ -1,5 +1,74 @@
 
-  // Functions that need state access
+"use client";
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../src/context/AuthContext';
+import { useTranslation } from '../../src/context/TranslationContext';
+import Navbar from '../../src/components/Navbar';
+import Footer from '../../src/components/Footer';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
+import {
+  TrendingUp, TrendingDown, Plus, Trash2, Brain, 
+  DollarSign, PieChart, AlertTriangle, Lock, Sparkles, Search
+} from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+
+
+
+
+
+// Debounce hook
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+};
+
+interface Holding {
+  id: number;
+  ticker: string;
+  company_name: string;
+  quantity: number;
+  avg_buy_price: number | null;
+  current_price: number;
+  market_value: number;
+  cost_basis: number;
+  pnl: number;
+  pnl_percent: number;
+  price_error?: boolean;
+}
+interface PortfolioSummary {
+  total_value: number;
+  total_cost: number;
+  total_pnl: number;
+  total_pnl_percent: number;
+  holdings_count: number;
+}
+
+export default function PortfolioPage() {
+  // Audit report modal state
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportTimestamp, setReportTimestamp] = useState<number | null>(null);
+  const { user, credits, isLoggedIn } = useAuth();
+  const { t } = useTranslation();
+  const [holdings, setHoldings] = useState<Holding[]>([]);
+  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [auditResult, setAuditResult] = useState<any>(null);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [loadingMessageIdx, setLoadingMessageIdx] = useState(0);
+  const loadingMessages = [
+    '🧠 AI is analyzing sector correlations...',
+    '📊 Calculating portfolio risk & volatility...',
+    '🔍 Comparing your holdings with 10-year market data...',
+    '✨ Generating your personalized health score...'
+  ];
+
+  // Handler functions must be defined before any JSX usage
   const runAIAudit = async () => {
     if (holdings.length === 0) {
       toast.error('Add stocks to your portfolio first');
@@ -46,76 +115,6 @@
     // TODO: Implement update logic here
     toast(`Update ${oldTicker} to ${newTicker} (stub)`, { icon: '✏️' });
   };
-
-  "use client";
-  import { useState, useEffect } from 'react';
-  import { useAuth } from '../../src/context/AuthContext';
-  import { useTranslation } from '../../src/context/TranslationContext';
-  import Navbar from '../../src/components/Navbar';
-  import Footer from '../../src/components/Footer';
-  import { motion } from 'framer-motion';
-  import toast from 'react-hot-toast';
-  import {
-    TrendingUp, TrendingDown, Plus, Trash2, Brain, 
-    DollarSign, PieChart, AlertTriangle, Lock, Sparkles, Search
-  } from 'lucide-react';
-  import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-
-  // --- MISSING FUNCTION STUBS ---
-
-
-
-// Debounce hook
-const useDebounce = (value: string, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debouncedValue;
-};
-
-interface Holding {
-  id: number;
-  ticker: string;
-  company_name: string;
-  quantity: number;
-  avg_buy_price: number | null;
-  current_price: number;
-  market_value: number;
-  cost_basis: number;
-  pnl: number;
-  pnl_percent: number;
-  price_error?: boolean;
-}
-interface PortfolioSummary {
-  total_value: number;
-  total_cost: number;
-  total_pnl: number;
-  total_pnl_percent: number;
-  holdings_count: number;
-}
-
-export default function PortfolioPage() {
-    // Audit report modal state
-    const [showReportModal, setShowReportModal] = useState(false);
-    const [reportTimestamp, setReportTimestamp] = useState<number | null>(null);
-  const { user, credits, isLoggedIn } = useAuth();
-  const { t } = useTranslation();
-  
-  const [holdings, setHoldings] = useState<Holding[]>([]);
-  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [auditResult, setAuditResult] = useState<any>(null);
-  const [auditLoading, setAuditLoading] = useState(false);
-  const [loadingMessageIdx, setLoadingMessageIdx] = useState(0);
-  const loadingMessages = [
-    '🧠 AI is analyzing sector correlations...',
-    '📊 Calculating portfolio risk & volatility...',
-    '🔍 Comparing your holdings with 10-year market data...',
-    '✨ Generating your personalized health score...'
-  ];
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (auditLoading) {
@@ -1075,6 +1074,7 @@ export default function PortfolioPage() {
         )}
       {/* End of main content */}
       
+
       <Footer />
     </div>
   );

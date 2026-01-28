@@ -605,7 +605,7 @@ export default function Home() {
     setAuthError("");
 
     try {
-      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}`, { 
+      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}?lang=${lang}`, { 
         credentials: 'include' // 🔒 httpOnly cookie sent automatically
       });
 

@@ -49,14 +49,25 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
           <div className="flex items-center gap-2 md:gap-3">
             {/* Dashboard Button - Desktop */}
             {isLoggedIn && (
-              <Link 
-                href="/dashboard" 
-                className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/50 hover:border-purple-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-purple-300 hover:text-purple-200 text-xs font-bold"
-                title="View your dashboard"
-              >
-                <LayoutDashboard className="w-3.5 h-3.5" />
-                <span className="hidden lg:inline">Dashboard</span>
-              </Link>
+              <>
+                <Link 
+                  href="/dashboard" 
+                  className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/50 hover:border-purple-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-purple-300 hover:text-purple-200 text-xs font-bold"
+                  title="View your dashboard"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span className="hidden lg:inline">Dashboard</span>
+                </Link>
+                
+                <Link 
+                  href="/portfolio" 
+                  className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-green-600/20 to-emerald-600/20 hover:from-green-600/30 hover:to-emerald-600/30 border border-green-500/50 hover:border-green-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-green-300 hover:text-green-200 text-xs font-bold"
+                  title="Track your portfolio"
+                >
+                  <span>📊</span>
+                  <span className="hidden lg:inline">Portfolio</span>
+                </Link>
+              </>
             )}
             
             {/* Credits Display */}

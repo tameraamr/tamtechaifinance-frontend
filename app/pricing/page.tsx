@@ -86,7 +86,7 @@ export default function PricingPage() {
               </ul>
 
               <a 
-                href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=10%20Credits" 
+                href="https://tamtechfinance.gumroad.com/l/tool?variant=Starter%20Pack%20(10%20Credits)" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-600/20 group"
@@ -145,7 +145,7 @@ export default function PricingPage() {
               </ul>
 
               <a 
-                href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=50%20Credits" 
+                href="https://tamtechfinance.gumroad.com/l/tool?variant=Trader's%20Choice%20(50%20Credits)" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-yellow-600/20 group"

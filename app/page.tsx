@@ -1435,7 +1435,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {/* 10 Credits - $4.99 */}
                 <a 
-                  href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=10%20Credits" 
+                  href="https://tamtechfinance.gumroad.com/l/tool?variant=Starter%20Pack%20(10%20Credits)" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold py-4 px-4 rounded-xl text-sm hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg"
@@ -1446,7 +1446,7 @@ export default function Home() {
 
                 {/* 50 Credits - $9.99 */}
                 <a 
-                  href="https://tamtechfinance.gumroad.com/l/tool?wanted=true&variant=50%20Credits" 
+                  href="https://tamtechfinance.gumroad.com/l/tool?variant=Trader's%20Choice%20(50%20Credits)" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-bold py-4 px-4 rounded-xl text-sm hover:from-yellow-500 hover:to-orange-500 transition-all shadow-lg border-2 border-yellow-500/50"

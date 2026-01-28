@@ -22,9 +22,18 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
   const [data] = useState(initialData);
   const analysis = data.analysis;
   const stockData = data.data;
+  const isTeaser = data.is_teaser || false;
   
   // Determine verdict styling
   const getVerdictStyle = (verdict: string) => {
+    if (isTeaser || verdict === '🔒 LOCKED') {
+      return {
+        bg: 'bg-gradient-to-r from-purple-600 to-pink-600',
+        text: 'text-purple-400',
+        icon: <Target className="w-6 h-6" />
+      };
+    }
+    
     switch (verdict) {
       case 'BUY':
         return {
@@ -126,27 +135,67 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
               </div>
             </div>
             
-            <div className="bg-slate-800/50 rounded-lg p-4">
+            {/* BLURRED CONFIDENCE SCORE in teaser mode */}
+            <div className={`bg-slate-800/50 rounded-lg p-4 ${isTeaser ? 'relative' : ''}`}>
               <div className="text-slate-400 text-sm mb-1">Confidence Score</div>
-              <div className={`text-2xl font-bold ${verdictStyle.text}`}>
-                {analysis.confidence_score}%
+              <div className={`text-2xl font-bold ${verdictStyle.text} ${isTeaser ? 'blur-sm select-none' : ''}`}>
+                {isTeaser ? '85%' : `${analysis.confidence_score}%`}
               </div>
+              {isTeaser && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xs font-bold text-purple-400">🔒 LOCKED</span>
+                </div>
+              )}
             </div>
             
-            <div className="bg-slate-800/50 rounded-lg p-4">
+            {/* BLURRED INTRINSIC VALUE in teaser mode */}
+            <div className={`bg-slate-800/50 rounded-lg p-4 ${isTeaser ? 'relative' : ''}`}>
               <div className="text-slate-400 text-sm mb-1">Intrinsic Value</div>
-              <div className="text-2xl font-bold text-white">
-                ${analysis.intrinsic_value || 'N/A'}
+              <div className={`text-2xl font-bold text-white ${isTeaser ? 'blur-sm select-none' : ''}`}>
+                {isTeaser ? '$120.50' : `$${analysis.intrinsic_value || 'N/A'}`}
               </div>
+              {isTeaser && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xs font-bold text-purple-400">🔒 LOCKED</span>
+                </div>
+              )}
             </div>
             
             <div className="bg-slate-800/50 rounded-lg p-4">
-              <div className="text-slate-400 text-sm mb-1">Market Cap</div>
+              <div className="text-slate-400 text-sm mb-1">Cache Age</div>
               <div className="text-2xl font-bold text-white">
-                ${stockData?.market_cap ? (stockData.market_cap / 1e9).toFixed(1) + 'B' : 'N/A'}
+                {stockData?.cacheAge || 'Live'}
               </div>
             </div>
           </div>
+          
+          {/* UNLOCK CTA for Teaser Mode */}
+          {isTeaser && (
+            <div className="mt-6 bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-xl p-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">🔒 Unlock Full Analysis</h3>
+                  <p className="text-slate-300">
+                    {analysis.unlock_message || 'Sign in and use 1 credit to see AI verdict, intrinsic value, SWOT analysis, and all premium insights.'}
+                  </p>
+                </div>
+                <div className="flex gap-3 shrink-0">
+                  <Link
+                    href="/pricing"
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-white transition-all"
+                  >
+                    Buy Credits
+                  </Link>
+                  <Link
+                    href={`/stock-analyzer?ticker=${ticker}`}
+                    className="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-white transition-all"
+                  >
+                    Analyze Now
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </motion.div>
         
         {/* AI Summary */}

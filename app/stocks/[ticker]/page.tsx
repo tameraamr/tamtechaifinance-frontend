@@ -111,8 +111,8 @@ export default async function StockPage({ params }: { params: Promise<{ ticker: 
   const ticker = tickerParam.toUpperCase();
   
   try {
-    // Fetch analysis data server-side
-    const response = await fetch(`${BASE_URL}/analyze/${ticker}?lang=en`, {
+    // Fetch TEASER analysis data from public endpoint (no auth required)
+    const response = await fetch(`${BASE_URL}/stocks/${ticker}?lang=en`, {
       next: { revalidate: 86400 }, // ISR: Revalidate every 24 hours
       headers: {
         'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800'
@@ -120,7 +120,23 @@ export default async function StockPage({ params }: { params: Promise<{ ticker: 
     });
     
     if (!response.ok) {
-      notFound();
+      // No cached data exists - show landing page
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white flex items-center justify-center p-4">
+          <div className="max-w-2xl w-full text-center space-y-6">
+            <h1 className="text-4xl font-bold">{ticker} Stock Analysis</h1>
+            <p className="text-xl text-slate-300">
+              No analysis available yet. Be the first to analyze {ticker}!
+            </p>
+            <a
+              href={`/stock-analyzer?ticker=${ticker}`}
+              className="inline-block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all"
+            >
+              Analyze {ticker} Now
+            </a>
+          </div>
+        </div>
+      );
     }
     
     const data = await response.json();
@@ -132,7 +148,7 @@ export default async function StockPage({ params }: { params: Promise<{ ticker: 
       '@context': 'https://schema.org',
       '@type': 'FinancialProduct',
       name: `${ticker} Stock Analysis`,
-      description: analysis.summary_one_line,
+      description: analysis.summary_one_line || `AI-powered analysis for ${stockData?.companyName || ticker}`,
       category: 'Stock Analysis',
       provider: {
         '@type': 'Organization',
@@ -144,26 +160,6 @@ export default async function StockPage({ params }: { params: Promise<{ ticker: 
         price: stockData?.price || 0,
         priceCurrency: stockData?.currency || 'USD',
       },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: analysis.confidence_score / 20, // Convert 0-100 to 0-5
-        bestRating: 5,
-        worstRating: 0,
-        ratingCount: 1,
-      },
-      review: {
-        '@type': 'Review',
-        reviewRating: {
-          '@type': 'Rating',
-          ratingValue: analysis.confidence_score / 20,
-          bestRating: 5,
-        },
-        author: {
-          '@type': 'Organization',
-          name: 'Tamtech Finance AI',
-        },
-        reviewBody: analysis.summary_one_line,
-      },
     };
     
     return (
@@ -174,7 +170,7 @@ export default async function StockPage({ params }: { params: Promise<{ ticker: 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         
-        {/* Client Component with the actual UI */}
+        {/* Client Component with TEASER mode */}
         <StockAnalysisPage 
           ticker={ticker}
           initialData={data}

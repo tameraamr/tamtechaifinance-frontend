@@ -1,7 +1,66 @@
 import { MetadataRoute } from 'next'
 
+// Full ticker pool (270 stocks)
+const TICKER_POOL = [
+  // Technology
+  "AAPL", "MSFT", "NVDA", "AVGO", "ORCL", "ADBE", "CRM", "CSCO", "ACN", "AMD",
+  "INTC", "IBM", "TXN", "QCOM", "NOW", "AMAT", "MU", "LRCX", "KLAC", "SNPS",
+  "CDNS", "ADSK", "ROP", "FTNT", "ANSS", "TYL", "PTC", "ZBRA", "KEYS", "GDDY",
+  "INTU", "PANW", "WDAY", "TEAM", "DDOG", "SNOW", "NET", "ZS", "OKTA", "CRWD",
+  
+  // Healthcare
+  "LLY", "UNH", "JNJ", "ABBV", "MRK", "TMO", "ABT", "DHR", "PFE", "BMY",
+  "AMGN", "GILD", "CVS", "CI", "MDT", "ISRG", "REGN", "VRTX", "HUM", "BSX",
+  "ELV", "ZTS", "SYK", "BDX", "EW", "IDXX", "RMD", "MTD", "DXCM", "A",
+  "ALGN", "HOLX", "PODD", "IQV", "CRL",
+  
+  // Finance
+  "BRK.B", "JPM", "V", "MA", "BAC", "WFC", "GS", "MS", "SPGI", "BLK",
+  "C", "AXP", "SCHW", "PGR", "CB", "MMC", "PNC", "USB", "TFC", "COF",
+  "AON", "ICE", "CME", "MCO", "AJG", "TRV", "AFL", "ALL", "MET", "AIG",
+  "FIS", "FISV", "BK", "STT", "TROW",
+  
+  // Consumer Discretionary
+  "AMZN", "TSLA", "HD", "MCD", "NKE", "SBUX", "LOW", "TJX", "BKNG", "CMG",
+  "MAR", "ORLY", "AZO", "GM", "F", "ROST", "YUM", "DG", "DLTR", "EBAY",
+  "POOL", "ULTA", "DPZ", "BBY", "DECK", "LVS", "MGM", "WYNN", "GRMN", "GPC",
+  
+  // Energy
+  "XOM", "CVX", "COP", "SLB", "EOG", "MPC", "PSX", "VLO", "OXY", "WMB",
+  "KMI", "HES", "HAL", "DVN", "BKR", "FANG", "MRO", "APA", "EQT", "CTRA",
+  "OKE", "LNG", "TRGP", "EPD", "ET",
+  
+  // Industrials
+  "CAT", "RTX", "UNP", "HON", "BA", "UPS", "LMT", "GE", "DE", "MMM",
+  "ETN", "PH", "EMR", "ITW", "CSX", "NSC", "FDX", "WM", "CMI", "PCAR",
+  "ROK", "CARR", "OTIS", "GWW", "FAST", "PAYX", "VRSK", "IEX", "DOV", "XYL",
+  
+  // Materials
+  "LIN", "APD", "ECL", "SHW", "FCX", "NEM", "CTVA", "DD", "NUE", "DOW",
+  "ALB", "VMC", "MLM", "PPG", "CF",
+  
+  // Real Estate
+  "PLD", "AMT", "EQIX", "PSA", "WELL", "DLR", "O", "SPG", "VICI", "AVB",
+  "EQR", "SBAC", "VTR", "EXR", "INVH",
+  
+  // Utilities
+  "NEE", "DUK", "SO", "D", "AEP", "EXC", "SRE", "XEL", "WEC", "ED",
+  "ES", "AWK", "DTE", "PPL", "AEE",
+  
+  // Communications
+  "META", "GOOGL", "GOOG", "NFLX", "DIS", "CMCSA", "T", "VZ", "TMUS", "CHTR",
+  "EA", "TTWO", "MTCH", "PARA", "WBD",
+  
+  // Consumer Staples
+  "WMT", "PG", "KO", "PEP", "COST", "PM", "MO", "CL", "MDLZ", "KMB",
+  "GIS", "K", "HSY", "CAG", "SJM"
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
+  const currentDate = new Date();
+  
+  // Static pages
+  const staticPages = [
     {
       url: 'https://tamtech-finance.com',
       lastModified: new Date(),
@@ -62,5 +121,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.5,
     },
-  ]
+  ];
+  
+  // Dynamic stock pages - All 270 tickers (HIGH PRIORITY FOR SEO)
+  const stockPages = TICKER_POOL.map((ticker) => ({
+    url: `https://tamtech-finance.com/stocks/${ticker}`,
+    lastModified: currentDate,
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  }));
+  
+  return [...staticPages, ...stockPages];
 }

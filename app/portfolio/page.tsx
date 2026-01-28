@@ -1122,18 +1122,24 @@ export default function PortfolioPage() {
               <div className="bg-slate-800/50 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-green-400 mb-3">✅ Strengths</h3>
                 <ul className="space-y-2">
-                  {auditResult.strengths.map((strength: string, i: number) => (
-                    <li key={i} className="text-slate-200">• {strength}</li>
-                  ))}
+                  {Array.isArray(auditResult.strengths) 
+                    ? auditResult.strengths.map((strength: string, i: number) => (
+                        <li key={i} className="text-slate-200">• {strength}</li>
+                      ))
+                    : <li className="text-slate-400">No strengths data available</li>
+                  }
                 </ul>
               </div>
               
               <div className="bg-slate-800/50 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-red-400 mb-3">⚠️ Weaknesses</h3>
                 <ul className="space-y-2">
-                  {auditResult.weaknesses.map((weakness: string, i: number) => (
-                    <li key={i} className="text-slate-200">• {weakness}</li>
-                  ))}
+                  {Array.isArray(auditResult.weaknesses) 
+                    ? auditResult.weaknesses.map((weakness: string, i: number) => (
+                        <li key={i} className="text-slate-200">• {weakness}</li>
+                      ))
+                    : <li className="text-slate-400">No weaknesses data available</li>
+                  }
                 </ul>
               </div>
             </div>
@@ -1141,9 +1147,12 @@ export default function PortfolioPage() {
             <div className="bg-slate-800/50 rounded-lg p-6 mt-6">
               <h3 className="text-xl font-bold text-blue-400 mb-3">💡 Recommendations</h3>
               <ul className="space-y-2">
-                {auditResult.recommendations.map((rec: string, i: number) => (
-                  <li key={i} className="text-slate-200">• {rec}</li>
-                ))}
+                {Array.isArray(auditResult.recommendations) 
+                  ? auditResult.recommendations.map((rec: string, i: number) => (
+                      <li key={i} className="text-slate-200">• {rec}</li>
+                    ))
+                  : <li className="text-slate-400">No recommendations data available</li>
+                }
               </ul>
             </div>
           </motion.div>

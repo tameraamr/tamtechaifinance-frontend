@@ -228,7 +228,7 @@ export const fullTranslations = {
     redeem: "3. Redeem",
     purchaseDesc: "Secure payment processed by Gumroad",
     getKeyDesc: "Instant email with your unique key",
-    redeemDesc: "Enter key to add 50 credits instantly",
+    redeemDesc: "Enter key to add 10 or 50 credits instantly",
     securedTransactions: "Secured & Verified Transactions",
     
     // Contact Page - Additional Keys
@@ -277,7 +277,7 @@ export const fullTranslations = {
     faq2Q: "What stocks can I analyze?",
     faq2A: "You can analyze any stock listed on major U.S. exchanges (NYSE, NASDAQ, S&P 500). This includes individual stocks, but not ETFs, mutual funds, or cryptocurrency at this time. Simply enter the ticker symbol (e.g., AAPL, TSLA, MSFT).",
     faq3Q: "How much does each analysis cost?",
-    faq3A: "Each analysis costs 1 credit. Guest users get 3 free trials. After that, you can purchase a license key for 50 credits at $5 via our secure Gumroad integration. Credits never expire.",
+    faq3A: "Each analysis costs 1 credit. Guest users get 3 free trials. After that, you can purchase credits: 10 credits for $4.99 or 50 credits for $9.99 via our secure Gumroad integration. Credits never expire.",
     faq4Q: "Can I download the analysis report?",
     faq4A: "Yes! Every analysis includes a professional PDF export feature. Click the 'Download PDF' button on the results page to save a comprehensive report with all metrics, charts, SWOT analysis, bull/bear cases, and AI verdict. Perfect for sharing or record-keeping.",
     faq5Q: "Is this financial advice?",
@@ -685,7 +685,7 @@ export const fullTranslations = {
     redeem: "3. الاسترداد",
     purchaseDesc: "الدفع الآمن تتم معالجته بواسطة Gumroad",
     getKeyDesc: "بريد إلكتروني فوري بمفتاحك الفريد",
-    redeemDesc: "أدخل المفتاح لإضافة 50 رصيد فوراً",
+    redeemDesc: "أدخل المفتاح لإضافة 10 أو 50 رصيد فوراً",
     securedTransactions: "معاملات آمنة ومُتحقق منها",
     
     // Contact Page - Additional Keys
@@ -1011,7 +1011,7 @@ export const fullTranslations = {
     threats: "Amenazas",
     
     // Purchase
-    upgradeBtn: "Comprar Clave Pro ($5)",
+    upgradeBtn: "Comprar Créditos",
     redeemBtn: "Canjear",
     inputKey: "Clave de Licencia...",
     haveKey: "¿TIENES UNA CLAVE?",
@@ -1193,7 +1193,7 @@ export const fullTranslations = {
     faq2Q: "¿Qué acciones puedo analizar?",
     faq2A: "Puede analizar cualquier acción listada en las principales bolsas de EE.UU. (NYSE, NASDAQ, S&P 500). Esto incluye acciones individuales, pero no ETFs, fondos mutuos o criptomonedas en este momento. Simplemente ingrese el símbolo del ticker (por ejemplo, AAPL, TSLA, MSFT).",
     faq3Q: "¿Cuánto cuesta cada análisis?",
-    faq3A: "Cada análisis cuesta 1 crédito. Los usuarios invitados obtienen 3 pruebas gratuitas. Después de eso, puede comprar una clave de licencia por 50 créditos a $5 a través de nuestra integración segura con Gumroad. Los créditos nunca expiran.",
+    faq3A: "Cada análisis cuesta 1 crédito. Los usuarios invitados obtienen 3 pruebas gratuitas. Después de eso, puede comprar créditos: 10 créditos por $4.99 o 50 créditos por $9.99 a través de nuestra integración segura con Gumroad. Los créditos nunca expiran.",
     faq4Q: "¿Puedo descargar el informe de análisis?",
     faq4A: "¡Sí! Cada análisis incluye una función de exportación PDF profesional. Haga clic en el botón 'Descargar PDF' en la página de resultados para guardar un informe completo con todas las métricas, gráficos, análisis SWOT, casos alcista/bajista y veredicto de IA. Perfecto para compartir o mantener registros.",
     faq5Q: "¿Es esto asesoramiento financiero?",
@@ -1469,7 +1469,7 @@ export const fullTranslations = {
     threats: "איומים",
     
     // Purchase
-    upgradeBtn: "קנה מפתח Pro ($5)",
+    upgradeBtn: "קנה נקודות זיכוי",
     redeemBtn: "מימוש",
     inputKey: "מפתח רישיון...",
     haveKey: "יש לך מפתח?",
@@ -1929,7 +1929,7 @@ export const fullTranslations = {
     threats: "Угрозы",
     
     // Purchase
-    upgradeBtn: "Купить Pro ключ ($5)",
+    upgradeBtn: "Купить кредиты",
     redeemBtn: "Активировать",
     inputKey: "Лицензионный ключ...",
     haveKey: "ЕСТЬ КЛЮЧ?",
@@ -2387,7 +2387,7 @@ export const fullTranslations = {
     threats: "Minacce",
     
     // Purchase
-    upgradeBtn: "Ottieni Chiave Pro ($5)",
+    upgradeBtn: "Acquista Crediti",
     redeemBtn: "Riscatta",
     inputKey: "Codice Licenza...",
     haveKey: "HAI UN CODICE?",

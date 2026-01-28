@@ -45,6 +45,9 @@ interface PortfolioSummary {
 }
 
 export default function PortfolioPage() {
+    // Audit report modal state
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportTimestamp, setReportTimestamp] = useState<number | null>(null);
   const { user, credits, isLoggedIn } = useAuth();
   const { t } = useTranslation();
   
@@ -264,19 +267,17 @@ export default function PortfolioPage() {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
-          language: 'en'
+          language: navigator.language.split('-')[0] || 'en'
         })
       });
-      
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.detail || 'Audit failed');
       }
-      
       const data = await response.json();
-      // Fade-in animation for results
       setTimeout(() => {
         setAuditResult(data.audit);
+        setReportTimestamp(Date.now());
         toast.success(
           <div>
             <div className="font-bold text-lg text-purple-400 mb-1">AI Portfolio Audit Complete</div>
@@ -411,7 +412,104 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <Navbar />
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* Open Report Button */}
+      {auditResult && reportTimestamp && (Date.now() - reportTimestamp < 24 * 60 * 60 * 1000) && (
+        <div className="fixed bottom-8 right-8 z-50">
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold text-white shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+          >
+            <Brain className="w-5 h-5" />
+            Open Report
+          </button>
+        </div>
+      )}
+      {/* Audit Report Modal */}
+      {showReportModal && auditResult && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowReportModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={e => e.stopPropagation()}
+            className="bg-slate-900 border border-purple-500/30 rounded-xl p-8 max-w-2xl w-full overflow-y-auto max-h-[90vh]"
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+              <Brain className="w-8 h-8 text-purple-400" />
+              AI Portfolio Audit Report
+            </h2>
+            {/* Repeat audit results UI here */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-slate-800/50 rounded-lg p-4">
+                <div className="text-slate-400 text-sm mb-1">Portfolio Health</div>
+                <div className="text-3xl font-bold text-purple-400">{auditResult.portfolio_health_score}/100</div>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4">
+                <div className="text-slate-400 text-sm mb-1">Diversification</div>
+                <div className="text-3xl font-bold text-blue-400">{auditResult.diversification_score}/100</div>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4">
+                <div className="text-slate-400 text-sm mb-1">Risk Level</div>
+                <div className={`text-3xl font-bold ${
+                  auditResult.risk_level === 'LOW' ? 'text-green-400' : 
+                  auditResult.risk_level === 'MEDIUM' ? 'text-yellow-400' : 'text-red-400'
+                }`}>{auditResult.risk_level}</div>
+              </div>
+            </div>
+            <div className="bg-slate-800/50 rounded-lg p-6 mb-6">
+              <h3 className="text-xl font-bold text-white mb-3">Summary</h3>
+              <p className="text-slate-200">{auditResult.summary}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-slate-800/50 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-green-400 mb-3">✅ Strengths</h3>
+                <ul className="space-y-2">
+                  {auditResult.strengths.map((strength: string, i: number) => (
+                    <li key={i} className="text-slate-200">• {strength}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-6">
+                <h3 className="text-xl font-bold text-red-400 mb-3">⚠️ Weaknesses</h3>
+                <ul className="space-y-2">
+                  {auditResult.weaknesses.map((weakness: string, i: number) => (
+                    <li key={i} className="text-slate-200">• {weakness}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="bg-slate-800/50 rounded-lg p-6 mt-6">
+              <h3 className="text-xl font-bold text-blue-400 mb-3">💡 Recommendations</h3>
+              <ul className="space-y-2">
+                {auditResult.recommendations.map((rec: string, i: number) => (
+                  <li key={i} className="text-slate-200">• {rec}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex justify-end mt-8 gap-4">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="px-5 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold text-white"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => { setShowReportModal(false); runAIAudit(); }}
+                disabled={credits < 5}
+                className={`px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-semibold text-white flex items-center gap-2 ${credits < 5 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 transition-all'}`}
+              >
+                <Sparkles className="w-4 h-4" />
+                Refresh Report (5 Credits)
+              </button>
+            </div>
+            <div className="text-xs text-slate-500 mt-4 text-right">Report expires in {Math.max(0, Math.floor((24 * 60 * 60 * 1000 - (Date.now() - reportTimestamp!)) / (60 * 60 * 1000)))}h</div>
+          </motion.div>
+        </motion.div>
+      )}
         {/* Portfolio Value Graph */}
         {holdings.length > 0 && (
           <motion.div

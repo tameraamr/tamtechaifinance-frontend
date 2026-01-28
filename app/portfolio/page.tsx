@@ -573,13 +573,15 @@ export default function PortfolioPage() {
                   </div>
                   <div>
                     <span className="text-slate-400">S&P 500:</span>
-                    <button onClick={() => setNewTicker('VUSA.L')} className="ml-2 text-blue-400 hover:text-blue-300 underline">VUSA.L</button>
+                    <button onClick={() => setNewTicker('CSPX.L')} className="ml-2 text-blue-400 hover:text-blue-300 underline">CSPX.L</button>
                     <span className="text-slate-500"> or</span>
-                    <button onClick={() => setNewTicker('CSPX.L')} className="ml-1 text-blue-400 hover:text-blue-300 underline">CSPX.L</button>
+                    <button onClick={() => setNewTicker('VUSA.L')} className="ml-1 text-blue-400 hover:text-blue-300 underline">VUSA.L</button>
                   </div>
                   <div>
                     <span className="text-slate-400">Nasdaq-100:</span>
                     <button onClick={() => setNewTicker('EQQQ.L')} className="ml-2 text-blue-400 hover:text-blue-300 underline">EQQQ.L</button>
+                    <span className="text-slate-500"> or</span>
+                    <button onClick={() => setNewTicker('NQSE.DE')} className="ml-1 text-blue-400 hover:text-blue-300 underline">NQSE.DE</button>
                   </div>
                   <div>
                     <span className="text-slate-400">MSCI USA:</span>
@@ -595,7 +597,7 @@ export default function PortfolioPage() {
                   </div>
                 </div>
                 <div className="text-xs text-slate-500 mt-2">
-                  💡 Tip: .AS = Amsterdam, .L = London, .DE = Germany
+                  💡 Can't find your ETF? Try: YourTicker.AS (Amsterdam), .DE (Germany), .L (London), .PA (Paris)
                 </div>
               </div>
             </div>

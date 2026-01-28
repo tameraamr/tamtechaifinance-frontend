@@ -22,6 +22,7 @@ interface Holding {
   cost_basis: number;
   pnl: number;
   pnl_percent: number;
+  price_error?: boolean;
 }
 
 interface PortfolioSummary {
@@ -379,19 +380,42 @@ export default function PortfolioPage() {
                     <tr key={holding.id} className="border-b border-slate-800 hover:bg-slate-800/50">
                       <td className="py-4 px-4">
                         <div>
-                          <div className="font-bold text-white">{holding.ticker}</div>
+                          <div className="font-bold text-white flex items-center gap-2">
+                            {holding.ticker}
+                            {holding.price_error && (
+                              <span className="text-xs bg-yellow-900/50 text-yellow-400 px-2 py-1 rounded" title="Price data unavailable. Try adding exchange suffix (e.g., .AS, .DE)">
+                                ⚠️ No Price
+                              </span>
+                            )}
+                          </div>
                           <div className="text-sm text-slate-400">{holding.company_name}</div>
                         </div>
                       </td>
                       <td className="py-4 px-4 text-white">{holding.quantity}</td>
                       <td className="py-4 px-4 text-white">${holding.avg_buy_price?.toFixed(2) || 'N/A'}</td>
-                      <td className="py-4 px-4 text-white">${holding.current_price.toFixed(2)}</td>
-                      <td className="py-4 px-4 text-white font-semibold">${holding.market_value.toFixed(2)}</td>
+                      <td className="py-4 px-4 text-white">
+                        {holding.price_error ? (
+                          <span className="text-yellow-400">Price Error</span>
+                        ) : (
+                          `$${holding.current_price.toFixed(2)}`
+                        )}
+                      </td>
+                      <td className="py-4 px-4 text-white font-semibold">
+                        {holding.price_error ? (
+                          <span className="text-yellow-400">N/A</span>
+                        ) : (
+                          `$${holding.market_value.toFixed(2)}`
+                        )}
+                      </td>
                       <td className="py-4 px-4">
-                        <div className={`font-semibold ${holding.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {holding.pnl >= 0 ? '+' : ''}${holding.pnl.toFixed(2)}
-                          <div className="text-sm">({holding.pnl_percent >= 0 ? '+' : ''}{holding.pnl_percent.toFixed(2)}%)</div>
-                        </div>
+                        {holding.price_error ? (
+                          <span className="text-yellow-400 text-sm">Needs valid ticker</span>
+                        ) : (
+                          <div className={`font-semibold ${holding.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {holding.pnl >= 0 ? '+' : ''}${holding.pnl.toFixed(2)}
+                            <div className="text-sm">({holding.pnl_percent >= 0 ? '+' : ''}{holding.pnl_percent.toFixed(2)}%)</div>
+                          </div>
+                        )}
                       </td>
                       <td className="py-4 px-4 text-right">
                         <button

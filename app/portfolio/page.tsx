@@ -382,14 +382,16 @@ export default function PortfolioPage() {
           {/* Add Form */}
           {showAddForm && (
             <div className="bg-slate-800 rounded-lg p-4 mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <input
-                  type="text"
-                  placeholder="Ticker (e.g., AAPL)"
-                  value={newTicker}
-                  onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
-                  className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Ticker (e.g., AAPL)"
+                    value={newTicker}
+                    onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                  />
+                </div>
                 <input
                   type="number"
                   placeholder="Quantity"
@@ -412,6 +414,28 @@ export default function PortfolioPage() {
                   Add to Portfolio
                 </button>
               </div>
+              
+              {/* Exchange Suffix Suggestions */}
+              {newTicker && newTicker.length > 0 && !newTicker.includes('.') && (
+                <div className="bg-slate-900/50 rounded-lg p-3 border border-blue-500/30">
+                  <div className="text-xs text-blue-400 mb-2">
+                    💡 Can't find "{newTicker}"? Try adding an exchange suffix:
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {getSuggestedTickers(newTicker).map((suggestion) => (
+                      <button
+                        key={suggestion.ticker}
+                        onClick={() => setNewTicker(suggestion.ticker)}
+                        className="text-xs bg-blue-600/80 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors"
+                        title={`${suggestion.exchange} exchange`}
+                      >
+                        {suggestion.ticker}
+                        <span className="text-blue-200 ml-1">({suggestion.exchange})</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           

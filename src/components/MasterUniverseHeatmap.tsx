@@ -1,8 +1,38 @@
 "use client";
 import { useState, useEffect, memo } from "react";
-import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, Activity, Zap, DollarSign, Coins, BarChart3, Globe } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  Zap,
+  DollarSign,
+  Coins,
+  BarChart3,
+  Globe,
+  Bitcoin,
+  Gem,
+  PiggyBank,
+  Banknote,
+  Landmark,
+  Fuel,
+  Wheat,
+  Factory,
+  Building2,
+  Zap as Electricity,
+  Phone,
+  Shirt,
+  Beef,
+  Coffee,
+  Citrus,
+  Sun
+} from "lucide-react";
 import { useTranslation } from '../context/TranslationContext';
+
+interface MasterUniverseHeatmapProps {
+  lang: string;
+  t: Record<string, any>;
+}
 
 interface HeatmapItem {
   s: string;  // symbol (was ticker)
@@ -19,10 +49,64 @@ interface HeatmapData {
   last_updated: string;
 }
 
-interface MasterUniverseHeatmapProps {
-  lang: string;
-  t: any;
-}
+// Professional asset icon mapping
+const getAssetIcon = (symbol: string, assetType: string, assetName?: string) => {
+  // Crypto icons
+  if (assetType === 'crypto') {
+    switch (symbol.toLowerCase()) {
+      case 'btc': case 'btcusd': return <Bitcoin className="w-3 h-3" />;
+      case 'eth': case 'ethusd': return <Zap className="w-3 h-3" />;
+      case 'bnb': case 'bnbusd': return <Coins className="w-3 h-3" />;
+      case 'ada': case 'adausd': return <Gem className="w-3 h-3" />;
+      case 'sol': case 'solusd': return <Sun className="w-3 h-3" />;
+      default: return <Coins className="w-3 h-3" />;
+    }
+  }
+
+  // Commodities
+  if (assetType === 'commodities') {
+    switch (symbol.toLowerCase()) {
+      case 'gc=f': case 'si=f': return <Gem className="w-3 h-3" />; // Gold/Silver
+      case 'cl=f': return <Fuel className="w-3 h-3" />; // Oil
+      case 'ng=f': return <Electricity className="w-3 h-3" />; // Natural Gas
+      case 'zc=f': case 'zw=f': case 'zs=f': return <Wheat className="w-3 h-3" />; // Corn/Wheat/Soy
+      case 'cc=f': case 'kc=f': return <Coffee className="w-3 h-3" />; // Cocoa/Coffee
+      case 'sb=f': return <Citrus className="w-3 h-3" />; // Sugar
+      default: return <Gem className="w-3 h-3" />;
+    }
+  }
+
+  // Forex icons (currency pairs)
+  if (assetType === 'forex') {
+    return <Banknote className="w-3 h-3" />;
+  }
+
+  // Stock icons (major indices and sectors)
+  if (symbol === 'SPY' || symbol === 'QQQ' || symbol === 'IWM' || symbol === 'VTI') return <BarChart3 className="w-3 h-3" />;
+  if (symbol === 'XLK') return <Zap className="w-3 h-3" />; // Technology
+  if (symbol === 'XLE') return <Fuel className="w-3 h-3" />; // Energy
+  if (symbol === 'XLF') return <Landmark className="w-3 h-3" />; // Financials
+  if (symbol === 'XLV') return <Activity className="w-3 h-3" />; // Healthcare
+  if (symbol === 'XLY') return <Shirt className="w-3 h-3" />; // Consumer Disc
+  if (symbol === 'XLI') return <Factory className="w-3 h-3" />; // Industrials
+  if (symbol === 'XLB') return <Wheat className="w-3 h-3" />; // Materials
+  if (symbol === 'XLRE') return <Building2 className="w-3 h-3" />; // Real Estate
+  if (symbol === 'XLU') return <Electricity className="w-3 h-3" />; // Utilities
+  if (symbol === 'XLC') return <Phone className="w-3 h-3" />; // Communication
+  if (symbol === 'XLP') return <Beef className="w-3 h-3" />; // Consumer Staples
+
+  // Default stock icon
+  return <BarChart3 className="w-3 h-3" />;
+};
+
+// Generate a simple sparkline SVG path for the tooltip
+const generateSparkline = (change: number) => {
+  const isPositive = change > 0;
+  const points = isPositive
+    ? "M0,20 L4,16 L8,12 L12,8 L16,4 L20,2"
+    : "M0,2 L4,4 L8,8 L12,12 L16,16 L20,20";
+  return points;
+};
 
 // 🚀 MEMOIZED HEATMAP CARD - Optimized for performance
 const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index: number; assetType: string }) => {
@@ -33,13 +117,13 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
   const isPositive = change > 0;
   const isNegative = change < 0;
 
-  // Pre-compute colors and styles
-  const changeColor = isPositive ? 'text-green-400' : isNegative ? 'text-red-400' : 'text-slate-400';
+  // Pre-compute colors and styles with glassmorphism and advanced gradients
+  const changeColor = isPositive ? 'text-emerald-300' : isNegative ? 'text-rose-300' : 'text-slate-400';
   const absChange = Math.abs(change);
-  let cardStyle = 'bg-slate-500/10 border-slate-500/20';
-  if (absChange >= 5) cardStyle = isPositive ? 'bg-green-500/20 border-green-500/40' : 'bg-red-500/20 border-red-500/40';
-  else if (absChange >= 2) cardStyle = isPositive ? 'bg-green-400/15 border-green-400/30' : 'bg-red-400/15 border-red-400/30';
-  else if (absChange >= 1) cardStyle = isPositive ? 'bg-green-300/10 border-green-300/20' : 'bg-red-300/10 border-red-300/20';
+  let cardStyle = 'bg-gradient-to-br from-slate-500/10 to-slate-600/5 border-slate-500/20 backdrop-blur-sm';
+  if (absChange >= 5) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-500/25 to-green-600/15 border-emerald-400/40 backdrop-blur-sm' : 'bg-gradient-to-br from-rose-500/25 to-red-600/15 border-rose-400/40 backdrop-blur-sm';
+  else if (absChange >= 2) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-400/20 to-green-500/10 border-emerald-400/30 backdrop-blur-sm' : 'bg-gradient-to-br from-rose-400/20 to-red-500/10 border-rose-400/30 backdrop-blur-sm';
+  else if (absChange >= 1) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-300/15 to-green-400/5 border-emerald-300/20 backdrop-blur-sm' : 'bg-gradient-to-br from-rose-300/15 to-red-400/5 border-rose-300/20 backdrop-blur-sm';
 
   // Format price based on asset type
   const formatPrice = (price: number, assetType: string) => {
@@ -54,14 +138,37 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.01 }} // Faster animation
-      className={`relative p-2 rounded-lg border transition-all hover:scale-105 cursor-pointer ${cardStyle}`}
+      className={`relative p-2 rounded-lg border transition-all hover:scale-105 cursor-pointer group ${cardStyle}`}
       style={{ contain: 'layout style paint' }} // 🚀 CSS Containment for faster rendering
-      title={`${symbol} - ${change >= 0 ? '+' : ''}${change.toFixed(2)}%`}
     >
+      {/* Professional tooltip with sparkline */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800/95 backdrop-blur-sm border border-slate-600/50 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
+        <div className="text-xs font-mono text-white font-semibold">{symbol}</div>
+        <div className="text-sm font-mono text-slate-300">{formatPrice(price, assetType)}</div>
+        <div className={`text-xs font-mono font-bold ${changeColor}`}>
+          {change >= 0 ? '+' : ''}{change.toFixed(2)}%
+        </div>
+        {/* Mini sparkline */}
+        <div className="mt-1">
+          <svg width="60" height="20" className="overflow-visible">
+            <path
+              d={generateSparkline(change)}
+              stroke={isPositive ? '#10b981' : '#ef4444'}
+              strokeWidth="1.5"
+              fill="none"
+              className="drop-shadow-sm"
+            />
+          </svg>
+        </div>
+      </div>
+
       {/* FLATTENED DOM: Minimal nesting */}
-      <div className="text-xs font-bold text-white truncate">{symbol}</div>
-      <div className="text-sm font-semibold text-white">{formatPrice(price, assetType)}</div>
-      <div className={`text-xs font-bold flex items-center gap-1 ${changeColor}`}>
+      <div className="flex items-center gap-1 mb-1">
+        {getAssetIcon(symbol, assetType)}
+        <div className="text-xs font-bold text-white truncate font-mono">{symbol}</div>
+      </div>
+      <div className="text-sm font-semibold text-white font-mono">{formatPrice(price, assetType)}</div>
+      <div className={`text-xs font-bold flex items-center gap-1 font-mono ${changeColor}`}>
         {isPositive && <TrendingUp className="w-3 h-3" />}
         {isNegative && <TrendingDown className="w-3 h-3" />}
         {change >= 0 ? '+' : ''}{change.toFixed(2)}%

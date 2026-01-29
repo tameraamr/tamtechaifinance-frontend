@@ -47,6 +47,7 @@ interface HeatmapData {
   commodities: HeatmapItem[];
   forex: HeatmapItem[];
   last_updated: string;
+  cache_status?: string;  // 'complete' or 'partial'
 }
 
 // Professional asset icon mapping

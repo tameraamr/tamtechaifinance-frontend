@@ -421,43 +421,7 @@ export default function PortfolioPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <Navbar />
 
-      {/* Summary Cards */}
-      {/* Summary Cards */}
-        {/* Summary Cards */}
-        {summary && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
-          >
-            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <DollarSign className="w-6 h-6 text-green-400" />
-                <span className="text-slate-400 text-sm">Total Value</span>
-              </div>
-              <div className="text-2xl font-bold text-white">{formatPrice(summary.total_value)}</div>
-            </div>
-            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <TrendingUp className="w-6 h-6 text-blue-400" />
-                <span className="text-slate-400 text-sm">Total Cost</span>
-              </div>
-              <div className="text-2xl font-bold text-white">{formatPrice(summary.total_cost)}</div>
-            </div>
-            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-2">
-                {summary.total_pnl >= 0 ? <TrendingUp className="w-6 h-6 text-green-400" /> : <TrendingDown className="w-6 h-6 text-red-400" />}
-                <span className="text-slate-400 text-sm">Total P&L</span>
-              </div>
-              <div className={`text-2xl font-bold ${summary.total_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {summary.total_pnl >= 0 ? '+' : ''}{formatPrice(summary.total_pnl)}
-              </div>
-              <div className={`text-sm ${summary.total_pnl_percent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {summary.total_pnl_percent >= 0 ? '+' : ''}{summary.total_pnl_percent.toFixed(2)}%
-              </div>
-            </div>
-        {/* Sector Distribution Pie Chart */}
+      {/* Sector Distribution Pie Chart */}
         {sectorData.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

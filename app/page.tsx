@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import toast from 'react-hot-toast';
 
 // Import components
-import MarketDashboard from '../src/components/MarketDashboard';
+import MarketWatchtower from '../src/components/MarketWatchtower';
 import NewsAnalysis from '../src/components/NewsAnalysis';
 import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
@@ -1201,7 +1201,7 @@ export default function Home() {
         {/* X Master Universe Heatmap X */}
 
         {/* 👇 radar sentiment icon 👇 */}
-        <MarketDashboard sentiment={sentiment} sectors={sectors} lang={lang} t={t} />
+        <MarketWatchtower />
         {/* finish radar sentiment icon  */}
 
 

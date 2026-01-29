@@ -157,47 +157,48 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [authMode, setAuthMode] = useState("signup");
-  const [ticker, setTicker] = useState("");
-  const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
+  const [ticker, setTicker] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<{ symbol: string; name: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
-  const [compareTickers, setCompareTickers] = useState({ t1: "", t2: "" });
-  const [compareResult, setCompareResult] = useState<any>(null);
-  const [loadingCompare, setLoadingCompare] = useState(false);
+  const [compareTickers, setCompareTickers] = useState<{ t1: string; t2: string }>({ t1: "", t2: "" });
+  const [compareResult, setCompareResult] = useState<any | null>(null);
+  const [loadingCompare, setLoadingCompare] = useState<boolean>(false);
   const [compareError, setCompareError] = useState<string | null>(null);
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
-  const [loadingRandom, setLoadingRandom] = useState(false);
+  const [loadingRandom, setLoadingRandom] = useState<boolean>(false);
   const [pickerResult, setPickerResult] = useState<{ ticker: string; name?: string; price?: number | null } | null>(null);
-  const [pickerLoading, setPickerLoading] = useState(false);
-  const [newsSearch, setNewsSearch] = useState("");
+  const [pickerLoading, setPickerLoading] = useState<boolean>(false);
+  const [newsSearch, setNewsSearch] = useState<string>("");
 
   const [recentAnalyses, setRecentAnalyses] = useState<any[]>([]);
-  const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
-  const [displaySymbol, setDisplaySymbol] = useState("????");
-  const [displayName, setDisplayName] = useState("");
-  const [displayPrice, setDisplayPrice] = useState<number | undefined>();
-  const [spinnerRolling, setSpinnerRolling] = useState(false);
+  const [isSubmittingAuth, setIsSubmittingAuth] = useState<boolean>(false);
+  const [displaySymbol, setDisplaySymbol] = useState<string>("????");
+  const [displayName, setDisplayName] = useState<string>("");
+  const [displayPrice, setDisplayPrice] = useState<number | undefined>(undefined);
+  const [spinnerRolling, setSpinnerRolling] = useState<boolean>(false);
   const [selectedSpinnerTicker, setSelectedSpinnerTicker] = useState<string | null>(null);
   const rollerRef = useRef<NodeJS.Timeout | null>(null);
 
   // --- ADDED STATE FOR MISSING VARIABLES ---
-  const [marketPulse, setMarketPulse] = useState<any[]>([]); // for setMarketPulse
-  const [loading, setLoading] = useState(false); // for loading and setLoading
-  const [analysisComplete, setAnalysisComplete] = useState(false); // for analysisComplete and setAnalysisComplete
-  const [authError, setAuthError] = useState(""); // for authError and setAuthError
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [country, setCountry] = useState("");
-  const [address, setAddress] = useState("");
-  const [licenseKey, setLicenseKey] = useState("");
-  const [result, setResult] = useState<any>(null);
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [progressMessageIndex, setProgressMessageIndex] = useState(0);
+  // TEST TEST TAMER
+  const [marketPulse, setMarketPulse] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [analysisComplete, setAnalysisComplete] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [licenseKey, setLicenseKey] = useState<string>("");
+  const [result, setResult] = useState<any | null>(undefined);
+  const [acceptTerms, setAcceptTerms] = useState<boolean>(false);
+  const [progressMessageIndex, setProgressMessageIndex] = useState<number>(0);
   const router = useRouter();
 
   // دالة لجلب التحليلات الأخيرة من الباك-إند (memoized to prevent recreating on every render)
@@ -211,20 +212,17 @@ export default function Home() {
     }
   }, []);
 
-  const [sentiment, setSentiment] = useState({ sentiment: "Neutral", score: 50 });
-
+  const [sentiment, setSentiment] = useState<{ sentiment: string; score: number }>({ sentiment: "Neutral", score: 50 });
   const fetchMarketDashboardData = useCallback(async () => {
     try {
-      // نستخدم BASE_URL المعرف عندك مسبقاً لضمان عمله لايف ولوكال
-      const [sentRes, sectRes] = await Promise.all([
-        fetch(`${BASE_URL}/market-sentiment`),
-        fetch(`${BASE_URL}/market-sectors`)
-      ]);
-
-      if (sentRes.ok) setSentiment(await sentRes.json());
-            const sentRes = await fetch(`${BASE_URL}/market-sentiment`);
-            if (sentRes.ok) setSentiment(await sentRes.json());
-            const sectRes = await fetch(`${BASE_URL}/market-sectors`);
+      // Only fetch market sentiment, /market-sectors is deprecated/removed
+      const sentRes = await fetch(`${BASE_URL}/market-sentiment`);
+      if (sentRes.ok) {
+        setSentiment(await sentRes.json());
+      }
+    } catch (err) {
+      console.error("Error fetching market dashboard data:", err);
+    }
   }, []);
 
   // تحديث الـ useEffect ليعمل عند فتح الصفحة أو عند أي تحليل جديد - with dependency array fix

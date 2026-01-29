@@ -6,8 +6,8 @@ import fetcher from './fetcher';
 import { useTypewriter } from './useTypewriter';
 import Sparkline from './Sparkline';
 
-const SENTIMENT_ENDPOINT = '/market-sentiment';
-const MOVERS_ENDPOINT = '/market-winners-losers.';
+const SENTIMENT_ENDPOINT = '/api/market-sentiment';
+const MOVERS_ENDPOINT = '/api/market-winners-losers';
 
 function getSentimentPhrase(score: number): string {
   if (score < 20) return '⚠️ Extreme fear. Markets defensive.';

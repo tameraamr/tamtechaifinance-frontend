@@ -39,6 +39,9 @@ interface HeatmapItem {
   p: number;  // price
   c: number;  // change_percent
   t: string;  // type (was asset_type)
+  n?: string; // name (company/asset name)
+  sec?: string; // sector
+  mc?: number; // market cap
 }
 
 interface HeatmapData {
@@ -117,6 +120,9 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
   const change = item.c;
   const isPositive = change > 0;
   const isNegative = change < 0;
+  const name = item.n;
+  const sector = item.sec;
+  const marketCap = item.mc;
 
   // Pre-compute colors and styles with ULTRA DRAMATIC glassmorphism and advanced gradients
   const changeColor = isPositive ? 'text-emerald-200 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]' : isNegative ? 'text-rose-200 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'text-slate-400';
@@ -138,20 +144,23 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.01, type: "spring", stiffness: 300, damping: 20 }} // Enhanced spring animation
+      transition={{ delay: index * 0.01, type: "spring", stiffness: 300, damping: 20 }}
       className={`relative p-3 rounded-xl border transition-all duration-300 hover:scale-110 hover:rotate-1 cursor-pointer group ${cardStyle}`}
       style={{
         contain: 'layout style paint',
         boxShadow: isPositive && absChange >= 5 ? '0 0 20px rgba(16, 185, 129, 0.3), 0 0 40px rgba(16, 185, 129, 0.1)' :
                   isNegative && absChange >= 5 ? '0 0 20px rgba(239, 68, 68, 0.3), 0 0 40px rgba(239, 68, 68, 0.1)' : undefined
-      }} // 🚀 GPU-accelerated glow effects
+      }}
     >
-      {/* ULTRA DRAMATIC PROFESSIONAL TOOLTIP with enhanced sparkline */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-slate-900/95 backdrop-blur-lg border border-slate-500/60 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 whitespace-nowrap ring-1 ring-white/10">
+      {/* Tooltip: show name, sector, market cap if available, no extra API calls */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-slate-900/95 backdrop-blur-lg border border-slate-500/60 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 whitespace-nowrap ring-1 ring-white/10 min-w-[200px]">
         <div className="flex items-center gap-2 mb-2">
           {getAssetIcon(symbol, assetType)}
           <div className="text-sm font-mono font-bold text-white">{symbol}</div>
         </div>
+        {name && <div className="text-xs text-slate-300 mb-1">{name}</div>}
+        {sector && <div className="text-xs text-blue-300 mb-1">Sector: {sector}</div>}
+        {typeof marketCap === 'number' && <div className="text-xs text-emerald-300 mb-1">Mkt Cap: ${marketCap.toLocaleString()}</div>}
         <div className="text-lg font-mono font-semibold text-slate-200 mb-1">{formatPrice(price, assetType)}</div>
         <div className={`text-sm font-mono font-bold mb-2 ${changeColor}`}>
           {change >= 0 ? '↗' : '↘'} {change >= 0 ? '+' : ''}{change.toFixed(2)}%

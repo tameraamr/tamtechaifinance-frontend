@@ -184,7 +184,6 @@ export default function Home() {
 
   // --- ADDED STATE FOR MISSING VARIABLES ---
   // TEST TEST TAMER
-  const [marketPulse, setMarketPulse] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [analysisComplete, setAnalysisComplete] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string>("");
@@ -239,17 +238,6 @@ export default function Home() {
 
     fetchRecentAnalyses();
 
-    const fetchPulse = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/market-pulse`);
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) setMarketPulse(data);
-      } catch (err) { console.log("Pulse error"); }
-    };
-    
-    fetchPulse(); // Initial fetch
-    const interval = setInterval(fetchPulse, 120000); // 2 minutes instead of 1 to reduce load
-    
     // SEO: Set page metadata and canonical (only runs once)
     if (typeof document !== 'undefined') {
       document.title = "Tamtech Finance | AI-Powered Stock Analysis & Insights";
@@ -267,8 +255,6 @@ export default function Home() {
       }
       canonical.setAttribute('href', 'https://tamtech-finance.com');
     }
-    
-    return () => clearInterval(interval);
   }, [fetchRecentAnalyses]); // Added dependency
 
   // ✅ Debounced ticker search - Optimized to prevent excessive API calls

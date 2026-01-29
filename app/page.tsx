@@ -185,7 +185,7 @@ export default function Home() {
   // --- ADDED STATE FOR MISSING VARIABLES ---
   // TEST TEST TAMER
   const [marketPulse, setMarketPulse] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [analysisComplete, setAnalysisComplete] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string>("");
   const [email, setEmail] = useState<string>("");

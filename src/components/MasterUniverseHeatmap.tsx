@@ -153,7 +153,7 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
       }}
     >
       {/* Tooltip: show name, sector, market cap if available, no extra API calls */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-slate-900/95 backdrop-blur-lg border border-slate-500/60 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 whitespace-nowrap ring-1 ring-white/10 min-w-[200px]">
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-slate-900/95 backdrop-blur-lg border border-slate-500/60 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-active:opacity-100 transition-all duration-300 pointer-events-auto z-20 whitespace-nowrap ring-1 ring-white/10 min-w-[200px]">
         <div className="flex items-center gap-2 mb-2">
           {getAssetIcon(symbol, assetType)}
           <div className="text-sm font-mono font-bold text-white">{symbol}</div>

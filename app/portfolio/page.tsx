@@ -367,6 +367,7 @@ export default function PortfolioPage() {
         current_price: 0,
         change_p: 0,
         shares: parseFloat(newQuantity),
+        avg_buy_price: newAvgPrice ? parseFloat(newAvgPrice) : null,
         sector: null
       };
       setHoldings(prev => [...prev, newHolding]);
@@ -616,7 +617,7 @@ export default function PortfolioPage() {
                 <div className="text-slate-400 text-sm">Total Balance</div>
               </div>
               <div className="text-2xl font-bold text-white">
-                {formatPrice(totalBalance, currency, exchangeRates)}
+                {formatPrice(totalBalance)}
               </div>
             </div>
 
@@ -658,7 +659,7 @@ export default function PortfolioPage() {
               <div className={`text-2xl font-bold ${
                 total24hChange >= 0 ? 'text-green-400' : 'text-red-400'
               }`}>
-                {total24hChange >= 0 ? '+' : ''}{formatPrice(total24hChange, currency, exchangeRates)}
+                {total24hChange >= 0 ? '+' : ''}{formatPrice(total24hChange)}
               </div>
             </div>
           </motion.div>
@@ -683,7 +684,7 @@ export default function PortfolioPage() {
                 <YAxis stroke="#94a3b8" fontSize={12} />
                 <Tooltip 
                   contentStyle={{ background: '#1e293b', color: '#fff', border: '1px solid #a78bfa' }}
-                  formatter={(value: number) => [formatPrice(value), 'Value']}
+                  formatter={(value: number | undefined) => value ? [formatPrice(value), 'Value'] : ['N/A', 'Value']}
                 />
                 <Bar dataKey="value" fill="#a78bfa" radius={[4, 4, 0, 0]} />
               </BarChart>

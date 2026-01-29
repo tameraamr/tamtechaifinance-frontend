@@ -1,7 +1,15 @@
 import React from 'react';
 import useSWR from 'swr';
 import { motion, useAnimation } from 'framer-motion';
-import { Gauge, Zap, TrendingUp } from 'lucide-react';
+import { Gauge, Zap, TrendingUp, TrendingDown, Trophy } from 'lucide-react';
+
+// Helper to format price
+function formatPrice(price: number | undefined) {
+  if (typeof price !== 'number') return '--';
+  if (price >= 1) return `$${price.toFixed(2)}`;
+  if (price > 0) return `$${price.toPrecision(2)}`;
+  return '$0.00';
+}
 import fetcher from './fetcher';
 import { useTypewriter } from './useTypewriter';
 import Sparkline from './Sparkline';
@@ -29,7 +37,11 @@ export default function MarketWatchtower() {
   // SWR for sentiment
   const { data: sentiment, isLoading: loadingSentiment } = useSWR(SENTIMENT_ENDPOINT, fetcher, { revalidateOnFocus: true });
   // SWR for movers
-  const { data: movers, isLoading: loadingMovers } = useSWR(MOVERS_ENDPOINT, fetcher, { revalidateOnFocus: true });
+  const { data: marketData, isLoading: loadingMovers } = useSWR(MOVERS_ENDPOINT, fetcher, { revalidateOnFocus: true });
+
+  // Only show top 2 gainers/losers for compactness
+  const topWinners = Array.isArray(marketData?.winners) ? marketData.winners.slice(0, 2) : [];
+  const topLosers = Array.isArray(marketData?.losers) ? marketData.losers.slice(0, 2) : [];
 
   // Typewriter effect for AI narrative
   const score = sentiment?.score ?? 50;
@@ -42,9 +54,6 @@ export default function MarketWatchtower() {
     controls.start({ rotate: Math.max(-90, Math.min(90, (score - 50) * 1.8)) });
   }, [score, controls]);
 
-  // Top movers (show 3 gainers, fallback to empty)
-  const topGainers = Array.isArray(movers?.gainers) ? movers.gainers.slice(0, 3) : [];
-
   // Responsive grid
   return (
     <section className="relative z-10 w-full max-w-7xl mx-auto px-2 md:px-6 mt-8 mb-12">
@@ -52,7 +61,7 @@ export default function MarketWatchtower() {
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[60vw] max-w-5xl max-h-[600px] rounded-full bg-gradient-radial from-blue-700/30 via-purple-600/20 to-transparent blur-3xl opacity-80" />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr_0.8fr] gap-6 items-stretch">
         {/* Left: Sentiment Gauge */}
         <div className="flex flex-col items-center justify-center bg-slate-900/80 border border-slate-800/60 rounded-3xl shadow-xl p-6 md:p-8 relative overflow-hidden min-h-[260px]">
           <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-24 bg-gradient-to-t from-blue-500/10 to-transparent blur-2xl" />
@@ -112,31 +121,56 @@ export default function MarketWatchtower() {
           </div>
         </div>
 
-        {/* Right: Top Movers */}
-        <div className="flex flex-col gap-4 items-center justify-center min-h-[260px]">
-          <div className="mb-2 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
+        {/* Top Movers - Compact Side Panel */}
+        <div className="flex flex-col gap-2 items-center justify-center min-h-[180px] max-w-[280px] w-full ml-auto">
+          <div className="mb-1 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-yellow-400" />
             <span className="text-xs font-black uppercase tracking-widest text-slate-400">Top Movers</span>
           </div>
-          <div className="flex flex-col gap-4 w-full max-w-xs">
-            {loadingMovers && (
-              <div className="h-24 bg-slate-800/40 rounded-2xl animate-pulse" />
-            )}
-            {topGainers.map((g: any, idx: number) => (
-              <div key={g.symbol} className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl shadow-lg p-4 flex items-center gap-4 glass-card relative overflow-hidden">
-                <div className="flex flex-col flex-1 min-w-0">
-                  <span className="text-base font-black text-white truncate">{g.symbol}</span>
-                  <span className="text-xs text-slate-400 font-mono">${g.price?.toFixed(2) ?? '--'}</span>
+          {/* Winners */}
+          {topWinners.map((stock: any, index: number) => (
+            <div key={index} className="flex items-center justify-between p-2.5 bg-slate-800/50 rounded-lg hover:bg-slate-800/70 transition-colors gap-2 w-full mb-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center justify-center w-6 h-6 bg-yellow-500/20 rounded-full">
+                  <span className="text-xs font-bold text-yellow-400">#{index + 1}</span>
                 </div>
-                <div className="w-20 h-8 flex items-center">
-                  <Sparkline data={g.sparkline || []} width={64} height={24} color="#10b981" />
+                <div>
+                  <div className="text-white font-medium text-sm">{stock.ticker}</div>
+                  <div className="text-slate-400 text-[10px] truncate max-w-24">{stock.name}</div>
                 </div>
               </div>
-            ))}
-            {!loadingMovers && topGainers.length === 0 && (
-              <div className="text-xs text-slate-500 text-center py-6">No data</div>
-            )}
-          </div>
+              <div className="text-right">
+                <div className="text-green-400 font-bold text-sm">+{stock.change_percent.toFixed(2)}%</div>
+                <div className="text-white text-[10px] font-mono">{formatPrice(stock.price)}</div>
+              </div>
+            </div>
+          ))}
+          {/* Losers */}
+          {topLosers.map((stock: any, index: number) => (
+            <div key={index} className="flex items-center justify-between p-2.5 bg-slate-800/50 rounded-lg hover:bg-slate-800/70 transition-colors gap-2 w-full mb-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center justify-center w-6 h-6 bg-red-500/20 rounded-full">
+                  <span className="text-xs font-bold text-red-400">#{index + 1}</span>
+                </div>
+                <div>
+                  <div className="text-white font-medium text-sm">{stock.ticker}</div>
+                  <div className="text-slate-400 text-[10px] truncate max-w-24">{stock.name}</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-red-400 font-bold text-sm">{stock.change_percent.toFixed(2)}%</div>
+                <div className="text-white text-[10px] font-mono">{formatPrice(stock.price)}</div>
+              </div>
+            </div>
+          ))}
+          {marketData && topWinners.length === 0 && topLosers.length === 0 && (
+            <div className="text-xs text-slate-500 text-center py-4 w-full">No data</div>
+          )}
+          {marketData?.timestamp && (
+            <div className="text-[10px] text-slate-500 mt-2 text-center w-full">
+              Last updated: {new Date(marketData.timestamp).toLocaleString()}
+            </div>
+          )}
         </div>
       </div>
     </section>

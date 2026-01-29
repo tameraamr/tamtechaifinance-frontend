@@ -326,12 +326,29 @@ export default function PortfolioPage() {
       }
       const data = await response.json();
       toast.success(`✅ ${newTicker.toUpperCase()} added to portfolio`, { id: loadingToast });
+      // Optimistic update: add holding immediately to state
+      const newHolding: Holding = {
+        id: Date.now(), // temp id, will be replaced on fetch
+        ticker: newTicker.toUpperCase(),
+        company_name: newTicker.toUpperCase(),
+        quantity: parseFloat(newQuantity),
+        avg_buy_price: newAvgPrice ? parseFloat(newAvgPrice) : null,
+        current_price: 0,
+        market_value: 0,
+        cost_basis: (newAvgPrice ? parseFloat(newAvgPrice) : 0) * parseFloat(newQuantity),
+        pnl: 0,
+        pnl_percent: 0,
+        sector: 'Unknown',
+        industry: 'Unknown',
+        price_error: true
+      };
+      setHoldings(prev => [...prev, newHolding]);
       // Reset form
       setNewTicker('');
       setNewQuantity('');
       setNewAvgPrice('');
       setShowAddForm(false);
-      // Refresh portfolio
+      // Refresh portfolio to get real data
       fetchPortfolio();
     } catch (error: any) {
       console.error('Error adding holding:', error);

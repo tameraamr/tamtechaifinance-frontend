@@ -182,6 +182,24 @@ export default function Home() {
   const [selectedSpinnerTicker, setSelectedSpinnerTicker] = useState<string | null>(null);
   const rollerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // --- ADDED STATE FOR MISSING VARIABLES ---
+  const [marketPulse, setMarketPulse] = useState<any[]>([]); // for setMarketPulse
+  const [loading, setLoading] = useState(false); // for loading and setLoading
+  const [analysisComplete, setAnalysisComplete] = useState(false); // for analysisComplete and setAnalysisComplete
+  const [authError, setAuthError] = useState(""); // for authError and setAuthError
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
+  const [licenseKey, setLicenseKey] = useState("");
+  const [result, setResult] = useState<any>(null);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [progressMessageIndex, setProgressMessageIndex] = useState(0);
+  const router = useRouter();
+
   // دالة لجلب التحليلات الأخيرة من الباك-إند (memoized to prevent recreating on every render)
   const fetchRecentAnalyses = useCallback(async () => {
     try {

@@ -222,10 +222,9 @@ export default function Home() {
       ]);
 
       if (sentRes.ok) setSentiment(await sentRes.json());
-      if (sectRes.ok) setSectors(await sectRes.json());
-    } catch (err) {
-      console.log("Dashboard sync waiting for connection...");
-    }
+            const sentRes = await fetch(`${BASE_URL}/market-sentiment`);
+            if (sentRes.ok) setSentiment(await sentRes.json());
+            const sectRes = await fetch(`${BASE_URL}/market-sectors`);
   }, []);
 
   // تحديث الـ useEffect ليعمل عند فتح الصفحة أو عند أي تحليل جديد - with dependency array fix

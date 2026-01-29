@@ -29,19 +29,11 @@ const useDebounce = (value: string, delay: number) => {
 
 interface Holding {
   id: number;
-  ticker: string;
-  company_name: string;
-  quantity: number;
-  avg_buy_price: number | null;
+  symbol: string;
   current_price: number;
-  market_value: number;
-  cost_basis: number;
-  pnl: number;
-  pnl_percent: number;
-  sector: string;
-  industry: string;
-  price_error?: boolean;
-  last_updated?: string | null;
+  change_p: number;
+  shares: number;
+  sector: string | null;
 }
 interface PortfolioSummary {
   total_value: number;
@@ -249,9 +241,10 @@ export default function PortfolioPage() {
       if (!response.ok) throw new Error('Failed to fetch portfolio');
       
       const data = await response.json();
-      setHoldings(data.holdings);
-      setSummary(data.summary);
-      calculateSectorData(data.holdings);
+      // Backend now returns array directly, not wrapped in object
+      setHoldings(data);
+      setSummary(null); // No summary in new format
+      calculateSectorData(data);
     } catch (error) {
       console.error('Error fetching portfolio:', error);
     } finally {
@@ -265,10 +258,12 @@ export default function PortfolioPage() {
     let totalValue = 0;
 
     holdings.forEach(holding => {
-      if (holding.market_value > 0) {
+      // Calculate market value from current_price * shares
+      const marketValue = (holding.current_price || 0) * (holding.shares || 0);
+      if (marketValue > 0) {
         const sector = holding.sector || 'Unknown';
-        sectorMap[sector] = (sectorMap[sector] || 0) + holding.market_value;
-        totalValue += holding.market_value;
+        sectorMap[sector] = (sectorMap[sector] || 0) + marketValue;
+        totalValue += marketValue;
       }
     });
 
@@ -401,12 +396,13 @@ export default function PortfolioPage() {
 
   // Prepare data for portfolio value graph
   const graphData = holdings.map(h => ({
-    name: h.ticker,
-    value: h.market_value
+    name: h.symbol,
+    value: (h.current_price || 0) * (h.shares || 0)
   }));
-  
-  const topWinner = holdings.filter(h => !h.price_error && h.pnl > 0).sort((a, b) => b.pnl_percent - a.pnl_percent)[0];
-  const topLoser = holdings.filter(h => !h.price_error && h.pnl < 0).sort((a, b) => a.pnl_percent - b.pnl_percent)[0];
+
+  // Note: P&L calculations not available in simplified format
+  const topWinner = null;
+  const topLoser = null;
   
   if (!user) {
     return (
@@ -927,131 +923,39 @@ export default function PortfolioPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-slate-700">
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Ticker</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Symbol</th>
                     <th className="text-left py-3 px-4 text-slate-400 font-semibold">Shares</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Currency</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Avg Price</th>
                     <th className="text-left py-3 px-4 text-slate-400 font-semibold">Current Price</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Market Value</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">P&L</th>
-                    <th className="text-center py-3 px-4 text-slate-400 font-semibold">7D Chart</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Change %</th>
+                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Sector</th>
                     <th className="text-right py-3 px-4 text-slate-400 font-semibold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedHoldings.map((holding) => (
-                    <tr key={holding.id} className="border-b border-slate-800 hover:bg-slate-800/50">
+                  {holdings.map((holding) => (
+                    <tr key={holding.symbol} className="border-b border-slate-800 hover:bg-slate-800/50">
                       <td className="py-4 px-4">
-                        <div>
-                          <div className="font-bold text-white flex items-center gap-2">
-                            {holding.ticker}
-                            {holding.price_error && (
-                              <span className="text-xs bg-yellow-900/50 text-yellow-400 px-2 py-1 rounded" title="Price data unavailable. Click Fix Ticker to update">
-                                ⚠️ No Price
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-slate-400">{holding.company_name}</div>
-                          
-                          {/* Edit Mode */}
-                          {editingId === holding.id && holding.price_error && (
-                            <div className="mt-3 bg-slate-800 rounded-lg p-3 border border-yellow-500/30">
-                              <div className="text-xs text-slate-400 mb-2">Enter correct ticker symbol:</div>
-                              <div className="flex gap-2">
-                                <input
-                                  type="text"
-                                  value={editTicker}
-                                  onChange={(e) => setEditTicker(e.target.value.toUpperCase())}
-                                  placeholder="e.g., VWCE.AS"
-                                  className="flex-1 px-3 py-1.5 bg-slate-700 border border-slate-600 rounded text-white text-sm"
-                                />
-                                <button
-                                  onClick={() => editTicker && updateTicker(holding.id, holding.ticker, editTicker)}
-                                  className="px-4 py-1.5 bg-green-600 hover:bg-green-500 rounded text-white text-sm font-semibold"
-                                >
-                                  Update
-                                </button>
-                                <button
-                                  onClick={() => { setEditingId(null); setEditTicker(''); }}
-                                  className="px-4 py-1.5 bg-slate-600 hover:bg-slate-500 rounded text-white text-sm"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                        <div className="font-bold text-white">
+                          {holding.symbol}
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-white">{holding.quantity}</td>
+                      <td className="py-4 px-4 text-white">
+                        {holding.shares?.toFixed(2)}
+                      </td>
+                      <td className="py-4 px-4 text-white">
+                        ${holding.current_price?.toFixed(2) || '0.00'}
+                      </td>
                       <td className="py-4 px-4">
-                        <span className="text-xs font-semibold text-blue-400 bg-blue-900/30 px-2 py-1 rounded">
-                          {getStockCurrency(holding.ticker)}
+                        <span className={`font-semibold ${holding.change_p >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {holding.change_p >= 0 ? '+' : ''}{holding.change_p?.toFixed(2) || '0.00'}%
                         </span>
                       </td>
                       <td className="py-4 px-4 text-white">
-                        {holding.avg_buy_price ? formatStockPrice(holding.avg_buy_price, holding.ticker).formatted : 'N/A'}
-                      </td>
-                      <td className="py-4 px-4 text-white">
-                        {holding.price_error ? (
-                          <span className="text-yellow-400">Price Error</span>
-                        ) : (
-                          formatStockPrice(holding.current_price, holding.ticker).formatted
-                        )}
-                      </td>
-                      <td className="py-4 px-4 text-white font-semibold">
-                        {holding.price_error ? (
-                          <span className="text-yellow-400">N/A</span>
-                        ) : (
-                          formatStockPrice(holding.market_value, holding.ticker).formatted
-                        )}
-                      </td>
-                      <td className="py-4 px-4">
-                        {holding.price_error ? (
-                          <button
-                            onClick={() => { setEditingId(holding.id); setEditTicker(''); }}
-                            className="text-sm bg-yellow-600 hover:bg-yellow-500 text-white px-3 py-1 rounded font-semibold"
-                          >
-                            Fix Ticker
-                          </button>
-                        ) : (
-                          <div className={`font-semibold ${holding.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {holding.pnl >= 0 ? '+' : ''}{formatStockPrice(holding.pnl, holding.ticker).formatted}
-                            <div className="text-sm">({holding.pnl_percent >= 0 ? '+' : ''}{holding.pnl_percent.toFixed(2)}%)</div>
-                          </div>
-                        )}
-                      </td>
-                      <td className="py-4 px-4">
-                        {holding.price_error ? (
-                          <div className="w-20 h-8 bg-slate-700 rounded flex items-center justify-center">
-                            <span className="text-xs text-slate-500">No Data</span>
-                          </div>
-                        ) : (
-                          <div className="w-20 h-8">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <AreaChart data={[
-                                { day: 1, price: holding.current_price * 0.95 },
-                                { day: 2, price: holding.current_price * 0.97 },
-                                { day: 3, price: holding.current_price * 0.99 },
-                                { day: 4, price: holding.current_price * 1.01 },
-                                { day: 5, price: holding.current_price * 1.02 },
-                                { day: 6, price: holding.current_price * 0.98 },
-                                { day: 7, price: holding.current_price }
-                              ]}>
-                                <Area
-                                  type="monotone"
-                                  dataKey="price"
-                                  stroke={holding.pnl >= 0 ? "#10b981" : "#ef4444"}
-                                  fill={holding.pnl >= 0 ? "#10b98120" : "#ef444420"}
-                                  strokeWidth={1.5}
-                                />
-                              </AreaChart>
-                            </ResponsiveContainer>
-                          </div>
-                        )}
+                        {holding.sector || 'Unknown'}
                       </td>
                       <td className="py-4 px-4 text-right">
                         <button
-                          onClick={() => setConfirmDelete({id: holding.id, ticker: holding.ticker})}
+                          onClick={() => setConfirmDelete({id: holding.id, ticker: holding.symbol})}
                           className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />

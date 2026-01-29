@@ -122,7 +122,7 @@ export default function MarketWatchtower() {
             {loadingMovers && (
               <div className="h-24 bg-slate-800/40 rounded-2xl animate-pulse" />
             )}
-            {topGainers.map((g, idx) => (
+            {topGainers.map((g: any, idx: number) => (
               <div key={g.symbol} className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl shadow-lg p-4 flex items-center gap-4 glass-card relative overflow-hidden">
                 <div className="flex flex-col flex-1 min-w-0">
                   <span className="text-base font-black text-white truncate">{g.symbol}</span>

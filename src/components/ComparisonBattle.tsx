@@ -147,6 +147,10 @@ export default function ComparisonBattle({
                 type="text" 
                 placeholder="TICKER 1" 
                 value={compareTickers.t1}
+                autoComplete="disabled-by-admin"
+                autoCorrect="off"
+                spellCheck="false"
+                autoCapitalize="off"
                 className="w-full bg-slate-950 border border-slate-800 p-5 rounded-2xl outline-none uppercase font-mono text-center text-3xl text-blue-400 focus:border-blue-500 transition-all shadow-2xl focus:shadow-blue-500/20" 
                 onChange={(e) => setCompareTickers({...compareTickers, t1: e.target.value.toUpperCase()})} 
               />
@@ -159,6 +163,10 @@ export default function ComparisonBattle({
                 type="text" 
                 placeholder="TICKER 2" 
                 value={compareTickers.t2}
+                autoComplete="disabled-by-admin"
+                autoCorrect="off"
+                spellCheck="false"
+                autoCapitalize="off"
                 className="w-full bg-slate-950 border border-slate-800 p-5 rounded-2xl outline-none uppercase font-mono text-center text-3xl text-emerald-400 focus:border-emerald-500 transition-all shadow-2xl focus:shadow-emerald-500/20" 
                 onChange={(e) => setCompareTickers({...compareTickers, t2: e.target.value.toUpperCase()})} 
               />

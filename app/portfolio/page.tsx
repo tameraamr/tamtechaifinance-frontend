@@ -772,6 +772,10 @@ export default function PortfolioPage() {
                     type="text"
                     placeholder="Ticker (e.g., AAPL)"
                     value={newTicker}
+                    autoComplete="disabled-by-admin"
+                    autoCorrect="off"
+                    spellCheck="false"
+                    autoCapitalize="off"
                     onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
                     onFocus={() => newTicker.length >= 2 && setShowSuggestions(true)}
                     onClick={(e) => e.stopPropagation()}

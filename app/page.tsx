@@ -881,6 +881,10 @@ export default function Home() {
                   placeholder={t.searchPlaceholder}
                   className="w-full bg-transparent p-3 text-sm outline-none uppercase font-mono text-white"
                   value={ticker}
+                  autoComplete="disabled-by-admin"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  autoCapitalize="off"
                   onChange={(e) => {
                     setTicker(e.target.value.toUpperCase());
                     setUserTyping(true);

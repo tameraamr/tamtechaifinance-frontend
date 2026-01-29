@@ -184,6 +184,19 @@ export default function PricingPage() {
           </div>
         </div>
 
+        {/* Already have a key link */}
+        <div className="mt-12 text-center">
+          <p className="text-slate-400 mb-4">
+            Already have a license key?
+            <Link
+              href="/dashboard"
+              className="text-blue-400 hover:text-blue-300 font-bold ml-2 transition-colors"
+            >
+              Activate it on your Dashboard →
+            </Link>
+          </p>
+        </div>
+
         {/* Security Trust Badge */}
         <div className="mt-20 flex flex-col items-center gap-4 py-8 border-t border-slate-800/50">
           <div className="flex items-center gap-2 text-slate-500">

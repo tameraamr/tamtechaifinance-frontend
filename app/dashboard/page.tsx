@@ -158,6 +158,11 @@ export default function DashboardPage() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
+  // Redeem state
+  const [licenseKey, setLicenseKey] = useState<string>("");
+  const [redeemError, setRedeemError] = useState<string>("");
+  const [redeeming, setRedeeming] = useState(false);
+
   // Fetch analysis history
   useEffect(() => {
     // Wait for auth to load before redirecting
@@ -399,6 +404,33 @@ export default function DashboardPage() {
     }
   };
 
+  const handleRedeem = async () => {
+    setRedeemError("");
+    if (!licenseKey.trim()) return;
+
+    setRedeeming(true);
+    try {
+      const res = await fetch(`${BASE_URL}/verify-license`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify({ license_key: licenseKey.trim() }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        updateCredits(data.credits);
+        setLicenseKey("");
+        toast.success(`🎉 License activated! New balance: ${data.credits} credits`);
+      } else {
+        setRedeemError(data.message);
+      }
+    } catch (err: any) {
+      setRedeemError("Error connecting to server");
+    } finally {
+      setRedeeming(false);
+    }
+  };
+
   const getVerdictColor = (verdict: string) => {
     const v = verdict.toUpperCase();
     if (v.includes('BUY') || v.includes('STRONG BUY')) return 'text-green-400';
@@ -451,9 +483,63 @@ export default function DashboardPage() {
             </h1>
             <p className="text-slate-400">Manage your account and track your AI stock analysis</p>
           </motion.div>
+        </div>
 
-          {/* Tabs */}
-          <div className="flex gap-2 mt-6 border-b border-slate-800">
+        {/* Redeem License Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="bg-gradient-to-br from-green-900/20 via-slate-900 to-green-900/10 border border-green-500/30 rounded-2xl p-6 mb-8 shadow-xl"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-600/30 to-green-400/10 border border-green-400/40 flex items-center justify-center">
+              <CreditCard className="text-green-400" size={20} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-white">Activate License Key</h2>
+              <p className="text-slate-400 text-sm">Already purchased? Enter your license key to add credits</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter your license key"
+                className="flex-1 bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-green-500 transition"
+                value={licenseKey}
+                onChange={(e) => setLicenseKey(e.target.value)}
+              />
+              <button
+                onClick={handleRedeem}
+                disabled={redeeming || !licenseKey.trim()}
+                className="bg-green-600 hover:bg-green-500 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold px-6 py-3 rounded-lg transition-all flex items-center gap-2"
+              >
+                {redeeming ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Activating...
+                  </>
+                ) : (
+                  <>
+                    <Zap size={16} />
+                    Activate
+                  </>
+                )}
+              </button>
+            </div>
+
+            {redeemError && (
+              <p className="text-red-400 text-sm animate-pulse">
+                ⚠️ {redeemError}
+              </p>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mt-6 border-b border-slate-800">
             <button
               onClick={() => setActiveTab('history')}
               className={`px-6 py-3 font-bold text-sm transition-all ${
@@ -481,7 +567,6 @@ export default function DashboardPage() {
               </div>
             </button>
           </div>
-        </div>
 
         {/* Stats Cards */}
         {activeTab === 'history' && (

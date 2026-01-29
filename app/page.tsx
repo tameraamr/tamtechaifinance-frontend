@@ -15,6 +15,7 @@ import NewsAnalysis from '../src/components/NewsAnalysis';
 import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
 import RecentAnalyses from '../src/components/RecentAnalyses';
+import MasterUniverseHeatmap from '../src/components/MasterUniverseHeatmap';
 import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
 import { useAuth } from '../src/context/AuthContext';
@@ -1220,6 +1221,13 @@ export default function Home() {
           handleAnalyze={handleAnalyze}
         />
         {/* X Recent Analyses X */}
+
+        {/* 👇 Master Universe Heatmap 👇 */}
+        <MasterUniverseHeatmap
+          lang={lang}
+          t={t}
+        />
+        {/* X Master Universe Heatmap X */}
 
         {/* 👇 radar sentiment icon 👇 */}
         <MarketDashboard sentiment={sentiment} sectors={sectors} lang={lang} t={t} />

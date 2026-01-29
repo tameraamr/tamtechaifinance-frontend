@@ -11,7 +11,7 @@ import {
   TrendingUp, TrendingDown, Plus, Trash2, 
   DollarSign, PieChart, AlertTriangle, Lock, Search, Trophy, Award
 } from 'lucide-react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, PieChart as RechartsPieChart, Pie, Cell, AreaChart, Area } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, PieChart as RechartsPieChart, Pie, Cell, AreaChart, Area, BarChart, Bar } from 'recharts';
 
 
 
@@ -33,6 +33,7 @@ interface Holding {
   current_price: number;
   change_p: number;
   shares: number;
+  avg_buy_price: number | null;
   sector: string | null;
 }
 interface PortfolioSummary {
@@ -163,6 +164,11 @@ export default function PortfolioPage() {
   // Market winners/losers data
   const [marketData, setMarketData] = useState<{winners: any[], losers: any[], timestamp?: string} | null>(null);
   
+  // KPI values
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [totalPnLPercent, setTotalPnLPercent] = useState(0);
+  const [total24hChange, setTotal24hChange] = useState(0);
+  
   useEffect(() => {
     if (isLoggedIn) {
       fetchPortfolio();
@@ -245,6 +251,7 @@ export default function PortfolioPage() {
       setHoldings(data);
       setSummary(null); // No summary in new format
       calculateSectorData(data);
+      calculateKPIs(data);
     } catch (error) {
       console.error('Error fetching portfolio:', error);
     } finally {
@@ -282,6 +289,37 @@ export default function PortfolioPage() {
       .sort((a, b) => b.value - a.value);
 
     setSectorData(sectorData);
+  };
+
+  // Calculate KPI values
+  const calculateKPIs = (holdings: Holding[]) => {
+    let totalValue = 0;
+    let totalCost = 0;
+    let total24hChangeValue = 0;
+
+    holdings.forEach(holding => {
+      const currentPrice = holding.current_price || 0;
+      const shares = holding.shares || 0;
+      const avgBuyPrice = holding.avg_buy_price || currentPrice; // Fallback to current price if no buy price
+      const changePercent = holding.change_p || 0;
+
+      const currentValue = currentPrice * shares;
+      const costBasis = avgBuyPrice * shares;
+      const change24hValue = (changePercent / 100) * currentValue;
+
+      totalValue += currentValue;
+      totalCost += costBasis;
+      total24hChangeValue += change24hValue;
+    });
+
+    setTotalBalance(totalValue);
+    
+    // Calculate total P&L %
+    const totalPnL = totalValue - totalCost;
+    const totalPnLPercentValue = totalCost > 0 ? (totalPnL / totalCost) * 100 : 0;
+    setTotalPnLPercent(totalPnLPercentValue);
+    
+    setTotal24hChange(total24hChangeValue);
   };
 
   // Fetch market winners/losers data
@@ -563,6 +601,69 @@ export default function PortfolioPage() {
           </motion.div>
         )}
 
+        {/* KPI Summary Cards */}
+        {holdings.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
+          >
+            {/* Total Balance */}
+            <div className="bg-gradient-to-br from-blue-900/30 to-slate-900 border border-blue-500/30 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <DollarSign className="w-6 h-6 text-blue-400" />
+                <div className="text-slate-400 text-sm">Total Balance</div>
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatPrice(totalBalance, currency, exchangeRates)}
+              </div>
+            </div>
+
+            {/* Total P&L % */}
+            <div className={`border rounded-xl p-6 ${
+              totalPnLPercent >= 0
+                ? 'bg-gradient-to-br from-green-900/30 to-slate-900 border-green-500/30'
+                : 'bg-gradient-to-br from-red-900/30 to-slate-900 border-red-500/30'
+            }`}>
+              <div className="flex items-center gap-3 mb-2">
+                {totalPnLPercent >= 0 ? (
+                  <TrendingUp className="w-6 h-6 text-green-400" />
+                ) : (
+                  <TrendingDown className="w-6 h-6 text-red-400" />
+                )}
+                <div className="text-slate-400 text-sm">Total P&L</div>
+              </div>
+              <div className={`text-2xl font-bold ${
+                totalPnLPercent >= 0 ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {totalPnLPercent >= 0 ? '+' : ''}{totalPnLPercent.toFixed(2)}%
+              </div>
+            </div>
+
+            {/* 24h Change */}
+            <div className={`border rounded-xl p-6 ${
+              total24hChange >= 0
+                ? 'bg-gradient-to-br from-green-900/30 to-slate-900 border-green-500/30'
+                : 'bg-gradient-to-br from-red-900/30 to-slate-900 border-red-500/30'
+            }`}>
+              <div className="flex items-center gap-3 mb-2">
+                {total24hChange >= 0 ? (
+                  <TrendingUp className="w-6 h-6 text-green-400" />
+                ) : (
+                  <TrendingDown className="w-6 h-6 text-red-400" />
+                )}
+                <div className="text-slate-400 text-sm">24h Change</div>
+              </div>
+              <div className={`text-2xl font-bold ${
+                total24hChange >= 0 ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {total24hChange >= 0 ? '+' : ''}{formatPrice(total24hChange, currency, exchangeRates)}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Portfolio Value Graph - moved below summary cards */}
         {holdings.length > 0 && (
           <motion.div
@@ -576,13 +677,16 @@ export default function PortfolioPage() {
               Portfolio Value by Ticker
             </h2>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <BarChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
                 <YAxis stroke="#94a3b8" fontSize={12} />
-                <Tooltip contentStyle={{ background: '#1e293b', color: '#fff', border: '1px solid #a78bfa' }} />
-                <Line type="monotone" dataKey="value" stroke="#a78bfa" strokeWidth={3} dot={{ r: 4 }} />
-              </LineChart>
+                <Tooltip 
+                  contentStyle={{ background: '#1e293b', color: '#fff', border: '1px solid #a78bfa' }}
+                  formatter={(value: number) => [formatPrice(value), 'Value']}
+                />
+                <Bar dataKey="value" fill="#a78bfa" radius={[4, 4, 0, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           </motion.div>
         )}
@@ -637,7 +741,7 @@ export default function PortfolioPage() {
                   <TrendingUp className="w-6 h-6 text-green-400" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-slate-400 text-xs mb-1">\ud83c\udfc6 Top Performer</div>
+                  <div className="text-slate-400 text-xs mb-1">🏆 Top Performer</div>
                   <div className="font-bold text-white text-lg">{topWinner.symbol}</div>
                   <div className="text-green-400 font-semibold">+{topWinner.change_p.toFixed(2)}%</div>
                 </div>
@@ -649,7 +753,7 @@ export default function PortfolioPage() {
                   <TrendingDown className="w-6 h-6 text-red-400" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-slate-400 text-xs mb-1">\ud83d\udcc9 Needs Attention</div>
+                  <div className="text-slate-400 text-xs mb-1">📉 Needs Attention</div>
                   <div className="font-bold text-white text-lg">{topLoser.symbol}</div>
                   <div className="text-red-400 font-semibold">{topLoser.change_p.toFixed(2)}%</div>
                 </div>
@@ -709,9 +813,9 @@ export default function PortfolioPage() {
                 onChange={(e) => setSortBy(e.target.value as 'value' | 'change' | 'symbol')}
                 className="px-3 py-2 bg-slate-800 text-white border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-blue-500"
               >
-                <option value="value">\ud83d\udcb0 Sort by Value</option>
-                <option value="change">\ud83d\udcc8 Sort by Change %</option>
-                <option value="symbol">\ud83d\udd24 Sort by Symbol</option>
+                <option value="value">💰 Sort by Value</option>
+                <option value="change">📈 Sort by Change %</option>
+                <option value="symbol">🔍 Sort by Symbol</option>
               </select>
               <button
                 onClick={() => setShowAddForm(!showAddForm)}

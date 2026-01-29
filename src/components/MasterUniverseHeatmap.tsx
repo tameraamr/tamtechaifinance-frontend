@@ -1,17 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Activity, Zap, DollarSign, Coins, BarChart3, Globe } from "lucide-react";
 import { useTranslation } from '../context/TranslationContext';
 
 interface HeatmapItem {
-  ticker: string;
-  name: string;
-  price: number;
-  change_percent: number;
-  market_cap?: number;
-  volume?: number;
-  asset_type: string;
+  s: string;  // symbol (was ticker)
+  p: number;  // price
+  c: number;  // change_percent
+  t: string;  // type (was asset_type)
 }
 
 interface HeatmapData {
@@ -26,6 +23,54 @@ interface MasterUniverseHeatmapProps {
   lang: string;
   t: any;
 }
+
+// 🚀 MEMOIZED HEATMAP CARD - Optimized for performance
+const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index: number; assetType: string }) => {
+  // Pre-compute values to avoid recalculation
+  const symbol = item.s;
+  const price = item.p;
+  const change = item.c;
+  const isPositive = change > 0;
+  const isNegative = change < 0;
+
+  // Pre-compute colors and styles
+  const changeColor = isPositive ? 'text-green-400' : isNegative ? 'text-red-400' : 'text-slate-400';
+  const absChange = Math.abs(change);
+  let cardStyle = 'bg-slate-500/10 border-slate-500/20';
+  if (absChange >= 5) cardStyle = isPositive ? 'bg-green-500/20 border-green-500/40' : 'bg-red-500/20 border-red-500/40';
+  else if (absChange >= 2) cardStyle = isPositive ? 'bg-green-400/15 border-green-400/30' : 'bg-red-400/15 border-red-400/30';
+  else if (absChange >= 1) cardStyle = isPositive ? 'bg-green-300/10 border-green-300/20' : 'bg-red-300/10 border-red-300/20';
+
+  // Format price based on asset type
+  const formatPrice = (price: number, assetType: string) => {
+    if (assetType === 'crypto') return `$${price.toFixed(2)}`;
+    if (assetType === 'forex') return price.toFixed(4);
+    if (assetType === 'commodities') return `$${price.toFixed(2)}`;
+    return `$${price.toLocaleString()}`;
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.01 }} // Faster animation
+      className={`relative p-2 rounded-lg border transition-all hover:scale-105 cursor-pointer ${cardStyle}`}
+      style={{ contain: 'layout style paint' }} // 🚀 CSS Containment for faster rendering
+      title={`${symbol} - ${change >= 0 ? '+' : ''}${change.toFixed(2)}%`}
+    >
+      {/* FLATTENED DOM: Minimal nesting */}
+      <div className="text-xs font-bold text-white truncate">{symbol}</div>
+      <div className="text-sm font-semibold text-white">{formatPrice(price, assetType)}</div>
+      <div className={`text-xs font-bold flex items-center gap-1 ${changeColor}`}>
+        {isPositive && <TrendingUp className="w-3 h-3" />}
+        {isNegative && <TrendingDown className="w-3 h-3" />}
+        {change >= 0 ? '+' : ''}{change.toFixed(2)}%
+      </div>
+    </motion.div>
+  );
+});
+
+HeatmapCard.displayName = 'HeatmapCard';
 
 const assetClassConfig = {
   stocks: {
@@ -208,49 +253,15 @@ export default function MasterUniverseHeatmap({ lang, t }: MasterUniverseHeatmap
         })}
       </div>
 
-      {/* Heatmap Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+      {/* Heatmap Grid - Optimized with memoized cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2" style={{ contain: 'layout' }}>
         {currentData.slice(0, 30).map((item, index) => (
-          <motion.div
-            key={item.ticker}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.02 }}
-            className={`relative p-3 rounded-xl border transition-all hover:scale-105 cursor-pointer ${getHeatmapColor(item.change_percent)}`}
-            title={`${item.name} - ${formatChange(item.change_percent)}`}
-          >
-            {/* Ticker */}
-            <div className="text-xs font-bold text-white mb-1 truncate">
-              {item.ticker}
-            </div>
-
-            {/* Name */}
-            <div className="text-xs text-slate-400 mb-2 truncate" style={{ fontSize: '10px' }}>
-              {item.name}
-            </div>
-
-            {/* Price */}
-            <div className="text-sm font-semibold text-white mb-1">
-              {formatPrice(item.price, item.asset_type)}
-            </div>
-
-            {/* Change */}
-            <div className={`text-xs font-bold flex items-center gap-1 ${getChangeColor(item.change_percent)}`}>
-              {item.change_percent > 0 ? (
-                <TrendingUp className="w-3 h-3" />
-              ) : item.change_percent < 0 ? (
-                <TrendingDown className="w-3 h-3" />
-              ) : null}
-              {formatChange(item.change_percent)}
-            </div>
-
-            {/* Market Cap for stocks/crypto */}
-            {item.market_cap && item.asset_type !== 'forex' && (
-              <div className="text-xs text-slate-500 mt-1">
-                Cap: ${(item.market_cap / 1e9).toFixed(1)}B
-              </div>
-            )}
-          </motion.div>
+          <HeatmapCard
+            key={item.s}
+            item={item}
+            index={index}
+            assetType={selectedAssetClass}
+          />
         ))}
       </div>
 

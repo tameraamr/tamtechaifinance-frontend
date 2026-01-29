@@ -1,12 +1,20 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Mail, MessageSquare, Send, ArrowLeft, Clock, ShieldCheck } from 'lucide-react';
+import { Mail, MessageSquare, Send, ArrowLeft, Clock, ShieldCheck, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '../../src/context/TranslationContext';
 import LanguageSelector from '../../src/components/LanguageSelector';
 
 export default function ContactPage() {
   const { t, isRTL } = useTranslation();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     document.title = "Contact Us | Get Support - Tamtech Finance";
@@ -24,6 +32,42 @@ export default function ContactPage() {
     }
     canonical.setAttribute('href', 'https://tamtech-finance.com/contact');
   }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleEmailSend = () => {
     const subject = encodeURIComponent("Support Inquiry: TamtechAI Pro");
@@ -86,24 +130,108 @@ export default function ContactPage() {
                 <MessageSquare className="w-6 h-6 text-blue-500" />
                 {t.sendMessage}
               </h3>
-              
-              <div className="space-y-5">
-                <p className="text-slate-400 text-sm italic mb-6">
-                  {t.openMailApp}
-                </p>
 
-                <button 
-                  onClick={handleEmailSend}
-                  className="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-blue-600/20"
-                >
-                  <Send className="w-5 h-5" />
-                  {t.sendEmail}
-                </button>
-
-                <div className="pt-6 flex items-center justify-center gap-2 text-slate-600">
-                  <ShieldCheck className="w-4 h-4 text-green-500" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest">{t.contactSecureChannel}</span>
+              {submitStatus === 'success' && (
+                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-green-400 font-semibold">Message sent successfully! We'll get back to you soon.</span>
                 </div>
+              )}
+
+              {submitStatus === 'error' && (
+                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <span className="text-red-400 font-semibold">Failed to send message. Please try again or use the email button below.</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-all"
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-300 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-all"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">Subject *</label>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-all"
+                    placeholder="How can we help you?"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-300 mb-2">Message *</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    required
+                    rows={5}
+                    className="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-all resize-none"
+                    placeholder="Tell us more about your inquiry..."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-xl shadow-blue-600/20 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Send Message
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-6 pt-6 border-t border-slate-700">
+                <p className="text-slate-400 text-sm text-center mb-4">Or send us an email directly:</p>
+                <button
+                  onClick={handleEmailSend}
+                  className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 py-3 rounded-xl font-semibold text-slate-300 flex items-center justify-center gap-3 transition-all"
+                >
+                  <Mail className="w-4 h-4" />
+                  Open Email Client
+                </button>
+              </div>
+
+              <div className="pt-6 flex items-center justify-center gap-2 text-slate-600">
+                <ShieldCheck className="w-4 h-4 text-green-500" />
+                <span className="text-[10px] uppercase font-bold tracking-widest">{t.contactSecureChannel}</span>
               </div>
             </div>
           </div>

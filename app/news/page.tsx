@@ -46,7 +46,7 @@ export default function NewsPage() {
           className="max-w-2xl mx-auto text-center"
         >
           {/* Back Button */}
-          <Link href="/" className="inline-flex items-center gap-2 mb-12 text-slate-400 hover:text-white transition-colors group">
+          <Link href="/" className="inline-flex items-center gap-2 mb-12 text-slate-400 hover:text-white transition-colors group touch-manipulation">
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </Link>

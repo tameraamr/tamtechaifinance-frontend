@@ -1,6 +1,7 @@
 
 "use client";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../src/context/AuthContext';
 import { useTranslation } from '../../src/context/TranslationContext';
 import Navbar from '../../src/components/Navbar';
@@ -9,7 +10,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import {
   TrendingUp, TrendingDown, Plus, Trash2, 
-  DollarSign, PieChart, AlertTriangle, Lock, Search, Trophy, Award
+  DollarSign, PieChart, AlertTriangle, Lock, Search, Trophy, Award, ArrowLeft
 } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, PieChart as RechartsPieChart, Pie, Cell, AreaChart, Area, BarChart, Bar } from 'recharts';
 
@@ -47,6 +48,7 @@ interface PortfolioSummary {
 export default function PortfolioPage() {
   const { user, credits, isLoggedIn } = useAuth();
   const { t } = useTranslation();
+  const router = useRouter();
 
   // Paywall: Require 20+ credits for portfolio access
   if (!isLoggedIn || credits <= 20) {
@@ -459,6 +461,17 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <Navbar />
+
+      {/* Back Button */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4 touch-manipulation"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+      </div>
 
       {/* Sector Distribution Pie Chart */}
         {sectorData.length > 0 && (

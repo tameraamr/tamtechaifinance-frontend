@@ -131,6 +131,10 @@ body {
   }
 }
 
+.animate-shimmer {
+  animation: shimmer 3s infinite;
+}
+
 .animate-glow {
   animation: glow-pulse 3s infinite ease-in-out;
 }

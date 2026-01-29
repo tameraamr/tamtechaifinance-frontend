@@ -84,7 +84,7 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
         {/* Back Button */}
         <Link 
           href="/"
-          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-6 transition-colors touch-manipulation"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home

@@ -268,7 +268,7 @@ export default function StockAnalyzerPage() {
         {/* Top Back Button */}
         <div className="w-full px-4 pt-4 pb-0">
           <div className="max-w-6xl mx-auto">
-            <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
+            <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors group touch-manipulation">
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
               {t.backToHome}
             </Link>

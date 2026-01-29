@@ -1201,6 +1201,241 @@ export default function Home() {
         <MarketWatchtower />
         {/* finish radar sentiment icon  */}
 
+        {/* 👇 Portfolio Teaser - High-End Advertisement 👇 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="relative mb-6 overflow-hidden"
+        >
+          {/* Shimmer Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-400/10 to-transparent -translate-x-full animate-shimmer opacity-0" style={{ animation: 'shimmer 3s infinite' }} />
+
+          {/* Glassmorphism Card */}
+          <div className="relative bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute -left-20 -top-20 w-40 h-40 bg-blue-500/10 blur-3xl rounded-full" />
+            <div className="absolute -right-20 -bottom-20 w-40 h-40 bg-purple-500/10 blur-3xl rounded-full" />
+
+            {/* PRO FEATURE Banner */}
+            <div className="relative z-20 mb-6">
+              <div className="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-400/30 rounded-2xl p-4 backdrop-blur-sm">
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-2xl">🌟</span>
+                  <span className="text-yellow-300 font-bold text-sm uppercase tracking-wide">
+                    PRO FEATURE: 20+ Credits Required for Full Access
+                  </span>
+                  <span className="text-2xl">🌟</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Preview Mode Watermark */}
+            {credits < 20 && (
+              <div className="absolute top-4 right-4 z-30">
+                <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 rounded-lg px-3 py-1">
+                  <span className="text-xs text-slate-400 font-semibold">Live Preview Mode</span>
+                </div>
+              </div>
+            )}
+
+            {/* Fully Visible Content */}
+            <div className="relative z-10">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">💼 Portfolio Tracker</p>
+                  <h3 className="text-2xl font-black text-white mt-1">Professional Portfolio</h3>
+                  <p className="text-xs text-blue-200 font-semibold mt-1">Real-time tracking & analytics</p>
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/30 to-purple-600/10 border border-blue-400/40 flex items-center justify-center shadow-lg">
+                  <PieChart className="text-blue-100" size={28} />
+                </div>
+              </div>
+
+              {/* Balance */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
+                className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 mb-6"
+              >
+                <div className="text-center">
+                  <p className="text-sm text-slate-400 mb-1">Total Balance</p>
+                  <p className="text-3xl font-black text-white">$25,430.00</p>
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    <TrendingUp className="w-4 h-4 text-green-400" />
+                    <span className="text-green-400 font-semibold text-sm">+12.5% this month</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Holdings */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+                className="mb-6"
+              >
+                <h4 className="text-lg font-bold text-white mb-4">Top Holdings</h4>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  {[
+                    { symbol: 'AAPL', name: 'Apple Inc.', change: '+2.3%' },
+                    { symbol: 'NVDA', name: 'NVIDIA', change: '+5.7%' },
+                    { symbol: 'TSLA', name: 'Tesla', change: '-1.2%' },
+                    { symbol: 'BTC', name: 'Bitcoin', change: '+8.9%' },
+                    { symbol: 'MSFT', name: 'Microsoft', change: '+1.8%' }
+                  ].map((holding, index) => (
+                    <motion.div
+                      key={holding.symbol}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-center hover:bg-slate-800/70 transition-all"
+                    >
+                      <p className="font-bold text-white text-sm">{holding.symbol}</p>
+                      <p className="text-xs text-slate-400 truncate">{holding.name}</p>
+                      <p className={`text-xs font-semibold mt-1 ${holding.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                        {holding.change}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Sparkline Chart */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 mb-6"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-bold text-white">Performance</h4>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-green-400 font-semibold text-sm">Live</span>
+                  </div>
+                </div>
+                {/* Animated Sparkline */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  viewport={{ once: true }}
+                  className="h-20 flex items-end justify-between gap-1"
+                >
+                  {[20, 25, 22, 30, 28, 35, 32, 40, 38, 45, 42, 50, 48, 55, 52, 60, 58, 65, 62, 70].map((height, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ height: 0 }}
+                      whileInView={{ height: `${height}%` }}
+                      transition={{ duration: 0.5, delay: i * 0.05 }}
+                      viewport={{ once: true }}
+                      className="bg-gradient-to-t from-green-500 to-green-400 rounded-sm flex-1 min-w-[2px] hover:from-green-400 hover:to-green-300 transition-all"
+                    />
+                  ))}
+                </motion.div>
+                <div className="flex justify-between text-xs text-slate-400 mt-2">
+                  <span>1M ago</span>
+                  <span className="text-green-400 font-semibold">+12.5%</span>
+                  <span>Now</span>
+                </div>
+              </motion.div>
+
+              {/* Features */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="mb-6"
+              >
+                <h4 className="text-lg font-bold text-white mb-4">Premium Features</h4>
+                <div className="space-y-3">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+                    <span className="text-slate-300 text-sm">Real-Time Tracking: Instant updates via SWR (No-refresh needed)</span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.5 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+                    <span className="text-slate-300 text-sm">Alpha Market Insights: Direct connection to MarketWatchtower data</span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.6 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+                    <span className="text-slate-300 text-sm">Smart 5-Asset View: Specialized focus on your core investments</span>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* CTA Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="relative z-30 mt-6 pt-6 border-t border-slate-700/50"
+            >
+              <div className="text-center">
+                <Link
+                  href={credits >= 20 ? "/portfolio" : "#"}
+                  onClick={credits >= 20 ? undefined : () => toast("💡 Earn points by analyzing stocks and engaging with the platform!", { icon: "💡" })}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-8 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-500/30 mb-4 inline-block"
+                >
+                  {credits >= 20 ? "Unlock Full Dashboard" : "How to Earn Points?"}
+                </Link>
+
+                {/* Progress Bar */}
+                <div className="max-w-xs mx-auto">
+                  <div className="flex justify-between text-xs text-slate-400 mb-2">
+                    <span>Points Progress</span>
+                    <span>{credits}/20 points</span>
+                  </div>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${Math.min((credits / 20) * 100, 100)}%` }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                      viewport={{ once: true }}
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">
+                    {credits >= 20
+                      ? "You've unlocked the portfolio! Visit /portfolio to access."
+                      : "Complete analyses and engage with the platform to earn points"
+                    }
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+        {/* X Portfolio Teaser - High-End Advertisement X */}
+
 
         {/* --- الصق الكود هنا --- */}
         {randomTicker && (

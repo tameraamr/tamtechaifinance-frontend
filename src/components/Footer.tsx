@@ -27,7 +27,7 @@ export default function Footer() {
               <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-600 transition-all">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all">
+              <a href="https://t.me/tamtechAi" target="_blank" rel="noopener noreferrer" className="p-2 bg-slate-800 rounded-lg hover:text-blue-400 transition-all">
                 <Send className="w-5 h-5" />
               </a>
             </div>

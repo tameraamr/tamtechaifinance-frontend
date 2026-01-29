@@ -153,7 +153,7 @@ export default function PortfolioPage() {
   const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
   
   // Sorting state
-  const [sortBy, setSortBy] = useState<'value' | 'pnl' | 'ticker'>('value');
+  const [sortBy, setSortBy] = useState<'value' | 'change' | 'symbol'>('value');
   
   const debouncedTicker = useDebounce(newTicker, 300);
   
@@ -325,18 +325,11 @@ export default function PortfolioPage() {
       // Optimistic update: add holding immediately to state
       const newHolding: Holding = {
         id: Date.now(), // temp id, will be replaced on fetch
-        ticker: newTicker.toUpperCase(),
-        company_name: newTicker.toUpperCase(),
-        quantity: parseFloat(newQuantity),
-        avg_buy_price: newAvgPrice ? parseFloat(newAvgPrice) : null,
+        symbol: newTicker.toUpperCase(),
         current_price: 0,
-        market_value: 0,
-        cost_basis: (newAvgPrice ? parseFloat(newAvgPrice) : 0) * parseFloat(newQuantity),
-        pnl: 0,
-        pnl_percent: 0,
-        sector: 'Unknown',
-        industry: 'Unknown',
-        price_error: true
+        change_p: 0,
+        shares: parseFloat(newQuantity),
+        sector: null
       };
       setHoldings(prev => [...prev, newHolding]);
       // Reset form
@@ -389,9 +382,9 @@ export default function PortfolioPage() {
   };
   
   const sortedHoldings = [...holdings].sort((a, b) => {
-    if (sortBy === 'value') return b.market_value - a.market_value;
-    if (sortBy === 'pnl') return b.pnl_percent - a.pnl_percent;
-    return a.ticker.localeCompare(b.ticker);
+    if (sortBy === 'value') return (b.current_price * b.shares) - (a.current_price * a.shares);
+    if (sortBy === 'change') return b.change_p - a.change_p;
+    return a.symbol.localeCompare(b.symbol);
   });
 
   // Prepare data for portfolio value graph
@@ -400,9 +393,13 @@ export default function PortfolioPage() {
     value: (h.current_price || 0) * (h.shares || 0)
   }));
 
-  // Note: P&L calculations not available in simplified format
-  const topWinner = null;
-  const topLoser = null;
+  // Calculate top performers based on change percentage
+  const topWinner = holdings.length > 0 ? holdings.reduce((prev, current) => 
+    (prev.change_p > current.change_p) ? prev : current
+  ) : null;
+  const topLoser = holdings.length > 0 ? holdings.reduce((prev, current) => 
+    (prev.change_p < current.change_p) ? prev : current
+  ) : null;
   
   if (!user) {
     return (
@@ -460,16 +457,6 @@ export default function PortfolioPage() {
                 {summary.total_pnl_percent >= 0 ? '+' : ''}{summary.total_pnl_percent.toFixed(2)}%
               </div>
             </div>
-            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <PieChart className="w-6 h-6 text-purple-400" />
-                <span className="text-slate-400 text-sm">Holdings</span>
-              </div>
-              <div className="text-2xl font-bold text-white">{summary.holdings_count}</div>
-            </div>
-          </motion.div>
-        )}
-
         {/* Sector Distribution Pie Chart */}
         {sectorData.length > 0 && (
           <motion.div
@@ -672,41 +659,6 @@ export default function PortfolioPage() {
           </div>
         </motion.div>
         
-        {/* Summary Cards */}
-        {summary && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
-          >
-            <div className="bg-gradient-to-br from-blue-900/50 to-slate-900 border border-blue-500/30 rounded-xl p-6">
-              <div className="text-slate-400 text-sm mb-1">Total Value</div>
-              <div className="text-3xl font-bold text-white">{formatPrice(summary.total_value)}</div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-xl p-6">
-              <div className="text-slate-400 text-sm mb-1">Total Cost</div>
-              <div className="text-3xl font-bold text-white">{formatPrice(summary.total_cost)}</div>
-            </div>
-            
-            <div className={`bg-gradient-to-br ${summary.total_pnl >= 0 ? 'from-green-900/50' : 'from-red-900/50'} to-slate-900 border ${summary.total_pnl >= 0 ? 'border-green-500/30' : 'border-red-500/30'} rounded-xl p-6`}>
-              <div className="text-slate-400 text-sm mb-1">Total P&L</div>
-              <div className={`text-3xl font-bold ${summary.total_pnl >= 0 ? 'text-green-400' : 'text-red-400'} flex items-center gap-2`}>
-                {summary.total_pnl >= 0 ? <TrendingUp className="w-6 h-6" /> : <TrendingDown className="w-6 h-6" />}
-                {formatPrice(Math.abs(summary.total_pnl))}
-              </div>
-            </div>
-            
-            <div className={`bg-gradient-to-br ${summary.total_pnl_percent >= 0 ? 'from-green-900/50' : 'from-red-900/50'} to-slate-900 border ${summary.total_pnl_percent >= 0 ? 'border-green-500/30' : 'border-red-500/30'} rounded-xl p-6`}>
-              <div className="text-slate-400 text-sm mb-1">Return %</div>
-              <div className={`text-3xl font-bold ${summary.total_pnl_percent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {summary.total_pnl_percent >= 0 ? '+' : ''}{summary.total_pnl_percent.toFixed(2)}%
-              </div>
-            </div>
-          </motion.div>
-        )}
-        
         {/* Top Winner & Loser */}
         {holdings.length > 0 && (topWinner || topLoser) && (
           <motion.div
@@ -722,8 +674,8 @@ export default function PortfolioPage() {
                 </div>
                 <div className="flex-1">
                   <div className="text-slate-400 text-xs mb-1">\ud83c\udfc6 Top Performer</div>
-                  <div className="font-bold text-white text-lg">{topWinner.ticker}</div>
-                  <div className="text-green-400 font-semibold">+{topWinner.pnl_percent.toFixed(2)}%</div>
+                  <div className="font-bold text-white text-lg">{topWinner.symbol}</div>
+                  <div className="text-green-400 font-semibold">+{topWinner.change_p.toFixed(2)}%</div>
                 </div>
               </div>
             )}
@@ -734,8 +686,8 @@ export default function PortfolioPage() {
                 </div>
                 <div className="flex-1">
                   <div className="text-slate-400 text-xs mb-1">\ud83d\udcc9 Needs Attention</div>
-                  <div className="font-bold text-white text-lg">{topLoser.ticker}</div>
-                  <div className="text-red-400 font-semibold">{topLoser.pnl_percent.toFixed(2)}%</div>
+                  <div className="font-bold text-white text-lg">{topLoser.symbol}</div>
+                  <div className="text-red-400 font-semibold">{topLoser.change_p.toFixed(2)}%</div>
                 </div>
               </div>
             )}
@@ -790,12 +742,12 @@ export default function PortfolioPage() {
             <div className="flex items-center gap-3">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'value' | 'pnl' | 'ticker')}
+                onChange={(e) => setSortBy(e.target.value as 'value' | 'change' | 'symbol')}
                 className="px-3 py-2 bg-slate-800 text-white border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-blue-500"
               >
                 <option value="value">\ud83d\udcb0 Sort by Value</option>
-                <option value="pnl">\ud83d\udcc8 Sort by Performance</option>
-                <option value="ticker">\ud83d\udd24 Sort by Ticker</option>
+                <option value="change">\ud83d\udcc8 Sort by Change %</option>
+                <option value="symbol">\ud83d\udd24 Sort by Symbol</option>
               </select>
               <button
                 onClick={() => setShowAddForm(!showAddForm)}

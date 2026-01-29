@@ -41,6 +41,7 @@ interface Holding {
   sector: string;
   industry: string;
   price_error?: boolean;
+  last_updated?: string | null;
 }
 interface PortfolioSummary {
   total_value: number;

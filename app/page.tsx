@@ -161,23 +161,6 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
-  const [marketPulse, setMarketPulse] = useState<any[]>([]);
-  const [timeRange, setTimeRange] = useState("1Y");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [analysisComplete, setAnalysisComplete] = useState(false);
-  const [progressMessageIndex, setProgressMessageIndex] = useState(0);
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [country, setCountry] = useState("");
-  const [address, setAddress] = useState("");
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [licenseKey, setLicenseKey] = useState("");
-  const [authError, setAuthError] = useState("");
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [compareTickers, setCompareTickers] = useState({ t1: "", t2: "" });
   const [compareResult, setCompareResult] = useState<any>(null);
@@ -863,36 +846,6 @@ export default function Home() {
       </Suspense>
       
       <Navbar guestTrials={guestTrials} setShowAuthModal={setShowAuthModal} setAuthMode={setAuthMode} />
-
-      {/* الحاوية المتحركة المحدثة */}
-      <div className="flex overflow-hidden relative ml-4 flex-1 items-center h-full">
-        {/* استخدام motion.div يضمن سلاسة 60 إطار في الثانية حتى على الموبايلات الضعيفة */}
-        <motion.div
-          className="flex gap-12 items-center whitespace-nowrap py-1"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{
-            ease: "linear",
-            duration: 25,
-            repeat: Infinity
-          }}
-        >
-          {marketPulse.length > 0 ? (
-            [...marketPulse, ...marketPulse].map((index, i) => (
-              <div key={i} className="flex items-center gap-2 px-4 shrink-0">
-                <span className="text-[10px] font-bold text-slate-500 uppercase">{index.name}</span>
-                <span className="text-[11px] font-mono font-bold text-slate-200">{index.price}</span>
-                <span className={`text-[9px] font-bold ${index.up ? 'text-emerald-500' : 'text-red-500'}`}>
-                  {index.change}
-                </span>
-              </div>
-            ))
-          ) : (
-            <span className="text-[10px] text-slate-600 animate-pulse font-bold tracking-widest uppercase px-4">
-              {t.loadingMarketData}
-            </span>
-          )}
-        </motion.div>
-      </div>
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 relative">
         {/* Compact AI Analyzer - Top Section */}

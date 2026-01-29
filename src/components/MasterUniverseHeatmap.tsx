@@ -117,13 +117,13 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
   const isPositive = change > 0;
   const isNegative = change < 0;
 
-  // Pre-compute colors and styles with glassmorphism and advanced gradients
-  const changeColor = isPositive ? 'text-emerald-300' : isNegative ? 'text-rose-300' : 'text-slate-400';
+  // Pre-compute colors and styles with ULTRA DRAMATIC glassmorphism and advanced gradients
+  const changeColor = isPositive ? 'text-emerald-200 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]' : isNegative ? 'text-rose-200 drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'text-slate-400';
   const absChange = Math.abs(change);
-  let cardStyle = 'bg-gradient-to-br from-slate-500/10 to-slate-600/5 border-slate-500/20 backdrop-blur-sm';
-  if (absChange >= 5) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-500/25 to-green-600/15 border-emerald-400/40 backdrop-blur-sm' : 'bg-gradient-to-br from-rose-500/25 to-red-600/15 border-rose-400/40 backdrop-blur-sm';
-  else if (absChange >= 2) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-400/20 to-green-500/10 border-emerald-400/30 backdrop-blur-sm' : 'bg-gradient-to-br from-rose-400/20 to-red-500/10 border-rose-400/30 backdrop-blur-sm';
-  else if (absChange >= 1) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-300/15 to-green-400/5 border-emerald-300/20 backdrop-blur-sm' : 'bg-gradient-to-br from-rose-300/15 to-red-400/5 border-rose-300/20 backdrop-blur-sm';
+  let cardStyle = 'bg-gradient-to-br from-slate-500/15 via-slate-600/10 to-slate-700/5 border border-slate-400/30 backdrop-blur-md shadow-lg shadow-slate-900/50';
+  if (absChange >= 5) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-500/30 via-green-600/20 to-emerald-700/10 border border-emerald-300/50 backdrop-blur-md shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400/30' : 'bg-gradient-to-br from-rose-500/30 via-red-600/20 to-rose-700/10 border border-rose-300/50 backdrop-blur-md shadow-lg shadow-rose-500/20 ring-1 ring-rose-400/30';
+  else if (absChange >= 2) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-400/25 via-green-500/15 to-emerald-600/8 border border-emerald-400/40 backdrop-blur-md shadow-lg shadow-emerald-500/15' : 'bg-gradient-to-br from-rose-400/25 via-red-500/15 to-rose-600/8 border border-rose-400/40 backdrop-blur-md shadow-lg shadow-rose-500/15';
+  else if (absChange >= 1) cardStyle = isPositive ? 'bg-gradient-to-br from-emerald-300/20 via-green-400/10 to-emerald-500/5 border border-emerald-300/30 backdrop-blur-md shadow-lg shadow-emerald-500/10' : 'bg-gradient-to-br from-rose-300/20 via-red-400/10 to-rose-500/5 border border-rose-300/30 backdrop-blur-md shadow-lg shadow-rose-500/10';
 
   // Format price based on asset type
   const formatPrice = (price: number, assetType: string) => {
@@ -137,41 +137,80 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.01 }} // Faster animation
-      className={`relative p-2 rounded-lg border transition-all hover:scale-105 cursor-pointer group ${cardStyle}`}
-      style={{ contain: 'layout style paint' }} // 🚀 CSS Containment for faster rendering
+      transition={{ delay: index * 0.01, type: "spring", stiffness: 300, damping: 20 }} // Enhanced spring animation
+      className={`relative p-3 rounded-xl border transition-all duration-300 hover:scale-110 hover:rotate-1 cursor-pointer group ${cardStyle}`}
+      style={{
+        contain: 'layout style paint',
+        boxShadow: isPositive && absChange >= 5 ? '0 0 20px rgba(16, 185, 129, 0.3), 0 0 40px rgba(16, 185, 129, 0.1)' :
+                  isNegative && absChange >= 5 ? '0 0 20px rgba(239, 68, 68, 0.3), 0 0 40px rgba(239, 68, 68, 0.1)' : undefined
+      }} // 🚀 GPU-accelerated glow effects
     >
-      {/* Professional tooltip with sparkline */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800/95 backdrop-blur-sm border border-slate-600/50 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
-        <div className="text-xs font-mono text-white font-semibold">{symbol}</div>
-        <div className="text-sm font-mono text-slate-300">{formatPrice(price, assetType)}</div>
-        <div className={`text-xs font-mono font-bold ${changeColor}`}>
-          {change >= 0 ? '+' : ''}{change.toFixed(2)}%
+      {/* ULTRA DRAMATIC PROFESSIONAL TOOLTIP with enhanced sparkline */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-slate-900/95 backdrop-blur-lg border border-slate-500/60 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20 whitespace-nowrap ring-1 ring-white/10">
+        <div className="flex items-center gap-2 mb-2">
+          {getAssetIcon(symbol, assetType)}
+          <div className="text-sm font-mono font-bold text-white">{symbol}</div>
         </div>
-        {/* Mini sparkline */}
-        <div className="mt-1">
-          <svg width="60" height="20" className="overflow-visible">
+        <div className="text-lg font-mono font-semibold text-slate-200 mb-1">{formatPrice(price, assetType)}</div>
+        <div className={`text-sm font-mono font-bold mb-2 ${changeColor}`}>
+          {change >= 0 ? '↗' : '↘'} {change >= 0 ? '+' : ''}{change.toFixed(2)}%
+        </div>
+        {/* Enhanced animated sparkline */}
+        <div className="relative">
+          <svg width="80" height="24" className="overflow-visible">
+            <defs>
+              <linearGradient id={`gradient-${symbol}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor={isPositive ? '#10b981' : '#ef4444'} stopOpacity="0.8" />
+                <stop offset="50%" stopColor={isPositive ? '#34d399' : '#f87171'} stopOpacity="1" />
+                <stop offset="100%" stopColor={isPositive ? '#6ee7b7' : '#fca5a5'} stopOpacity="0.8" />
+              </linearGradient>
+            </defs>
             <path
               d={generateSparkline(change)}
-              stroke={isPositive ? '#10b981' : '#ef4444'}
-              strokeWidth="1.5"
+              stroke={`url(#gradient-${symbol})`}
+              strokeWidth="2"
               fill="none"
-              className="drop-shadow-sm"
+              className="drop-shadow-lg"
+              style={{
+                filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.3))',
+                animation: 'sparklinePulse 2s ease-in-out infinite'
+              }}
+            />
+            {/* Animated dot at the end */}
+            <circle
+              cx="76"
+              cy={change >= 0 ? "4" : "20"}
+              r="3"
+              fill={isPositive ? '#10b981' : '#ef4444'}
+              className="animate-pulse"
+              style={{
+                filter: 'drop-shadow(0 0 6px rgba(255,255,255,0.5))'
+              }}
             />
           </svg>
         </div>
       </div>
 
-      {/* FLATTENED DOM: Minimal nesting */}
-      <div className="flex items-center gap-1 mb-1">
-        {getAssetIcon(symbol, assetType)}
-        <div className="text-xs font-bold text-white truncate font-mono">{symbol}</div>
+      {/* FLATTENED DOM: Minimal nesting with enhanced layout */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <div className={`p-1 rounded-lg ${isPositive && absChange >= 5 ? 'bg-emerald-500/20' : isNegative && absChange >= 5 ? 'bg-rose-500/20' : 'bg-slate-600/20'}`}>
+            {getAssetIcon(symbol, assetType)}
+          </div>
+          <div className="text-sm font-bold text-white truncate font-mono tracking-wide">{symbol}</div>
+        </div>
+        {/* Mini indicator for large changes */}
+        {absChange >= 5 && (
+          <div className={`px-1.5 py-0.5 rounded text-xs font-mono font-bold ${isPositive ? 'bg-emerald-500/30 text-emerald-200' : 'bg-rose-500/30 text-rose-200'}`}>
+            HOT
+          </div>
+        )}
       </div>
-      <div className="text-sm font-semibold text-white font-mono">{formatPrice(price, assetType)}</div>
-      <div className={`text-xs font-bold flex items-center gap-1 font-mono ${changeColor}`}>
-        {isPositive && <TrendingUp className="w-3 h-3" />}
-        {isNegative && <TrendingDown className="w-3 h-3" />}
-        {change >= 0 ? '+' : ''}{change.toFixed(2)}%
+      <div className="text-lg font-semibold text-white font-mono mb-1 tracking-wide">{formatPrice(price, assetType)}</div>
+      <div className={`text-sm font-bold flex items-center justify-center gap-1 font-mono ${changeColor}`}>
+        {isPositive && <TrendingUp className="w-4 h-4 animate-bounce" />}
+        {isNegative && <TrendingDown className="w-4 h-4 animate-bounce" />}
+        <span className="font-black">{change >= 0 ? '+' : ''}{change.toFixed(2)}%</span>
       </div>
     </motion.div>
   );

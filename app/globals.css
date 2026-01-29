@@ -50,6 +50,18 @@ body {
   backface-visibility: hidden;
 }
 
+/* ULTRA DRAMATIC SPARKLINE PULSE ANIMATION */
+@keyframes sparklinePulse {
+  0%, 100% {
+    opacity: 1;
+    stroke-width: 2;
+  }
+  50% {
+    opacity: 0.7;
+    stroke-width: 2.5;
+  }
+}
+
 /* عشان نسرع الشريط شوي إذا كان بطيء */
 .animate-marquee:hover {
   animation-play-state: paused;

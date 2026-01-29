@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Newspaper, Clock, Star, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "../../src/components/Navbar";
@@ -10,6 +11,7 @@ import { useTranslation } from '../../src/context/TranslationContext';
 export default function NewsPage() {
   const [guestTrials, setGuestTrials] = useState(3);
   const { t } = useTranslation();
+  const router = useRouter();
   
   useEffect(() => {
     document.title = "Market News & Analysis | Real-time Financial Insights - Tamtech Finance";
@@ -46,10 +48,10 @@ export default function NewsPage() {
           className="max-w-2xl mx-auto text-center"
         >
           {/* Back Button */}
-          <Link href="/" className="inline-flex items-center gap-2 mb-12 text-slate-400 hover:text-white transition-colors group touch-manipulation">
+          <button onClick={() => router.back()} className="inline-flex items-center gap-2 mb-12 text-slate-400 hover:text-white transition-colors group touch-manipulation">
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             Back to Home
-          </Link>
+          </button>
 
           {/* Icon */}
           <motion.div

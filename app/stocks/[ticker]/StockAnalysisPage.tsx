@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   TrendingUp, TrendingDown, DollarSign, BarChart3, 
@@ -18,6 +19,7 @@ interface StockAnalysisPageProps {
 
 export default function StockAnalysisPage({ ticker, initialData }: StockAnalysisPageProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   
   const [data] = useState(initialData);
   const analysis = data.analysis;
@@ -82,13 +84,13 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
       
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Back Button */}
-        <Link 
-          href="/"
+        <button
+          onClick={() => router.back()}
           className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-6 transition-colors touch-manipulation"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
-        </Link>
+        </button>
         
         {/* Header Section */}
         <motion.div

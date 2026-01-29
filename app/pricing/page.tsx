@@ -2,12 +2,14 @@
 import React from 'react';
 import { Check, Zap, ShieldCheck, Key, ShoppingCart, ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useTranslation } from '../../src/context/TranslationContext';
 import LanguageSelector from '../../src/components/LanguageSelector';
 
 export default function PricingPage() {
   const { t, isRTL } = useTranslation();
+  const router = useRouter();
   
   useEffect(() => {
     document.title = "Pricing | Affordable AI Stock Analysis Credits - Tamtech Finance";
@@ -29,10 +31,10 @@ export default function PricingPage() {
     <div className="min-h-screen bg-[#0b1121] text-slate-200 pb-20 selection:bg-blue-500/30" dir={isRTL ? "rtl" : "ltr"}>
       {/* Navigation Header */}
       <div className="max-w-7xl mx-auto px-6 pt-10 mb-12 flex items-center justify-between">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-white transition-all group touch-manipulation">
+        <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-slate-500 hover:text-white transition-all group touch-manipulation">
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
           <span className="text-sm font-bold uppercase tracking-widest">{t.backToDashboard}</span>
-        </Link>
+        </button>
         <LanguageSelector />
       </div>
 

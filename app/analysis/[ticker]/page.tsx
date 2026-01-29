@@ -405,8 +405,8 @@ const handleDownloadPDF = async () => {
     localStorage.removeItem('analysis_result');
     localStorage.removeItem('analysis_ticker');
     
-    // Navigate back to home
-    router.push('/');
+    // Navigate back to previous page (dashboard)
+    router.back();
   };
 
   const getFilteredChartData = () => {

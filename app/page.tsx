@@ -15,6 +15,7 @@ import NewsAnalysis from '../src/components/NewsAnalysis';
 import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
 import RecentAnalyses from '../src/components/RecentAnalyses';
+import RegretMachine from '../src/components/RegretMachine';
 import MasterUniverseHeatmap from '../src/components/MasterUniverseHeatmap';
 import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
@@ -1182,6 +1183,10 @@ export default function Home() {
           handleAnalyze={handleAnalyze}
         />
         {/* X Recent Analyses X */}
+
+        {/* 👇 Regret Machine 👇 */}
+        <RegretMachine lang={lang} />
+        {/* X Regret Machine X */}
 
         {/* 👇 Master Universe Heatmap 👇 */}
         <MasterUniverseHeatmap

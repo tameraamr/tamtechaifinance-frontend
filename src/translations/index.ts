@@ -463,7 +463,27 @@ export const fullTranslations = {
       margin: "Profit Margin: Percentage of revenue that turns into profit.",
       debt: "Debt-to-Equity: Measure of financial leverage/risk.",
       curr: "Current Ratio: Ability to pay short-term obligations."
-    }
+    },
+
+    // Regret Machine
+    regretMachineTitle: "The Regret Machine",
+    regretMachineSubtitle: "Calculate what you missed out on by not investing in a stock earlier. Enter your hypothetical purchase details below.",
+    enterStockSymbol: "Enter Stock Symbol (e.g., AAPL, TSLA)",
+    enterPurchasePrice: "Enter Purchase Price per Share ($)",
+    enterPurchaseDate: "Enter Purchase Date",
+    calculateRegret: "Calculate Regret",
+    regretAmount: "You could have made",
+    analyzeNow: "Analyze This Stock Now with AI",
+    shareOnX: "Share on X",
+    shareOnWhatsApp: "Share on WhatsApp",
+    shareOnTelegram: "Share on Telegram",
+    shareOnInstagram: "Share on Instagram",
+    shareTextEn: "OMG! I just realized I could have made ${amount} if I bought {stock} earlier! Check out your regret at TamtechAI",
+    shareTextAr: "يا ساتر! ضاعت عليّ ثروة بقيمة {amount} دولار في سهم {stock}! شوف ندمك أنت بموقع TamtechAI",
+    shareTextEs: "¡Madre mía! Me acabo de dar cuenta de que podría haber ganado ${amount} si hubiera comprado {stock} antes. ¡Mira tu arrepentimiento en TamtechAI!",
+    shareTextHe: "אוי ואבוי! רק עכשיו הבנתי שיכולתי להרוויח ${amount} אם הייתי קונה {stock} קודם! בדוק את החרטה שלך ב-TamtechAI",
+    shareTextRu: "Боже мой! Я только что понял, что мог заработать ${amount}, если бы купил {stock} раньше! Проверь свое сожаление на TamtechAI",
+    shareTextIt: "Oddio! Mi sono appena reso conto che avrei potuto guadagnare ${amount} se avessi comprato {stock} prima! Controlla il tuo rimpianto su TamtechAI"
   },
   
   ar: {
@@ -922,7 +942,27 @@ export const fullTranslations = {
       margin: "هامش الربح: النسبة المئوية للإيرادات التي تتحول لربح صافي.",
       debt: "الديون للملكية: مقياس للرافعة المالية والمخاطر.",
       curr: "النسبة الحالية: قدرة الشركة على سداد التزاماتها قصيرة الأجل."
-    }
+    },
+
+    // Regret Machine
+    regretMachineTitle: "آلة الندم",
+    regretMachineSubtitle: "احسب كم خسرت من المال بعدم الاستثمار في سهم سابقاً. أدخل تفاصيل الشراء الافتراضية أدناه.",
+    enterStockSymbol: "أدخل رمز السهم (مثل AAPL، TSLA)",
+    enterPurchasePrice: "أدخل سعر الشراء لكل سهم ($)",
+    enterPurchaseDate: "أدخل تاريخ الشراء",
+    calculateRegret: "احسب الندم",
+    regretAmount: "كنت تستطيع كسب",
+    analyzeNow: "حلل هذا السهم الآن بالذكاء الاصطناعي",
+    shareOnX: "شارك على X",
+    shareOnWhatsApp: "شارك على WhatsApp",
+    shareOnTelegram: "شارك على Telegram",
+    shareOnInstagram: "شارك على Instagram",
+    shareTextEn: "OMG! I just realized I could have made ${amount} if I bought {stock} earlier! Check out your regret at TamtechAI",
+    shareTextAr: "يا ساتر! ضاعت عليّ ثروة بقيمة {amount} دولار في سهم {stock}! شوف ندمك أنت بموقع TamtechAI",
+    shareTextEs: "¡Madre mía! Me acabo de dar cuenta de que podría haber ganado ${amount} si hubiera comprado {stock} antes. ¡Mira tu arrepentimiento en TamtechAI!",
+    shareTextHe: "אוי ואבוי! רק עכשיו הבנתי שיכולתי להרוויח ${amount} אם הייתי קונה {stock} קודם! בדוק את החרטה שלך ב-TamtechAI",
+    shareTextRu: "Боже мой! Я только что понял, что мог заработать ${amount}, если бы купил {stock} раньше! Проверь свое сожаление на TamtechAI",
+    shareTextIt: "Oddio! Mi sono appena reso conto che avrei potuto guadagnare ${amount} se avessi comprato {stock} prima! Controlla il tuo rimpianto su TamtechAI"
   },
   
   es: {
@@ -1380,7 +1420,27 @@ export const fullTranslations = {
       margin: "Margen de Ganancia: Porcentaje de ingresos que se convierte en ganancia.",
       debt: "Deuda/Patrimonio: Medida de apalancamiento financiero/riesgo.",
       curr: "Ratio Corriente: Capacidad de pagar obligaciones a corto plazo."
-    }
+    },
+
+    // Regret Machine
+    regretMachineTitle: "La Máquina del Arrepentimiento",
+    regretMachineSubtitle: "Calcula cuánto dinero perdiste por no invertir en una acción antes. Ingresa tus detalles de compra hipotéticos a continuación.",
+    enterStockSymbol: "Ingresa el Símbolo de Acción (ej. AAPL, TSLA)",
+    enterPurchasePrice: "Ingresa el Precio de Compra por Acción ($)",
+    enterPurchaseDate: "Ingresa la Fecha de Compra",
+    calculateRegret: "Calcular Arrepentimiento",
+    regretAmount: "Podrías haber hecho",
+    analyzeNow: "Analizar Esta Acción Ahora con IA",
+    shareOnX: "Compartir en X",
+    shareOnWhatsApp: "Compartir en WhatsApp",
+    shareOnTelegram: "Compartir en Telegram",
+    shareOnInstagram: "Compartir en Instagram",
+    shareTextEn: "OMG! I just realized I could have made ${amount} if I bought {stock} earlier! Check out your regret at TamtechAI",
+    shareTextAr: "يا ساتر! ضاعت عليّ ثروة بقيمة {amount} دولار في سهم {stock}! شوف ندمك أنت بموقع TamtechAI",
+    shareTextEs: "¡Madre mía! Me acabo de dar cuenta de que podría haber ganado ${amount} si hubiera comprado {stock} antes. ¡Mira tu arrepentimiento en TamtechAI!",
+    shareTextHe: "אוי ואבוי! רק עכשיו הבנתי שיכולתי להרוויח ${amount} אם הייתי קונה {stock} קודם! בדוק את החרטה שלך ב-TamtechAI",
+    shareTextRu: "Боже мой! Я только что понял, что мог заработать ${amount}, если бы купил {stock} раньше! Проверь свое сожаление на TamtechAI",
+    shareTextIt: "Oddio! Mi sono appena reso conto che avrei potuto guadagnare ${amount} se avessi comprato {stock} prima! Controlla il tuo rimpianto su TamtechAI"
   },
   
   he: {
@@ -1840,7 +1900,27 @@ export const fullTranslations = {
       margin: "שולי רווח: אחוז ההכנסות המומרות לרווח.",
       debt: "יחס חוב/הון: מודד מינוף פיננסי/סיכון.",
       curr: "יחס זרימה שוטפת: יכולת לשלם חובות לטווח קצר."
-    }
+    },
+
+    // Regret Machine
+    regretMachineTitle: "מכונת החרטה",
+    regretMachineSubtitle: "חשב כמה כסף פסדת על ידי שלא השקעת במניה קודם. הזן את פרטי הרכישה ההיפותטיים שלך למטה.",
+    enterStockSymbol: "הזן סימול מניה (למשל, AAPL, TSLA)",
+    enterPurchasePrice: "הזן מחיר רכישה למניה ($)",
+    enterPurchaseDate: "הזן תאריך רכישה",
+    calculateRegret: "חשב חרטה",
+    regretAmount: "יכולת להרוויח",
+    analyzeNow: "נתח מניה זו עכשיו עם AI",
+    shareOnX: "שתף ב-X",
+    shareOnWhatsApp: "שתף ב-WhatsApp",
+    shareOnTelegram: "שתף ב-Telegram",
+    shareOnInstagram: "שתף ב-Instagram",
+    shareTextEn: "OMG! I just realized I could have made ${amount} if I bought {stock} earlier! Check out your regret at TamtechAI",
+    shareTextAr: "يا ساتر! ضاعت عليّ ثروة بقيمة {amount} دولار في سهم {stock}! شوف ندمك أنت بموقع TamtechAI",
+    shareTextEs: "¡Madre mía! Me acabo de dar cuenta de que podría haber ganado ${amount} si hubiera comprado {stock} antes. ¡Mira tu arrepentimiento en TamtechAI!",
+    shareTextHe: "אוי ואבוי! רק עכשיו הבנתי שיכולתי להרוויח ${amount} אם הייתי קונה {stock} קודם! בדוק את החרטה שלך ב-TamtechAI",
+    shareTextRu: "Боже мой! Я только что понял, что мог заработать ${amount}, если бы купил {stock} раньше! Проверь свое сожаление на TamtechAI",
+    shareTextIt: "Oddio! Mi sono appena reso conto che avrei potuto guadagnare ${amount} se avessi comprato {stock} prima! Controlla il tuo rimpianto su TamtechAI"
   },
   
   ru: {
@@ -2298,7 +2378,27 @@ export const fullTranslations = {
       margin: "Маржа прибыли: Процент выручки, который превращается в прибыль.",
       debt: "Долг/Капитал: Мера финансового рычага/риска.",
       curr: "Коэффициент текущей ликвидности: Способность оплатить краткосрочные обязательства."
-    }
+    },
+
+    // Regret Machine
+    regretMachineTitle: "Машина Сожаления",
+    regretMachineSubtitle: "Рассчитайте, сколько денег вы упустили, не инвестируя в акцию раньше. Введите свои гипотетические детали покупки ниже.",
+    enterStockSymbol: "Введите Символ Акции (например, AAPL, TSLA)",
+    enterPurchasePrice: "Введите Цену Покупки за Акцию ($)",
+    enterPurchaseDate: "Введите Дату Покупки",
+    calculateRegret: "Рассчитать Сожаление",
+    regretAmount: "Вы могли заработать",
+    analyzeNow: "Проанализировать Эту Акцию Сейчас с ИИ",
+    shareOnX: "Поделиться в X",
+    shareOnWhatsApp: "Поделиться в WhatsApp",
+    shareOnTelegram: "Поделиться в Telegram",
+    shareOnInstagram: "Поделиться в Instagram",
+    shareTextEn: "OMG! I just realized I could have made ${amount} if I bought {stock} earlier! Check out your regret at TamtechAI",
+    shareTextAr: "يا ساتر! ضاعت عليّ ثروة بقيمة {amount} دولار في سهم {stock}! شوف ندمك أنت بموقع TamtechAI",
+    shareTextEs: "¡Madre mía! Me acabo de dar cuenta de que podría haber ganado ${amount} si hubiera comprado {stock} antes. ¡Mira tu arrepentimiento en TamtechAI!",
+    shareTextHe: "אוי ואבוי! רק עכשיו הבנתי שיכולתי להרוויח ${amount} אם הייתי קונה {stock} קודם! בדוק את החרטה שלך ב-TamtechAI",
+    shareTextRu: "Боже мой! Я только что понял, что мог заработать ${amount}, если бы купил {stock} раньше! Проверь свое сожаление на TamtechAI",
+    shareTextIt: "Oddio! Mi sono appena reso conto che avrei potuto guadagnare ${amount} se avessi comprato {stock} prima! Controlla il tuo rimpianto su TamtechAI"
   },
   
   it: {
@@ -2746,17 +2846,37 @@ export const fullTranslations = {
     
     // Tooltips
     tooltips: {
-      pe: "Rapporto P/E: Misura il prezzo corrente delle azioni rispetto agli utili per azione.",
-      peg: "Rapporto PEG: P/E aggiustato per la crescita. Sotto 1.0 è considerato sottovalutato.",
+      pe: "Rapporto Prezzo-Utile: Misura il prezzo attuale dell'azione rispetto agli utili per azione.",
+      peg: "Rapporto PEG: Rapporto P/E aggiustato per la crescita. Sotto 1.0 è considerato sottovalutato.",
       pb: "Prezzo/Libro: Rapporto di valutazione che confronta la capitalizzazione di mercato con il valore contabile.",
-      ps: "Prezzo/Vendite: Rapporto di valutazione che confronta il prezzo delle azioni con i ricavi.",
+      ps: "Prezzo/Vendite: Rapporto di valutazione che confronta il prezzo dell'azione con i ricavi.",
       beta: "Beta: Misura la volatilità rispetto al mercato (1.0). Beta alto significa alto rischio.",
-      div: "Rendimento da Dividendo: Pagamenti di dividendi annuali rispetto al prezzo.",
-      roe: "Return on Equity: Misura la redditività rispetto al patrimonio netto degli azionisti.",
-      margin: "Margine di Profitto: Percentuale di ricavi che si trasforma in profitto.",
-      debt: "Debito/Patrimonio: Misura della leva finanziaria/rischio.",
-      curr: "Rapporto Corrente: Capacità di pagare le obbligazioni a breve termine."
-    }
+      div: "Rendimento da Dividendi: Pagamenti annuali di dividendi relativi al prezzo.",
+      roe: "Rendimento del Capitale: Misura la redditività rispetto al capitale proprio degli azionisti.",
+      margin: "Margine di Profitto: Percentuale dei ricavi che si trasforma in profitto.",
+      debt: "Debito/Capitale: Misura della leva finanziaria/rischio.",
+      curr: "Rapporto Corrente: Capacità di pagare obbligazioni a breve termine."
+    },
+
+    // Regret Machine
+    regretMachineTitle: "La Macchina del Rimpianto",
+    regretMachineSubtitle: "Calcola quanto denaro hai perso per non aver investito in un'azione prima. Inserisci i tuoi dettagli di acquisto ipotetici di seguito.",
+    enterStockSymbol: "Inserisci il Simbolo dell'Azione (es. AAPL, TSLA)",
+    enterPurchasePrice: "Inserisci il Prezzo di Acquisto per Azione ($)",
+    enterPurchaseDate: "Inserisci la Data di Acquisto",
+    calculateRegret: "Calcola il Rimpianto",
+    regretAmount: "Avresti potuto guadagnare",
+    analyzeNow: "Analizza Questa Azione Ora con IA",
+    shareOnX: "Condividi su X",
+    shareOnWhatsApp: "Condividi su WhatsApp",
+    shareOnTelegram: "Condividi su Telegram",
+    shareOnInstagram: "Condividi su Instagram",
+    shareTextEn: "OMG! I just realized I could have made ${amount} if I bought {stock} earlier! Check out your regret at TamtechAI",
+    shareTextAr: "يا ساتر! ضاعت عليّ ثروة بقيمة {amount} دولار في سهم {stock}! شوف ندمك أنت بموقع TamtechAI",
+    shareTextEs: "¡Madre mía! Me acabo de dar cuenta de que podría haber ganado ${amount} si hubiera comprado {stock} antes. ¡Mira tu arrepentimiento en TamtechAI!",
+    shareTextHe: "אוי ואבוי! רק עכשיו הבנתי שיכולתי להרוויח ${amount} אם הייתי קונה {stock} קודם! בדוק את החרטה שלך ב-TamtechAI",
+    shareTextRu: "Боже мой! Я только что понял, что мог заработать ${amount}, если бы купил {stock} раньше! Проверь свое сожаление на TamtechAI",
+    shareTextIt: "Oddio! Mi sono appena reso conto che avrei potuto guadagnare ${amount} se avessi comprato {stock} prima! Controlla il tuo rimpianto su TamtechAI"
   }
 };
 

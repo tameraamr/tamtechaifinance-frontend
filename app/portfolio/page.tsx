@@ -140,6 +140,13 @@ export default function PortfolioPage() {
     getSuggestions();
   }, [debouncedTicker]);
 
+  // Close suggestions on outside click
+  useEffect(() => {
+    const closeSuggestions = () => setShowSuggestions(false);
+    window.addEventListener('click', closeSuggestions);
+    return () => window.removeEventListener('click', closeSuggestions);
+  }, []);
+
   // Paywall: Require 20+ credits for portfolio access
   if (!isLoggedIn || credits <= 20) {
     return (
@@ -248,13 +255,6 @@ export default function PortfolioPage() {
   // Market winners/losers data (moved to top)
   
   // KPI values (moved to top)
-  
-  // Close suggestions on outside click
-  useEffect(() => {
-    const closeSuggestions = () => setShowSuggestions(false);
-    window.addEventListener('click', closeSuggestions);
-    return () => window.removeEventListener('click', closeSuggestions);
-  }, []);
   
   const fetchPortfolio = async () => {
     try {
@@ -959,6 +959,9 @@ export default function PortfolioPage() {
                       </td>
                       <td className="py-4 px-4 text-white">
                         {holding.sector || 'Unknown'}
+                      </td>
+                      <td className="py-4 px-4 text-green-400 font-semibold">
+                        ${(Number(holding.shares || 0) * Number(holding.current_price || 0)).toFixed(2)}
                       </td>
                       <td className="py-4 px-4 text-right">
                         <button

@@ -925,57 +925,112 @@ export default function PortfolioPage() {
               <p className="text-sm mt-2">Click "Add Stock" to start tracking your investments</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                <tr className="border-b border-slate-700">
-                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Symbol</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Shares</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Current Price</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Change %</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Sector</th>
-                <th className="text-left py-3 px-4 text-green-400 font-semibold">Total Value</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-semibold">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                  {holdings.map((holding) => (
-                    <tr key={holding.symbol} className="border-b border-slate-800 hover:bg-slate-800/50">
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-white">
-                          {holding.symbol}
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                  <tr className="border-b border-slate-700">
+                  <th className="text-left py-3 px-4 text-slate-400 font-semibold sticky left-0 bg-[var(--bg-secondary)]">Symbol</th>
+                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Shares</th>
+                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Current Price</th>
+                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Change %</th>
+                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Sector</th>
+                  <th className="text-left py-3 px-4 text-green-400 font-semibold">Total Value</th>
+                  <th className="text-right py-3 px-4 text-slate-400 font-semibold">Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {holdings.map((holding) => (
+                      <tr key={holding.symbol} className="border-b border-slate-800 hover:bg-slate-800/50">
+                        <td className="py-4 px-4 sticky left-0 bg-[var(--bg-secondary)]">
+                          <div className="font-bold text-white">
+                            {holding.symbol}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-white">
+                          {holding.shares?.toFixed(2)}
+                        </td>
+                        <td className="py-4 px-4 text-white">
+                          ${holding.current_price?.toFixed(2) || '0.00'}
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={`font-semibold ${holding.change_p >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {holding.change_p >= 0 ? '+' : ''}{holding.change_p?.toFixed(2) || '0.00'}%
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-white">
+                          {holding.sector || 'Unknown'}
+                        </td>
+                        <td className="py-4 px-4 text-green-400 font-semibold">
+                          ${(Number(holding.shares || 0) * Number(holding.current_price || 0)).toFixed(2)}
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <button
+                            onClick={() => setConfirmDelete({id: holding.id, ticker: holding.symbol})}
+                            className="p-3 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors touch-manipulation"
+                          >
+                            <Trash2 className="w-6 h-6" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {holdings.map((holding) => (
+                  <motion.div
+                    key={holding.symbol}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-[var(--bg-secondary)] rounded-xl p-4 border border-[var(--border-primary)]"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">{holding.symbol.slice(0, 2)}</span>
                         </div>
-                      </td>
-                      <td className="py-4 px-4 text-white">
-                        {holding.shares?.toFixed(2)}
-                      </td>
-                      <td className="py-4 px-4 text-white">
-                        ${holding.current_price?.toFixed(2) || '0.00'}
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className={`font-semibold ${holding.change_p >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <div>
+                          <h3 className="font-bold text-white text-lg">{holding.symbol}</h3>
+                          <p className="text-[var(--text-secondary)] text-sm">{holding.sector || 'Unknown'}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setConfirmDelete({id: holding.id, ticker: holding.symbol})}
+                        className="p-3 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors touch-manipulation"
+                      >
+                        <Trash2 className="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center">
+                        <p className="text-[var(--text-secondary)] text-sm mb-1">Total Value</p>
+                        <p className="text-green-400 font-bold text-xl">
+                          ${(Number(holding.shares || 0) * Number(holding.current_price || 0)).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-[var(--text-secondary)] text-sm mb-1">Change</p>
+                        <p className={`font-bold text-xl ${holding.change_p >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                           {holding.change_p >= 0 ? '+' : ''}{holding.change_p?.toFixed(2) || '0.00'}%
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-white">
-                        {holding.sector || 'Unknown'}
-                      </td>
-                      <td className="py-4 px-4 text-green-400 font-semibold">
-                        ${(Number(holding.shares || 0) * Number(holding.current_price || 0)).toFixed(2)}
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <button
-                          onClick={() => setConfirmDelete({id: holding.id, ticker: holding.symbol})}
-                          className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-[var(--border-primary)]">
+                      <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                        <span>Shares: {holding.shares?.toFixed(2)}</span>
+                        <span>Price: ${holding.current_price?.toFixed(2) || '0.00'}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </>
           )}
         </motion.div>
         

@@ -841,7 +841,7 @@ export default function Home() {
   };
 
   return (
-    <div dir={isRTL ? "rtl" : "ltr"} className={`min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden ${isRTL ? 'font-arabic' : ''}`}>
+    <div dir={isRTL ? "rtl" : "ltr"} className={`min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121] text-[var(--text-primary)] font-sans selection:bg-[var(--accent-primary)]/30 overflow-x-hidden transition-all duration-300 ${isRTL ? 'font-arabic' : ''}`}>
       <Suspense fallback={null}>
         <SearchParamsHandler setShowAuthModal={setShowAuthModal} setShowPaywall={setShowPaywall} />
       </Suspense>
@@ -850,13 +850,13 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 relative">
         {/* Compact AI Analyzer - Top Section */}
-        <div id="main-analyzer" className="relative z-20 overflow-visible bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900/20 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-2xl mb-6">
+        <div id="main-analyzer" className="relative z-20 overflow-visible bg-gradient-to-br from-[var(--bg-secondary)] via-[var(--bg-secondary)] to-[var(--accent-primary)]/20 border border-[var(--border-primary)] rounded-2xl p-4 md:p-6 shadow-2xl mb-6">
           <div className="absolute -left-16 -top-16 w-48 h-48 bg-blue-600/10 blur-3xl" aria-hidden="true" />
           <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
 
           <div className="relative z-10 flex flex-col items-center text-center mb-4">
-            <p className="text-xs uppercase tracking-[0.25em] text-blue-300 font-bold">⚡ {t.primaryEngine}</p>
-            <h2 className="text-lg md:text-2xl font-black text-white mt-1">{t.aiStockAnalyzer}</h2>
+            <p className="text-xs uppercase tracking-[0.25em] text-[var(--accent-primary)] font-bold">⚡ {t.primaryEngine}</p>
+            <h2 className="text-lg md:text-2xl font-black text-[var(--text-primary)] mt-1">{t.aiStockAnalyzer}</h2>
           </div>
 
           <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
@@ -906,7 +906,10 @@ export default function Home() {
               </div>
 
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute left-0 right-0 mt-2 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10">
+                <div className="absolute left-0 right-0 mt-2 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10" style={{
+                  backgroundColor: 'var(--card-bg)',
+                  border: '1px solid var(--border-primary)'
+                }}>
                   {suggestions.map((s, i) => (
                     <button
                       key={i}
@@ -1447,7 +1450,10 @@ export default function Home() {
         {/* 👇 Analysis Complete - Show Confirmation Modal 👇 */}
         {analysisComplete && !loading && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-            <div className="bg-[#0f172a] border border-slate-700 p-6 md:p-8 rounded-3xl max-w-lg w-full relative shadow-2xl">
+            <div className="p-6 md:p-8 rounded-3xl max-w-lg w-full relative shadow-2xl" style={{
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid var(--border-primary)'
+            }}>
               <button onClick={() => setAnalysisComplete(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white transition-colors">
                 <XCircle className="w-6 h-6" />
               </button>
@@ -1504,7 +1510,10 @@ export default function Home() {
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
 
             {/* 👇 التعديل الثاني: المربع نفسه بتصميم أنظف */}
-            <div className="bg-[#0f172a] border border-slate-700 p-6 md:p-8 rounded-3xl max-w-lg w-full relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
+            <div className="p-6 md:p-8 rounded-3xl max-w-lg w-full relative shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar" style={{
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid var(--border-primary)'
+            }}>
 
               <button onClick={() => setShowAuthModal(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white transition-colors"><XCircle className="w-6 h-6" /></button>
 

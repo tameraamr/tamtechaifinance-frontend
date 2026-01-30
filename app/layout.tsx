@@ -3,10 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from '../src/context/AuthContext';
 import { TranslationProvider } from '../src/context/TranslationContext';
+import { ThemeProvider as NextThemeProvider } from "next-themes";
+import { ThemeProvider } from '../src/context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import CookieBanner from '../src/components/CookieBanner';
 import ConditionalAnalytics from '../src/components/ConditionalAnalytics';
 import VerificationBannerWrapper from '../src/components/VerificationBannerWrapper';
+import FloatingThemeSwitcher from '../src/components/FloatingThemeSwitcher';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -113,7 +116,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Structured Data for Google */}
         <script
@@ -128,15 +131,26 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <TranslationProvider>
-            <VerificationBannerWrapper>
-              {children}
-            </VerificationBannerWrapper>
-            <Toaster position="top-center" reverseOrder={false} />
-            <CookieBanner />
-          </TranslationProvider>
-        </AuthProvider>
+        <NextThemeProvider
+          attribute="class"
+          defaultTheme="default"
+          enableSystem={false}
+          disableTransitionOnChange={false}
+          themes={["default", "emerald-dark", "slate-grey", "deep-ocean", "royal-violet", "gold-alpha"]}
+        >
+          <AuthProvider>
+            <ThemeProvider>
+              <TranslationProvider>
+                <VerificationBannerWrapper>
+                  {children}
+                </VerificationBannerWrapper>
+                <Toaster position="top-center" reverseOrder={false} />
+                <CookieBanner />
+                <FloatingThemeSwitcher />
+              </TranslationProvider>
+            </ThemeProvider>
+          </AuthProvider>
+        </NextThemeProvider>
         {/* Google Analytics loads conditionally based on consent */}
         <ConditionalAnalytics gaId="G-6DD71GL8SC" />
       </body>

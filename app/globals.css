@@ -3,6 +3,21 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Default theme variables - Original Tamtech Theme */
+  --bg-primary: #0b1121;
+  --bg-secondary: #0f172a;
+  --bg-tertiary: #1a1a1a;
+  --bg-accent: #0f172a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --card-bg: rgba(15, 23, 42, 0.8);
+  --input-bg: rgba(15, 23, 42, 0.6);
 }
 
 @theme inline {
@@ -18,6 +33,192 @@
     --foreground: #ededed;
   }
 }
+
+/* Theme-specific overrides */
+html.emerald-dark {
+  --bg-primary: #050505;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #111111;
+  --bg-accent: #0f172a;
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --accent-primary: #10B981;
+  --accent-secondary: #059669;
+  --accent-hover: #047857;
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --card-bg: rgba(5, 5, 5, 0.9);
+  --input-bg: rgba(10, 10, 10, 0.8);
+}
+
+html.slate-grey {
+  --bg-primary: #1C1C1E;
+  --bg-secondary: #2C2C2E;
+  --bg-tertiary: #3C3C3E;
+  --bg-accent: #1C1C1E;
+  --text-primary: #ffffff;
+  --text-secondary: #E4E4E7;
+  --text-muted: #CBD5E1;
+  --accent-primary: #E4E4E7;
+  --accent-secondary: #CBD5E1;
+  --accent-hover: #94A3B8;
+  --border-primary: #475569;
+  --border-secondary: #64748B;
+  --card-bg: rgba(28, 28, 30, 0.9);
+  --input-bg: rgba(44, 44, 46, 0.8);
+}
+
+html.deep-ocean {
+  --bg-primary: #020617;
+  --bg-secondary: #0F172A;
+  --bg-tertiary: #1E293B;
+  --bg-accent: #020617;
+  --text-primary: #ffffff;
+  --text-secondary: #e0f2fe;
+  --text-muted: #7dd3fc;
+  --accent-primary: #38BDF8;
+  --accent-secondary: #0EA5E9;
+  --accent-hover: #0284C7;
+  --border-primary: #164E63;
+  --border-secondary: #155E75;
+  --card-bg: rgba(2, 6, 23, 0.9);
+  --input-bg: rgba(15, 23, 42, 0.8);
+}
+
+html.royal-violet {
+  --bg-primary: #0D0212;
+  --bg-secondary: #1A0B2E;
+  --bg-tertiary: #2A1B4A;
+  --bg-accent: #0D0212;
+  --text-primary: #ffffff;
+  --text-secondary: #e9d5ff;
+  --text-muted: #c4b5fd;
+  --accent-primary: #A855F7;
+  --accent-secondary: #9333EA;
+  --accent-hover: #7C3AED;
+  --border-primary: #581C87;
+  --border-secondary: #6B21A8;
+  --card-bg: rgba(13, 2, 18, 0.9);
+  --input-bg: rgba(26, 11, 46, 0.8);
+}
+
+html.gold-alpha {
+  --bg-primary: #000000;
+  --bg-secondary: #0A0A0A;
+  --bg-tertiary: #1A1A1A;
+  --bg-accent: #000000;
+  --text-primary: #ffffff;
+  --text-secondary: #F5F5F4;
+  --text-muted: #D4D4D8;
+  --accent-primary: #FFD700;
+  --accent-secondary: #F59E0B;
+  --accent-hover: #D97706;
+  --border-primary: #374151;
+  --border-secondary: #4B5563;
+  --card-bg: rgba(0, 0, 0, 0.9);
+  --input-bg: rgba(10, 10, 10, 0.8);
+}
+
+
+html.gold-alpha {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2a2a2a;
+  --bg-accent: #0a0a0a;
+  --text-primary: #ffffff;
+  --text-secondary: #fef3c7;
+  --text-muted: #fde68a;
+  --accent-primary: #f59e0b;
+  --accent-secondary: #d97706;
+  --accent-hover: #b45309;
+  --border-primary: #92400e;
+  --border-secondary: #78350f;
+  --card-bg: rgba(26, 26, 26, 0.8);
+  --input-bg: rgba(26, 26, 26, 0.6);
+}
+
+/* Apply body background using CSS variables */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.4s ease;
+}
+
+/* Default theme specific overrides - Original Tamtech Design */
+html:not(.emerald-dark):not(.slate-grey):not(.deep-ocean):not(.royal-violet):not(.gold-alpha) body {
+  background: linear-gradient(to bottom, #0b1121 0%, #070b14 50%, #0b1121 100%);
+  background-attachment: fixed;
+}
+
+html:not(.emerald-dark):not(.slate-grey):not(.deep-ocean):not(.royal-violet):not(.gold-alpha) {
+  --bg-primary: #0b1121;
+  --bg-secondary: #070b14;
+  --bg-tertiary: #0b1121;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --accent-primary: #00D4FF;
+  --accent-secondary: #0099FF;
+  --accent-hover: #0077FF;
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --card-bg: rgba(15, 23, 42, 0.8);
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --success-primary: #00FF88;
+  --success-secondary: #00DD66;
+  --warning-primary: #FFFF00;
+  --warning-secondary: #FFDD00;
+  --error-primary: #FF4444;
+  --error-secondary: #DD2222;
+  /* Premium shadow variables for Default theme */
+  --shadow-card: 0 25px 50px -12px rgba(0, 212, 255, 0.15), 0 0 0 1px rgba(0, 212, 255, 0.05);
+  --shadow-navbar: 0 10px 40px -10px rgba(0, 212, 255, 0.2), 0 4px 25px -5px rgba(0, 0, 0, 0.5);
+  --glow-primary: 0 0 20px rgba(0, 212, 255, 0.3);
+  --glow-success: 0 0 20px rgba(0, 255, 136, 0.3);
+  --glow-warning: 0 0 20px rgba(255, 255, 0, 0.3);
+}
+
+/* Theme-aware utility classes */
+.theme-bg-primary { background-color: var(--bg-primary); }
+.theme-bg-secondary { background-color: var(--bg-secondary); }
+.theme-bg-tertiary { background-color: var(--bg-tertiary); }
+.theme-bg-accent { background-color: var(--bg-accent); }
+
+.theme-text-primary { color: var(--text-primary); }
+.theme-text-secondary { color: var(--text-secondary); }
+.theme-text-muted { color: var(--text-muted); }
+
+.theme-accent-primary { color: var(--accent-primary); }
+.theme-accent-secondary { color: var(--accent-secondary); }
+.theme-accent-hover:hover { color: var(--accent-hover); }
+
+/* Premium shadow and glow utilities for Default theme */
+html:not(.emerald-dark):not(.slate-grey):not(.deep-ocean):not(.royal-violet):not(.gold-alpha) .shadow-card-premium {
+  box-shadow: var(--shadow-card);
+}
+
+html:not(.emerald-dark):not(.slate-grey):not(.deep-ocean):not(.royal-violet):not(.gold-alpha) .shadow-navbar-premium {
+  box-shadow: var(--shadow-navbar);
+}
+
+html:not(.emerald-dark):not(.slate-grey):not(.deep-ocean):not(.royal-violet):not(.gold-alpha) .glow-primary {
+  box-shadow: var(--glow-primary);
+}
+
+html:not(.emerald-dark):not(.slate-grey):not(.deep-ocean):not(.royal-violet):not(.gold-alpha) .glow-success {
+  box-shadow: var(--glow-success);
+}
+
+html:not(.emerald-dark):not(.slate-grey):not(.deep-ocean):not(.royal-violet):not(.gold-alpha) .glow-warning {
+  box-shadow: var(--glow-warning);
+}
+
+.theme-border-primary { border-color: var(--border-primary); }
+.theme-border-secondary { border-color: var(--border-secondary); }
+
+.theme-card-bg { background-color: var(--card-bg); }
+.theme-input-bg { background-color: var(--input-bg); }
 
 body {
   background: var(--background);
@@ -149,6 +350,11 @@ body {
 
 .bg-size-200 {
   background-size: 200% 100%;
+}
+
+/* Smooth theme transitions */
+body {
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .bg-pos-100 {

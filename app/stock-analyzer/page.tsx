@@ -261,14 +261,14 @@ export default function StockAnalyzerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col">
+    <div className="min-h-screen font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]" style={{ color: 'var(--text-primary)' }}>
       <Navbar guestTrials={guestTrials} />
 
       <main className="flex-1 w-full">
         {/* Top Back Button */}
         <div className="w-full px-4 pt-4 pb-0">
           <div className="max-w-6xl mx-auto">
-            <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors group touch-manipulation">
+            <button onClick={() => router.back()} className="inline-flex items-center gap-2 transition-colors group touch-manipulation" style={{ color: 'var(--text-muted)' }}>
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
               {t.backToHome}
             </button>
@@ -276,25 +276,33 @@ export default function StockAnalyzerPage() {
         </div>
 
         {/* Main Analyzer Tool Section - MOVED UP */}
-        <section className="w-full px-4 py-4 md:py-6 bg-gradient-to-b from-slate-900/50 to-[#0b1121]">
+        <section className="w-full px-4 py-4 md:py-6" style={{
+          background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3), var(--bg-primary))'
+        }}>
           <div className="max-w-6xl mx-auto">
             {/* Analyzer Display - Exact copy from homepage */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="max-w-3xl mx-auto mb-6">
-              <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900/20 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-2xl">
+              <div className="relative rounded-2xl p-4 md:p-6 shadow-2xl" style={{
+                background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary))',
+                border: '1px solid var(--border-primary)'
+              }}>
                 <div className="absolute -left-16 -top-16 w-48 h-48 bg-blue-600/10 blur-3xl" aria-hidden="true" />
                 <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
 
                 <div className="relative z-10 flex flex-col items-center text-center mb-4">
-                  <p className="text-xs uppercase tracking-[0.25em] text-blue-300 font-bold">⚡ {t.primaryEngine}</p>
-                  <h2 className="text-lg md:text-2xl font-black text-white mt-1">{t.aiStockAnalyzer}</h2>
+                  <p className="text-xs uppercase tracking-[0.25em] font-bold" style={{ color: 'var(--accent-primary)' }}>⚡ {t.primaryEngine}</p>
+                  <h2 className="text-lg md:text-2xl font-black mt-1" style={{ color: 'var(--text-primary)' }}>{t.aiStockAnalyzer}</h2>
                 </div>
 
                 <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
                   {authError && (
-                    <div className="w-full mb-3 bg-red-500/10 border border-red-500/50 p-3 rounded-lg flex items-center justify-between gap-2">
+                    <div className="w-full mb-3 p-3 rounded-lg flex items-center justify-between gap-2" style={{
+                      backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.5)'
+                    }}>
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="text-red-500 w-4 h-4 shrink-0" />
-                        <span className="text-red-200 text-xs font-bold">{authError}</span>
+                        <span className="text-xs font-bold" style={{ color: '#fecaca' }}>{authError}</span>
                       </div>
                       <button onClick={() => setAuthError("")} className="text-red-400 hover:text-white p-1">
                         <XCircle className="w-4 h-4" />
@@ -304,11 +312,14 @@ export default function StockAnalyzerPage() {
 
                   <div className="w-full relative">
                     {/* 💳 Credit Warning Badge */}
-                    <div className="mb-3 bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5 flex items-center gap-2">
-                      <div className="bg-amber-500/20 rounded-full p-1.5">
-                        <Zap className="w-3.5 h-3.5 text-amber-400" />
+                    <div className="mb-3 rounded-lg p-2.5 flex items-center gap-2" style={{
+                      backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                      border: '1px solid rgba(245, 158, 11, 0.3)'
+                    }}>
+                      <div className="rounded-full p-1.5" style={{ backgroundColor: 'rgba(245, 158, 11, 0.2)' }}>
+                        <Zap className="w-3.5 h-3.5" style={{ color: '#fbbf24' }} />
                       </div>
-                      <span className="text-amber-200 text-xs font-semibold">
+                      <span className="text-xs font-semibold" style={{ color: '#fde68a' }}>
                         {isLoggedIn 
                           ? `Each analysis costs 1 credit • You have ${credits} ${credits === 1 ? 'credit' : 'credits'} remaining`
                           : `Free trial: ${guestTrials} ${guestTrials === 1 ? 'analysis' : 'analyses'} left • Register for more`
@@ -316,18 +327,22 @@ export default function StockAnalyzerPage() {
                       </span>
                     </div>
 
-                    <div className="flex items-center bg-slate-950/70 border border-slate-800 rounded-xl overflow-hidden shadow-lg focus-within:border-blue-500/50 transition-all">
+                    <div className="flex items-center rounded-xl overflow-hidden shadow-lg transition-all focus-within:border-blue-500/50" style={{
+                      backgroundColor: 'var(--input-bg)',
+                      border: '1px solid var(--border-primary)'
+                    }}>
                       <input
                         id="ticker-input"
                         name="ticker"
                         type="text"
                         placeholder={t.searchPlaceholder}
-                        className="w-full bg-transparent p-3 text-sm outline-none uppercase font-mono text-white"
+                        className="w-full p-3 text-sm outline-none uppercase font-mono"
                         value={ticker}
                         autoComplete="disabled-by-admin"
                         autoCorrect="off"
                         spellCheck="false"
                         autoCapitalize="off"
+                        style={{ backgroundColor: 'transparent', color: 'var(--text-primary)' }}
                         onChange={(e) => {
                           setTicker(e.target.value.toUpperCase());
                           setUserTyping(true);
@@ -340,16 +355,25 @@ export default function StockAnalyzerPage() {
                           }
                         }}
                       />
-                      <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-5 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
+                      <button onClick={() => handleAnalyze()} disabled={loading} className="px-4 md:px-5 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center" style={{
+                        backgroundColor: 'var(--accent-primary)',
+                        color: 'white'
+                      }}>
                         {loading ? "..." : t.analyze}
                       </button>
-                      <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch" title={t.getRandomStock}>
-                        <Dices className="w-5 h-5 text-purple-400" />
+                      <button onClick={fetchRandomStock} className="px-3 flex items-center justify-center transition-all self-stretch" style={{
+                        backgroundColor: 'var(--bg-tertiary)',
+                        borderLeft: '1px solid var(--border-primary)'
+                      }} title={t.getRandomStock}>
+                        <Dices className="w-5 h-5" style={{ color: 'var(--accent-secondary)' }} />
                       </button>
                     </div>
 
                     {showSuggestions && suggestions.length > 0 && (
-                      <div className="absolute left-0 right-0 mt-2 bg-[#0f172a] border border-slate-700 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10">
+                      <div className="absolute left-0 right-0 mt-2 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10" style={{
+                        backgroundColor: 'var(--card-bg)',
+                        border: '1px solid var(--border-primary)'
+                      }}>
                         {suggestions.map((s, i) => (
                           <button
                             key={i}
@@ -360,13 +384,14 @@ export default function StockAnalyzerPage() {
                               setShowSuggestions(false);
                               handleAnalyze(s.symbol);
                             }}
-                            className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-600/20 border-b border-slate-800/50 last:border-0 transition-all group/item text-left text-sm"
+                            className="w-full flex items-center justify-between px-4 py-2.5 border-b border-slate-800/50 last:border-0 transition-all group/item text-left text-sm"
+                            style={{ borderBottom: '1px solid var(--border-primary)' }}
                           >
                             <div className="flex flex-col items-start">
-                              <span className="text-blue-400 font-bold">{s.symbol}</span>
-                              <span className="text-slate-500 text-[10px] truncate max-w-[200px]">{s.name}</span>
+                              <span className="font-bold" style={{ color: 'var(--accent-primary)' }}>{s.symbol}</span>
+                              <span className="text-[10px] truncate max-w-[200px]" style={{ color: 'var(--text-muted)' }}>{s.name}</span>
                             </div>
-                            <Search size={12} className="text-slate-600 group-hover/item:text-blue-500" />
+                            <Search size={12} className="group-hover/item:text-blue-500" style={{ color: 'var(--text-secondary)' }} />
                           </button>
                         ))}
                       </div>
@@ -382,7 +407,10 @@ export default function StockAnalyzerPage() {
                     transition={{ duration: 0.5 }}
                     className="mt-4"
                   >
-                    <div className="bg-gradient-to-br from-blue-900/40 via-purple-900/40 to-blue-900/40 border-2 border-blue-500/30 rounded-2xl p-6 text-center relative overflow-hidden">
+                    <div className="rounded-2xl p-6 text-center relative overflow-hidden" style={{
+                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1), rgba(59, 130, 246, 0.1))',
+                      border: '2px solid rgba(59, 130, 246, 0.3)'
+                    }}>
                       {/* Animated background gradient */}
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10 animate-pulse" />
                       
@@ -414,12 +442,14 @@ export default function StockAnalyzerPage() {
                         </div>
 
                         {/* Loading text */}
-                        <h3 className="text-xl font-bold text-white mb-2">
-                          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                        <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                          <span className="bg-clip-text text-transparent" style={{
+                            background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary))'
+                          }}>
                             AI Analysis in Progress
                           </span>
                         </h3>
-                        <p className="text-slate-300 text-xs mb-3">
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
                           {ticker ? `Analyzing ${ticker} with advanced AI algorithms...` : 'Running deep analysis...'}
                         </p>
 
@@ -432,7 +462,7 @@ export default function StockAnalyzerPage() {
                             className="flex items-center gap-2 text-left text-xs"
                           >
                             <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
-                            <span className="text-slate-300">Fetching real-time market data</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Fetching real-time market data</span>
                           </motion.div>
                           <motion.div
                             initial={{ opacity: 0, x: -20 }}
@@ -441,7 +471,7 @@ export default function StockAnalyzerPage() {
                             className="flex items-center gap-2 text-left text-xs"
                           >
                             <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin shrink-0"></div>
-                            <span className="text-slate-300">Running AI financial models</span>
+                            <span style={{ color: 'var(--text-secondary)' }}>Running AI financial models</span>
                           </motion.div>
                           <motion.div
                             initial={{ opacity: 0, x: -20 }}
@@ -450,7 +480,7 @@ export default function StockAnalyzerPage() {
                             className="flex items-center gap-2 text-left text-xs opacity-50"
                           >
                             <div className="w-4 h-4 border-2 border-slate-600 rounded-full shrink-0"></div>
-                            <span className="text-slate-400">Generating comprehensive report</span>
+                            <span style={{ color: 'var(--text-muted)' }}>Generating comprehensive report</span>
                           </motion.div>
                         </div>
                       </div>
@@ -463,13 +493,18 @@ export default function StockAnalyzerPage() {
         </section>
 
         {/* Small Hero Section - MOVED BELOW TOOL */}
-        <section className="w-full px-4 py-4 md:py-6 border-b border-slate-800 bg-slate-900/20">
+        <section className="w-full px-4 py-4 md:py-6" style={{
+          borderBottom: '1px solid var(--border-primary)',
+          backgroundColor: 'rgba(0, 0, 0, 0.1)'
+        }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2 bg-clip-text text-transparent" style={{
+                background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary), #06b6d4)'
+              }}>
                 {t.aiPoweredStockTool}
               </h1>
-              <p className="text-slate-400 text-sm md:text-base max-w-2xl">
+              <p className="text-sm md:text-base max-w-2xl" style={{ color: 'var(--text-muted)' }}>
                 {t.aiToolDescription}
               </p>
             </motion.div>
@@ -477,11 +512,14 @@ export default function StockAnalyzerPage() {
         </section>
 
         {/* What's Included Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
+        <section className="w-full px-4 py-16" style={{
+          borderBottom: '1px solid var(--border-primary)',
+          backgroundColor: 'rgba(0, 0, 0, 0.15)'
+        }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.whatsIncludedTitle}</h2>
-              <p className="text-slate-300 text-lg mb-12 max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-black mb-8 text-center" style={{ color: 'var(--text-primary)' }}>{t.whatsIncludedTitle}</h2>
+              <p className="text-lg mb-12 max-w-3xl mx-auto text-center" style={{ color: 'var(--text-secondary)' }}>
                 {t.whatsIncludedDesc}
               </p>
               
@@ -533,18 +571,24 @@ export default function StockAnalyzerPage() {
                     desc: t.featureAIVerdictDesc
                   }
                 ].map((item, idx) => (
-                  <motion.div key={idx} whileHover={{ y: -6 }} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:border-blue-500/30 transition group">
-                    <div className="mb-4 p-3 bg-slate-900 rounded-xl w-fit group-hover:bg-slate-800 transition">{item.icon}</div>
-                    <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
-                    <p className="text-slate-300 text-sm leading-relaxed">{item.desc}</p>
+                  <motion.div key={idx} whileHover={{ y: -6 }} className="rounded-2xl p-6 transition group" style={{
+                    backgroundColor: 'var(--card-bg)',
+                    border: '1px solid var(--border-primary)'
+                  }}>
+                    <div className="mb-4 p-3 rounded-xl w-fit transition" style={{ backgroundColor: 'var(--bg-tertiary)' }}>{item.icon}</div>
+                    <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.desc}</p>
                   </motion.div>
                 ))}
               </div>
 
               <div className="mt-12 text-center">
-                <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-2xl px-6 py-4">
-                  <Zap className="w-6 h-6 text-yellow-400 fill-yellow-400/20" />
-                  <p className="text-white font-bold">{t.professionalPdfExport}</p>
+                <div className="inline-flex items-center gap-3 rounded-2xl px-6 py-4" style={{
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1))',
+                  border: '1px solid rgba(59, 130, 246, 0.3)'
+                }}>
+                  <Zap className="w-6 h-6 fill-yellow-400/20" style={{ color: '#fbbf24' }} />
+                  <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{t.professionalPdfExport}</p>
                 </div>
               </div>
             </motion.div>
@@ -552,10 +596,10 @@ export default function StockAnalyzerPage() {
         </section>
 
         {/* How It Works Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800">
+        <section className="w-full px-4 py-16" style={{ borderBottom: '1px solid var(--border-primary)' }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.howAnalysisWorksTitle}</h2>
+              <h2 className="text-3xl md:text-4xl font-black mb-8 text-center" style={{ color: 'var(--text-primary)' }}>{t.howAnalysisWorksTitle}</h2>
               
               <div className="grid md:grid-cols-4 gap-6">
                 {[
@@ -564,10 +608,13 @@ export default function StockAnalyzerPage() {
                   { num: "3", title: t.howStep3Title, desc: t.howStep3Desc },
                   { num: "4", title: t.howStep4Title, desc: t.howStep4Desc }
                 ].map((step, idx) => (
-                  <div key={idx} className="relative bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:border-blue-500/30 transition">
-                    <div className="text-4xl font-black text-blue-400 mb-4">{step.num}</div>
-                    <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
-                    <p className="text-slate-400 text-sm">{step.desc}</p>
+                  <div key={idx} className="relative rounded-2xl p-6 transition" style={{
+                    backgroundColor: 'var(--card-bg)',
+                    border: '1px solid var(--border-primary)'
+                  }}>
+                    <div className="text-4xl font-black mb-4" style={{ color: 'var(--accent-primary)' }}>{step.num}</div>
+                    <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>{step.title}</h3>
+                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{step.desc}</p>
                   </div>
                 ))}
               </div>
@@ -576,10 +623,13 @@ export default function StockAnalyzerPage() {
         </section>
 
         {/* Why Use AI Analysis Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
+        <section className="w-full px-4 py-16" style={{
+          borderBottom: '1px solid var(--border-primary)',
+          backgroundColor: 'rgba(0, 0, 0, 0.15)'
+        }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.whyUseAITitle}</h2>
+              <h2 className="text-3xl md:text-4xl font-black mb-8 text-center" style={{ color: 'var(--text-primary)' }}>{t.whyUseAITitle}</h2>
               
               <div className="grid md:grid-cols-3 gap-8">
                 {[
@@ -599,10 +649,13 @@ export default function StockAnalyzerPage() {
                     desc: t.whyAI3Desc
                   }
                 ].map((item, idx) => (
-                  <motion.div key={idx} whileHover={{ y: -6 }} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 hover:border-blue-500/30 transition group">
-                    <div className="mb-4 p-4 bg-slate-900 rounded-xl w-fit group-hover:bg-slate-800 transition">{item.icon}</div>
-                    <h3 className="text-xl font-bold text-white mb-4">{item.title}</h3>
-                    <p className="text-slate-300 leading-relaxed">{item.desc}</p>
+                  <motion.div key={idx} whileHover={{ y: -6 }} className="rounded-2xl p-8 transition group" style={{
+                    backgroundColor: 'var(--card-bg)',
+                    border: '1px solid var(--border-primary)'
+                  }}>
+                    <div className="mb-4 p-4 rounded-xl w-fit transition" style={{ backgroundColor: 'var(--bg-tertiary)' }}>{item.icon}</div>
+                    <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
+                    <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.desc}</p>
                   </motion.div>
                 ))}
               </div>
@@ -611,25 +664,30 @@ export default function StockAnalyzerPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800">
+        <section className="w-full px-4 py-16" style={{ borderBottom: '1px solid var(--border-primary)' }}>
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">{t.frequentlyAskedQuestions}</h2>
+              <h2 className="text-3xl md:text-4xl font-black mb-12 text-center" style={{ color: 'var(--text-primary)' }}>{t.frequentlyAskedQuestions}</h2>
               
               <div className="space-y-4">
                 {faqItems.map((item, idx) => (
                   <motion.div
                     key={idx}
                     initial={false}
-                    className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden hover:border-blue-500/30 transition"
+                    className="rounded-xl overflow-hidden transition"
+                    style={{
+                      backgroundColor: 'var(--card-bg)',
+                      border: '1px solid var(--border-primary)'
+                    }}
                   >
                     <button
                       onClick={() => setExpandedFAQ(expandedFAQ === idx ? null : idx)}
-                      className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700/30 transition"
+                      className="w-full px-6 py-4 flex items-center justify-between transition"
+                      style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
                     >
-                      <h3 className="text-left font-bold text-white text-lg">{item.question}</h3>
+                      <h3 className="text-left font-bold text-lg" style={{ color: 'var(--text-primary)' }}>{item.question}</h3>
                       <motion.div animate={{ rotate: expandedFAQ === idx ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                        <ChevronDown className="w-5 h-5 text-slate-400" />
+                        <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
                       </motion.div>
                     </button>
                     
@@ -639,8 +697,11 @@ export default function StockAnalyzerPage() {
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 py-4 bg-slate-900/50 border-t border-slate-700">
-                        <p className="text-slate-300 leading-relaxed">{item.answer}</p>
+                      <div className="px-6 py-4" style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        borderTop: '1px solid var(--border-primary)'
+                      }}>
+                        <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.answer}</p>
                       </div>
                     </motion.div>
                   </motion.div>
@@ -651,17 +712,23 @@ export default function StockAnalyzerPage() {
         </section>
 
         {/* Risk Warning Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
+        <section className="w-full px-4 py-16" style={{
+          borderBottom: '1px solid var(--border-primary)',
+          backgroundColor: 'rgba(0, 0, 0, 0.15)'
+        }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <div className="bg-gradient-to-br from-orange-900/30 to-red-900/20 border border-orange-500/30 rounded-2xl p-8">
+              <div className="rounded-2xl p-8" style={{
+                background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(239, 68, 68, 0.1))',
+                border: '1px solid rgba(251, 146, 60, 0.3)'
+              }}>
                 <div className="flex items-start gap-4">
-                  <Shield className="w-8 h-8 text-orange-400 flex-shrink-0 mt-1" />
+                  <Shield className="w-8 h-8 flex-shrink-0 mt-1" style={{ color: '#fb923c' }} />
                   <div>
-                    <h2 className="text-2xl font-black text-white mb-4">{t.riskWarningTitle}</h2>
-                    <p className="text-slate-300 mb-4">{t.riskWarningP1}</p>
-                    <p className="text-slate-300 mb-4">{t.riskWarningP2}</p>
-                    <p className="text-slate-400 text-sm">{t.riskWarningDisclaimer}</p>
+                    <h2 className="text-2xl font-black mb-4" style={{ color: 'var(--text-primary)' }}>{t.riskWarningTitle}</h2>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{t.riskWarningP1}</p>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{t.riskWarningP2}</p>
+                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{t.riskWarningDisclaimer}</p>
                   </div>
                 </div>
               </div>
@@ -670,12 +737,18 @@ export default function StockAnalyzerPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="w-full px-4 py-16 bg-gradient-to-r from-blue-900/30 via-slate-900/50 to-purple-900/30">
+        <section className="w-full px-4 py-16" style={{
+          background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary))'
+        }}>
           <div className="max-w-4xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-2xl md:text-3xl font-black text-white mb-6">{t.readyToAnalyzeTitle}</h2>
-              <p className="text-slate-300 text-lg mb-8">{t.readyToAnalyzeDesc}</p>
-              <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg shadow-blue-900/30">
+              <h2 className="text-2xl md:text-3xl font-black mb-6" style={{ color: 'var(--text-primary)' }}>{t.readyToAnalyzeTitle}</h2>
+              <p className="text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>{t.readyToAnalyzeDesc}</p>
+              <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="inline-flex items-center gap-2 font-bold px-8 py-4 rounded-xl transition shadow-lg hover:shadow-xl" style={{
+                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                color: 'white',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+              }}>
                 <Search size={20} />
                 {t.backToAnalyzer}
               </a>

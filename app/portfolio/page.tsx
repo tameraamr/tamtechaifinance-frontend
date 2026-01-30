@@ -50,26 +50,116 @@ export default function PortfolioPage() {
   const { t } = useTranslation();
   const router = useRouter();
 
+  // All hooks must be called before any conditional returns
+  const [holdings, setHoldings] = useState<Holding[]>([]);
+  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTicker, setNewTicker] = useState('');
+  const [newShares, setNewShares] = useState('');
+  const [newQuantity, setNewQuantity] = useState('');
+  const [newAvgPrice, setNewAvgPrice] = useState('');
+  const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [sortBy, setSortBy] = useState<'symbol' | 'value' | 'change'>('value');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [performanceData, setPerformanceData] = useState<any[]>([]);
+  const [sectorData, setSectorData] = useState<{name: string, value: number, percentage: number, color: string}[]>([]);
+  const [marketData, setMarketData] = useState<{winners: any[], losers: any[], timestamp?: string} | null>(null);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [totalPnLPercent, setTotalPnLPercent] = useState(0);
+  const [total24hChange, setTotal24hChange] = useState(0);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTicker, setEditTicker] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState<{id: number, ticker: string} | null>(null);
+  const [currency, setCurrency] = useState('USD');
+  const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
+
+  // All hooks must be called before any conditional returns
+  const debouncedTicker = useDebounce(newTicker, 300);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchPortfolio();
+      fetchMarketData();
+      // Welcome toast
+      if (user) {
+        toast.success(`Welcome back! You have ${credits} credits`, { duration: 4000, icon: '👋' });
+      }
+    }
+  }, [isLoggedIn]);
+
+  // Fetch exchange rates
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await response.json();
+        setExchangeRates(data.rates);
+      } catch (error) {
+        console.error('Failed to fetch exchange rates:', error);
+        // Fallback rates if API fails
+        setExchangeRates({
+          USD: 1,
+          EUR: 0.92,
+          GBP: 0.79,
+          JPY: 149.50,
+          CAD: 1.35,
+          AUD: 1.52,
+          CHF: 0.87,
+          CNY: 7.24,
+          INR: 83.12
+        });
+      }
+    };
+    fetchRates();
+  }, []);
+
+  // Autocomplete for ticker
+  useEffect(() => {
+    const getSuggestions = async () => {
+      if (!debouncedTicker || debouncedTicker.length < 2) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/search-ticker/${debouncedTicker}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSuggestions(data);
+          setShowSuggestions(true);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+      }
+    };
+
+    getSuggestions();
+  }, [debouncedTicker]);
+
   // Paywall: Require 20+ credits for portfolio access
   if (!isLoggedIn || credits <= 20) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
         <Navbar />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md mx-auto text-center p-8 bg-slate-800 rounded-xl border border-slate-700"
+          className="max-w-md mx-auto text-center p-8 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-primary)]"
         >
           <Lock className="w-16 h-16 text-yellow-400 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-white mb-4">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
             Professional Portfolio Tracker
           </h1>
-          <p className="text-slate-300 mb-6">
+          <p className="text-[var(--text-secondary)] mb-6">
             Unlock your Professional Portfolio Tracker with advanced analytics, live charts, and performance insights.
           </p>
-          <div className="bg-slate-700 rounded-lg p-4 mb-6">
+          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4 mb-6">
             <p className="text-yellow-400 font-semibold">Requires 20+ credits</p>
-            <p className="text-slate-400 text-sm">Current balance: {credits} credits</p>
+            <p className="text-[var(--text-muted)] text-sm">Current balance: {credits} credits</p>
           </div>
           <button
             onClick={() => window.location.href = '/pricing'}
@@ -84,10 +174,6 @@ export default function PortfolioPage() {
   }
 
   // Rest of the portfolio page for premium users...
-  const [holdings, setHoldings] = useState<Holding[]>([]);
-  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [showAddForm, setShowAddForm] = useState(false);
 
   // Handler functions must be defined before any JSX usage
 
@@ -137,100 +223,31 @@ export default function PortfolioPage() {
     }
   };
   
-  // Add form state
-  const [newTicker, setNewTicker] = useState('');
-  const [newQuantity, setNewQuantity] = useState('');
-  const [newAvgPrice, setNewAvgPrice] = useState('');
-  const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  // Add form state (moved to top)
+  // const [newTicker, setNewTicker] = useState('');
+  // const [newQuantity, setNewQuantity] = useState('');
+  // const [newAvgPrice, setNewAvgPrice] = useState('');
+  // const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
+  // const [showSuggestions, setShowSuggestions] = useState(false);
   
-  // Edit ticker state
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editTicker, setEditTicker] = useState('');
+  // Edit ticker state (moved to top)
+  // const [editingId, setEditingId] = useState<number | null>(null);
+  // const [editTicker, setEditTicker] = useState('');
   
-  // Confirmation state
-  const [confirmDelete, setConfirmDelete] = useState<{id: number, ticker: string} | null>(null);
+  // Confirmation state (moved to top)
+  // const [confirmDelete, setConfirmDelete] = useState<{id: number, ticker: string} | null>(null);
   
-  // Currency selection
-  const [currency, setCurrency] = useState('USD');
-  const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
+  // Currency selection (moved to top)
+  // const [currency, setCurrency] = useState('USD');
+  // const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
   
-  // Sorting state
-  const [sortBy, setSortBy] = useState<'value' | 'change' | 'symbol'>('value');
+  // Sorting state (moved to top)
   
-  const debouncedTicker = useDebounce(newTicker, 300);
+  // Sector data for pie chart (moved to top)
   
-  // Sector data for pie chart
-  const [sectorData, setSectorData] = useState<{name: string, value: number, percentage: number, color: string}[]>([]);
+  // Market winners/losers data (moved to top)
   
-  // Market winners/losers data
-  const [marketData, setMarketData] = useState<{winners: any[], losers: any[], timestamp?: string} | null>(null);
-  
-  // KPI values
-  const [totalBalance, setTotalBalance] = useState(0);
-  const [totalPnLPercent, setTotalPnLPercent] = useState(0);
-  const [total24hChange, setTotal24hChange] = useState(0);
-  
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchPortfolio();
-      fetchMarketData();
-      // Welcome toast
-      if (user) {
-        toast.success(`Welcome back! You have ${credits} credits`, { duration: 4000, icon: '👋' });
-      }
-    }
-  }, [isLoggedIn]);
-  
-  // Fetch exchange rates
-  useEffect(() => {
-    const fetchRates = async () => {
-      try {
-        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const data = await response.json();
-        setExchangeRates(data.rates);
-      } catch (error) {
-        console.error('Failed to fetch exchange rates:', error);
-        // Fallback rates if API fails
-        setExchangeRates({
-          USD: 1,
-          EUR: 0.92,
-          GBP: 0.79,
-          JPY: 149.50,
-          CAD: 1.35,
-          AUD: 1.52,
-          CHF: 0.87,
-          CNY: 7.24,
-          INR: 83.12
-        });
-      }
-    };
-    fetchRates();
-  }, []);
-  
-  // Autocomplete for ticker
-  useEffect(() => {
-    const getSuggestions = async () => {
-      if (!debouncedTicker || debouncedTicker.length < 2) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/search-ticker/${debouncedTicker}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-          setShowSuggestions(true);
-        }
-      } catch (error) {
-        console.error('Search error:', error);
-      }
-    };
-
-    getSuggestions();
-  }, [debouncedTicker]);
+  // KPI values (moved to top)
   
   // Close suggestions on outside click
   useEffect(() => {
@@ -459,14 +476,17 @@ export default function PortfolioPage() {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       <Navbar />
 
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4 touch-manipulation"
+          className="flex items-center gap-2 transition-colors mb-4 touch-manipulation"
+          style={{ color: 'var(--text-secondary)', }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back</span>
@@ -479,10 +499,11 @@ export default function PortfolioPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
-            className="mb-8 bg-slate-900 border border-purple-500/30 rounded-xl p-6"
+            className="mb-8 rounded-xl p-6"
+            style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--accent-primary)', borderColor: 'var(--accent-primary)30' }}
           >
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <PieChart className="w-6 h-6 text-purple-400" />
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <PieChart className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
               Sector Distribution
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -508,26 +529,26 @@ export default function PortfolioPage() {
                     </Pie>
                     <Tooltip
                       formatter={(value: number | undefined) => value ? [formatPrice(value), 'Value'] : ['N/A', 'Value']}
-                      labelStyle={{ color: '#000' }}
-                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
+                      labelStyle={{ color: 'var(--text-primary)' }}
+                      contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: '8px', color: 'var(--text-primary)' }}
                     />
                   </RechartsPieChart>
                 </ResponsiveContainer>
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-white mb-3">Sector Breakdown</h3>
+                <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Sector Breakdown</h3>
                 {sectorData.map((sector, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-2 rounded-lg" style={{ backgroundColor: 'var(--bg-tertiary)50' }}>
                     <div className="flex items-center gap-2">
                       <div 
                         className="w-3 h-3 rounded-full" 
                         style={{ backgroundColor: sector.color }}
                       ></div>
-                      <span className="text-slate-200 text-sm">{sector.name}</span>
+                      <span style={{ color: 'var(--text-secondary)' }} className="text-sm">{sector.name}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-white font-medium">{formatPrice(sector.value)}</div>
-                      <div className="text-slate-400 text-xs">{sector.percentage.toFixed(1)}%</div>
+                      <div style={{ color: 'var(--text-primary)' }} className="font-medium">{formatPrice(sector.value)}</div>
+                      <div style={{ color: 'var(--text-muted)' }} className="text-xs">{sector.percentage.toFixed(1)}%</div>
                     </div>
                   </div>
                 ))}
@@ -546,54 +567,56 @@ export default function PortfolioPage() {
             className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
           >
             {/* Total Balance */}
-            <div className="bg-gradient-to-br from-blue-900/30 to-slate-900 border border-blue-500/30 rounded-xl p-6">
+            <div className="rounded-xl p-6" style={{ background: 'linear-gradient(to bottom right, var(--accent-primary)30, var(--bg-secondary))', border: '1px solid var(--accent-primary)30' }}>
               <div className="flex items-center gap-3 mb-2">
-                <DollarSign className="w-6 h-6 text-blue-400" />
-                <div className="text-slate-400 text-sm">Total Balance</div>
+                <DollarSign className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
+                <div style={{ color: 'var(--text-secondary)' }} className="text-sm">Total Balance</div>
               </div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 {formatPrice(totalBalance)}
               </div>
             </div>
 
             {/* Total P&L % */}
-            <div className={`border rounded-xl p-6 ${
-              totalPnLPercent >= 0
-                ? 'bg-gradient-to-br from-green-900/30 to-slate-900 border-green-500/30'
-                : 'bg-gradient-to-br from-red-900/30 to-slate-900 border-red-500/30'
-            }`}>
+            <div className="border rounded-xl p-6" style={{
+              background: totalPnLPercent >= 0 
+                ? 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.3), var(--bg-secondary))'
+                : 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.3), var(--bg-secondary))',
+              borderColor: totalPnLPercent >= 0 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'
+            }}>
               <div className="flex items-center gap-3 mb-2">
                 {totalPnLPercent >= 0 ? (
-                  <TrendingUp className="w-6 h-6 text-green-400" />
+                  <TrendingUp className="w-6 h-6" style={{ color: '#22c55e' }} />
                 ) : (
-                  <TrendingDown className="w-6 h-6 text-red-400" />
+                  <TrendingDown className="w-6 h-6" style={{ color: '#ef4444' }} />
                 )}
-                <div className="text-slate-400 text-sm">Total P&L</div>
+                <div style={{ color: 'var(--text-secondary)' }} className="text-sm">Total P&L</div>
               </div>
-              <div className={`text-2xl font-bold ${
-                totalPnLPercent >= 0 ? 'text-green-400' : 'text-red-400'
-              }`}>
+              <div className="text-2xl font-bold" style={{
+                color: totalPnLPercent >= 0 ? '#22c55e' : '#ef4444'
+              }}>
                 {totalPnLPercent >= 0 ? '+' : ''}{totalPnLPercent.toFixed(2)}%
               </div>
             </div>
 
             {/* 24h Change */}
-            <div className={`border rounded-xl p-6 ${
-              total24hChange >= 0
-                ? 'bg-gradient-to-br from-green-900/30 to-slate-900 border-green-500/30'
-                : 'bg-gradient-to-br from-red-900/30 to-slate-900 border-red-500/30'
-            }`}>
+            <div className="border rounded-xl p-6" style={{
+              background: total24hChange >= 0
+                ? 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.3), var(--bg-secondary))'
+                : 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.3), var(--bg-secondary))',
+              borderColor: total24hChange >= 0 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'
+            }}>
               <div className="flex items-center gap-3 mb-2">
                 {total24hChange >= 0 ? (
-                  <TrendingUp className="w-6 h-6 text-green-400" />
+                  <TrendingUp className="w-6 h-6" style={{ color: '#22c55e' }} />
                 ) : (
-                  <TrendingDown className="w-6 h-6 text-red-400" />
+                  <TrendingDown className="w-6 h-6" style={{ color: '#ef4444' }} />
                 )}
-                <div className="text-slate-400 text-sm">24h Change</div>
+                <div style={{ color: 'var(--text-secondary)' }} className="text-sm">24h Change</div>
               </div>
-              <div className={`text-2xl font-bold ${
-                total24hChange >= 0 ? 'text-green-400' : 'text-red-400'
-              }`}>
+              <div className="text-2xl font-bold" style={{
+                color: total24hChange >= 0 ? '#22c55e' : '#ef4444'
+              }}>
                 {total24hChange >= 0 ? '+' : ''}{formatPrice(total24hChange)}
               </div>
             </div>
@@ -606,22 +629,23 @@ export default function PortfolioPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="mb-8 bg-slate-900 border border-blue-500/30 rounded-xl p-6"
+            className="mb-8 rounded-xl p-6"
+            style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--accent-primary)30' }}
           >
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <PieChart className="w-6 h-6 text-blue-400" />
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <PieChart className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
               Portfolio Value by Ticker
             </h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                <YAxis stroke="#94a3b8" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-primary)" />
+                <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} />
+                <YAxis stroke="var(--text-muted)" fontSize={12} />
                 <Tooltip 
-                  contentStyle={{ background: '#1e293b', color: '#fff', border: '1px solid #a78bfa' }}
+                  contentStyle={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)' }}
                   formatter={(value: number | undefined) => value ? [formatPrice(value), 'Value'] : ['N/A', 'Value']}
                 />
-                <Bar dataKey="value" fill="#a78bfa" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="var(--accent-primary)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </motion.div>
@@ -632,8 +656,8 @@ export default function PortfolioPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-black text-white mb-2">📊 Portfolio Tracker</h1>
-          <p className="text-slate-400">Track your investments with live P&L calculations</p>
+          <h1 className="text-4xl font-black mb-2" style={{ color: 'var(--text-primary)' }}>📊 Portfolio Tracker</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>Track your investments with live P&L calculations</p>
         </motion.div>
         
         {/* Currency Selector */}
@@ -643,12 +667,13 @@ export default function PortfolioPage() {
           transition={{ delay: 0.1 }}
           className="mb-4 flex justify-end"
         >
-          <div className="bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-slate-400" />
+          <div className="bg-slate-800 border border-slate-700 rounded-lg p-2 flex items-center gap-2" style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-secondary)' }}>
+            <DollarSign className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
               className="bg-slate-700 text-white px-3 py-1.5 rounded border border-slate-600 focus:outline-none focus:border-blue-500 cursor-pointer"
+              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)', borderColor: 'var(--border-primary)' }}
             >
               <option value="USD">🇺🇸 USD</option>
               <option value="EUR">🇪🇺 EUR</option>
@@ -672,26 +697,26 @@ export default function PortfolioPage() {
             className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
           >
             {topWinner && (
-              <div className="bg-gradient-to-br from-green-900/30 to-slate-900 border border-green-500/30 rounded-xl p-5 flex items-center gap-4">
-                <div className="bg-green-600/20 p-3 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-green-400" />
+              <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.3), var(--bg-secondary))', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)' }}>
+                  <TrendingUp className="w-6 h-6" style={{ color: '#22c55e' }} />
                 </div>
                 <div className="flex-1">
-                  <div className="text-slate-400 text-xs mb-1">🏆 Top Performer</div>
-                  <div className="font-bold text-white text-lg">{topWinner.symbol}</div>
-                  <div className="text-green-400 font-semibold">+{topWinner.change_p.toFixed(2)}%</div>
+                  <div style={{ color: 'var(--text-secondary)' }} className="text-xs mb-1">🏆 Top Performer</div>
+                  <div style={{ color: 'var(--text-primary)' }} className="font-bold text-lg">{topWinner.symbol}</div>
+                  <div style={{ color: '#22c55e' }} className="font-semibold">+{topWinner.change_p.toFixed(2)}%</div>
                 </div>
               </div>
             )}
             {topLoser && (
-              <div className="bg-gradient-to-br from-red-900/30 to-slate-900 border border-red-500/30 rounded-xl p-5 flex items-center gap-4">
-                <div className="bg-red-600/20 p-3 rounded-lg">
-                  <TrendingDown className="w-6 h-6 text-red-400" />
+              <div className="rounded-xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.3), var(--bg-secondary))', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }}>
+                  <TrendingDown className="w-6 h-6" style={{ color: '#ef4444' }} />
                 </div>
                 <div className="flex-1">
-                  <div className="text-slate-400 text-xs mb-1">📉 Needs Attention</div>
-                  <div className="font-bold text-white text-lg">{topLoser.symbol}</div>
-                  <div className="text-red-400 font-semibold">{topLoser.change_p.toFixed(2)}%</div>
+                  <div style={{ color: 'var(--text-secondary)' }} className="text-xs mb-1">📉 Needs Attention</div>
+                  <div style={{ color: 'var(--text-primary)' }} className="font-bold text-lg">{topLoser.symbol}</div>
+                  <div style={{ color: '#ef4444' }} className="font-semibold">{topLoser.change_p.toFixed(2)}%</div>
                 </div>
               </div>
             )}
@@ -709,23 +734,30 @@ export default function PortfolioPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-slate-900 border border-red-500/30 rounded-xl p-6 max-w-md w-full"
+              className="rounded-xl p-6 max-w-md w-full"
+              style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid rgba(239, 68, 68, 0.3)' }}
             >
-              <h3 className="text-xl font-bold text-white mb-3">Remove {confirmDelete.ticker}?</h3>
-              <p className="text-slate-300 mb-6">Are you sure you want to remove {confirmDelete.ticker} from your portfolio?</p>
+              <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Remove {confirmDelete.ticker}?</h3>
+              <p style={{ color: 'var(--text-secondary)' }} className="mb-6">Are you sure you want to remove {confirmDelete.ticker} from your portfolio?</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => {
                     deleteHolding(confirmDelete.id, confirmDelete.ticker);
                     setConfirmDelete(null);
                   }}
-                  className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 rounded-lg font-semibold text-white transition-all"
+                  className="flex-1 px-4 py-2.5 rounded-lg font-semibold transition-all"
+                  style={{ backgroundColor: '#dc2626', color: 'white' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
                 >
                   Remove
                 </button>
                 <button
                   onClick={() => setConfirmDelete(null)}
-                  className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold text-white transition-all"
+                  className="flex-1 px-4 py-2.5 rounded-lg font-semibold transition-all"
+                  style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-accent)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-tertiary)'}
                 >
                   Cancel
                 </button>
@@ -740,14 +772,16 @@ export default function PortfolioPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-6"
+          style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-primary)' }}
         >
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Holdings</h2>
+            <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Holdings</h2>
             <div className="flex items-center gap-3">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'value' | 'change' | 'symbol')}
-                className="px-3 py-2 bg-slate-800 text-white border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 rounded-lg text-sm focus:outline-none cursor-pointer"
+                style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-secondary)' }}
               >
                 <option value="value">💰 Sort by Value</option>
                 <option value="change">📈 Sort by Change %</option>
@@ -755,7 +789,10 @@ export default function PortfolioPage() {
               </select>
               <button
                 onClick={() => setShowAddForm(!showAddForm)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold text-white flex items-center gap-2"
+                className="px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all"
+                style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
               >
                 <Plus className="w-5 h-5" />
                 Add Stock
@@ -765,7 +802,7 @@ export default function PortfolioPage() {
           
           {/* Add Form */}
           {showAddForm && (
-            <div className="bg-slate-800 rounded-lg p-4 mb-6">
+            <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
                 <div className="relative">
                   <input
@@ -779,12 +816,13 @@ export default function PortfolioPage() {
                     onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
                     onFocus={() => newTicker.length >= 2 && setShowSuggestions(true)}
                     onClick={(e) => e.stopPropagation()}
-                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                    className="w-full px-4 py-2 rounded-lg"
+                    style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', color: 'var(--text-primary)' }}
                   />
                   
                   {/* Autocomplete Suggestions */}
                   {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50 max-h-60 overflow-y-auto">
+                    <div className="absolute left-0 right-0 mt-2 rounded-lg shadow-2xl overflow-hidden z-50 max-h-60 overflow-y-auto" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-secondary)' }}>
                       {suggestions.map((s, i) => (
                         <button
                           key={i}
@@ -794,13 +832,16 @@ export default function PortfolioPage() {
                             setNewTicker(s.symbol);
                             setShowSuggestions(false);
                           }}
-                          className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-600/20 border-b border-slate-700 last:border-0 transition-all text-left"
+                          className="w-full flex items-center justify-between px-4 py-2.5 border-b last:border-0 transition-all text-left"
+                          style={{ borderColor: 'var(--border-primary)' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)20'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <div className="flex flex-col items-start">
-                            <span className="text-blue-400 font-bold text-sm">{s.symbol}</span>
-                            <span className="text-slate-400 text-xs truncate max-w-[200px]">{s.name}</span>
+                            <span style={{ color: 'var(--accent-primary)' }} className="font-bold text-sm">{s.symbol}</span>
+                            <span style={{ color: 'var(--text-secondary)' }} className="text-xs truncate max-w-[200px]">{s.name}</span>
                           </div>
-                          <Search size={12} className="text-slate-600" />
+                          <Search size={12} style={{ color: 'var(--text-muted)' }} />
                         </button>
                       ))}
                     </div>
@@ -811,7 +852,8 @@ export default function PortfolioPage() {
                   placeholder="Quantity"
                   value={newQuantity}
                   onChange={(e) => setNewQuantity(e.target.value)}
-                  className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                  className="px-4 py-2 rounded-lg"
+                  style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', color: 'var(--text-primary)' }}
                 />
                 <input
                   type="number"
@@ -819,50 +861,54 @@ export default function PortfolioPage() {
                   placeholder="Avg Buy Price (optional)"
                   value={newAvgPrice}
                   onChange={(e) => setNewAvgPrice(e.target.value)}
-                  className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                  className="px-4 py-2 rounded-lg"
+                  style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', color: 'var(--text-primary)' }}
                 />
                 <button
                   onClick={addHolding}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg font-semibold text-white"
+                  className="px-4 py-2 rounded-lg font-semibold transition-all"
+                  style={{ backgroundColor: '#22c55e', color: 'white' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#16a34a'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#22c55e'}
                 >
                   Add to Portfolio
                 </button>
               </div>
               
               {/* European ETF Guide */}
-              <div className="mt-3 bg-blue-900/20 border border-blue-500/30 rounded-lg p-3">
-                <div className="text-xs font-semibold text-blue-400 mb-2">📌 Popular European ETFs (for Revolut users):</div>
+              <div className="mt-3 rounded-lg p-3" style={{ backgroundColor: 'var(--accent-primary)15', border: '1px solid var(--accent-primary)30' }}>
+                <div style={{ color: 'var(--accent-primary)' }} className="text-xs font-semibold mb-2">📌 Popular European ETFs (for Revolut users):</div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                   <div>
-                    <span className="text-slate-400">VWCE (World):</span>
-                    <button onClick={() => setNewTicker('VWCE.AS')} className="ml-2 text-blue-400 hover:text-blue-300 underline">VWCE.AS</button>
+                    <span style={{ color: 'var(--text-secondary)' }}>VWCE (World):</span>
+                    <button onClick={() => setNewTicker('VWCE.AS')} style={{ color: 'var(--accent-primary)' }} className="ml-2 hover:underline">VWCE.AS</button>
                   </div>
                   <div>
-                    <span className="text-slate-400">S&P 500:</span>
-                    <button onClick={() => setNewTicker('CSPX.L')} className="ml-2 text-blue-400 hover:text-blue-300 underline">CSPX.L</button>
-                    <span className="text-slate-500"> or</span>
-                    <button onClick={() => setNewTicker('VUSA.L')} className="ml-1 text-blue-400 hover:text-blue-300 underline">VUSA.L</button>
+                    <span style={{ color: 'var(--text-secondary)' }}>S&P 500:</span>
+                    <button onClick={() => setNewTicker('CSPX.L')} style={{ color: 'var(--accent-primary)' }} className="ml-2 hover:underline">CSPX.L</button>
+                    <span style={{ color: 'var(--text-muted)' }}> or</span>
+                    <button onClick={() => setNewTicker('VUSA.L')} style={{ color: 'var(--accent-primary)' }} className="ml-1 hover:underline">VUSA.L</button>
                   </div>
                   <div>
-                    <span className="text-slate-400">Nasdaq-100:</span>
-                    <button onClick={() => setNewTicker('EQQQ.L')} className="ml-2 text-blue-400 hover:text-blue-300 underline">EQQQ.L</button>
-                    <span className="text-slate-500"> or</span>
-                    <button onClick={() => setNewTicker('NQSE.DE')} className="ml-1 text-blue-400 hover:text-blue-300 underline">NQSE.DE</button>
+                    <span style={{ color: 'var(--text-secondary)' }}>Nasdaq-100:</span>
+                    <button onClick={() => setNewTicker('EQQQ.L')} style={{ color: 'var(--accent-primary)' }} className="ml-2 hover:underline">EQQQ.L</button>
+                    <span style={{ color: 'var(--text-muted)' }}> or</span>
+                    <button onClick={() => setNewTicker('NQSE.DE')} style={{ color: 'var(--accent-primary)' }} className="ml-1 hover:underline">NQSE.DE</button>
                   </div>
                   <div>
-                    <span className="text-slate-400">MSCI USA:</span>
-                    <button onClick={() => setNewTicker('VUSA.AS')} className="ml-2 text-blue-400 hover:text-blue-300 underline">VUSA.AS</button>
+                    <span style={{ color: 'var(--text-secondary)' }}>MSCI USA:</span>
+                    <button onClick={() => setNewTicker('VUSA.AS')} style={{ color: 'var(--accent-primary)' }} className="ml-2 hover:underline">VUSA.AS</button>
                   </div>
                   <div>
-                    <span className="text-slate-400">Emerging Markets:</span>
-                    <button onClick={() => setNewTicker('VFEM.AS')} className="ml-2 text-blue-400 hover:text-blue-300 underline">VFEM.AS</button>
+                    <span style={{ color: 'var(--text-secondary)' }}>Emerging Markets:</span>
+                    <button onClick={() => setNewTicker('VFEM.AS')} style={{ color: 'var(--accent-primary)' }} className="ml-2 hover:underline">VFEM.AS</button>
                   </div>
                   <div>
-                    <span className="text-slate-400">Europe:</span>
-                    <button onClick={() => setNewTicker('VEUR.AS')} className="ml-2 text-blue-400 hover:text-blue-300 underline">VEUR.AS</button>
+                    <span style={{ color: 'var(--text-secondary)' }}>Europe:</span>
+                    <button onClick={() => setNewTicker('VEUR.AS')} style={{ color: 'var(--accent-primary)' }} className="ml-2 hover:underline">VEUR.AS</button>
                   </div>
                 </div>
-                <div className="text-xs text-slate-500 mt-2">
+                <div style={{ color: 'var(--text-muted)' }} className="text-xs mt-2">
                   💡 Can't find your ETF? Try: YourTicker.AS (Amsterdam), .DE (Germany), .L (London), .PA (Paris)
                 </div>
               </div>
@@ -871,11 +917,11 @@ export default function PortfolioPage() {
           
           {/* Table */}
           {loading ? (
-            <div className="text-center py-12 text-slate-400">Loading portfolio...</div>
+            <div className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>Loading portfolio...</div>
           ) : holdings.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
+            <div className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
               <PieChart className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-xl">Your portfolio is empty</p>
+              <p className="text-xl" style={{ color: 'var(--text-primary)' }}>Your portfolio is empty</p>
               <p className="text-sm mt-2">Click "Add Stock" to start tracking your investments</p>
             </div>
           ) : (

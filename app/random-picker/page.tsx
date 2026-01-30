@@ -221,14 +221,14 @@ export default function RandomPickerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0b1121] text-slate-100 font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col">
+    <div className="min-h-screen font-sans selection:bg-blue-500/30 overflow-x-hidden flex flex-col bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]" style={{ color: 'var(--text-primary)' }}>
       <Navbar guestTrials={guestTrials} />
 
       <main className="flex-1 w-full">
         {/* Top Back Button */}
         <div className="w-full px-4 pt-4 pb-0">
           <div className="max-w-6xl mx-auto">
-            <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors group touch-manipulation">
+            <button onClick={() => router.back()} className="inline-flex items-center gap-2 transition-colors group touch-manipulation" style={{ color: 'var(--text-secondary)' }}>
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
               Back to Home
             </button>
@@ -236,15 +236,19 @@ export default function RandomPickerPage() {
         </div>
 
         {/* Main Tool Section - MOVED UP */}
-        <section className="w-full px-4 py-0 md:py-2 bg-gradient-to-b from-slate-900/50 to-[#0b1121]">
+        <section className="w-full px-4 py-0 md:py-2" style={{ background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.05), var(--bg-primary))' }}>
           <div className="max-w-6xl mx-auto">
             {authError && !showAuthModal && (
-              <div className="mb-6 max-w-2xl mx-auto bg-red-500/10 border border-red-500/50 p-4 rounded-xl flex items-center justify-between gap-3">
+              <div className="mb-6 max-w-2xl mx-auto p-4 rounded-xl flex items-center justify-between gap-3" style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#fecaca'
+              }}>
                 <div className="flex items-center gap-3">
-                  <AlertTriangle className="text-red-500 w-5 h-5" />
-                  <span className="text-red-200 text-sm font-bold">{authError}</span>
+                  <AlertTriangle className="w-5 h-5" style={{ color: '#ef4444' }} />
+                  <span className="text-sm font-bold">{authError}</span>
                 </div>
-                <button onClick={() => setAuthError("")} className="text-red-400 hover:text-white">
+                <button onClick={() => setAuthError("")} className="hover:text-white" style={{ color: '#fca5a5' }}>
                   <XCircle className="w-5 h-5" />
                 </button>
               </div>
@@ -252,13 +256,19 @@ export default function RandomPickerPage() {
 
             {/* Slot Machine Display */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="max-w-2xl mx-auto mb-6">
-              <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900/20 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+              <div className="relative rounded-3xl p-8 shadow-2xl" style={{
+                background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary), rgba(59, 130, 246, 0.1))',
+                border: '1px solid var(--border-primary)'
+              }}>
                 <div className="absolute -left-24 -top-24 w-64 h-64 bg-blue-600/10 blur-3xl" aria-hidden="true" />
                 <div className="absolute -right-24 bottom-0 w-72 h-72 bg-purple-500/10 blur-3xl" aria-hidden="true" />
 
                 <div className="relative z-10">
                   {/* Ticker Display */}
-                  <div className="bg-slate-950/80 border border-purple-500/30 rounded-2xl p-6 mb-6 text-center relative">
+                  <div className="rounded-2xl p-6 mb-6 text-center relative" style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                    border: '1px solid rgba(168, 85, 247, 0.3)'
+                  }}>
                     {selectedTicker && !rolling && (
                       <button
                         onClick={() => {
@@ -267,18 +277,24 @@ export default function RandomPickerPage() {
                           setDisplayName("");
                           setDisplayPrice(undefined);
                         }}
-                        className="absolute top-4 right-4 text-slate-400 hover:text-white hover:bg-slate-800 p-2 rounded-lg transition"
+                        className="absolute top-4 right-4 hover:bg-slate-800 p-2 rounded-lg transition"
+                        style={{ color: 'var(--text-secondary)' }}
                         title="Reset"
                       >
                         <XCircle className="w-5 h-5" />
                       </button>
                     )}
-                    <p className="text-slate-500 text-xs uppercase tracking-widest mb-2">{t.yourTicker}</p>
-                    <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 font-mono mb-4">
+                    <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>{t.yourTicker}</p>
+                    <div className="text-6xl font-black font-mono mb-4" style={{
+                      background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}>
                       {displaySymbol}
                     </div>
-                    {displayName && <p className="text-slate-300 text-lg font-semibold mb-2">{displayName}</p>}
-                    {displayPrice && <p className="text-emerald-400 text-2xl font-bold">${displayPrice.toFixed(2)}</p>}
+                    {displayName && <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>{displayName}</p>}
+                    {displayPrice && <p className="text-2xl font-bold" style={{ color: 'var(--accent-primary)' }}>${displayPrice.toFixed(2)}</p>}
                   </div>
 
                   {/* Spin Button */}
@@ -287,7 +303,13 @@ export default function RandomPickerPage() {
                     disabled={rolling || loading}
                     whileHover={{ scale: rolling || loading ? 1 : 1.02 }}
                     whileTap={{ scale: rolling || loading ? 1 : 0.98 }}
-                    className="w-full bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-size-200 hover:bg-pos-100 text-white font-bold py-4 rounded-xl text-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-purple-900/50 hover:shadow-purple-500/50 relative overflow-hidden group"
+                    className="w-full font-bold py-4 rounded-xl text-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-500/50 relative overflow-hidden group"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary))',
+                      backgroundSize: '200% 200%',
+                      color: 'var(--text-primary)',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                    }}
                   >
                     {/* Shimmer effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -315,20 +337,33 @@ export default function RandomPickerPage() {
                 <button
                   onClick={handleAnalyze}
                   disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-105 disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
+                  className="flex-1 font-bold py-3 rounded-xl transition-all transform hover:scale-105 disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2 shadow-lg"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                    color: 'var(--text-primary)',
+                    boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.3)'
+                  }}
                 >
                   <Brain className="w-5 h-5" />
                   {t.analyzeOneCredit}
                 </button>
                 <button
                   onClick={() => router.push(`/news?ticker=${selectedTicker}`)}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+                  className="flex-1 py-3 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+                  style={{
+                    backgroundColor: 'var(--bg-tertiary)',
+                    color: 'var(--text-secondary)'
+                  }}
                 >
                   {t.seeNews}
                 </button>
                 <button
                   onClick={() => setSelectedTicker(null)}
-                  className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+                  className="py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+                  style={{
+                    backgroundColor: 'var(--bg-secondary)',
+                    color: 'var(--text-muted)'
+                  }}
                   title={t.hideOptions}
                 >
                   ✕
@@ -344,7 +379,10 @@ export default function RandomPickerPage() {
                 transition={{ duration: 0.5 }}
                 className="max-w-2xl mx-auto"
               >
-                <div className="bg-gradient-to-br from-blue-900/40 via-purple-900/40 to-blue-900/40 border-2 border-blue-500/30 rounded-2xl p-8 text-center relative overflow-hidden">
+                <div className="rounded-2xl p-8 text-center relative overflow-hidden" style={{
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2), rgba(59, 130, 246, 0.2))',
+                  border: '2px solid rgba(59, 130, 246, 0.3)'
+                }}>
                   {/* Animated background gradient */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10 animate-pulse" />
                   
@@ -376,12 +414,17 @@ export default function RandomPickerPage() {
                     </div>
 
                     {/* Loading text */}
-                    <h3 className="text-2xl font-bold text-white mb-3">
-                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                    <h3 className="text-2xl font-bold mb-3">
+                      <span style={{
+                        background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      }}>
                         AI Analysis in Progress
                       </span>
                     </h3>
-                    <p className="text-slate-300 text-sm mb-4">
+                    <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
                       Analyzing {selectedTicker} with advanced AI algorithms...
                     </p>
 
@@ -394,7 +437,7 @@ export default function RandomPickerPage() {
                         className="flex items-center gap-3 text-left"
                       >
                         <CheckCircle className="w-5 h-5 text-green-400" />
-                        <span className="text-slate-300 text-sm">Fetching real-time market data</span>
+                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Fetching real-time market data</span>
                       </motion.div>
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -402,8 +445,8 @@ export default function RandomPickerPage() {
                         transition={{ delay: 0.6 }}
                         className="flex items-center gap-3 text-left"
                       >
-                        <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-slate-300 text-sm">Running AI financial models</span>
+                        <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--accent-primary)', borderTopColor: 'transparent' }}></div>
+                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Running AI financial models</span>
                       </motion.div>
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -411,8 +454,8 @@ export default function RandomPickerPage() {
                         transition={{ delay: 1.0 }}
                         className="flex items-center gap-3 text-left opacity-50"
                       >
-                        <div className="w-5 h-5 border-2 border-slate-600 rounded-full"></div>
-                        <span className="text-slate-400 text-sm">Generating comprehensive report</span>
+                        <div className="w-5 h-5 border-2 rounded-full" style={{ borderColor: 'var(--border-primary)' }}></div>
+                        <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Generating comprehensive report</span>
                       </motion.div>
                     </div>
                   </div>
@@ -423,13 +466,21 @@ export default function RandomPickerPage() {
         </section>
 
         {/* Small Hero Section - MOVED BELOW TOOL */}
-        <section className="w-full px-4 py-4 md:py-6 border-b border-slate-800 bg-slate-900/20">
+        <section className="w-full px-4 py-4 md:py-6" style={{
+          borderBottom: '1px solid var(--border-primary)',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)'
+        }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{
+                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), #06b6d4)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
                 {t.randomPickerTitle}
               </h1>
-              <p className="text-slate-400 text-sm md:text-base max-w-2xl">
+              <p className="text-sm md:text-base max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
                 {t.randomPickerDesc}
               </p>
             </motion.div>
@@ -437,11 +488,14 @@ export default function RandomPickerPage() {
         </section>
 
         {/* How It Works Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
+        <section className="w-full px-4 py-16" style={{
+          borderBottom: '1px solid var(--border-primary)',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)'
+        }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.howItWorksTitle}</h2>
-              <p className="text-slate-300 text-lg mb-8 max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-black mb-8 text-center" style={{ color: 'var(--text-primary)' }}>{t.howItWorksTitle}</h2>
+              <p className="text-lg mb-8 max-w-3xl mx-auto text-center" style={{ color: 'var(--text-secondary)' }}>
                 {t.howItWorksDesc}
               </p>
               
@@ -452,10 +506,13 @@ export default function RandomPickerPage() {
                   { num: "3", title: t.step3Title, desc: t.step3Desc },
                   { num: "4", title: t.step4Title, desc: t.step4Desc }
                 ].map((step, idx) => (
-                  <div key={idx} className="relative bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:border-blue-500/30 transition">
-                    <div className="text-4xl font-black text-blue-400 mb-4">{step.num}</div>
-                    <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
-                    <p className="text-slate-400 text-sm">{step.desc}</p>
+                  <div key={idx} className="relative rounded-2xl p-6 hover:border-blue-500/30 transition" style={{
+                    backgroundColor: 'var(--card-bg)',
+                    border: '1px solid var(--border-primary)'
+                  }}>
+                    <div className="text-4xl font-black mb-4" style={{ color: 'var(--accent-primary)' }}>{step.num}</div>
+                    <h3 className="font-bold text-lg mb-2" style={{ color: 'var(--text-primary)' }}>{step.title}</h3>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{step.desc}</p>
                   </div>
                 ))}
               </div>
@@ -464,33 +521,38 @@ export default function RandomPickerPage() {
         </section>
 
         {/* Why Use Random Stock Picker Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800">
+        <section className="w-full px-4 py-16" style={{ borderBottom: '1px solid var(--border-primary)' }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-8 text-center">{t.whyUseTitle}</h2>
+              <h2 className="text-3xl md:text-4xl font-black mb-8 text-center" style={{ color: 'var(--text-primary)' }}>{t.whyUseTitle}</h2>
               
               <div className="grid md:grid-cols-3 gap-8">
                 {[
                   {
-                    icon: <Brain className="w-12 h-12 text-blue-400" />,
+                    icon: <Brain className="w-12 h-12" style={{ color: 'var(--accent-primary)' }} />,
                     title: t.whyUse1Title,
                     desc: t.whyUse1Desc
                   },
                   {
-                    icon: <TrendingUp className="w-12 h-12 text-green-400" />,
+                    icon: <TrendingUp className="w-12 h-12" style={{ color: 'var(--accent-primary)' }} />,
                     title: t.whyUse2Title,
                     desc: t.whyUse2Desc
                   },
                   {
-                    icon: <Lightbulb className="w-12 h-12 text-yellow-400" />,
+                    icon: <Lightbulb className="w-12 h-12" style={{ color: 'var(--accent-primary)' }} />,
                     title: t.whyUse3Title,
                     desc: t.whyUse3Desc
                   }
                 ].map((item, idx) => (
-                  <motion.div key={idx} whileHover={{ y: -6 }} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 hover:border-blue-500/30 transition group">
-                    <div className="mb-4 p-4 bg-slate-900 rounded-xl w-fit group-hover:bg-slate-800 transition">{item.icon}</div>
-                    <h3 className="text-xl font-bold text-white mb-4">{item.title}</h3>
-                    <p className="text-slate-300 leading-relaxed">{item.desc}</p>
+                  <motion.div key={idx} whileHover={{ y: -6 }} className="rounded-2xl p-8 hover:border-blue-500/30 transition group" style={{
+                    backgroundColor: 'var(--card-bg)',
+                    border: '1px solid var(--border-primary)'
+                  }}>
+                    <div className="mb-4 p-4 w-fit rounded-xl transition" style={{
+                      backgroundColor: 'var(--bg-tertiary)'
+                    }}>{item.icon}</div>
+                    <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{item.title}</h3>
+                    <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.desc}</p>
                   </motion.div>
                 ))}
               </div>
@@ -499,21 +561,27 @@ export default function RandomPickerPage() {
         </section>
 
         {/* Risk Warning Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800 bg-slate-900/30">
+        <section className="w-full px-4 py-16" style={{
+          borderBottom: '1px solid var(--border-primary)',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)'
+        }}>
           <div className="max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <div className="bg-gradient-to-br from-orange-900/30 to-red-900/20 border border-orange-500/30 rounded-2xl p-8">
+              <div className="rounded-2xl p-8" style={{
+                background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(239, 68, 68, 0.1))',
+                border: '1px solid rgba(251, 146, 60, 0.3)'
+              }}>
                 <div className="flex items-start gap-4">
-                  <Shield className="w-8 h-8 text-orange-400 flex-shrink-0 mt-1" />
+                  <Shield className="w-8 h-8 flex-shrink-0 mt-1" style={{ color: '#fb923c' }} />
                   <div>
-                    <h2 className="text-2xl font-black text-white mb-4">{t.randomPickerDisclaimerTitle}</h2>
-                    <p className="text-slate-300 mb-4">
+                    <h2 className="text-2xl font-black mb-4" style={{ color: 'var(--text-primary)' }}>{t.randomPickerDisclaimerTitle}</h2>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
                       {t.randomPickerDisclaimerP1}
                     </p>
-                    <p className="text-slate-300 mb-4">
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
                       {t.randomPickerDisclaimerP2}
                     </p>
-                    <p className="text-slate-400 text-sm">
+                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                       {t.randomPickerDisclaimerP3}
                     </p>
                   </div>
@@ -524,25 +592,29 @@ export default function RandomPickerPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="w-full px-4 py-16 border-b border-slate-800">
+        <section className="w-full px-4 py-16" style={{ borderBottom: '1px solid var(--border-primary)' }}>
           <div className="max-w-4xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">{t.randomPickerFAQTitle}</h2>
+              <h2 className="text-3xl md:text-4xl font-black mb-12 text-center" style={{ color: 'var(--text-primary)' }}>{t.randomPickerFAQTitle}</h2>
               
               <div className="space-y-4">
                 {faqItems.map((item, idx) => (
                   <motion.div
                     key={idx}
                     initial={false}
-                    className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden hover:border-blue-500/30 transition"
+                    className="rounded-xl overflow-hidden hover:border-blue-500/30 transition"
+                    style={{
+                      backgroundColor: 'var(--card-bg)',
+                      border: '1px solid var(--border-primary)'
+                    }}
                   >
                     <button
                       onClick={() => setExpandedFAQ(expandedFAQ === idx ? null : idx)}
                       className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-700/30 transition"
                     >
-                      <h3 className="text-left font-bold text-white text-lg">{item.question}</h3>
+                      <h3 className="text-left font-bold text-lg" style={{ color: 'var(--text-primary)' }}>{item.question}</h3>
                       <motion.div animate={{ rotate: expandedFAQ === idx ? 180 : 0 }} transition={{ duration: 0.3 }}>
-                        <ChevronDown className="w-5 h-5 text-slate-400" />
+                        <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
                       </motion.div>
                     </button>
                     
@@ -552,8 +624,11 @@ export default function RandomPickerPage() {
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 py-4 bg-slate-900/50 border-t border-slate-700">
-                        <p className="text-slate-300 leading-relaxed">{item.answer}</p>
+                      <div className="px-6 py-4" style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        borderTop: '1px solid var(--border-primary)'
+                      }}>
+                        <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.answer}</p>
                       </div>
                     </motion.div>
                   </motion.div>
@@ -564,12 +639,18 @@ export default function RandomPickerPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="w-full px-4 py-16 bg-gradient-to-r from-blue-900/30 via-slate-900/50 to-purple-900/30">
+        <section className="w-full px-4 py-16" style={{
+          background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary))'
+        }}>
           <div className="max-w-4xl mx-auto text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
-              <h2 className="text-2xl md:text-3xl font-black text-white mb-6">Ready to Discover Your Next Stock?</h2>
-              <p className="text-slate-300 text-lg mb-8">Start spinning above. Pick randomly, analyze intelligently, invest wisely.</p>
-              <Link href="#" className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg shadow-blue-900/30">
+              <h2 className="text-2xl md:text-3xl font-black mb-6" style={{ color: 'var(--text-primary)' }}>Ready to Discover Your Next Stock?</h2>
+              <p className="text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>Start spinning above. Pick randomly, analyze intelligently, invest wisely.</p>
+              <Link href="#" className="inline-flex items-center gap-2 font-bold px-8 py-4 rounded-xl transition shadow-lg hover:shadow-xl" style={{
+                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                color: 'white',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+              }}>
                 <TrendingUp size={20} />
                 Back to the Spinner
               </Link>

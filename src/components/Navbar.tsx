@@ -18,29 +18,29 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="border-b border-slate-800 bg-[#0b1121]/95 backdrop-blur-xl sticky top-0 z-50">
+    <nav className="border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/95 backdrop-blur-xl sticky top-0 z-50 shadow-navbar-premium">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* Main Navbar */}
         <div className="h-16 flex items-center justify-between">
           {/* Left: Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
-            <BarChart3 className="text-blue-500 w-5 h-5 md:w-6 md:h-6" />
+            <BarChart3 className="w-5 h-5 md:w-6 md:h-6" style={{ color: 'var(--accent-primary)' }} />
             <span className="font-bold text-base md:text-xl tracking-tight">
               <span className="hidden sm:inline">TamtechAI </span>
               <span className="sm:hidden">T</span>
-              <span className="text-blue-500">Pro</span>
+              <span style={{ color: 'var(--accent-primary)' }}>Pro</span>
             </span>
           </Link>
 
           {/* Center: Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
-            <Link href="/stock-analyzer" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
+            <Link href="/stock-analyzer" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
               {t.analyzer}
             </Link>
-            <Link href="/random-picker" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
+            <Link href="/random-picker" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
               {t.randomPicker}
             </Link>
-            <Link href="/news" className="text-xs font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-600/50 px-4 py-2 rounded-lg transition-all duration-300 text-slate-300 hover:text-blue-300">
+            <Link href="/news" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
               {t.news}
             </Link>
           </div>
@@ -72,21 +72,21 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             
             {/* Credits Display */}
             {isLoading ? (
-              <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-400">
-                <Star className="w-3 h-3 text-slate-500 animate-pulse" />
+              <div className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-muted)]">
+                <Star className="w-3 h-3 text-[var(--text-muted)] animate-pulse" />
                 <span className="animate-pulse">...</span>
               </div>
             ) : isLoggedIn ? (
               <Link
                 href="/dashboard"
-                className="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-300 hover:border-blue-500/50 transition-all cursor-pointer"
+                className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/50 transition-all cursor-pointer"
                 title="View dashboard"
               >
                 <Star className="w-3 h-3 text-yellow-400" />
                 <span>{credits}</span>
               </Link>
             ) : (
-              <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-slate-400">
+              <div className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-muted)]">
                 <User className="w-3 h-3" />
                 <span>{guestTrials ?? 0}</span>
               </div>
@@ -97,12 +97,12 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
 
             {/* Auth Buttons - Desktop */}
             {isLoading ? (
-              <div className="hidden md:flex items-center gap-1.5 bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-xs font-bold text-slate-400">
+              <div className="hidden md:flex items-center gap-1.5 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-4 py-2 rounded-lg text-xs font-bold text-[var(--text-muted)]">
                 <User className="w-3.5 h-3.5 animate-pulse" />
                 <span className="animate-pulse">...</span>
               </div>
             ) : isLoggedIn ? (
-              <button onClick={logout} className="hidden md:block p-2 text-slate-400 hover:text-red-400 transition-colors" title="Logout">
+              <button onClick={logout} className="hidden md:block p-2 text-[var(--text-muted)] hover:text-red-400 transition-colors" title="Logout">
                 <LogOut className="w-5 h-5" />
               </button>
             ) : (

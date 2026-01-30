@@ -120,7 +120,7 @@ const formatMetricValue = (value: any, key?: string) => {
   return Number(value).toFixed(2);
 };
 
-const getVerdictColor = (v: string) => v?.includes("BUY") ? "text-emerald-400 border-emerald-500/50 bg-emerald-500/10" : v?.includes("SELL") ? "text-red-400 border-red-500/50 bg-red-500/10" : "text-yellow-400 border-yellow-500/50 bg-yellow-500/10";
+const getVerdictColor = (v: string) => v?.includes("BUY") ? "text-[#10b981] border-[#10b981]/50 bg-[#10b981]/10" : v?.includes("SELL") ? "text-[#ef4444] border-[#ef4444]/50 bg-[#ef4444]/10" : "text-[#f59e0b] border-[#f59e0b]/50 bg-[#f59e0b]/10";
 
 const calculateRangePos = (c: number, l: number, h: number) => Math.min(Math.max(((c-l)/(h-l))*100, 0), 100);
 
@@ -435,37 +435,43 @@ const handleDownloadPDF = async () => {
   // SECURITY: Enhanced loading state - ensure auth checks complete before showing any content
   if (loading || !authChecked || authLoading) {
     return (
-      <div className="min-h-screen bg-[#0b1121] text-slate-100">
+      <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]" style={{ color: 'var(--text-primary)' }}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
           {/* Progress Indicator */}
           <div className="flex flex-col items-center mb-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-            <div className="w-full max-w-xs bg-slate-800 rounded-full h-2 overflow-hidden mb-4">
-              <div className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 animate-pulse" style={{width: `${((progressMessageIndex + 1) / analysisProgressMessages.length) * 100}%`}}></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 mb-4" style={{ borderColor: 'var(--accent-primary)' }}></div>
+            <div className="w-full max-w-xs rounded-full h-2 overflow-hidden mb-4" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
+              <div className="h-full animate-pulse" style={{
+                background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary))',
+                width: `${((progressMessageIndex + 1) / analysisProgressMessages.length) * 100}%`
+              }}></div>
             </div>
-            <p className="text-blue-400 text-sm font-bold animate-pulse text-center px-6 max-w-md leading-relaxed">
+            <p className="text-sm font-bold animate-pulse text-center px-6 max-w-md leading-relaxed" style={{ color: 'var(--accent-primary)' }}>
               {analysisProgressMessages[progressMessageIndex]}
             </p>
           </div>
 
           {/* Header Skeleton */}
           <div className="flex justify-end mb-6">
-            <div className="h-8 w-24 bg-slate-800 rounded-lg animate-pulse"></div>
+            <div className="h-8 w-24 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
           </div>
 
-          <div className="p-3 md:p-6 bg-[#0b1121] rounded-3xl border border-slate-800/50">
+          <div className="p-3 md:p-6 rounded-3xl" style={{
+            backgroundColor: 'var(--bg-primary)',
+            border: '1px solid var(--border-primary)'
+          }}>
             {/* Report Header */}
-            <div className="mb-6 border-b border-slate-800 pb-6 flex flex-wrap justify-between items-center gap-4">
+            <div className="mb-6 pb-6 flex flex-wrap justify-between items-center gap-4" style={{ borderBottom: '1px solid var(--border-primary)' }}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-800 rounded-lg animate-pulse"></div>
+                <div className="w-10 h-10 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
                 <div>
-                  <div className="h-6 w-32 bg-slate-800 rounded animate-pulse mb-1"></div>
-                  <div className="h-3 w-24 bg-slate-700 rounded animate-pulse"></div>
+                  <div className="h-6 w-32 rounded animate-pulse mb-1" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
+                  <div className="h-3 w-24 rounded animate-pulse" style={{ backgroundColor: 'var(--bg-secondary)' }}></div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="h-6 w-16 bg-slate-800 rounded animate-pulse mb-1"></div>
-                <div className="h-3 w-20 bg-slate-700 rounded animate-pulse"></div>
+                <div className="h-6 w-16 rounded animate-pulse mb-1" style={{ backgroundColor: 'var(--bg-tertiary)' }}></div>
+                <div className="h-3 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--bg-secondary)' }}></div>
               </div>
             </div>
 
@@ -560,89 +566,119 @@ const handleDownloadPDF = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b1121] text-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]" style={{ color: 'var(--text-primary)' }}>
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
         <div className="flex justify-between items-center mb-6">
-          <button onClick={handleBack} className="flex items-center gap-2 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold border border-slate-600/50 transition">
+          <button onClick={handleBack} className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition" style={{
+            backgroundColor: 'var(--card-bg)',
+            color: 'var(--text-secondary)',
+            border: '1px solid var(--border-primary)'
+          }}>
             <ArrowLeft className="w-3 h-3 md:w-4 md:h-4" /> Back to Search
           </button>
-<button
-  onClick={handleDownloadPDF}
-  disabled={isGeneratingPDF} // تعطيل الزر تماماً أثناء التوليد
-  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-70 disabled:cursor-wait shadow-lg shadow-blue-500/20"
->
-  {isGeneratingPDF ? (
-    <>
-      {/* دائرة التحميل المتحركة */}
-      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-      <span>{isRTL ? "جاري التوليد..." : "Generating..."}</span>
-    </>
-  ) : (
-    <>
-      <Download className="w-4 h-4" />
-      <span>{isRTL ? "تحميل تقرير PDF" : "Download PDF Report"}</span>
-    </>
-  )}
-</button>
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPDF}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-70 disabled:cursor-wait shadow-lg"
+            style={{
+              background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+              color: 'white',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+            }}
+          >
+            {isGeneratingPDF ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>{isRTL ? "جاري التوليد..." : "Generating..."}</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span>{isRTL ? "تحميل تقرير PDF" : "Download PDF Report"}</span>
+              </>
+            )}
+          </button>
         </div>
 
-        <div id="report-content" className="p-3 md:p-6 bg-[#0b1121] rounded-3xl border border-slate-800/50">
-          <div className="mb-6 border-b border-slate-800 pb-6 flex flex-wrap justify-between items-center gap-4">
+        <div id="report-content" className="p-3 md:p-6 rounded-3xl" style={{
+          backgroundColor: 'var(--bg-primary)',
+          border: '1px solid var(--border-primary)'
+        }}>
+          <div className="mb-6 pb-6 flex flex-wrap justify-between items-center gap-4" style={{ borderBottom: '1px solid var(--border-primary)' }}>
             <div className="flex items-center gap-3">
-              <BarChart3 className="text-blue-500 w-7 h-7 md:w-10 md:h-10" />
+              <BarChart3 className="w-7 h-7 md:w-10 md:h-10" style={{ color: 'var(--accent-primary)' }} />
               <div>
-                <h1 className="text-xl md:text-3xl font-black text-white tracking-tighter">TamtechAI <span className="text-blue-500">Pro</span></h1>
-                <p className="text-slate-500 text-[10px] md:text-xs uppercase font-bold tracking-widest">{t.reportTitle}</p>
+                <h1 className="text-xl md:text-3xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>TamtechAI <span style={{ color: 'var(--accent-primary)' }}>Pro</span></h1>
+                <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest" style={{ color: 'var(--text-muted)' }}>{t.reportTitle}</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-slate-200 font-mono font-black text-xl md:text-3xl">{result.ticker}</div>
-              <div className="text-slate-500 text-[10px] md:text-xs font-bold">{new Date().toLocaleDateString()}</div>
+              <div className="font-mono font-black text-xl md:text-3xl" style={{ color: 'var(--text-primary)' }}>{result.ticker}</div>
+              <div className="text-[10px] md:text-xs font-bold" style={{ color: 'var(--text-muted)' }}>{new Date().toLocaleDateString()}</div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
-            <div className="lg:col-span-1 bg-slate-800/40 border border-slate-700/50 rounded-2xl p-4 md:p-8 flex flex-col justify-center">
+            <div className="lg:col-span-1 rounded-2xl p-4 md:p-8 flex flex-col justify-center" style={{
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid var(--border-primary)'
+            }}>
               <div className="flex justify-between items-center mb-4">
-                <span className="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg text-xs md:text-sm font-mono font-bold border border-blue-500/20">{result.ticker}</span>
-                {result.data.recommendationKey !== "none" && <span className="text-[10px] uppercase font-black text-blue-500">{t.analyst}: {result.data.recommendationKey.replace('_', ' ')}</span>}
+                <span className="px-3 py-1 rounded-lg text-xs md:text-sm font-mono font-bold" style={{
+                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                  color: 'var(--accent-primary)',
+                  border: '1px solid rgba(59, 130, 246, 0.2)'
+                }}>{result.ticker}</span>
+                {result.data.recommendationKey !== "none" && <span className="text-[10px] uppercase font-black" style={{ color: 'var(--accent-primary)' }}>{t.analyst}: {result.data.recommendationKey.replace('_', ' ')}</span>}
               </div>
-              <h2 className="text-2xl md:text-4xl font-black mb-1 text-white leading-tight">{result.data.companyName}</h2>
+              <h2 className="text-2xl md:text-4xl font-black mb-1 leading-tight" style={{ color: 'var(--text-primary)' }}>{result.data.companyName}</h2>
               
               {/* 💹 LIVE PRICE with Badge */}
               <div className="flex items-baseline gap-3 my-6">
-                <div className="text-4xl md:text-6xl font-mono font-black text-white" dir="ltr">
+                <div className="text-4xl md:text-6xl font-mono font-black" style={{ color: 'var(--text-primary)' }} dir="ltr">
                   ${result.data.price?.toFixed(2)}
                 </div>
-                <div className="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2.5 py-1">
+                <div className="flex items-center gap-1.5 rounded-full px-2.5 py-1" style={{
+                  backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)'
+                }}>
                   <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                  <span className="text-[9px] md:text-[10px] font-black text-emerald-400 uppercase tracking-wider">LIVE</span>
+                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-wider" style={{ color: '#10b981' }}>LIVE</span>
                 </div>
               </div>
               
               <div className="mb-8">
-                <div className="flex justify-between text-[10px] md:text-xs text-slate-500 font-bold mb-2">
+                <div className="flex justify-between text-[10px] md:text-xs font-bold mb-2" style={{ color: 'var(--text-muted)' }}>
                   <span>{t.low}: ${result.data.fiftyTwoWeekLow}</span>
                   <span>{t.high}: ${result.data.fiftyTwoWeekHigh}</span>
                 </div>
-                <div className="w-full h-2 md:h-3 bg-slate-800 rounded-full overflow-hidden relative shadow-inner">
-                  <div className="h-full bg-gradient-to-r from-blue-600 via-blue-400 to-emerald-400 absolute transition-all duration-1000 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                    style={{ left: `${calculateRangePos(result.data.price, result.data.fiftyTwoWeekLow, result.data.fiftyTwoWeekHigh) - 2}%`, width: '4%' }}>
+                <div className="w-full h-2 md:h-3 rounded-full overflow-hidden relative shadow-inner" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
+                  <div className="h-full absolute transition-all duration-1000 shadow-[0_0_10px_rgba(59,130,246,0.5)]" style={{
+                    background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary))',
+                    left: `${calculateRangePos(result.data.price, result.data.fiftyTwoWeekLow, result.data.fiftyTwoWeekHigh) - 2}%`,
+                    width: '4%'
+                  }}>
                   </div>
                 </div>
               </div>
-              <div className={`p-6 rounded-2xl text-center border-2 shadow-2xl transition-all duration-500 ${getVerdictColor(result.analysis.verdict)}`}>
+              <div className={`p-6 rounded-2xl text-center border-2 shadow-2xl shadow-card-premium transition-all duration-500 ${getVerdictColor(result.analysis.verdict)}`}>
                 <div className="text-[10px] md:text-xs uppercase opacity-70 mb-2 font-black tracking-[0.2em]">{t.verdict}</div>
                 <span className="text-3xl md:text-5xl font-black tracking-tighter block">{result.analysis.verdict}</span>
                 <div className="mt-3 text-[10px] md:text-xs font-black bg-black/20 py-1 rounded-full">{t.confidence}: {result.analysis.confidence_score}%</div>
               </div>
             </div>
-            <div className="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-3xl p-2 md:p-8 h-[300px] md:h-[500px] shadow-2xl">
+            <div className="lg:col-span-2 rounded-3xl p-2 md:p-8 h-[300px] md:h-[500px] shadow-2xl shadow-card-premium" style={{
+              backgroundColor: 'var(--bg-secondary)',
+              border: '1px solid var(--border-primary)'
+            }}>
               {/* --- بداية كود الأزرار --- */}
-              <div className="flex justify-between items-center mb-6 bg-slate-800/30 p-2 rounded-2xl border border-slate-700/50">
+              <div className="flex justify-between items-center mb-6 rounded-2xl p-2" style={{
+                backgroundColor: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-secondary)'
+              }}>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Market History</span>
+                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent-primary)' }}></div>
+                  <span className="text-[10px] font-black uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Market History</span>
                 </div>
                 <div className="flex gap-1">
                   {['1W', '1M', '6M', '1Y'].map((range) => (
@@ -683,7 +719,7 @@ const handleDownloadPDF = async () => {
 
           <div className="bg-slate-900/50 border border-slate-800/50 rounded-3xl p-4 md:p-8 mb-8 shadow-xl">
             <h3 className="text-lg md:text-2xl font-black mb-6 text-white flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-xl"><Activity className="w-5 h-5 md:w-6 md:h-6 text-blue-500" /></div>
+              <div className="p-2 bg-blue-500/10 rounded-xl glow-primary"><Activity className="w-5 h-5 md:w-6 md:h-6 text-[var(--accent-primary)]" /></div>
               {t.metricsTitle}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
@@ -709,7 +745,7 @@ const handleDownloadPDF = async () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10 mb-8">
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
               <div className="bg-slate-800/20 border border-blue-500/10 p-5 md:p-8 rounded-3xl hover:bg-slate-800/40 transition-all duration-500 group">
-                <h3 className="text-blue-500 font-black mb-4 flex gap-3 text-sm md:text-xl uppercase tracking-tighter items-center">
+                <h3 className="text-[var(--accent-primary)] font-black mb-4 flex gap-3 text-sm md:text-xl uppercase tracking-tighter items-center">
                   <div className="p-2 bg-blue-500/10 rounded-lg"><Target className="w-5 h-5 md:w-6 md:h-6" /></div>
                   Business DNA
                 </h3>
@@ -736,9 +772,9 @@ const handleDownloadPDF = async () => {
                 </p>
               </div>
             </div>
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 md:p-8 h-[350px] md:h-[500px] shadow-2xl flex flex-col sticky top-24">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 md:p-8 h-[350px] md:h-[500px] shadow-2xl shadow-card-premium flex flex-col sticky top-24">
               <h3 className="text-center font-black text-slate-400 mb-6 flex justify-center gap-3 text-xs md:text-lg uppercase tracking-widest">
-                <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400/20" /> {t.radar}
+                <Zap className="w-5 h-5 text-[var(--warning-primary)] fill-[var(--warning-primary)]/20" /> {t.radar}
               </h3>
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="60%" data={result.analysis.radar_scores}>
@@ -767,7 +803,7 @@ const handleDownloadPDF = async () => {
                 <ul className="space-y-3">{result.analysis.swot_analysis.weaknesses.map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
               </div>
               <div className="bg-blue-900/10 border border-blue-500/20 p-6 md:p-8 rounded-3xl transform hover:scale-[1.02] transition-all">
-                <h4 className="text-blue-400 font-black mb-4 flex gap-3 items-center text-sm md:text-xl"><Lightbulb size={24} /> {t.opportunities}</h4>
+                <h4 className="text-[var(--accent-secondary)] font-black mb-4 flex gap-3 items-center text-sm md:text-xl"><Lightbulb size={24} /> {t.opportunities}</h4>
                 <ul className="space-y-3">{result.analysis.swot_analysis.opportunities.map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
               </div>
               <div className="bg-red-900/10 border border-red-500/20 p-6 md:p-8 rounded-3xl transform hover:scale-[1.02] transition-all">
@@ -793,7 +829,7 @@ const handleDownloadPDF = async () => {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-500/10 rounded-xl p-2.5">
-                  <Brain className="w-5 h-5 text-blue-400" />
+                  <Brain className="w-5 h-5 text-[var(--accent-secondary)]" />
                 </div>
                 <div>
                   <div className="text-slate-200 font-bold text-sm md:text-base">Institutional Analysis</div>

@@ -79,14 +79,15 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]">
       <Navbar />
       
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-6 transition-colors touch-manipulation"
+          className="inline-flex items-center gap-2 mb-6 transition-colors touch-manipulation"
+          style={{ color: 'var(--accent-primary)' }}
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
@@ -96,30 +97,42 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900/20 border border-slate-800 rounded-2xl p-6 md:p-8 mb-6"
+          className="rounded-2xl p-6 md:p-8 mb-6"
+          style={{
+            background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary), rgba(59, 130, 246, 0.1))',
+            border: '1px solid var(--border-primary)'
+          }}
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl md:text-4xl font-black text-white">{ticker}</h1>
-                <span className={`px-4 py-1 rounded-full text-sm font-bold ${verdictStyle.bg} text-white flex items-center gap-2`}>
+                <h1 className="text-3xl md:text-4xl font-black" style={{ color: 'var(--text-primary)' }}>{ticker}</h1>
+                <span className={`px-4 py-1 rounded-full text-sm font-bold text-white flex items-center gap-2`} style={{ background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))' }}>
                   {verdictStyle.icon}
                   {analysis.verdict}
                 </span>
               </div>
-              <p className="text-xl text-slate-300">{stockData?.companyName || ticker}</p>
+              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>{stockData?.companyName || ticker}</p>
             </div>
             
             <div className="flex gap-3">
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: 'var(--bg-tertiary)',
+                  color: 'var(--text-primary)'
+                }}
               >
                 <Share2 className="w-4 h-4" />
                 Share
               </button>
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: 'var(--accent-primary)',
+                  color: 'var(--text-primary)'
+                }}
                 onClick={() => window.print()}
               >
                 <Download className="w-4 h-4" />
@@ -130,42 +143,42 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
           
           {/* Key Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-slate-800/50 rounded-lg p-4">
-              <div className="text-slate-400 text-sm mb-1">Current Price</div>
-              <div className="text-2xl font-bold text-white">
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--card-bg)' }}>
+              <div className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>Current Price</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 ${stockData?.price?.toFixed(2) || 'N/A'}
               </div>
             </div>
             
             {/* BLURRED CONFIDENCE SCORE in teaser mode */}
-            <div className={`bg-slate-800/50 rounded-lg p-4 ${isTeaser ? 'relative' : ''}`}>
-              <div className="text-slate-400 text-sm mb-1">Confidence Score</div>
-              <div className={`text-2xl font-bold ${verdictStyle.text} ${isTeaser ? 'blur-sm select-none' : ''}`}>
+            <div className={`rounded-lg p-4`} style={{ backgroundColor: 'var(--card-bg)' }}>
+              <div className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>Confidence Score</div>
+              <div className={`text-2xl font-bold ${isTeaser ? 'blur-sm select-none' : ''}`} style={{ color: 'var(--accent-primary)' }}>
                 {isTeaser ? '85%' : `${analysis.confidence_score}%`}
               </div>
               {isTeaser && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xs font-bold text-purple-400">🔒 LOCKED</span>
+                  <span className="text-xs font-bold" style={{ color: 'var(--accent-primary)' }}>🔒 LOCKED</span>
                 </div>
               )}
             </div>
             
             {/* BLURRED INTRINSIC VALUE in teaser mode */}
-            <div className={`bg-slate-800/50 rounded-lg p-4 ${isTeaser ? 'relative' : ''}`}>
-              <div className="text-slate-400 text-sm mb-1">Intrinsic Value</div>
-              <div className={`text-2xl font-bold text-white ${isTeaser ? 'blur-sm select-none' : ''}`}>
+            <div className={`rounded-lg p-4`} style={{ backgroundColor: 'var(--card-bg)' }}>
+              <div className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>Intrinsic Value</div>
+              <div className={`text-2xl font-bold ${isTeaser ? 'blur-sm select-none' : ''}`} style={{ color: 'var(--text-primary)' }}>
                 {isTeaser ? '$120.50' : `$${analysis.intrinsic_value || 'N/A'}`}
               </div>
               {isTeaser && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xs font-bold text-purple-400">🔒 LOCKED</span>
+                  <span className="text-xs font-bold" style={{ color: 'var(--accent-primary)' }}>🔒 LOCKED</span>
                 </div>
               )}
             </div>
             
-            <div className="bg-slate-800/50 rounded-lg p-4">
-              <div className="text-slate-400 text-sm mb-1">Cache Age</div>
-              <div className="text-2xl font-bold text-white">
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--card-bg)' }}>
+              <div className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>Cache Age</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 {stockData?.cacheAge || 'Live'}
               </div>
             </div>
@@ -173,24 +186,35 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
           
           {/* UNLOCK CTA for Teaser Mode */}
           {isTeaser && (
-            <div className="mt-6 bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-xl p-6">
+            <div className="mt-6 rounded-xl p-6" style={{
+              background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(251, 146, 60, 0.1))',
+              border: '1px solid rgba(168, 85, 247, 0.3)'
+            }}>
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">🔒 Unlock Full Analysis</h3>
-                  <p className="text-slate-300">
+                  <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>🔒 Unlock Full Analysis</h3>
+                  <p style={{ color: 'var(--text-secondary)' }}>
                     {analysis.unlock_message || 'Sign in and use 1 credit to see AI verdict, intrinsic value, SWOT analysis, and all premium insights.'}
                   </p>
                 </div>
                 <div className="flex gap-3 shrink-0">
                   <Link
                     href="/pricing"
-                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-bold text-white transition-all"
+                    className="px-6 py-3 rounded-lg font-bold transition-all"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                      color: 'var(--text-primary)'
+                    }}
                   >
                     Buy Credits
                   </Link>
                   <Link
                     href={`/stock-analyzer?ticker=${ticker}`}
-                    className="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-white transition-all"
+                    className="px-6 py-3 rounded-lg font-bold transition-all"
+                    style={{
+                      backgroundColor: 'var(--bg-tertiary)',
+                      color: 'var(--text-primary)'
+                    }}
                   >
                     Analyze Now
                   </Link>
@@ -205,13 +229,17 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-gradient-to-br from-blue-900/20 to-slate-900 border border-blue-500/30 rounded-2xl p-6 md:p-8 mb-6"
+          className="rounded-2xl p-6 md:p-8 mb-6"
+          style={{
+            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), var(--bg-secondary))',
+            border: '1px solid rgba(59, 130, 246, 0.3)'
+          }}
         >
           <div className="flex items-center gap-3 mb-4">
-            <Brain className="w-6 h-6 text-blue-400" />
-            <h2 className="text-2xl font-bold text-white">AI Executive Summary</h2>
+            <Brain className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>AI Executive Summary</h2>
           </div>
-          <p className="text-lg text-slate-200 leading-relaxed">
+          <p className="text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
             {analysis.summary_one_line}
           </p>
         </motion.div>
@@ -223,14 +251,18 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-slate-900 via-slate-900 to-purple-900/20 border border-slate-800 rounded-2xl p-6 md:p-8"
+            className="rounded-2xl p-6 md:p-8"
+            style={{
+              background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary), rgba(168, 85, 247, 0.1))',
+              border: '1px solid var(--border-primary)'
+            }}
           >
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <Target className="w-6 h-6 text-purple-400" />
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <Target className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
               The Business DNA
             </h2>
             <div className="prose prose-invert max-w-none">
-              <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">
+              <p className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 {analysis.chapter_1_the_business}
               </p>
             </div>
@@ -241,14 +273,18 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-slate-900 via-slate-900 to-green-900/20 border border-slate-800 rounded-2xl p-6 md:p-8"
+            className="rounded-2xl p-6 md:p-8"
+            style={{
+              background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary), rgba(34, 197, 94, 0.1))',
+              border: '1px solid var(--border-primary)'
+            }}
           >
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <DollarSign className="w-6 h-6 text-green-400" />
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <DollarSign className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
               Financial Health
             </h2>
             <div className="prose prose-invert max-w-none">
-              <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">
+              <p className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 {analysis.chapter_2_financials}
               </p>
             </div>
@@ -259,14 +295,18 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-900/20 border border-slate-800 rounded-2xl p-6 md:p-8"
+            className="rounded-2xl p-6 md:p-8"
+            style={{
+              background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary), rgba(245, 158, 11, 0.1))',
+              border: '1px solid var(--border-primary)'
+            }}
           >
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <BarChart3 className="w-6 h-6 text-amber-400" />
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <BarChart3 className="w-6 h-6" style={{ color: 'var(--accent-primary)' }} />
               Valuation Analysis
             </h2>
             <div className="prose prose-invert max-w-none">
-              <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">
+              <p className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 {analysis.chapter_3_valuation}
               </p>
             </div>
@@ -277,14 +317,18 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-gradient-to-br from-slate-900 via-slate-900 to-red-900/20 border border-slate-800 rounded-2xl p-6 md:p-8"
+            className="rounded-2xl p-6 md:p-8"
+            style={{
+              background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary), rgba(239, 68, 68, 0.1))',
+              border: '1px solid var(--border-primary)'
+            }}
           >
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <AlertTriangle className="w-6 h-6 text-red-400" />
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <AlertTriangle className="w-6 h-6" style={{ color: '#ef4444' }} />
               Risks & Catalysts
             </h2>
             <div className="prose prose-invert max-w-none">
-              <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">
+              <p className="whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 {analysis.chapter_4_risks_and_catalysts}
               </p>
             </div>
@@ -296,7 +340,11 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className={`${verdictStyle.bg} rounded-2xl p-6 md:p-8 mt-6 text-white`}
+          className="rounded-2xl p-6 md:p-8 mt-6"
+          style={{
+            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+            color: 'var(--text-primary)'
+          }}
         >
           <div className="flex items-center gap-3 mb-4">
             {verdictStyle.icon}
@@ -319,20 +367,32 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 mt-8 text-center text-white"
+          className="rounded-2xl p-8 mt-8 text-center"
+          style={{
+            background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+            color: 'var(--text-primary)'
+          }}
         >
           <h3 className="text-2xl font-bold mb-4">Want More AI-Powered Analysis?</h3>
           <p className="text-lg mb-6">Get unlimited stock analyses, portfolio tracking, and real-time alerts</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/pricing"
-              className="px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"
+              className="px-8 py-3 rounded-lg hover:bg-slate-100 transition-colors font-bold"
+              style={{
+                backgroundColor: 'var(--text-primary)',
+                color: 'var(--accent-primary)'
+              }}
             >
               View Pricing Plans
             </Link>
             <Link
               href="/"
-              className="px-8 py-3 bg-blue-700 hover:bg-blue-800 font-bold rounded-lg transition-colors"
+              className="px-8 py-3 rounded-lg font-bold transition-colors"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'var(--text-primary)'
+              }}
             >
               Analyze Another Stock
             </Link>
@@ -340,7 +400,7 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
         </motion.div>
         
         {/* Disclaimer */}
-        <div className="text-center text-slate-500 text-sm mt-8 pb-8">
+        <div className="text-center pb-8" style={{ color: 'var(--text-muted)' }}>
           <p>
             This analysis is generated by AI and should not be considered financial advice.
             Always conduct your own research and consult with a qualified financial advisor

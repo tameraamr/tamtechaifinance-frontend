@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import toast from 'react-hot-toast';
-import { useCustomTheme } from './ThemeContext';
 
 // 🔥 Use relative path to leverage Vercel rewrite (makes cookies first-party)
 const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
@@ -49,10 +48,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Only use theme context on client side
-  const themeContext = typeof window !== 'undefined' ? useCustomTheme() : null;
-  const theme = themeContext?.theme || 'default';
-
   const isLoggedIn = isAuthenticated && !!user;
   // Handle both boolean true and number 1 for is_verified
   const isVerified = user?.is_verified === 1 || user?.is_verified === true;
@@ -64,9 +59,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const displayName = userName || 'User';
 
+    // Get current theme from localStorage (avoiding circular dependency)
+    const currentTheme = localStorage.getItem('tamtech-theme') || 'default';
+
     // Theme-aware styling
     const getThemeStyles = () => {
-      switch (theme) {
+      switch (currentTheme) {
         case 'gold-alpha':
           return {
             style: {

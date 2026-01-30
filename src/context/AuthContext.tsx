@@ -1,5 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import toast from 'react-hot-toast';
+import { useCustomTheme } from './ThemeContext';
 
 // 🔥 Use relative path to leverage Vercel rewrite (makes cookies first-party)
 const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
@@ -47,9 +49,99 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Only use theme context on client side
+  const themeContext = typeof window !== 'undefined' ? useCustomTheme() : null;
+  const theme = themeContext?.theme || 'default';
+
   const isLoggedIn = isAuthenticated && !!user;
   // Handle both boolean true and number 1 for is_verified
   const isVerified = user?.is_verified === 1 || user?.is_verified === true;
+
+  // 🎉 Personalized Welcome Notification
+  const showWelcomeToast = (userName: string, userCredits: number) => {
+    // Only show toast on client side
+    if (typeof window === 'undefined') return;
+
+    const displayName = userName || 'User';
+
+    // Theme-aware styling
+    const getThemeStyles = () => {
+      switch (theme) {
+        case 'gold-alpha':
+          return {
+            style: {
+              background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)',
+              border: '1px solid #FFD700',
+              boxShadow: '0 10px 40px rgba(255, 215, 0, 0.3)',
+              color: '#FFD700',
+            },
+            icon: '✨',
+          };
+        case 'royal-violet':
+          return {
+            style: {
+              background: 'linear-gradient(135deg, #1a0b2e 0%, #2a1b4a 100%)',
+              border: '1px solid #A855F7',
+              boxShadow: '0 10px 40px rgba(168, 85, 247, 0.3)',
+              color: '#e9d5ff',
+            },
+            icon: '👑',
+          };
+        case 'emerald-dark':
+          return {
+            style: {
+              background: 'linear-gradient(135deg, #050505 0%, #0a0a0a 100%)',
+              border: '1px solid #10B981',
+              boxShadow: '0 10px 40px rgba(16, 185, 129, 0.3)',
+              color: '#d1fae5',
+            },
+            icon: '🌟',
+          };
+        case 'deep-ocean':
+          return {
+            style: {
+              background: 'linear-gradient(135deg, #020617 0%, #0f172a 100%)',
+              border: '1px solid #38BDF8',
+              boxShadow: '0 10px 40px rgba(56, 189, 248, 0.3)',
+              color: '#e0f2fe',
+            },
+            icon: '🌊',
+          };
+        case 'slate-grey':
+          return {
+            style: {
+              background: 'linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%)',
+              border: '1px solid #E4E4E7',
+              boxShadow: '0 10px 40px rgba(228, 228, 231, 0.3)',
+              color: '#E4E4E7',
+            },
+            icon: '💎',
+          };
+        default: // default theme
+          return {
+            style: {
+              background: 'linear-gradient(135deg, #0b1121 0%, #070b14 100%)',
+              border: '1px solid #00D4FF',
+              boxShadow: '0 10px 40px rgba(0, 212, 255, 0.3)',
+              color: '#f1f5f9',
+            },
+            icon: '🚀',
+          };
+      }
+    };
+
+    const themeStyles = getThemeStyles();
+
+    toast.success(
+      `Welcome back, ${displayName}! ${themeStyles.icon}\n\nYou have ${userCredits} 💎 credits available. Ready for a new analysis?`,
+      {
+        duration: 5000,
+        position: 'top-right',
+        style: themeStyles.style,
+        className: 'welcome-toast',
+      }
+    );
+  };
 
   // 🧹 Clean up old localStorage token on mount (one-time migration)
   useEffect(() => {
@@ -126,13 +218,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(completeUserData.user);
         setCredits(completeUserData.credits);
         setIsAuthenticated(true);
+
+        // 🎉 Show welcome toast for fresh login
+        const userName = completeUserData.user.first_name
+          ? `${completeUserData.user.first_name} ${completeUserData.user.last_name || ''}`.trim()
+          : completeUserData.user.email.split('@')[0];
+        showWelcomeToast(userName, completeUserData.credits);
+
         return;
       }
     }
-    
+
     setUser(userData);
     setCredits(userCredits);
     setIsAuthenticated(true);
+
+    // 🎉 Show welcome toast for fresh login
+    const userName = userData.first_name
+      ? `${userData.first_name} ${userData.last_name || ''}`.trim()
+      : userData.email.split('@')[0];
+    showWelcomeToast(userName, userCredits);
   };
 
   const logout = async () => {

@@ -928,14 +928,15 @@ export default function PortfolioPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Symbol</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Shares</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Current Price</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Change %</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-semibold">Sector</th>
-                    <th className="text-right py-3 px-4 text-slate-400 font-semibold">Actions</th>
-                  </tr>
+                <tr className="border-b border-slate-700">
+                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Symbol</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Shares</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Current Price</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Change %</th>
+                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Sector</th>
+                <th className="text-left py-3 px-4 text-green-400 font-semibold">Total Value</th>
+                <th className="text-right py-3 px-4 text-slate-400 font-semibold">Actions</th>
+                </tr>
                 </thead>
                 <tbody>
                   {holdings.map((holding) => (

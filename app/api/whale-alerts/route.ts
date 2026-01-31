@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit') || '50';
 
     // Forward to backend
-    const backendUrl = 'http://127.0.0.1:8000';
+    const backendUrl = 'https://tamtechaifinance-backend-production.up.railway.app';
     const response = await fetch(`${backendUrl}/whale-alerts?limit=${limit}`, {
       method: 'GET',
       headers: {

@@ -5,7 +5,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { ticker } = await params;
 
     // Forward to backend
-    const backendUrl = 'http://127.0.0.1:8000';
+    const backendUrl = 'https://tamtechaifinance-backend-production.up.railway.app';
     const response = await fetch(`${backendUrl}/api/stock-quote/${ticker}`, {
       method: 'GET',
       headers: {

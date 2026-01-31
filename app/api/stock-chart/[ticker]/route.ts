@@ -8,7 +8,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const interval = searchParams.get('interval') || '1d';
 
     // Forward to backend
-    const backendUrl = 'http://127.0.0.1:8000';
+    const backendUrl = 'https://tamtechaifinance-backend-production.up.railway.app';
     const response = await fetch(`${backendUrl}/api/stock-chart/${ticker}?range=${range}&interval=${interval}`, {
       method: 'GET',
       headers: {

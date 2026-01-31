@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     // Forward to backend
-    const backendUrl = 'http://127.0.0.1:8000';
+    const backendUrl = 'https://tamtechaifinance-backend-production.up.railway.app';
     const response = await fetch(`${backendUrl}/check-whale-activity`, {
       method: 'POST',
       headers: {

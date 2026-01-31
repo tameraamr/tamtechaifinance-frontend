@@ -203,7 +203,7 @@ export default function Home() {
   const router = useRouter();
 
   // Event Timer State
-  const [nextEvent, setNextEvent] = useState<{ name: string; date_time: string } | null>(null);
+  const [nextEvent, setNextEvent] = useState<{ name: string; date_time: string; importance: string; ai_impact_note: string } | null>(null);
   const [countdown, setCountdown] = useState<string>("00:00:00");
 
   // دالة لجلب التحليلات الأخيرة من الباك-إند (memoized to prevent recreating on every render)
@@ -1153,44 +1153,78 @@ export default function Home() {
 
           {/* Global Event Timer Card - The Pulse */}
           <motion.div
-            whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 50px -25px rgba(59,130,246,0.45)" }}
-            className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900/40 to-slate-800 border border-cyan-500/50 ring-2 ring-cyan-500/20 rounded-2xl p-5 flex flex-col gap-3 shadow-xl"
+            whileHover={{ y: -8, scale: 1.02, boxShadow: "0 25px 80px -20px rgba(0,255,255,0.4)" }}
+            className="relative overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-xl border border-cyan-500/30 rounded-3xl p-6 flex flex-col gap-4 shadow-2xl ring-1 ring-cyan-500/20"
           >
-            {/* Pulse glow effect */}
-            <div className="absolute inset-0 bg-cyan-600/15 blur-2xl animate-pulse" aria-hidden="true" />
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-cyan-600/10 blur-3xl" aria-hidden="true" />
-            <div className="absolute -left-10 -bottom-10 w-28 h-28 bg-cyan-500/8 blur-2xl" aria-hidden="true" />
-            
+            {/* Command Center Glow Effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/5 via-transparent to-blue-600/5 blur-3xl" aria-hidden="true" />
+            <div className="absolute -right-16 -top-16 w-40 h-40 bg-cyan-500/8 blur-3xl rounded-full" aria-hidden="true" />
+            <div className="absolute -left-16 -bottom-16 w-36 h-36 bg-blue-500/6 blur-3xl rounded-full" aria-hidden="true" />
+
+            {/* Terminal-style header */}
             <div className="flex items-center justify-between relative z-10">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-cyan-300 font-bold">The Pulse</p>
-                <h3 className="text-xl font-black text-white mt-1">Global Event Timer</h3>
-                <p className="text-xs text-cyan-200 font-semibold mt-1">Next Major Event</p>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50 animate-pulse" />
+                <div>
+                  <p className="text-xs uppercase tracking-[0.15em] text-cyan-300 font-bold">Command Center</p>
+                  <h3 className="text-lg font-black text-white mt-0.5">Global Event Timer</h3>
+                </div>
               </div>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-600/30 to-cyan-400/10 border border-cyan-400/40 flex items-center justify-center shadow-lg">
-                <Timer className="text-cyan-100" size={24} />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-cyan-400/10 border border-cyan-400/30 flex items-center justify-center shadow-lg">
+                <Timer className="text-cyan-100" size={20} />
               </div>
             </div>
-            
-            {/* Live Countdown */}
-            <div className="text-center relative z-10">
-              <div className="text-3xl font-mono font-bold text-cyan-300 mb-2 font-black">
+
+            {/* Live Countdown with Impact Indicator */}
+            <div className="text-center relative z-10 space-y-3">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-xs text-slate-400 uppercase tracking-wide">Next Event</span>
+                {nextEvent && (
+                  <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+                    nextEvent.importance === 'High' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                    nextEvent.importance === 'Medium' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                    'bg-green-500/20 text-green-300 border border-green-500/30'
+                  }`}>
+                    {nextEvent.importance} Impact
+                  </div>
+                )}
+              </div>
+
+              <div className="text-4xl font-mono font-bold text-cyan-300 mb-2 font-black tracking-wider">
                 {countdown}
               </div>
-              <p className="text-slate-300 text-sm">
-                {nextEvent ? nextEvent.name : "Loading..."}
-              </p>
+
+              <div className="space-y-1">
+                <p className="text-slate-200 text-sm font-semibold leading-tight">
+                  {nextEvent ? nextEvent.name : "Loading..."}
+                </p>
+                {nextEvent && (
+                  <p className="text-slate-400 text-xs">
+                    {nextEvent.ai_impact_note}
+                  </p>
+                )}
+              </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-              <span className="bg-cyan-600/25 border border-cyan-400/50 rounded-lg px-2.5 py-1.5 text-center text-cyan-100 hover:bg-cyan-600/35 transition">🇺🇸 Fed Events</span>
-              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">$ CPI/NFP</span>
-              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">📅 Earnings</span>
-              <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">€ M&A</span>
+
+            {/* Event Categories with Currency Flags */}
+            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold relative z-10">
+              <span className="bg-gradient-to-r from-cyan-600/20 to-cyan-500/20 border border-cyan-400/40 rounded-xl px-3 py-2 text-center text-cyan-100 hover:from-cyan-600/30 hover:to-cyan-500/30 transition-all duration-200 flex items-center justify-center gap-1">
+                🇺🇸 Fed Events
+              </span>
+              <span className="bg-gradient-to-r from-emerald-600/20 to-emerald-500/20 border border-emerald-400/40 rounded-xl px-3 py-2 text-center text-emerald-100 hover:from-emerald-600/30 hover:to-emerald-500/30 transition-all duration-200 flex items-center justify-center gap-1">
+                $ CPI/NFP
+              </span>
+              <span className="bg-gradient-to-r from-purple-600/20 to-purple-500/20 border border-purple-400/40 rounded-xl px-3 py-2 text-center text-purple-100 hover:from-purple-600/30 hover:to-purple-500/30 transition-all duration-200 flex items-center justify-center gap-1">
+                📅 Earnings
+              </span>
+              <span className="bg-gradient-to-r from-orange-600/20 to-orange-500/20 border border-orange-400/40 rounded-xl px-3 py-2 text-center text-orange-100 hover:from-orange-600/30 hover:to-orange-500/30 transition-all duration-200 flex items-center justify-center gap-1">
+                🇪🇺 M&A
+              </span>
             </div>
-            
-            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-cyan-900/30">
-              View Full Calendar <ArrowRight size={16} />
+
+            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold px-5 py-3 rounded-xl text-sm transition-all duration-200 shadow-lg shadow-cyan-900/30 hover:shadow-cyan-900/50 relative z-10">
+              <Calendar className="w-4 h-4" />
+              View Full Calendar
             </Link>
           </motion.div>
 

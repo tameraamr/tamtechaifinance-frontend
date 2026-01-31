@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target,
-  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper
+  CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper, Timer
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from 'react-hot-toast';
@@ -202,6 +202,10 @@ export default function Home() {
   const [progressMessageIndex, setProgressMessageIndex] = useState<number>(0);
   const router = useRouter();
 
+  // Event Timer State
+  const [nextEvent, setNextEvent] = useState<{ name: string; date_time: string } | null>(null);
+  const [countdown, setCountdown] = useState<string>("00:00:00");
+
   // دالة لجلب التحليلات الأخيرة من الباك-إند (memoized to prevent recreating on every render)
   const fetchRecentAnalyses = useCallback(async () => {
     try {
@@ -257,7 +261,51 @@ export default function Home() {
       }
       canonical.setAttribute('href', 'https://tamtech-finance.com');
     }
+    
+    // Fetch next event for timer
+    fetchNextEvent();
   }, [fetchRecentAnalyses]); // Added dependency
+
+  // Fetch next calendar event
+  const fetchNextEvent = async () => {
+    try {
+      const response = await fetch('/api/calendar-events');
+      const data = await response.json();
+      if (data.events && data.events.length > 0) {
+        const next = data.events[0]; // Get the first upcoming event
+        setNextEvent(next);
+      }
+    } catch (error) {
+      console.error('Failed to fetch next event:', error);
+    }
+  };
+
+  // Update countdown every second
+  useEffect(() => {
+    if (!nextEvent) return;
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const eventTime = new Date(nextEvent.date_time).getTime();
+      const distance = eventTime - now;
+
+      if (distance > 0) {
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        setCountdown(
+          `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+        );
+      } else {
+        setCountdown("00:00:00");
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [nextEvent]);
 
   // ✅ Debounced ticker search - Optimized to prevent excessive API calls
   const debouncedTicker = useDebounce(ticker, 300); // 300ms debounce
@@ -1021,37 +1069,47 @@ export default function Home() {
 
         {/* Financial Tool Suite - Top Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
-          {/* News Terminal Card - Coming Soon */}
+          {/* Global Event Timer Card - The Pulse */}
           <motion.div
             whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 50px -25px rgba(59,130,246,0.45)" }}
-            className="relative overflow-hidden bg-gradient-to-br from-blue-900/30 via-slate-900 to-[#0f172a] border border-blue-500/30 rounded-2xl p-5 flex flex-col gap-3 shadow-xl opacity-50 pointer-events-none"
+            className="relative overflow-hidden bg-gradient-to-br from-blue-900/30 via-slate-900 to-[#0f172a] border border-blue-500/30 rounded-2xl p-5 flex flex-col gap-3 shadow-xl"
           >
+            {/* Pulse glow effect */}
+            <div className="absolute inset-0 bg-blue-600/10 blur-2xl animate-pulse" aria-hidden="true" />
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/10 blur-3xl" aria-hidden="true" />
             <div className="absolute -left-10 -bottom-10 w-28 h-28 bg-blue-500/5 blur-2xl" aria-hidden="true" />
             
             <div className="flex items-center justify-between relative z-10">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">📰 {t.newsDesk}</p>
-                <h3 className="text-xl font-black text-white mt-1">{t.newsTerminal}</h3>
-                <p className="text-xs text-blue-200 font-semibold mt-1">{t.realTimeMarketSignals}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">⏰ The Pulse</p>
+                <h3 className="text-xl font-black text-white mt-1">Global Event Timer</h3>
+                <p className="text-xs text-blue-200 font-semibold mt-1">Next Major Event</p>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-400/10 border border-blue-400/40 flex items-center justify-center shadow-lg">
-                <Newspaper className="text-blue-100" size={24} />
+                <Timer className="text-blue-100" size={24} />
               </div>
             </div>
             
-            <p className="text-slate-200 text-sm leading-relaxed">{t.marketMoversDesc}</p>
-            
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 {t.fedUpdatesLabel}</span>
-              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">💰 {t.earningsLabel}</span>
-              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">🤝 {t.mnaDealsLabel}</span>
-              <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">🎯 NVDA, AAPL</span>
+            {/* Live Countdown */}
+            <div className="text-center relative z-10">
+              <div className="text-3xl font-mono font-bold text-blue-300 mb-2 font-black">
+                {countdown}
+              </div>
+              <p className="text-slate-300 text-sm">
+                {nextEvent ? nextEvent.name : "Loading..."}
+              </p>
             </div>
             
-            <button disabled className="inline-flex items-center justify-center gap-2 bg-slate-700 text-slate-400 font-bold px-4 py-2.5 rounded-xl text-sm shadow-lg mt-auto cursor-not-allowed">
-              {t.launchTerminal} <ArrowRight size={16} />
-            </button>
+            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 Fed Events</span>
+              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">💰 CPI/NFP</span>
+              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">📅 Earnings</span>
+              <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">🎯 M&A</span>
+            </div>
+            
+            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-blue-900/30">
+              View Full Calendar <ArrowRight size={16} />
+            </Link>
           </motion.div>
 
           {/* Random Stock Picker Card */}
@@ -1126,8 +1184,8 @@ export default function Home() {
                 <button onClick={() => handleSpinnerAnalyze()} disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 rounded-lg transition disabled:opacity-60">
                   📊 Analyze (1C)
                 </button>
-                <button onClick={() => router.push(`/news?ticker=${selectedSpinnerTicker}`)} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold py-2 rounded-lg transition">
-                  📰 News
+                <button onClick={() => router.push(`/calendar`)} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold py-2 rounded-lg transition">
+                  📅 Calendar
                 </button>
                 <button onClick={() => setSelectedSpinnerTicker(null)} className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-2 px-3 rounded-lg transition" title="Hide options">
                   ✕

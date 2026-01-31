@@ -286,11 +286,15 @@ export default function Home() {
 
     const updateCountdown = () => {
       const now = new Date().getTime();
-      const eventTime = new Date(nextEvent.date_time).getTime();
+      // Parse the date_time as UTC (add 'Z' if not present to ensure UTC interpretation)
+      const dateTimeStr = nextEvent.date_time.endsWith('Z') ? nextEvent.date_time : nextEvent.date_time + 'Z';
+      const eventTime = new Date(dateTimeStr).getTime();
       const distance = eventTime - now;
 
       if (distance > 0) {
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        // Calculate total hours, minutes, seconds
+        const totalHours = Math.floor(distance / (1000 * 60 * 60));
+        const hours = totalHours;
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
         
@@ -1068,7 +1072,7 @@ export default function Home() {
         </div>
 
         {/* Financial Tool Suite - Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10 items-start">
           {/* Random Stock Picker Card */}
           <motion.div
             whileHover={{ y: -6, scale: 1.02, boxShadow: "0 25px 60px -25px rgba(168,85,247,0.55)" }}
@@ -1204,22 +1208,6 @@ export default function Home() {
                   </p>
                 )}
               </div>
-            </div>
-
-            {/* Event Categories with Currency Flags */}
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold relative z-10">
-              <span className="bg-gradient-to-r from-cyan-600/20 to-cyan-500/20 border border-cyan-400/40 rounded-xl px-3 py-2 text-center text-cyan-100 hover:from-cyan-600/30 hover:to-cyan-500/30 transition-all duration-200 flex items-center justify-center gap-1">
-                🇺🇸 Fed Events
-              </span>
-              <span className="bg-gradient-to-r from-emerald-600/20 to-emerald-500/20 border border-emerald-400/40 rounded-xl px-3 py-2 text-center text-emerald-100 hover:from-emerald-600/30 hover:to-emerald-500/30 transition-all duration-200 flex items-center justify-center gap-1">
-                $ CPI/NFP
-              </span>
-              <span className="bg-gradient-to-r from-purple-600/20 to-purple-500/20 border border-purple-400/40 rounded-xl px-3 py-2 text-center text-purple-100 hover:from-purple-600/30 hover:to-purple-500/30 transition-all duration-200 flex items-center justify-center gap-1">
-                📅 Earnings
-              </span>
-              <span className="bg-gradient-to-r from-orange-600/20 to-orange-500/20 border border-orange-400/40 rounded-xl px-3 py-2 text-center text-orange-100 hover:from-orange-600/30 hover:to-orange-500/30 transition-all duration-200 flex items-center justify-center gap-1">
-                🇪🇺 M&A
-              </span>
             </div>
 
             <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold px-5 py-3 rounded-xl text-sm transition-all duration-200 shadow-lg shadow-cyan-900/30 hover:shadow-cyan-900/50 relative z-10">

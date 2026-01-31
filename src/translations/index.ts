@@ -23,7 +23,28 @@ export const fullTranslations = {
     analyzer: "Analyzer",
     randomPicker: "Random Picker",
     news: "News",
+    whaleRadar: "Whale Radar",
     backToDashboard: "Back to Dashboard",
+    
+    // Whale Tracker
+    whaleAlert: "Whale Alert",
+    liveWhaleFeed: "Live Whale Feed",
+    viewAllAlerts: "View All Alerts",
+    smartMoneyRadar: "Smart Money Radar",
+    aiInsight: "AI Insight",
+    volumeSpike: "Volume Spike",
+    largeTransaction: "Large Transaction",
+    whaleInsight1: "{ticker} is showing unusual institutional activity. High volume detected!",
+    whaleInsight2: "{ticker} experiencing significant trading volume. Institutional interest rising!",
+    whaleInsight3: "{ticker} volume spike suggests major players are active. Time to investigate!",
+    analyzeNow: "Don't miss the opportunity—Analyze {ticker} now!",
+    
+    // Whale Alert Templates
+    whaleAlertTemplates: {
+      volumeSpike: "Massive volume spike detected for {ticker} - institutional activity likely!",
+      largeTransaction: "Large transaction of ${value} detected for {ticker} - whale movement!",
+      both: "Whale alert! {ticker} shows both volume spike and large transaction - major institutional interest!"
+    },
     
     // Auth
     loginTitle: "Login to Continue",
@@ -473,7 +494,7 @@ export const fullTranslations = {
     enterPurchaseDate: "Enter Purchase Date",
     calculateRegret: "Calculate Regret",
     regretAmount: "You could have made",
-    analyzeNow: "Analyze This Stock Now with AI",
+    analyzeStockNow: "Analyze This Stock Now with AI",
     shareOnX: "Share on X",
     shareOnWhatsApp: "Share on WhatsApp",
     shareOnTelegram: "Share on Telegram",
@@ -500,7 +521,28 @@ export const fullTranslations = {
     analyzer: "المحلل",
     randomPicker: "اختيار عشوائي",
     news: "الأخبار",
+    whaleRadar: "رادار الحيتان",
     backToDashboard: "العودة للوحة التحكم",
+    
+    // Whale Tracker
+    whaleAlert: "تنبيه الحيتان",
+    liveWhaleFeed: "تغذية الحيتان الحية",
+    viewAllAlerts: "عرض جميع التنبيهات",
+    smartMoneyRadar: "رادار الأموال الذكية",
+    aiInsight: "رؤية الذكاء الاصطناعي",
+    volumeSpike: "ارتفاع الحجم",
+    largeTransaction: "صفقة كبيرة",
+    whaleInsight1: "{ticker} يظهر نشاط مؤسسي غير عادي. تم اكتشاف حجم عالي!",
+    whaleInsight2: "{ticker} يشهد حجم تداول كبير. الاهتمام المؤسسي في ارتفاع!",
+    whaleInsight3: "{ticker} ارتفاع الحجم يشير إلى أن اللاعبين الكبار نشيطين. وقت التحقيق!",
+    analyzeNow: "لا تفوت الفرصة—حلل {ticker} الآن!",
+    
+    // Whale Alert Templates
+    whaleAlertTemplates: {
+      volumeSpike: "تم اكتشاف ارتفاع هائل في الحجم لـ {ticker} - نشاط مؤسسي محتمل!",
+      largeTransaction: "تم اكتشاف صفقة كبيرة بقيمة ${value} لـ {ticker} - حركة حوت!",
+      both: "تنبيه حوت! {ticker} يظهر كلاً من ارتفاع الحجم وصفقة كبيرة - اهتمام مؤسسي كبير!"
+    },
     
     // Auth
     loginTitle: "سجل دخولك للمتابعة",
@@ -952,7 +994,7 @@ export const fullTranslations = {
     enterPurchaseDate: "أدخل تاريخ الشراء",
     calculateRegret: "احسب الندم",
     regretAmount: "كنت تستطيع كسب",
-    analyzeNow: "حلل هذا السهم الآن بالذكاء الاصطناعي",
+    analyzeStockNow: "حلل هذا السهم الآن بالذكاء الاصطناعي",
     shareOnX: "شارك على X",
     shareOnWhatsApp: "شارك على WhatsApp",
     shareOnTelegram: "شارك على Telegram",
@@ -979,7 +1021,28 @@ export const fullTranslations = {
     analyzer: "Analizador",
     randomPicker: "Selector Aleatorio",
     news: "Noticias",
+    whaleRadar: "Radar Ballena",
     backToDashboard: "Volver al Panel",
+    
+    // Whale Tracker
+    whaleAlert: "Alerta Ballena",
+    liveWhaleFeed: "Feed de Ballenas en Vivo",
+    viewAllAlerts: "Ver Todas las Alertas",
+    smartMoneyRadar: "Radar Dinero Inteligente",
+    aiInsight: "Perspectiva IA",
+    volumeSpike: "Pico de Volumen",
+    largeTransaction: "Transacción Grande",
+    whaleInsight1: "{ticker} muestra actividad institucional inusual. ¡Volumen alto detectado!",
+    whaleInsight2: "{ticker} experimentando volumen de trading significativo. ¡Interés institucional aumentando!",
+    whaleInsight3: "{ticker} pico de volumen sugiere que los jugadores principales están activos. ¡Hora de investigar!",
+    analyzeNow: "¡No pierdas la oportunidad—Analiza {ticker} ahora!",
+    
+    // Whale Alert Templates
+    whaleAlertTemplates: {
+      volumeSpike: "¡Pico masivo de volumen detectado para {ticker} - actividad institucional probable!",
+      largeTransaction: "¡Transacción grande de ${value} detectada para {ticker} - movimiento de ballena!",
+      both: "¡Alerta de ballena! {ticker} muestra tanto pico de volumen como transacción grande - interés institucional mayor!"
+    },
     
     // Auth
     loginTitle: "Iniciar Sesión para Continuar",
@@ -1430,7 +1493,7 @@ export const fullTranslations = {
     enterPurchaseDate: "Ingresa la Fecha de Compra",
     calculateRegret: "Calcular Arrepentimiento",
     regretAmount: "Podrías haber hecho",
-    analyzeNow: "Analizar Esta Acción Ahora con IA",
+    analyzeStockNow: "Analizar Esta Acción Ahora con IA",
     shareOnX: "Compartir en X",
     shareOnWhatsApp: "Compartir en WhatsApp",
     shareOnTelegram: "Compartir en Telegram",
@@ -1457,7 +1520,28 @@ export const fullTranslations = {
     analyzer: "מנתח",
     randomPicker: "בוחר אקראי",
     news: "חדשות",
+    whaleRadar: "רדאר לווייתנים",
     backToDashboard: "חזרה ללוח הבקרה",
+    
+    // Whale Tracker
+    whaleAlert: "התראת לווייתן",
+    liveWhaleFeed: "הזנת לווייתנים חיה",
+    viewAllAlerts: "צפה בכל ההתראות",
+    smartMoneyRadar: "רדאר כסף חכם",
+    aiInsight: "תובנה AI",
+    volumeSpike: "עליית נפח",
+    largeTransaction: "עסקה גדולה",
+    whaleInsight1: "{ticker} מציג פעילות מוסדית לא רגילה. זוהה נפח גבוה!",
+    whaleInsight2: "{ticker} חווה נפח מסחר משמעותי. העניין המוסדי עולה!",
+    whaleInsight3: "{ticker} עליית נפח מצביעה על כך שהשחקנים הגדולים פעילים. זמן לחקור!",
+    analyzeNow: "אל תפספס את ההזדמנות—נתח {ticker} עכשיו!",
+    
+    // Whale Alert Templates
+    whaleAlertTemplates: {
+      volumeSpike: "זוהה עליית נפח עצומה עבור {ticker} - פעילות מוסדית סבירה!",
+      largeTransaction: "זוהתה עסקה גדולה של ${value} עבור {ticker} - תנועת לווייתן!",
+      both: "התראת לווייתן! {ticker} מציג גם עליית נפח וגם עסקה גדולה - עניין מוסדי גדול!"
+    },
     
     // Auth
     loginTitle: "התחבר להמשך",
@@ -1910,7 +1994,7 @@ export const fullTranslations = {
     enterPurchaseDate: "הזן תאריך רכישה",
     calculateRegret: "חשב חרטה",
     regretAmount: "יכולת להרוויח",
-    analyzeNow: "נתח מניה זו עכשיו עם AI",
+    analyzeStockNow: "נתח מניה זו עכשיו עם AI",
     shareOnX: "שתף ב-X",
     shareOnWhatsApp: "שתף ב-WhatsApp",
     shareOnTelegram: "שתף ב-Telegram",
@@ -1937,7 +2021,28 @@ export const fullTranslations = {
     analyzer: "Анализатор",
     randomPicker: "Случайный выбор",
     news: "Новости",
+    whaleRadar: "Радар Китов",
     backToDashboard: "Вернуться к панели",
+    
+    // Whale Tracker
+    whaleAlert: "Оповещение о Ките",
+    liveWhaleFeed: "Живая Лента Китов",
+    viewAllAlerts: "Посмотреть Все Оповещения",
+    smartMoneyRadar: "Радар Умных Денег",
+    aiInsight: "Анализ ИИ",
+    volumeSpike: "Всплеск Объема",
+    largeTransaction: "Крупная Сделка",
+    whaleInsight1: "{ticker} показывает необычную институциональную активность. Обнаружен высокий объем!",
+    whaleInsight2: "{ticker} испытывает значительный объем торгов. Институциональный интерес растет!",
+    whaleInsight3: "{ticker} всплеск объема предполагает, что крупные игроки активны. Время расследовать!",
+    analyzeNow: "Не упустите возможность—Проанализируйте {ticker} сейчас!",
+    
+    // Whale Alert Templates
+    whaleAlertTemplates: {
+      volumeSpike: "Обнаружен мощный всплеск объема для {ticker} - вероятна институциональная активность!",
+      largeTransaction: "Обнаружена крупная сделка на ${value} для {ticker} - движение кита!",
+      both: "Оповещение о ките! {ticker} показывает и всплеск объема, и крупную сделку - значительный институциональный интерес!"
+    },
     
     // Auth
     loginTitle: "Войти, чтобы продолжить",
@@ -2388,7 +2493,7 @@ export const fullTranslations = {
     enterPurchaseDate: "Введите Дату Покупки",
     calculateRegret: "Рассчитать Сожаление",
     regretAmount: "Вы могли заработать",
-    analyzeNow: "Проанализировать Эту Акцию Сейчас с ИИ",
+    analyzeStockNow: "Проанализировать Эту Акцию Сейчас с ИИ",
     shareOnX: "Поделиться в X",
     shareOnWhatsApp: "Поделиться в WhatsApp",
     shareOnTelegram: "Поделиться в Telegram",
@@ -2415,7 +2520,28 @@ export const fullTranslations = {
     analyzer: "Analizzatore",
     randomPicker: "Scelta Casuale",
     news: "Notizie",
+    whaleRadar: "Radar Balene",
     backToDashboard: "Torna alla Dashboard",
+    
+    // Whale Tracker
+    whaleAlert: "Allerta Balena",
+    liveWhaleFeed: "Feed Balene Live",
+    viewAllAlerts: "Vedi Tutti gli Avvisi",
+    smartMoneyRadar: "Radar Soldi Intelligenti",
+    aiInsight: "Intuizione AI",
+    volumeSpike: "Picco di Volume",
+    largeTransaction: "Transazione Grande",
+    whaleInsight1: "{ticker} mostra attività istituzionale insolita. Rilevato volume elevato!",
+    whaleInsight2: "{ticker} sta sperimentando volume di trading significativo. Interesse istituzionale in aumento!",
+    whaleInsight3: "{ticker} picco di volume suggerisce che i giocatori principali sono attivi. È ora di investigare!",
+    analyzeNow: "Non perdere l'opportunità—Analizza {ticker} ora!",
+    
+    // Whale Alert Templates
+    whaleAlertTemplates: {
+      volumeSpike: "Rilevato picco massivo di volume per {ticker} - attività istituzionale probabile!",
+      largeTransaction: "Rilevata transazione grande di ${value} per {ticker} - movimento di balena!",
+      both: "Allerta balena! {ticker} mostra sia picco di volume che transazione grande - interesse istituzionale maggiore!"
+    },
     
     // Auth
     loginTitle: "Accedi",
@@ -2866,7 +2992,7 @@ export const fullTranslations = {
     enterPurchaseDate: "Inserisci la Data di Acquisto",
     calculateRegret: "Calcola il Rimpianto",
     regretAmount: "Avresti potuto guadagnare",
-    analyzeNow: "Analizza Questa Azione Ora con IA",
+    analyzeStockNow: "Analizza Questa Azione Ora con IA",
     shareOnX: "Condividi su X",
     shareOnWhatsApp: "Condividi su WhatsApp",
     shareOnTelegram: "Condividi su Telegram",

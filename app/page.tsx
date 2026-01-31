@@ -16,6 +16,7 @@ import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
 import RecentAnalyses from '../src/components/RecentAnalyses';
 import RegretMachine from '../src/components/RegretMachine';
+import WhaleTracker from '../src/components/WhaleTracker';
 import MasterUniverseHeatmap from '../src/components/MasterUniverseHeatmap';
 import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
@@ -1187,6 +1188,17 @@ export default function Home() {
         {/* 👇 Regret Machine 👇 */}
         <RegretMachine lang={lang} />
         {/* X Regret Machine X */}
+
+        {/* 👇 Live Whale Feed 👇 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="relative mb-6 overflow-hidden"
+        >
+          <WhaleTracker limit={5} showHeader={true} showViewAll={true} lang={lang} />
+        </motion.div>
+        {/* X Live Whale Feed X */}
 
         {/* 👇 Master Universe Heatmap 👇 */}
         <MasterUniverseHeatmap

@@ -84,14 +84,14 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
       
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Back Button */}
-        <button
-          onClick={() => router.back()}
+        <Link
+          href="/"
           className="inline-flex items-center gap-2 mb-6 transition-colors touch-manipulation"
           style={{ color: 'var(--accent-primary)' }}
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
-        </button>
+        </Link>
         
         {/* Header Section */}
         <motion.div

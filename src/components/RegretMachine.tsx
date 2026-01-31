@@ -38,25 +38,13 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
   const fetchCurrentPrice = async (symbol: string) => {
     try {
       // Try backend API first
-      const response = await fetch(`/api/get-price/${symbol.toUpperCase()}`);
+      const response = await fetch(`/api/stock-quote/${symbol.toUpperCase()}`);
       if (response.ok) {
         const data = await response.json();
         if (data.price) return data.price;
       }
     } catch (backendError) {
-      console.log('Backend API failed, trying fallback...');
-    }
-
-    // Fallback: Use Yahoo Finance API directly
-    try {
-      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol.toUpperCase()}?range=1d&interval=1d`);
-      if (response.ok) {
-        const data = await response.json();
-        const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
-        if (price) return price;
-      }
-    } catch (yahooError) {
-      console.log('Yahoo API failed, using mock data...');
+      console.log('Backend API failed, using mock data...');
     }
 
     // Final fallback: Mock prices for demo

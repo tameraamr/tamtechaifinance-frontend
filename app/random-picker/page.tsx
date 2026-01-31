@@ -84,14 +84,13 @@ export default function RandomPickerPage() {
       setDisplaySymbol(data.ticker);
       setSelectedTicker(data.ticker);
 
-      // Fetch price from Yahoo Finance (happens in background)
-      fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${data.ticker}`)
+      // Fetch price from backend API (happens in background)
+      fetch(`/api/stock-quote/${data.ticker}`)
         .then((r) => r.json())
         .then((q) => {
-          const quote = q.quoteResponse?.result?.[0];
-          if (quote) {
-            setDisplayName(quote.longName || quote.shortName || "");
-            setDisplayPrice(quote.regularMarketPrice);
+          if (q.price) {
+            setDisplayName(q.companyName || "");
+            setDisplayPrice(q.price);
           }
         })
         .catch(() => {});

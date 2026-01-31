@@ -485,13 +485,12 @@ export default function Home() {
       let lastPrice: number | null | undefined;
 
       try {
-        const quoteRes = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${tickerSymbol}`);
+        const quoteRes = await fetch(`/api/stock-quote/${tickerSymbol}`);
         if (quoteRes.ok) {
           const quoteData = await quoteRes.json();
-          const q = quoteData?.quoteResponse?.result?.[0];
-          if (q) {
-            companyName = q.longName || q.shortName;
-            lastPrice = typeof q.regularMarketPrice === 'number' ? q.regularMarketPrice : null;
+          if (quoteData.price) {
+            companyName = quoteData.companyName;
+            lastPrice = quoteData.price;
           }
         }
       } catch (err) {
@@ -559,14 +558,13 @@ export default function Home() {
       setDisplaySymbol(data.ticker);
       setSelectedSpinnerTicker(data.ticker);
 
-      // Fetch price from Yahoo Finance (happens in background)
-      fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${data.ticker}`)
+      // Fetch price from backend API (happens in background)
+      fetch(`/api/stock-quote/${data.ticker}`)
         .then((r) => r.json())
         .then((q) => {
-          const quote = q.quoteResponse?.result?.[0];
-          if (quote) {
-            setDisplayName(quote.longName || quote.shortName || "");
-            setDisplayPrice(quote.regularMarketPrice);
+          if (q.price) {
+            setDisplayName(q.companyName || "");
+            setDisplayPrice(q.price);
           }
         })
         .catch(() => {});

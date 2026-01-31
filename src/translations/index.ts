@@ -23,6 +23,7 @@ export const fullTranslations = {
     analyzer: "Analyzer",
     randomPicker: "Random Picker",
     news: "News",
+    calendar: "Calendar",
     whaleRadar: "Whale Radar",
     backToDashboard: "Back to Dashboard",
     
@@ -521,6 +522,7 @@ export const fullTranslations = {
     analyzer: "المحلل",
     randomPicker: "اختيار عشوائي",
     news: "الأخبار",
+    calendar: "التقويم",
     whaleRadar: "رادار الحيتان",
     backToDashboard: "العودة للوحة التحكم",
     
@@ -1021,6 +1023,7 @@ export const fullTranslations = {
     analyzer: "Analizador",
     randomPicker: "Selector Aleatorio",
     news: "Noticias",
+    calendar: "Calendario",
     whaleRadar: "Radar Ballena",
     backToDashboard: "Volver al Panel",
     
@@ -1520,6 +1523,7 @@ export const fullTranslations = {
     analyzer: "מנתח",
     randomPicker: "בוחר אקראי",
     news: "חדשות",
+    calendar: "לוח שנה",
     whaleRadar: "רדאר לווייתנים",
     backToDashboard: "חזרה ללוח הבקרה",
     
@@ -2021,6 +2025,7 @@ export const fullTranslations = {
     analyzer: "Анализатор",
     randomPicker: "Случайный выбор",
     news: "Новости",
+    calendar: "Календарь",
     whaleRadar: "Радар Китов",
     backToDashboard: "Вернуться к панели",
     
@@ -2520,6 +2525,7 @@ export const fullTranslations = {
     analyzer: "Analizzatore",
     randomPicker: "Scelta Casuale",
     news: "Notizie",
+    calendar: "Calendario",
     whaleRadar: "Radar Balene",
     backToDashboard: "Torna alla Dashboard",
     

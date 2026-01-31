@@ -40,8 +40,8 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             <Link href="/random-picker" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
               {t.randomPicker}
             </Link>
-            <Link href="/news" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
-              {t.news}
+            <Link href="/calendar" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
+              {t.calendar}
             </Link>
             <Link href="/smart-money-radar" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
               {t.whaleRadar}
@@ -148,11 +148,11 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
               🎲 {t.randomPicker}
             </Link>
             <Link 
-              href="/news" 
+              href="/calendar" 
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
             >
-              📰 {t.news}
+              📅 {t.calendar}
             </Link>
             <Link 
               href="/smart-money-radar" 

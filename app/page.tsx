@@ -1069,49 +1069,6 @@ export default function Home() {
 
         {/* Financial Tool Suite - Top Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
-          {/* Global Event Timer Card - The Pulse */}
-          <motion.div
-            whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 50px -25px rgba(59,130,246,0.45)" }}
-            className="relative overflow-hidden bg-gradient-to-br from-blue-900/30 via-slate-900 to-[#0f172a] border border-blue-500/30 rounded-2xl p-5 flex flex-col gap-3 shadow-xl"
-          >
-            {/* Pulse glow effect */}
-            <div className="absolute inset-0 bg-blue-600/10 blur-2xl animate-pulse" aria-hidden="true" />
-            <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/10 blur-3xl" aria-hidden="true" />
-            <div className="absolute -left-10 -bottom-10 w-28 h-28 bg-blue-500/5 blur-2xl" aria-hidden="true" />
-            
-            <div className="flex items-center justify-between relative z-10">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">⏰ The Pulse</p>
-                <h3 className="text-xl font-black text-white mt-1">Global Event Timer</h3>
-                <p className="text-xs text-blue-200 font-semibold mt-1">Next Major Event</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-400/10 border border-blue-400/40 flex items-center justify-center shadow-lg">
-                <Timer className="text-blue-100" size={24} />
-              </div>
-            </div>
-            
-            {/* Live Countdown */}
-            <div className="text-center relative z-10">
-              <div className="text-3xl font-mono font-bold text-blue-300 mb-2 font-black">
-                {countdown}
-              </div>
-              <p className="text-slate-300 text-sm">
-                {nextEvent ? nextEvent.name : "Loading..."}
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 Fed Events</span>
-              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">💰 CPI/NFP</span>
-              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">📅 Earnings</span>
-              <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">🎯 M&A</span>
-            </div>
-            
-            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-blue-900/30">
-              View Full Calendar <ArrowRight size={16} />
-            </Link>
-          </motion.div>
-
           {/* Random Stock Picker Card */}
           <motion.div
             whileHover={{ y: -6, scale: 1.02, boxShadow: "0 25px 60px -25px rgba(168,85,247,0.55)" }}
@@ -1124,7 +1081,7 @@ export default function Home() {
             {spinnerRolling || selectedSpinnerTicker ? (
               <div className="relative z-10 text-center">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-slate-400 text-xs uppercase tracking-widest animate-pulse">🎰 {t.spinning}</p>
+                  <p className="text-slate-400 text-xs uppercase tracking-widest animate-pulse">{t.spinning}</p>
                   {!spinnerRolling && selectedSpinnerTicker && (
                     <button
                       onClick={() => {
@@ -1143,27 +1100,27 @@ export default function Home() {
                 <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 font-mono mb-3 animate-bounce">
                   {displaySymbol}
                 </div>
-                {displayName && <p className="text-slate-300 text-sm font-semibold mb-1">🏢 {displayName}</p>}
-                {displayPrice && <p className="text-emerald-400 text-xl font-bold">💵 ${displayPrice.toFixed(2)}</p>}
+                {displayName && <p className="text-slate-300 text-sm font-semibold mb-1">{displayName}</p>}
+                {displayPrice && <p className="text-emerald-400 text-xl font-bold">${displayPrice.toFixed(2)}</p>}
               </div>
             ) : (
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200 font-bold">🎰 {t.instantPick}</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200 font-bold">{t.instantPick}</p>
                     <h3 className="text-xl font-black text-white mt-1">{t.stockSpinner}</h3>
                     <p className="text-xs text-purple-200 font-semibold mt-1">{t.luckyDipAnalysis}</p>
                   </div>
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-600/40 to-blue-600/20 border border-purple-400/50 flex items-center justify-center shadow-lg shadow-purple-900/30">
-                    <span className="text-3xl animate-spin">🎲</span>
+                    <Dices className="text-purple-100" size={24} />
                   </div>
                 </div>
                 <p className="text-slate-100 text-sm leading-relaxed mb-3">{t.spinWheelDesc}</p>
                 <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-                  <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">⚡ MSFT</span>
-                  <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">🚀 AMZN</span>
-                  <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">📈 TSLA</span>
-                  <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">💎 AAPL</span>
+                  <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">MSFT</span>
+                  <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">AMZN</span>
+                  <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">TSLA</span>
+                  <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">AAPL</span>
                 </div>
               </div>
             )}
@@ -1174,7 +1131,7 @@ export default function Home() {
               disabled={spinnerRolling}
               className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-purple-900/30 disabled:opacity-70 relative z-10"
             >
-              <span className="text-lg">🎰</span>
+              <Dices className="text-white" size={16} />
               {spinnerRolling ? t.spinning : t.spinAgain}
             </button>
 
@@ -1182,16 +1139,59 @@ export default function Home() {
             {selectedSpinnerTicker && !spinnerRolling && (
               <div className="flex gap-2 relative z-10">
                 <button onClick={() => handleSpinnerAnalyze()} disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-2 rounded-lg transition disabled:opacity-60">
-                  📊 Analyze (1C)
+                  {t.analyze} (1C)
                 </button>
                 <button onClick={() => router.push(`/calendar`)} className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold py-2 rounded-lg transition">
-                  📅 Calendar
+                  {t.calendar}
                 </button>
                 <button onClick={() => setSelectedSpinnerTicker(null)} className="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-2 px-3 rounded-lg transition" title="Hide options">
                   ✕
                 </button>
               </div>
             )}
+          </motion.div>
+
+          {/* Global Event Timer Card - The Pulse */}
+          <motion.div
+            whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 50px -25px rgba(59,130,246,0.45)" }}
+            className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900/40 to-slate-800 border border-cyan-500/50 ring-2 ring-cyan-500/20 rounded-2xl p-5 flex flex-col gap-3 shadow-xl"
+          >
+            {/* Pulse glow effect */}
+            <div className="absolute inset-0 bg-cyan-600/15 blur-2xl animate-pulse" aria-hidden="true" />
+            <div className="absolute -right-10 -top-10 w-32 h-32 bg-cyan-600/10 blur-3xl" aria-hidden="true" />
+            <div className="absolute -left-10 -bottom-10 w-28 h-28 bg-cyan-500/8 blur-2xl" aria-hidden="true" />
+            
+            <div className="flex items-center justify-between relative z-10">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-cyan-300 font-bold">The Pulse</p>
+                <h3 className="text-xl font-black text-white mt-1">Global Event Timer</h3>
+                <p className="text-xs text-cyan-200 font-semibold mt-1">Next Major Event</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-600/30 to-cyan-400/10 border border-cyan-400/40 flex items-center justify-center shadow-lg">
+                <Timer className="text-cyan-100" size={24} />
+              </div>
+            </div>
+            
+            {/* Live Countdown */}
+            <div className="text-center relative z-10">
+              <div className="text-3xl font-mono font-bold text-cyan-300 mb-2 font-black">
+                {countdown}
+              </div>
+              <p className="text-slate-300 text-sm">
+                {nextEvent ? nextEvent.name : "Loading..."}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+              <span className="bg-cyan-600/25 border border-cyan-400/50 rounded-lg px-2.5 py-1.5 text-center text-cyan-100 hover:bg-cyan-600/35 transition">🇺🇸 Fed Events</span>
+              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">$ CPI/NFP</span>
+              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">📅 Earnings</span>
+              <span className="bg-orange-600/25 border border-orange-400/50 rounded-lg px-2.5 py-1.5 text-center text-orange-100 hover:bg-orange-600/35 transition">€ M&A</span>
+            </div>
+            
+            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-cyan-900/30">
+              View Full Calendar <ArrowRight size={16} />
+            </Link>
           </motion.div>
 
           {/* Stock Battle Card */}
@@ -1204,7 +1204,7 @@ export default function Home() {
             
             <div className="flex items-center justify-between relative z-10">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300 font-bold">⚔️ {t.battleArena}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300 font-bold">{t.battleArena}</p>
                 <h3 className="text-xl font-black text-white mt-1">{t.stockBattle}</h3>
                 <p className="text-xs text-emerald-200 font-semibold mt-1">{t.headToHeadVerdict}</p>
               </div>
@@ -1216,17 +1216,16 @@ export default function Home() {
             <p className="text-slate-200 text-sm leading-relaxed">{t.battleDesc}</p>
             
             <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">⚡ TSLA vs F</span>
-              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">📊 Momentum</span>
-              <span className="bg-red-600/25 border border-red-400/50 rounded-lg px-2.5 py-1.5 text-center text-red-100 hover:bg-red-600/35 transition">⚠️ Risk Notes</span>
-              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">✅ AI Verdict</span>
+              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">TSLA vs F</span>
+              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">Momentum</span>
+              <span className="bg-red-600/25 border border-red-400/50 rounded-lg px-2.5 py-1.5 text-center text-red-100 hover:bg-red-600/35 transition">Risk Notes</span>
+              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">AI Verdict</span>
             </div>
             
             <button
               onClick={() => setShowCompareModal(true)}
               className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-900/30"
             >
-              <span className="text-lg">⚔️</span>
               Launch Battle <ArrowRight size={16} />
             </button>
           </motion.div>

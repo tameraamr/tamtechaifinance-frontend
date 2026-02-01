@@ -145,7 +145,7 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.01, type: "spring", stiffness: 300, damping: 20 }}
-      className={`relative p-3 rounded-xl border transition-all duration-300 hover:scale-110 hover:rotate-1 cursor-pointer group ${cardStyle}`}
+      className={`relative p-3 rounded-xl border transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-slate-400/20 cursor-pointer group ${cardStyle}`}
       style={{
         contain: 'layout style paint',
         boxShadow: isPositive && absChange >= 5 ? '0 0 20px rgba(16, 185, 129, 0.3), 0 0 40px rgba(16, 185, 129, 0.1)' :
@@ -218,8 +218,8 @@ const HeatmapCard = memo(({ item, index, assetType }: { item: HeatmapItem; index
       </div>
       <div className="text-lg font-semibold text-white font-mono mb-1 tracking-wide">{formatPrice(price, assetType)}</div>
       <div className={`text-sm font-bold flex items-center justify-center gap-1 font-mono ${changeColor}`}>
-        {isPositive && <TrendingUp className="w-4 h-4 animate-bounce" />}
-        {isNegative && <TrendingDown className="w-4 h-4 animate-bounce" />}
+        {isPositive && <TrendingUp className="w-4 h-4" />}
+        {isNegative && <TrendingDown className="w-4 h-4" />}
         <span className="font-black">{change >= 0 ? '+' : ''}{change.toFixed(2)}%</span>
       </div>
     </motion.div>

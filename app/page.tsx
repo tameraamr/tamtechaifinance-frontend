@@ -20,6 +20,7 @@ import WhaleTracker from '../src/components/WhaleTracker';
 import MasterUniverseHeatmap from '../src/components/MasterUniverseHeatmap';
 import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
+import UpgradeModal from '../src/components/UpgradeModal';
 import { useAuth } from '../src/context/AuthContext';
 import { useTranslation } from '../src/context/TranslationContext';
 import { useDebounce } from '../src/hooks/useDebounce';
@@ -152,7 +153,7 @@ interface Sector {
 
 
 export default function Home() {
-  const { user, credits, isLoggedIn, isLoading: authLoading, login, logout, updateCredits, refreshUserData } = useAuth();
+  const { user, credits, isLoggedIn, isLoading: authLoading, login, logout, updateCredits, refreshUserData, isPro } = useAuth();
   const { lang, setLang, t, isRTL } = useTranslation();
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [guestTrials, setGuestTrials] = useState(3);
@@ -168,6 +169,8 @@ export default function Home() {
   const [compareResult, setCompareResult] = useState<any | null>(null);
   const [loadingCompare, setLoadingCompare] = useState<boolean>(false);
   const [compareError, setCompareError] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [modalTrigger, setModalTrigger] = useState<'credits' | 'portfolio' | 'pdf' | 'feature'>('feature');
 
   const [randomTicker, setRandomTicker] = useState<string | null>(null);
   const [loadingRandom, setLoadingRandom] = useState<boolean>(false);
@@ -816,6 +819,18 @@ export default function Home() {
 
   const handleCompare = async () => {
     if (!compareTickers.t1 || !compareTickers.t2) return;
+
+    // 🔥 PRO CHECK: Stock Battle is Pro-only feature
+    if (!isPro && isLoggedIn) {
+      setShowCompareModal(false);
+      setModalTrigger('feature');
+      setShowUpgradeModal(true);
+      toast.error("⚔️ Stock Battle is a Pro-only feature! Upgrade to unlock unlimited battles.", {
+        duration: 5000,
+        icon: "🔒"
+      });
+      return;
+    }
 
     setCompareError(null);
     setAuthError("");
@@ -1812,6 +1827,12 @@ export default function Home() {
           isLoggedIn={isLoggedIn}
           setAuthMode={setAuthMode}
           setShowAuthModal={setShowAuthModal}
+        />
+
+        <UpgradeModal 
+          isOpen={showUpgradeModal} 
+          onClose={() => setShowUpgradeModal(false)}
+          trigger={modalTrigger}
         />
 
       </main>

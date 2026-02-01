@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 // Import components
 import NewsAnalysis from '../../../src/components/NewsAnalysis';
 import Forecasts from '../../../src/components/Forecasts';
+import UpgradeModal from '../../../src/components/UpgradeModal';
 import { useAuth } from '../../../src/context/AuthContext';
 import { useTranslation } from '../../../src/context/TranslationContext';
 
@@ -230,7 +231,7 @@ export default function AnalysisPage() {
   const router = useRouter();
   const ticker = params.ticker as string;
 
-  const { credits, isLoggedIn, isLoading: authLoading } = useAuth();
+  const { credits, isLoggedIn, isLoading: authLoading, isPro } = useAuth();
 
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -240,6 +241,7 @@ export default function AnalysisPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const handleRefreshAnalysis = async () => {
     if (isRefreshing) return;
@@ -403,6 +405,16 @@ export default function AnalysisPage() {
 const handleDownloadPDF = async () => {
   const input = document.getElementById('report-content');
   if (!input || isGeneratingPDF) return; // صمام أمان لمنع البدء المتكرر
+
+  // 🔥 PRO CHECK: PDF Download is Pro-only feature
+  if (!isPro && isLoggedIn) {
+    toast.error("📄 PDF Export is a Pro-only feature! Upgrade to download professional reports.", {
+      duration: 5000,
+      icon: "🔒"
+    });
+    setShowUpgradeModal(true);
+    return;
+  }
 
   setIsGeneratingPDF(true); // تفعيل الـ Spinner فوراً
   
@@ -1005,6 +1017,12 @@ const handleDownloadPDF = async () => {
           </footer>
         </div>
       </div>
+
+      <UpgradeModal 
+        isOpen={showUpgradeModal} 
+        onClose={() => setShowUpgradeModal(false)}
+        trigger="pdf"
+      />
     </div>
   );
 }

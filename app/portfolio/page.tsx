@@ -6,6 +6,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { useTranslation } from '../../src/context/TranslationContext';
 import Navbar from '../../src/components/Navbar';
 import Footer from '../../src/components/Footer';
+import UpgradeModal from '../../src/components/UpgradeModal';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import {
@@ -46,7 +47,7 @@ interface PortfolioSummary {
 }
 
 export default function PortfolioPage() {
-  const { user, credits, isLoggedIn } = useAuth();
+  const { user, credits, isLoggedIn, isPro } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -75,12 +76,24 @@ export default function PortfolioPage() {
   const [confirmDelete, setConfirmDelete] = useState<{id: number, ticker: string} | null>(null);
   const [currency, setCurrency] = useState('USD');
   const [exchangeRates, setExchangeRates] = useState<{[key: string]: number}>({ USD: 1 });
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // All hooks must be called before any conditional returns
   const debouncedTicker = useDebounce(newTicker, 300);
 
   useEffect(() => {
     if (isLoggedIn) {
+      // 🔥 PRO CHECK: Portfolio is Pro-only feature
+      if (!isPro) {
+        toast.error("🔒 Portfolio is a Pro-only feature! Upgrade to track your investments.", {
+          duration: 5000,
+          icon: "⚠️"
+        });
+        setShowUpgradeModal(true);
+        setLoading(false);
+        return;
+      }
+
       fetchPortfolio();
       fetchMarketData();
       // Welcome toast
@@ -88,7 +101,7 @@ export default function PortfolioPage() {
         toast.success(`Welcome back! You have ${credits} credits`, { duration: 4000, icon: '👋' });
       }
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isPro]);
 
   // Fetch exchange rates
   useEffect(() => {
@@ -1036,6 +1049,11 @@ export default function PortfolioPage() {
         
       {/* End of main content */}
       
+      <UpgradeModal 
+        isOpen={showUpgradeModal} 
+        onClose={() => setShowUpgradeModal(false)}
+        trigger="portfolio"
+      />
 
       <Footer />
     </div>

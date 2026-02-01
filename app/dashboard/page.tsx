@@ -144,7 +144,7 @@ function SkeletonLoader() {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, credits, isLoggedIn, isVerified, isLoading, updateCredits, isPro, verifyGumroadLicense, refreshUserData } = useAuth();
+  const { user, credits, isLoggedIn, isVerified, isLoading, updateCredits, isPro, subscriptionExpiry, verifyGumroadLicense, refreshUserData } = useAuth();
   const { t } = useTranslation();
   
   const [activeTab, setActiveTab] = useState<'history' | 'settings'>('history');
@@ -582,30 +582,64 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Pro License Activation Card */}
-        {!isPro && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="rounded-2xl p-6"
-            style={{
-              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.1), var(--bg-secondary), rgba(234, 179, 8, 0.05))',
-              border: '1px solid rgba(234, 179, 8, 0.3)'
-            }}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
-                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(234, 179, 8, 0.1))',
-                border: '1px solid rgba(234, 179, 8, 0.4)'
-              }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="rounded-2xl p-6"
+          style={{
+            background: isPro 
+              ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), var(--bg-secondary), rgba(34, 197, 94, 0.05))'
+              : 'linear-gradient(135deg, rgba(234, 179, 8, 0.1), var(--bg-secondary), rgba(234, 179, 8, 0.05))',
+            border: isPro ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(234, 179, 8, 0.3)'
+          }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+              background: isPro 
+                ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.1))'
+                : 'linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(234, 179, 8, 0.1))',
+              border: isPro ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(234, 179, 8, 0.4)'
+            }}>
+              {isPro ? (
+                <CheckCircle style={{ color: '#22c55e' }} size={20} />
+              ) : (
                 <Zap style={{ color: '#eab308' }} size={20} />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-yellow-400">Activate Pro Subscription</h2>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Unlock unlimited analyses, portfolio tracking & PDF exports</p>
-              </div>
+              )}
             </div>
+            <div>
+              <h2 className={`text-xl font-black ${isPro ? 'text-green-400' : 'text-yellow-400'}`}>
+                {isPro ? 'Pro Subscription Active' : 'Activate Pro Subscription'}
+              </h2>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                {isPro 
+                  ? 'Unlimited analyses, portfolio tracking & PDF exports' 
+                  : 'Unlock unlimited analyses, portfolio tracking & PDF exports'
+                }
+              </p>
+            </div>
+          </div>
 
+          {isPro ? (
+            <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <CheckCircle className="w-5 h-5 text-green-400" />
+                <span className="font-bold text-green-300">Pro Benefits Active</span>
+              </div>
+              <ul className="space-y-1.5 text-sm text-green-200/80 ml-7">
+                <li>✓ Unlimited AI Stock Analyses</li>
+                <li>✓ Unlimited Portfolio Tracking</li>
+                <li>✓ Unlimited PDF Exports</li>
+                <li>✓ Unlimited Stock Battle Comparisons</li>
+                <li>✓ Priority Support</li>
+              </ul>
+              {subscriptionExpiry && (
+                <p className="text-xs text-green-300/60 mt-3">
+                  Subscription expires: {new Date(subscriptionExpiry).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+          ) : (
             <div className="flex flex-col gap-3">
               <div className="flex gap-2">
                 <input
@@ -648,8 +682,8 @@ export default function DashboardPage() {
                 </p>
               )}
             </div>
-          </motion.div>
-        )}
+          )}
+        </motion.div>
 
         {/* Tabs */}
         <div className="flex gap-2 mt-6 border-b border-slate-800">

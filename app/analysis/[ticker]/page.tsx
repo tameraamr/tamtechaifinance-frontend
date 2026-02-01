@@ -237,7 +237,60 @@ export default function AnalysisPage() {
   const [error, setError] = useState<string | null>(null);
   const [progressMessageIndex, setProgressMessageIndex] = useState(0);
   const [timeRange, setTimeRange] = useState('1Y');
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefreshAnalysis = async () => {
+    if (isRefreshing) return;
+    
+    setIsRefreshing(true);
+    try {
+      const refreshToast = toast.loading(isRTL ? "جاري تحديث التحليل..." : "Refreshing analysis...");
+      
+      const res = await fetch(`${BASE_URL}/analyze/${ticker}?lang=${lang}&force_refresh=true`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Failed to refresh analysis');
+      }
+
+      const data = await res.json();
+      
+      // DEBUG: Log the returned data
+      console.log('Refresh response data:', data);
+      console.log('Upcoming catalysts:', data.analysis?.upcoming_catalysts);
+      console.log('Competitors:', data.analysis?.competitors);
+      console.log('Ownership insights:', data.analysis?.ownership_insights);
+      
+      // Update the result with fresh data
+      setResult({...data});
+      
+      // Force re-render by updating refresh key
+      setRefreshKey(prev => prev + 1);
+      
+      // Update localStorage with fresh data
+      localStorage.setItem('analysis_result', JSON.stringify(data));
+      localStorage.setItem('analysis_ticker', ticker);
+      
+      toast.success(isRTL ? "تم تحديث التحليل بنجاح!" : "Analysis refreshed successfully!", { id: refreshToast });
+      
+      // Update page metadata
+      const companyName = data?.company_name || ticker.toUpperCase();
+      document.title = `${companyName} (${ticker.toUpperCase()}) Analysis | AI Stock Report - Tamtech Finance`;
+      
+    } catch (error) {
+      console.error('Refresh error:', error);
+      toast.error(isRTL ? "فشل في تحديث التحليل" : "Failed to refresh analysis");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Authentication state
   const [authChecked, setAuthChecked] = useState(false);
@@ -566,7 +619,7 @@ const handleDownloadPDF = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]" style={{ color: 'var(--text-primary)' }}>
+    <div key={refreshKey} className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]" style={{ color: 'var(--text-primary)' }}>
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
         <div className="flex justify-between items-center mb-6">
           <button onClick={handleBack} className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition" style={{
@@ -576,28 +629,52 @@ const handleDownloadPDF = async () => {
           }}>
             <ArrowLeft className="w-3 h-3 md:w-4 md:h-4" /> Back to Search
           </button>
-          <button
-            onClick={handleDownloadPDF}
-            disabled={isGeneratingPDF}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-70 disabled:cursor-wait shadow-lg"
-            style={{
-              background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
-              color: 'white',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-            }}
-          >
-            {isGeneratingPDF ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span>{isRTL ? "جاري التوليد..." : "Generating..."}</span>
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4" />
-                <span>{isRTL ? "تحميل تقرير PDF" : "Download PDF Report"}</span>
-              </>
-            )}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleRefreshAnalysis}
+              disabled={isRefreshing}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: 'var(--accent-primary)',
+                color: 'white',
+                border: '1px solid var(--accent-primary)'
+              }}
+            >
+              {isRefreshing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>{isRTL ? "جاري التحديث..." : "Refreshing..."}</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4" />
+                  <span>{isRTL ? "تحديث التحليل" : "Refresh Analysis"}</span>
+                </>
+              )}
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPDF}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-70 disabled:cursor-wait shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
+                color: 'white',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              {isGeneratingPDF ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>{isRTL ? "جاري التوليد..." : "Generating..."}</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  <span>{isRTL ? "تحميل تقرير PDF" : "Download PDF Report"}</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         <div id="report-content" className="p-3 md:p-6 rounded-3xl" style={{
@@ -633,7 +710,7 @@ const handleDownloadPDF = async () => {
               </div>
               <h2 className="text-2xl md:text-4xl font-black mb-1 leading-tight" style={{ color: 'var(--text-primary)' }}>{result.data.companyName}</h2>
               
-              {/* 💹 LIVE PRICE with Badge */}
+              {/* 💹 LIVE PRICE */}
               <div className="flex items-baseline gap-3 my-6">
                 <div className="text-4xl md:text-6xl font-mono font-black" style={{ color: 'var(--text-primary)' }} dir="ltr">
                   ${result.data.price?.toFixed(2)}
@@ -738,6 +815,52 @@ const handleDownloadPDF = async () => {
               <MetricCard label="Rev Growth" value={result.data.revenue_growth} metricKey="margin" tooltipKey="margin" suffix="%" />
               <MetricCard label="Market Cap" value={formatNumber(result.data.market_cap)} metricKey="mcap" tooltipKey="pe" />
             </div>
+          </div>
+
+          {/* Earnings and Competitors Row */}
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-8">
+            {/* Earnings Badge Section */}
+            {result.analysis.upcoming_catalysts?.next_earnings_date && (
+              <div className="flex-1 bg-slate-900/50 border border-slate-800/50 rounded-3xl p-4 md:p-8 shadow-xl">
+                <h3 className="text-lg md:text-2xl font-black mb-6 text-white flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/10 rounded-xl glow-primary"><Calendar className="w-5 h-5 md:w-6 md:h-6 text-[var(--accent-primary)]" /></div>
+                  Next Earnings Date
+                </h3>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 rounded-full px-4 py-2" style={{
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    border: '1px solid rgba(59, 130, 246, 0.3)'
+                  }}>
+                    <Calendar className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm md:text-base font-black uppercase tracking-wider" style={{ color: '#3b82f6' }}>
+                      {new Date(result.analysis.upcoming_catalysts.next_earnings_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Competitors Section */}
+            {result.analysis.competitors && result.analysis.competitors.length > 0 && (
+              <div className="flex-1 bg-slate-900/50 border border-slate-800/50 rounded-3xl p-4 md:p-8 shadow-xl">
+                <h3 className="text-lg md:text-2xl font-black mb-6 text-white flex items-center gap-3">
+                  <div className="p-2 bg-purple-500/10 rounded-xl"><Trophy className="w-5 h-5 md:w-6 md:h-6 text-purple-400" /></div>
+                  Competitors
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {result.analysis.competitors.map((competitor: any, index: number) => (
+                    <button
+                      key={index}
+                      onClick={() => router.push(`/analysis/${competitor.ticker.toLowerCase()}`)}
+                      className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-xl text-slate-300 hover:bg-slate-700/70 hover:border-slate-600/50 transition-all font-bold text-sm uppercase tracking-wider hover:scale-105"
+                      title={competitor.strength}
+                    >
+                      {competitor.ticker.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <Forecasts forecasts={result.analysis.forecasts} t={t} />
@@ -846,6 +969,34 @@ const handleDownloadPDF = async () => {
                 <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider">Price: Live</span>
               </div>
             </div>
+            {result.analysis.ownership_insights && (
+              <div className="mt-4 pt-4 border-t border-slate-700/50">
+                {result.analysis.ownership_insights.institutional_sentiment && (
+                  <div className="mb-3">
+                    <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Institutional Sentiment</div>
+                    <p className="text-slate-300 text-xs md:text-sm leading-relaxed font-medium">
+                      {cleanAIOutput(result.analysis.ownership_insights.institutional_sentiment)}
+                    </p>
+                  </div>
+                )}
+                {result.analysis.ownership_insights.insider_trading && (
+                  <div className="mb-3">
+                    <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Insider Trading</div>
+                    <p className="text-slate-300 text-xs md:text-sm leading-relaxed font-medium">
+                      {cleanAIOutput(result.analysis.ownership_insights.insider_trading)}
+                    </p>
+                  </div>
+                )}
+                {result.analysis.ownership_insights.dividend_safety && (
+                  <div>
+                    <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Dividend Safety</div>
+                    <p className="text-slate-300 text-xs md:text-sm leading-relaxed font-medium">
+                      {cleanAIOutput(result.analysis.ownership_insights.dividend_safety)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <footer className="border-t border-slate-800 mt-16 py-8 text-center">

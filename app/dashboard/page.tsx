@@ -144,7 +144,7 @@ function SkeletonLoader() {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, credits, isLoggedIn, isVerified, isLoading, updateCredits } = useAuth();
+  const { user, credits, isLoggedIn, isVerified, isLoading, updateCredits, isPro, verifyGumroadLicense, refreshUserData } = useAuth();
   const { t } = useTranslation();
   
   const [activeTab, setActiveTab] = useState<'history' | 'settings'>('history');
@@ -164,10 +164,15 @@ export default function DashboardPage() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
-  // Redeem state
+  // Redeem state (Credits)
   const [licenseKey, setLicenseKey] = useState<string>("");
   const [redeemError, setRedeemError] = useState<string>("");
   const [redeeming, setRedeeming] = useState(false);
+
+  // Pro License state
+  const [proLicenseKey, setProLicenseKey] = useState<string>("");
+  const [proRedeemError, setProRedeemError] = useState<string>("");
+  const [proRedeeming, setProRedeeming] = useState(false);
 
   // Fetch analysis history
   useEffect(() => {
@@ -437,6 +442,22 @@ export default function DashboardPage() {
     }
   };
 
+  const handleProRedeem = async () => {
+    setProRedeemError("");
+    if (!proLicenseKey.trim()) return;
+
+    setProRedeeming(true);
+    const success = await verifyGumroadLicense(proLicenseKey.trim());
+    setProRedeeming(false);
+
+    if (success) {
+      setProLicenseKey("");
+      await refreshUserData();
+    } else {
+      setProRedeemError("Invalid or already used license key");
+    }
+  };
+
   const getVerdictColor = (verdict: string) => {
     const v = verdict.toUpperCase();
     if (v.includes('BUY') || v.includes('STRONG BUY')) return 'text-green-400';
@@ -559,6 +580,76 @@ export default function DashboardPage() {
             )}
           </div>
         </motion.div>
+
+        {/* Pro License Activation Card */}
+        {!isPro && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-2xl p-6"
+            style={{
+              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.1), var(--bg-secondary), rgba(234, 179, 8, 0.05))',
+              border: '1px solid rgba(234, 179, 8, 0.3)'
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(234, 179, 8, 0.1))',
+                border: '1px solid rgba(234, 179, 8, 0.4)'
+              }}>
+                <Zap style={{ color: '#eab308' }} size={20} />
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-yellow-400">Activate Pro Subscription</h2>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Unlock unlimited analyses, portfolio tracking & PDF exports</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter your Gumroad Pro license key"
+                  className="flex-1 rounded-lg px-4 py-3 focus:outline-none transition"
+                  style={{
+                    backgroundColor: 'var(--input-bg)',
+                    border: '1px solid rgba(234, 179, 8, 0.3)',
+                    color: 'var(--text-primary)'
+                  }}
+                  value={proLicenseKey}
+                  onChange={(e) => setProLicenseKey(e.target.value)}
+                />
+                <button
+                  onClick={handleProRedeem}
+                  disabled={proRedeeming || !proLicenseKey.trim()}
+                  className="font-bold px-6 py-3 rounded-lg transition-all flex items-center gap-2 disabled:cursor-not-allowed bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 disabled:from-gray-600 disabled:to-gray-700"
+                  style={{
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  {proRedeeming ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Activating...
+                    </>
+                  ) : (
+                    <>
+                      <Zap size={16} />
+                      Activate Pro
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {proRedeemError && (
+                <p className="text-sm animate-pulse" style={{ color: '#ef4444' }}>
+                  ⚠️ {proRedeemError}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2 mt-6 border-b border-slate-800">

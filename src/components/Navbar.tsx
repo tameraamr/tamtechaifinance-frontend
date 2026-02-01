@@ -13,7 +13,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: NavbarProps) {
-  const { isLoggedIn, credits, logout, isLoading } = useAuth();
+  const { isLoggedIn, credits, logout, isLoading, isPro } = useAuth();
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -73,21 +73,33 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
               </>
             )}
             
-            {/* Credits Display */}
+            {/* Credits/Pro Badge Display */}
             {isLoading ? (
               <div className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-muted)]">
                 <Star className="w-3 h-3 text-[var(--text-muted)] animate-pulse" />
                 <span className="animate-pulse">...</span>
               </div>
             ) : isLoggedIn ? (
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/50 transition-all cursor-pointer"
-                title="View dashboard"
-              >
-                <Star className="w-3 h-3 text-yellow-400" />
-                <span>{credits}</span>
-              </Link>
+              isPro ? (
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/50 px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs font-bold text-yellow-300 hover:border-yellow-400/70 transition-all cursor-pointer"
+                  title="Pro Subscriber - Unlimited Access"
+                >
+                  <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+                  <span className="hidden sm:inline">PRO</span>
+                  <span className="sm:hidden">P</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/50 transition-all cursor-pointer"
+                  title="View dashboard"
+                >
+                  <Star className="w-3 h-3 text-yellow-400" />
+                  <span>{credits}</span>
+                </Link>
+              )
             ) : (
               <div className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-muted)]">
                 <User className="w-3 h-3" />

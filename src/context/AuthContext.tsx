@@ -13,6 +13,8 @@ interface User {
   country?: string;
   address?: string;
   is_verified?: number | boolean;  // 0/1 or false/true
+  is_pro?: number | boolean;  // 0/1 or false/true
+  subscription_expiry?: string | null;  // ISO datetime string
 }
 
 interface AuthContextType {
@@ -20,12 +22,15 @@ interface AuthContextType {
   credits: number;
   isLoggedIn: boolean;
   isVerified: boolean;
+  isPro: boolean;
+  subscriptionExpiry: string | null;
   isLoading: boolean;
   login: (userData: User, credits: number) => Promise<void>;
   logout: () => Promise<void>;
   updateCredits: (newCredits: number) => void;
   refreshUserData: () => Promise<void>;
   retryValidation: () => Promise<void>;
+  verifyGumroadLicense: (licenseKey: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,6 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isLoggedIn = isAuthenticated && !!user;
   // Handle both boolean true and number 1 for is_verified
   const isVerified = user?.is_verified === 1 || user?.is_verified === true;
+  // Handle Pro status
+  const isPro = user?.is_pro === 1 || user?.is_pro === true;
+  const subscriptionExpiry = user?.subscription_expiry || null;
 
   // 🎉 Personalized Welcome Notification
   const showWelcomeToast = (userName: string, userCredits: number) => {
@@ -286,17 +294,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   };
 
+  const verifyGumroadLicense = async (licenseKey: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`${BASE_URL}/verify-gumroad-license`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ license_key: licenseKey }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        toast.error(error.detail || 'License verification failed');
+        return false;
+      }
+
+      const data = await response.json();
+      
+      // Refresh user data to get updated Pro status
+      await refreshUserData();
+      
+      toast.success('🎉 Pro subscription activated! You now have unlimited access.');
+      return true;
+    } catch (error) {
+      console.error('License verification error:', error);
+      toast.error('Failed to verify license. Please try again.');
+      return false;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     credits,
     isLoggedIn,
     isVerified,
+    isPro,
+    subscriptionExpiry,
     isLoading,
     login,
     logout,
     updateCredits,
     refreshUserData,
     retryValidation,
+    verifyGumroadLicense,
   };
 
   return (

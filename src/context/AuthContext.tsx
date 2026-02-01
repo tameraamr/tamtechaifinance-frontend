@@ -179,6 +179,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             country: data.country,
             address: data.address,
             is_verified: data.is_verified,
+            is_pro: data.is_pro,  // 🔥 CRITICAL: Include Pro status
+            subscription_expiry: data.subscription_expiry,  // 🔥 CRITICAL: Include expiry
           },
           credits: data.credits,
         };

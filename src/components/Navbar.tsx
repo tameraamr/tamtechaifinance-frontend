@@ -50,16 +50,16 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
 
           {/* Right: Credits, Language, User Actions */}
           <div className="flex items-center gap-2 md:gap-3">
-            {/* Dashboard Button - Desktop */}
+            {/* Account Button - Desktop */}
             {isLoggedIn && (
               <>
                 <Link 
-                  href="/dashboard" 
+                  href="/account" 
                   className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/50 hover:border-purple-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-purple-300 hover:text-purple-200 text-xs font-bold"
-                  title="View your dashboard"
+                  title="View your account"
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
-                  <span className="hidden lg:inline">Dashboard</span>
+                  <User className="w-3.5 h-3.5" />
+                  <span className="hidden lg:inline">Account</span>
                 </Link>
                 
                 <Link 
@@ -82,7 +82,7 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             ) : isLoggedIn ? (
               isPro ? (
                 <Link
-                  href="/dashboard"
+                  href="/account"
                   className="flex items-center gap-1.5 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 border border-yellow-500/50 px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs font-bold text-yellow-300 hover:border-yellow-400/70 transition-all cursor-pointer"
                   title="Pro Subscriber - Unlimited Access"
                 >
@@ -92,9 +92,9 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
                 </Link>
               ) : (
                 <Link
-                  href="/dashboard"
+                  href="/account"
                   className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/50 transition-all cursor-pointer"
-                  title="View dashboard"
+                  title="View account"
                 >
                   <Star className="w-3 h-3 text-yellow-400" />
                   <span>{credits}</span>
@@ -174,16 +174,16 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
               🐳 {t.whaleRadar}
             </Link>
 
-            {/* Dashboard Link - Before Language Selector */}
+            {/* Account Link - Before Language Selector */}
             {isLoggedIn && (
               <>
                 <Link 
-                  href="/dashboard" 
+                  href="/account" 
                   onClick={() => setMobileMenuOpen(false)}
                   className="block text-sm font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 px-4 py-3 rounded-lg transition-all text-purple-300 flex items-center gap-2"
                 >
-                  <LayoutDashboard className="w-4 h-4" />
-                  📊 Dashboard
+                  <User className="w-4 h-4" />
+                  👤 Account
                 </Link>
                 <Link 
                   href="/portfolio" 

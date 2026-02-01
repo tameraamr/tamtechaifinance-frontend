@@ -89,8 +89,10 @@ export default function PortfolioPage() {
           duration: 5000,
           icon: "⚠️"
         });
-        setShowUpgradeModal(true);
-        setLoading(false);
+        // Redirect to homepage after 1 second
+        setTimeout(() => {
+          router.push('/');
+        }, 1000);
         return;
       }
 
@@ -101,7 +103,7 @@ export default function PortfolioPage() {
         toast.success(`Welcome back! You have ${credits} credits`, { duration: 4000, icon: '👋' });
       }
     }
-  }, [isLoggedIn, isPro]);
+  }, [isLoggedIn, isPro, router]);
 
   // Fetch exchange rates
   useEffect(() => {

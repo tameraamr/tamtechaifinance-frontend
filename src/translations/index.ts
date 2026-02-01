@@ -462,6 +462,15 @@ export const fullTranslations = {
     battleWinner: "Winner:",
     battleDataStream: "Verified Institutional Data Stream",
     
+    // Global Event Timer Card
+    commandCenter: "Command Center",
+    globalEventTimer: "Global Event Timer",
+    nextEvent: "Next Event",
+    highImpact: "High Impact",
+    mediumImpact: "Medium Impact",
+    lowImpact: "Low Impact",
+    viewFullCalendar: "View Full Calendar",
+    
     comingSoon: "Coming Soon",
     newsComingSoonDesc: "Real-time market news, earnings updates, and sector analysis powered by AI. Stay ahead of market-moving events.",
     fedUpdates: "Fed Updates",
@@ -1444,6 +1453,15 @@ export const fullTranslations = {
     battleWinner: "Ganador:",
     battleDataStream: "Flujo de Datos Institucional Verificado",
     
+    // Global Event Timer Card
+    commandCenter: "Centro de Comando",
+    globalEventTimer: "Temporizador de Eventos Globales",
+    nextEvent: "Próximo Evento",
+    highImpact: "Alto Impacto",
+    mediumImpact: "Impacto Medio",
+    lowImpact: "Bajo Impacto",
+    viewFullCalendar: "Ver Calendario Completo",
+    
     comingSoon: "Próximamente",
     newsComingSoonDesc: "Noticias de mercado en tiempo real, actualizaciones de ganancias y análisis sectorial impulsado por IA. Mantente adelante de los eventos que mueven el mercado.",
     fedUpdates: "Actualizaciones de la Fed",
@@ -1945,6 +1963,15 @@ export const fullTranslations = {
     battleRiskDesc: "דוח זה שנוצר על ידי AI הוא למטרות חינוכיות ומידע בלבד ואינו מהווה ייעוץ פיננסי, השקעות או משפטי. מסחר והשקעה בשווקים פיננסיים כרוכים בסיכון משמעותי של הפסד. TamtechAI והשותפים שלה אינם אחראים לכל החלטה פיננסית שנעשתה על בסיס ניתוח זה. התייעצ תמיד עם יועץ פיננסי מוסמך לפני קבלת החלטות השקעה.",
     battleWinner: "מנצח:",
     battleDataStream: "זרם נתונים מוסדי מאומת",
+    
+    // Global Event Timer Card
+    commandCenter: "מרכז פקודה",
+    globalEventTimer: "שעון אירועים גלובלי",
+    nextEvent: "אירוע הבא",
+    highImpact: "השפעה גבוהה",
+    mediumImpact: "השפעה בינונית",
+    lowImpact: "השפעה נמוכה",
+    viewFullCalendar: "צפה בלוח השנה המלא",
     
     comingSoon: "בקרוב",
     newsComingSoonDesc: "חדשות שוק בזמן אמת, עדכוני רווחים וניתוח מגזרי מונע AI. הישאר קצב אחד קדימה מהאירועים שמניעים את השווקים.",
@@ -2464,6 +2491,15 @@ export const fullTranslations = {
     battleWinner: "Победитель:",
     battleDataStream: "Проверенный институциональный поток данных",
     
+    // Global Event Timer Card
+    commandCenter: "Командный центр",
+    globalEventTimer: "Таймер глобальных событий",
+    nextEvent: "Следующее событие",
+    highImpact: "Высокое влияние",
+    mediumImpact: "Среднее влияние",
+    lowImpact: "Низкое влияние",
+    viewFullCalendar: "Посмотреть полный календарь",
+    
     comingSoon: "Скоро",
     newsComingSoonDesc: "Новости рынка в реальном времени, обновления прибыли и секторальный анализ на основе ИИ. Будьте впереди событий, движущих рынок.",
     fedUpdates: "Обновления ФРС",
@@ -2963,6 +2999,15 @@ export const fullTranslations = {
     battleRiskDesc: "Questo rapporto generato dall'IA è solo a scopo educativo e informativo e non costituisce consulenza finanziaria, di investimento o legale. Il trading e gli investimenti nei mercati finanziari comportano un rischio significativo di perdita. TamtechAI e le sue affiliate non sono responsabili per alcuna decisione finanziaria presa sulla base di questa analisi. Consultare sempre un consulente finanziario autorizzato prima di prendere decisioni di investimento.",
     battleWinner: "Vincitore:",
     battleDataStream: "Flusso Dati Istituzionale Verificato",
+    
+    // Global Event Timer Card
+    commandCenter: "Centro di Comando",
+    globalEventTimer: "Timer Eventi Globali",
+    nextEvent: "Prossimo Evento",
+    highImpact: "Alto Impatto",
+    mediumImpact: "Impatto Medio",
+    lowImpact: "Basso Impatto",
+    viewFullCalendar: "Visualizza Calendario Completo",
     
     comingSoon: "Prossimamente",
     newsComingSoonDesc: "Notizie di mercato in tempo reale, aggiornamenti sugli utili e analisi settoriale basata su IA. Rimani avanti agli eventi che muovono il mercato.",

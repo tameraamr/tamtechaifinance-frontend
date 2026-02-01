@@ -138,9 +138,9 @@ export default function PricingPage() {
               <ul className="space-y-3 mb-8 flex-grow">
                 {[
                   "10 AI Stock Analyses",
-                  "10 Stock Battles",
-                  "10 PDF Exports",
                   "Intrinsic Value Calculations",
+                  "AI-Powered Insights",
+                  "Real-time Market Data",
                   "Instant License Delivery",
                   "No Expiration Date"
                 ].map((feature, i) => (
@@ -173,7 +173,7 @@ export default function PricingPage() {
               <ShoppingCart className="text-blue-500 w-8 h-8" />
             </div>
             <h4 className="font-bold text-white mb-2">{t.purchase}</h4>
-            <p className="text-sm text-slate-500 leading-relaxed italic">{t.purchaseDesc}</p>
+            <p className="text-sm text-slate-500 leading-relaxed italic">Choose TamtechAI Pro ($10/month) for unlimited access, or 10 Credits ($5) for pay-as-you-go.</p>
           </div>
           <div className="text-center p-6">
             <div className="bg-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-slate-800 shadow-lg">

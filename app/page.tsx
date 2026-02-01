@@ -1195,8 +1195,8 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50 animate-pulse" />
                 <div>
-                  <p className="text-xs uppercase tracking-[0.15em] text-cyan-300 font-bold">Command Center</p>
-                  <h3 className="text-lg font-black text-white mt-0.5">Global Event Timer</h3>
+                  <p className="text-xs uppercase tracking-[0.15em] text-cyan-300 font-bold">{t.commandCenter}</p>
+                  <h3 className="text-lg font-black text-white mt-0.5">{t.globalEventTimer}</h3>
                 </div>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-cyan-400/10 border border-cyan-400/30 flex items-center justify-center shadow-lg">
@@ -1207,14 +1207,14 @@ export default function Home() {
             {/* Live Countdown with Impact Indicator */}
             <div className="text-center relative z-10 space-y-3">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-xs text-slate-400 uppercase tracking-wide">Next Event</span>
+                <span className="text-xs text-slate-400 uppercase tracking-wide">{t.nextEvent}</span>
                 {nextEvent && (
                   <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
                     nextEvent.importance === 'High' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                     nextEvent.importance === 'Medium' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
                     'bg-green-500/20 text-green-300 border border-green-500/30'
                   }`}>
-                    {nextEvent.importance} Impact
+                    {nextEvent.importance === 'High' ? t.highImpact : nextEvent.importance === 'Medium' ? t.mediumImpact : t.lowImpact}
                   </div>
                 )}
               </div>
@@ -1237,7 +1237,7 @@ export default function Home() {
 
             <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold px-5 py-3 rounded-xl text-sm transition-all duration-200 shadow-lg shadow-cyan-900/30 hover:shadow-cyan-900/50 relative z-10">
               <Calendar className="w-4 h-4" />
-              View Full Calendar
+              {t.viewFullCalendar}
             </Link>
           </motion.div>
 

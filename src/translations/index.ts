@@ -952,6 +952,15 @@ export const fullTranslations = {
     battleWinner: "الفائز:",
     battleDataStream: "تدفق بيانات مؤسسي موثق",
     
+    // Global Event Timer Card
+    commandCenter: "مركز القيادة",
+    globalEventTimer: "مؤقت الأحداث العالمية",
+    nextEvent: "الحدث التالي",
+    highImpact: "تأثير عالي",
+    mediumImpact: "تأثير متوسط",
+    lowImpact: "تأثير منخفض",
+    viewFullCalendar: "عرض التقويم الكامل",
+    
     comingSoon: "قريباً",
     newsComingSoonDesc: "أخبار السوق في الوقت الفعلي، وتحديثات الأرباح، وتحليل القطاعات بالذكاء الاصطناعي. ابقَ متقدماً على الأحداث المؤثرة في السوق.",
     fedUpdates: "تحديثات الاحتياطي الفيدرالي",

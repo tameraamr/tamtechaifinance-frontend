@@ -727,8 +727,13 @@ export default function Home() {
     setResult(null);
     setAnalysisComplete(false);
 
-    // 1. فحص الرصيد محلياً للمسجلين
-    if (isLoggedIn && credits <= 0) { setShowPaywall(true); setLoading(false); return; }
+    // 1. فحص الرصيد محلياً للمسجلين (Pro users bypass this)
+    if (isLoggedIn && !isPro && credits <= 0) {
+      setModalTrigger('credits');
+      setShowUpgradeModal(true);
+      setLoading(false);
+      return;
+    }
 
     // 2. فحص أولي للزوار (بناءً على المتصفح)
     if (!isLoggedIn && guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; }
@@ -761,7 +766,12 @@ export default function Home() {
         return;
       }
 
-      if (res.status === 402) { setShowPaywall(true); return; }
+      if (res.status === 402) {
+        setModalTrigger('credits');
+        setShowUpgradeModal(true);
+        setLoading(false);
+        return;
+      }
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -1744,76 +1754,7 @@ export default function Home() {
           </div>
         )}
 
-        {showPaywall && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in">
-            <div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl max-w-lg w-full text-center relative shadow-2xl">
-              <div className="bg-slate-800 p-4 rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center mx-auto mb-6 border border-slate-700">
-                <Lock className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" />
-              </div>
-
-              <h2 className="text-xl md:text-3xl font-bold mb-2 text-white">{t.paywallTitle}</h2>
-              <p className="text-slate-400 mb-6 text-xs md:text-sm">Choose your credit package:</p>
-
-              {/* Two Tier Pricing Buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {/* 10 Credits - $4.99 */}
-                <a 
-                  href="https://tamtechfinance.gumroad.com/l/tool?variant=Starter%20Pack%20(10%20Credits)" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold py-4 px-4 rounded-xl text-sm hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg"
-                >
-                  <div className="text-2xl font-black mb-1">$4.99</div>
-                  <div className="text-xs opacity-90">10 Credits</div>
-                </a>
-
-                {/* 50 Credits - $9.99 */}
-                <a 
-                  href="https://tamtechfinance.gumroad.com/l/tool?variant=Trader's%20Choice%20(50%20Credits)" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-bold py-4 px-4 rounded-xl text-sm hover:from-yellow-500 hover:to-orange-500 transition-all shadow-lg border-2 border-yellow-500/50"
-                >
-                  <div className="text-xs uppercase tracking-wide mb-1">Best Value</div>
-                  <div className="text-2xl font-black mb-1">$9.99</div>
-                  <div className="text-xs opacity-90">50 Credits</div>
-                </a>
-              </div>
-
-              <div className="border-t border-slate-700 pt-6 mt-2">
-                <p className="text-slate-500 text-xs mb-3">Already have a license key?</p>
-
-                <div className="flex flex-col gap-2">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder={t.inputKey}
-                      className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white"
-                      value={licenseKey}
-                      onChange={(e) => setLicenseKey(e.target.value)}
-                    />
-                    <button
-                      onClick={handleRedeem}
-                      className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg text-xs cursor-pointer active:scale-95 transition-all"
-                    >
-                      {t.redeemBtn}
-                    </button>
-                  </div>
-
-                  {authError && (
-                    <p className="text-red-500 text-[10px] md:text-xs mt-1 animate-pulse text-left">
-                      ⚠️ {authError}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <button onClick={() => setShowPaywall(false)} className="mt-6 text-[10px] md:text-xs text-slate-500 hover:text-slate-300 cursor-pointer">
-                Close
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Old paywall removed - using UpgradeModal instead */}
 
         <ComparisonBattle
           showCompareModal={showCompareModal}

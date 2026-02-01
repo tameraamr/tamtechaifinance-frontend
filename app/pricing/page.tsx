@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { Check, Zap, ShieldCheck, Key, ShoppingCart, ArrowLeft, Star } from 'lucide-react';
+import { Check, Zap, ShieldCheck, Key, ShoppingCart, ArrowLeft, Star, Crown, TrendingUp, FileText, PieChart } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -48,9 +48,73 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {/* Pricing Cards Grid - 2 Options */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
           
+          {/* PRO SUBSCRIPTION - RECOMMENDED */}
+          <div className="relative md:scale-105 md:z-10">
+            <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-orange-500 rounded-[2rem] blur opacity-40 hover:opacity-60 transition duration-1000"></div>
+            
+            <div className="relative bg-slate-900 border-2 border-yellow-500/70 p-8 rounded-[2rem] shadow-2xl h-full flex flex-col">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-2xl font-black text-white flex items-center gap-2">
+                    <Crown className="w-7 h-7 text-yellow-500 fill-yellow-500" />
+                    TamtechAI Pro
+                  </h3>
+                  <p className="text-yellow-400 text-xs mt-1 uppercase tracking-widest font-bold">Monthly Subscription</p>
+                </div>
+                <div className="bg-yellow-600/30 text-yellow-300 px-3 py-1 rounded-full text-xs font-black uppercase border border-yellow-500/50">
+                  ⭐ Recommended
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-6xl font-black text-yellow-300">$10</span>
+                  <span className="text-slate-400 text-xl">/mo</span>
+                </div>
+                <p className="text-green-400 text-sm font-bold mt-2">Best value for power users!</p>
+                <p className="text-slate-400 mt-3 text-sm leading-relaxed">
+                  Unlimited access to all premium features
+                </p>
+              </div>
+
+              <ul className="space-y-3 mb-8 flex-grow">
+                {[
+                  { icon: Zap, text: "Unlimited Stock Analyses" },
+                  { icon: TrendingUp, text: "Unlimited Stock Battles" },
+                  { icon: PieChart, text: "Full Portfolio Tracking" },
+                  { icon: FileText, text: "Unlimited PDF Exports" },
+                  { icon: Star, text: "Priority AI Processing" },
+                  { icon: Crown, text: "Clickable Competitors" },
+                  { icon: ShieldCheck, text: "Cancel Anytime" }
+                ].map((feature, i) => {
+                  const Icon = feature.icon;
+                  return (
+                    <li key={i} className="flex items-center gap-3 text-slate-200">
+                      <div className="bg-yellow-500/20 p-1.5 rounded-full">
+                        <Icon className="w-4 h-4 text-yellow-400" />
+                      </div>
+                      <span className="text-sm font-semibold">{feature.text}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <a 
+                href="https://tamtechfinance.gumroad.com/l/membership" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-yellow-600/30 group"
+              >
+                <Crown className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                Get Pro - $10/month
+              </a>
+              <p className="text-center text-xs text-slate-500 mt-3">Cancel anytime, no commitments</p>
+            </div>
+          </div>
+
           {/* 10 Credits Package */}
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[2rem] blur opacity-20 hover:opacity-40 transition duration-1000"></div>
@@ -63,8 +127,9 @@ export default function PricingPage() {
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black text-white">$4.99</span>
+                  <span className="text-5xl font-black text-white">$5</span>
                 </div>
+                <p className="text-slate-400 text-sm mt-2">One-time purchase</p>
                 <p className="text-slate-400 mt-3 text-sm leading-relaxed">
                   Perfect for trying out our AI-powered analysis
                 </p>
@@ -73,10 +138,11 @@ export default function PricingPage() {
               <ul className="space-y-3 mb-8 flex-grow">
                 {[
                   "10 AI Stock Analyses",
-                  "Stock Battle Mode",
-                  "Professional PDF Exports",
+                  "10 Stock Battles",
+                  "10 PDF Exports",
                   "Intrinsic Value Calculations",
-                  "Instant License Delivery"
+                  "Instant License Delivery",
+                  "No Expiration Date"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-3 text-slate-300">
                     <div className="bg-blue-500/20 p-1 rounded-full">
@@ -94,66 +160,7 @@ export default function PricingPage() {
                 className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-blue-600/20 group"
               >
                 <ShoppingCart className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                Buy Now - $4.99
-              </a>
-            </div>
-          </div>
-
-          {/* 50 Credits Package - Popular */}
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-orange-500 rounded-[2rem] blur opacity-30 hover:opacity-50 transition duration-1000"></div>
-            
-            <div className="relative bg-slate-900 border-2 border-yellow-500/50 p-8 rounded-[2rem] shadow-2xl h-full flex flex-col">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-2xl font-black text-white flex items-center gap-2">
-                    <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-                    Pro Pack
-                  </h3>
-                  <p className="text-slate-500 text-xs mt-1 uppercase tracking-widest font-bold">50 Credits</p>
-                </div>
-                <div className="bg-yellow-600/20 text-yellow-400 px-3 py-1 rounded-full text-xs font-black uppercase">
-                  Best Value
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-6xl font-black text-white">$9.99</span>
-                </div>
-                <p className="text-green-400 text-sm font-bold mt-2">Save 50%! ($0.20 per analysis)</p>
-                <p className="text-slate-400 mt-3 text-sm leading-relaxed">
-                  Maximum value for serious investors
-                </p>
-              </div>
-
-              <ul className="space-y-3 mb-8 flex-grow">
-                {[
-                  "50 AI Stock Analyses",
-                  "Stock Battle Mode",
-                  "Professional PDF Exports",
-                  "Intrinsic Value Calculations",
-                  "Instant License Delivery",
-                  "Priority AI Processing",
-                  "No Expiration Date"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-slate-300">
-                    <div className="bg-yellow-500/20 p-1 rounded-full">
-                      <Check className="w-3 h-3 text-yellow-400" />
-                    </div>
-                    <span className="text-sm font-medium">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <a 
-                href="https://tamtechfinance.gumroad.com/l/tool?variant=Trader's%20Choice%20(50%20Credits)" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-yellow-600/20 group"
-              >
-                <ShoppingCart className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                Buy Now - $9.99
+                Buy Now - $5
               </a>
             </div>
           </div>

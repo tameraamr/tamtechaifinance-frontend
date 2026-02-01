@@ -61,6 +61,9 @@ export default function UpgradeModal({ isOpen, onClose, trigger = 'credits' }: U
   };
 
   const { title, subtitle } = getTriggerMessage();
+  
+  // Pro-only features should NOT show credits option
+  const isProOnlyFeature = trigger === 'portfolio' || trigger === 'pdf' || trigger === 'feature';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -183,17 +186,20 @@ export default function UpgradeModal({ isOpen, onClose, trigger = 'credits' }: U
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[var(--border-primary)]"></div>
+          {/* Divider - Only show for credit triggers */}
+          {!isProOnlyFeature && (
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[var(--border-primary)]"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-[var(--bg-secondary)] text-[var(--text-muted)]">or</span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-[var(--bg-secondary)] text-[var(--text-muted)]">or</span>
-            </div>
-          </div>
+          )}
 
-          {/* Buy Credits Option */}
+          {/* Buy Credits Option - Only show for credit triggers */}
+          {!isProOnlyFeature && (
           <div className="border border-[var(--border-primary)] rounded-xl p-6 hover:border-[var(--accent-primary)]/50 transition-colors">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -224,6 +230,7 @@ export default function UpgradeModal({ isOpen, onClose, trigger = 'credits' }: U
               Buy 10 Credits - $5
             </a>
           </div>
+          )}
 
           {/* Current Balance */}
           {!isPro && credits > 0 && (

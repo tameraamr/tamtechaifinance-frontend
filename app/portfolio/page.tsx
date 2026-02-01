@@ -160,40 +160,7 @@ export default function PortfolioPage() {
     return () => window.removeEventListener('click', closeSuggestions);
   }, []);
 
-  // Paywall: Require 20+ credits for portfolio access
-  if (!isLoggedIn || credits <= 20) {
-    return (
-      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
-        <Navbar />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-md mx-auto text-center p-8 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-primary)]"
-        >
-          <Lock className="w-16 h-16 text-yellow-400 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">
-            Professional Portfolio Tracker
-          </h1>
-          <p className="text-[var(--text-secondary)] mb-6">
-            Unlock your Professional Portfolio Tracker with advanced analytics, live charts, and performance insights.
-          </p>
-          <div className="bg-[var(--bg-tertiary)] rounded-lg p-4 mb-6">
-            <p className="text-yellow-400 font-semibold">Requires 20+ credits</p>
-            <p className="text-[var(--text-muted)] text-sm">Current balance: {credits} credits</p>
-          </div>
-          <button
-            onClick={() => window.location.href = '/pricing'}
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105"
-          >
-            Upgrade Now
-          </button>
-        </motion.div>
-        <Footer />
-      </div>
-    );
-  }
-
-  // Rest of the portfolio page for premium users...
+  // Pro check is handled in useEffect - renders UpgradeModal if not Pro
 
   // Handler functions must be defined before any JSX usage
 

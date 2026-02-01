@@ -299,9 +299,9 @@ export const fullTranslations = {
     faq2Q: "What stocks can I analyze?",
     faq2A: "You can analyze any stock listed on major U.S. exchanges (NYSE, NASDAQ, S&P 500). This includes individual stocks, but not ETFs, mutual funds, or cryptocurrency at this time. Simply enter the ticker symbol (e.g., AAPL, TSLA, MSFT).",
     faq3Q: "How much does each analysis cost?",
-    faq3A: "Each analysis costs 1 credit. Guest users get 3 free trials. After that, you can purchase credits: 10 credits for $4.99 or 50 credits for $9.99 via our secure Gumroad integration. Credits never expire.",
+    faq3A: "Choose your preferred option: Get TamtechAI Pro for $10/month with unlimited analyses, stock battles, portfolio tracking, and PDF exports. Or purchase 10 credits for $5 (one-time payment, never expires). Guest users get 3 free trials.",
     faq4Q: "Can I download the analysis report?",
-    faq4A: "Yes! Every analysis includes a professional PDF export feature. Click the 'Download PDF' button on the results page to save a comprehensive report with all metrics, charts, SWOT analysis, bull/bear cases, and AI verdict. Perfect for sharing or record-keeping.",
+    faq4A: "Yes! PDF export is available for Pro subscribers (unlimited) or costs 1 credit for free users. Download a comprehensive report with all metrics, charts, SWOT analysis, bull/bear cases, and AI verdict. Perfect for sharing or record-keeping.",
     faq5Q: "Is this financial advice?",
     faq5A: "No. Our AI analysis is a research tool designed to enhance your decision-making process, not replace it. We are not licensed financial advisors. All analysis is for educational and informational purposes only. Always do your own research and consult with a qualified financial professional before investing.",
     
@@ -798,9 +798,9 @@ export const fullTranslations = {
     faq2Q: "ما هي الأسهم التي يمكنني تحليلها؟",
     faq2A: "يمكنك تحليل أي سهم مدرج في البورصات الأمريكية الرئيسية (NYSE، NASDAQ، S&P 500). يشمل ذلك الأسهم الفردية، ولكن ليس صناديق الاستثمار المتداولة أو صناديق الاستثمار المشتركة أو العملات المشفرة في الوقت الحالي. ببساطة أدخل رمز السهم (مثل AAPL، TSLA، MSFT).",
     faq3Q: "كم تبلغ تكلفة كل تحليل؟",
-    faq3A: "يكلف كل تحليل رصيد واحد. يحصل المستخدمون الزوار على 3 تجارب مجانية. بعد ذلك، يمكنك شراء رصيد: 10 رصيد بـ $4.99 أو 50 رصيد بـ $9.99 عبر التكامل الآمن مع Gumroad. الأرصدة لا تنتهي صلاحيتها أبدًا.",
+    faq3A: "اختر الخيار المفضل لديك: احصل على TamtechAI Pro مقابل 10 دولارات شهريًا مع تحليلات غير محدودة، معارك الأسهم، تتبع المحفظة، وتصدير PDF. أو اشترِ 10 أرصدة مقابل 5 دولارات (دفعة واحدة، لا تنتهي صلاحيتها أبدًا). يحصل المستخدمون الزوار على 3 تجارب مجانية.",
     faq4Q: "هل يمكنني تنزيل تقرير التحليل؟",
-    faq4A: "نعم! يتضمن كل تحليل ميزة تصدير PDF احترافية. انقر على زر 'تنزيل PDF' في صفحة النتائج لحفظ تقرير شامل مع جميع المقاييس والرسوم البيانية وتحليل SWOT وحالات الثور/الدب وحكم الذكاء الاصطناعي. مثالي للمشاركة أو الاحتفاظ بالسجلات.",
+    faq4A: "نعم! تصدير PDF متاح لمشتركي Pro (غير محدود) أو يكلف رصيد واحد للمستخدمين المجانيين. قم بتنزيل تقرير شامل مع جميع المقاييس والرسوم البيانية وتحليل SWOT وحالات الثور/الدب وحكم الذكاء الاصطناعي. مثالي للمشاركة أو الاحتفاظ بالسجلات.",
     faq5Q: "هل هذه نصيحة مالية؟",
     faq5A: "لا. تحليل الذكاء الاصطناعي الخاص بنا هو أداة بحثية مصممة لتحسين عملية اتخاذ القرار، وليس استبدالها. نحن لسنا مستشارين ماليين مرخصين. جميع التحليلات لأغراض تعليمية وإعلامية فقط. قم دائمًا بإجراء بحثك الخاص واستشر متخصصًا ماليًا مؤهلاً قبل الاستثمار.",
     

@@ -26,15 +26,19 @@ export async function generateMetadata({ params }: { params: Promise<{ ticker: s
   const ticker = tickerParam.toUpperCase();
   
   try {
-    // Fetch cached analysis data for metadata
-    const response = await fetch(`${BASE_URL}/analyze/${ticker}?lang=en`, {
-      next: { revalidate: 86400 } // Cache for 24 hours
+    // Fetch cached analysis data for metadata  
+    const response = await fetch(`${BASE_URL}/stocks/${ticker}?lang=en`, {
+      next: { revalidate: 3600 } // Cache for 1 hour
     });
     
     if (!response.ok) {
       return {
-        title: `${ticker} Stock Analysis - Tamtech Finance`,
-        description: `AI-powered analysis and investment insights for ${ticker} stock. Get real-time financial health scores, buy/sell recommendations, and intrinsic value calculations.`,
+        title: `${ticker} Stock Analysis 2026 - AI-Powered Insights | Tamtech Finance`,
+        description: `Comprehensive AI analysis for ${ticker} stock. Get buy/sell recommendations, intrinsic value, financial health scores, and investment insights.`,
+        alternates: {
+          canonical: `https://tamtech-finance.com/stocks/${ticker}`,
+        },
+        keywords: `${ticker} stock, ${ticker} analysis, ${ticker} prediction, ${ticker} buy or sell, stock analysis, AI prediction`,
       };
     }
     
@@ -42,30 +46,32 @@ export async function generateMetadata({ params }: { params: Promise<{ ticker: s
     const analysis = data.analysis;
     const stockData = data.data;
     
-    const title = `${ticker} Stock Analysis 2026: ${analysis.verdict} Rating - ${analysis.confidence_score}% Confidence | Tamtech Finance`;
-    const description = analysis.summary_one_line || `Professional AI-powered analysis of ${stockData?.companyName || ticker}. Current verdict: ${analysis.verdict} with ${analysis.confidence_score}% confidence. Comprehensive financial health assessment and investment recommendations.`;
+    // Dynamic SEO title with verdict
+    const title = `${ticker} Analysis: ${analysis.verdict} (${analysis.confidence_score}% Confidence) | Tamtech Finance`;
+    const description = analysis.summary_one_line || `AI analysis of ${stockData?.companyName || ticker}. Verdict: ${analysis.verdict} with ${analysis.confidence_score}% confidence. Intrinsic value: $${analysis.intrinsic_value || 'N/A'}.`;
     
     return {
       title,
       description,
       keywords: [
-        `${ticker} stock`,
-        `${ticker} analysis`,
-        `${ticker} stock price`,
-        `${ticker} prediction`,
-        `${ticker} AI analysis`,
+        `${ticker} stock analysis 2026`,
         `${ticker} buy or sell`,
+        `${ticker} price prediction`,
+        `${ticker} intrinsic value`,
+        `${ticker} AI analysis`,
         `${ticker} investment`,
         `${stockData?.companyName} stock`,
-        'stock analysis',
+        `${stockData?.companyName} analysis`,
         'AI stock prediction',
-        'financial analysis'
+        'stock analysis tool'
       ].join(', '),
+      authors: [{ name: 'Tamtech Finance AI' }],
       openGraph: {
         title,
         description,
         type: 'article',
         url: `https://tamtech-finance.com/stocks/${ticker}`,
+        siteName: 'Tamtech Finance',
         images: [
           {
             url: `https://tamtech-finance.com/api/og/${ticker}`,
@@ -83,10 +89,14 @@ export async function generateMetadata({ params }: { params: Promise<{ ticker: s
       },
       alternates: {
         canonical: `https://tamtech-finance.com/stocks/${ticker}`,
+        languages: {
+          'en-US': `https://tamtech-finance.com/stocks/${ticker}`,
+        },
       },
       robots: {
         index: true,
         follow: true,
+        nocache: false,
         googleBot: {
           index: true,
           follow: true,
@@ -101,6 +111,9 @@ export async function generateMetadata({ params }: { params: Promise<{ ticker: s
     return {
       title: `${ticker} Stock Analysis - Tamtech Finance`,
       description: `AI-powered analysis for ${ticker} stock. Real-time financial insights and investment recommendations.`,
+      alternates: {
+        canonical: `https://tamtech-finance.com/stocks/${ticker}`,
+      },
     };
   }
 }

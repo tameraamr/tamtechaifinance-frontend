@@ -25,7 +25,7 @@ interface ArticleData {
 
 async function getArticle(slug: string): Promise<ArticleData | null> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/articles/${slug}`;
+    const url = `https://tamtechaifinance-backend-production.up.railway.app/articles/${slug}`;
     console.log('Fetching article from:', url);
     
     const response = await fetch(url, {

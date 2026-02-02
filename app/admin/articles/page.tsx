@@ -25,6 +25,8 @@ export default function AdminArticlesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshStatus, setRefreshStatus] = useState('');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -76,14 +78,42 @@ export default function AdminArticlesPage() {
       const data = await response.json();
       if (data.success) {
         setArticles(data.articles);
+        setError(''); // Clear any previous errors
       } else {
-        setError('Failed to fetch articles');
+        setError(data.detail || 'Failed to fetch articles');
       }
-    } catch (err) {
-      setError('Error loading articles');
-      console.error(err);
+    } catch (err: any) {
+      setError(`Error: ${err.message || 'Network error. Make sure backend is running.'}`);
+      console.error('Article fetch error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRefreshAllTickers = async () => {
+    if (!confirm('This will refresh all 270 tickers. Cost: $0.54. Continue?')) {
+      return;
+    }
+
+    setRefreshing(true);
+    setRefreshStatus('Starting refresh...');
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/refresh-all-tickers?admin_key=tamtech_refresh_2026`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setRefreshStatus(`✅ Refresh started! ${data.total_tickers} tickers, estimated ${data.estimated_time}. Check Railway logs for progress.`);
+      } else {
+        setRefreshStatus(`❌ Error: ${data.detail || 'Failed to start refresh'}`);
+      }
+    } catch (err: any) {
+      setRefreshStatus(`❌ Error: ${err.message}`);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -231,14 +261,29 @@ export default function AdminArticlesPage() {
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 shadow-2xl">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-white">Article Management</h1>
-            <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
-            >
-              {showCreateForm ? 'Cancel' : '+ Create New Article'}
-            </button>
+            <h1 className="text-4xl font-bold text-white">Admin Panel</h1>
+            <div className="flex gap-3">
+              <button
+                onClick={handleRefreshAllTickers}
+                disabled={refreshing}
+                className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg disabled:opacity-50"
+              >
+                {refreshing ? '🔄 Refreshing...' : '🔄 Refresh 270 Tickers'}
+              </button>
+              <button
+                onClick={() => setShowCreateForm(!showCreateForm)}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
+              >
+                {showCreateForm ? 'Cancel' : '+ Create New Article'}
+              </button>
+            </div>
           </div>
+
+          {refreshStatus && (
+            <div className="mb-6 p-4 bg-blue-500/20 border border-blue-500 rounded-lg text-blue-200">
+              {refreshStatus}
+            </div>
+          )}
 
           {error && (
             <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-200">

@@ -21,7 +21,7 @@ export default function ArticleOfTheDay() {
 
   useEffect(() => {
     // Fetch featured article from API
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/featured-article`)
+    fetch('/api/featured-article')
       .then(res => res.json())
       .then(data => {
         console.log('Featured article API response:', data);

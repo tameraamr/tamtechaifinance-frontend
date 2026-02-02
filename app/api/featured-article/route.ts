@@ -1,25 +1,21 @@
 import { NextResponse } from 'next/server';
-import { getFeaturedArticle } from '../../../lib/articles';
+
+const BACKEND_URL = 'https://tamtechaifinance-backend-production.up.railway.app';
 
 export async function GET() {
   try {
-    const today = new Date().toISOString().split('T')[0];
-    const article = getFeaturedArticle(today);
-    
-    if (!article) {
-      return NextResponse.json(null);
-    }
-    
-    return NextResponse.json({
-      title: article.title,
-      slug: article.slug,
-      date: article.date,
-      readTime: article.readTime,
-      excerpt: article.excerpt,
-      tags: article.tags,
+    const response = await fetch(`${BACKEND_URL}/api/featured-article`, {
+      cache: 'no-store'
     });
-  } catch (error) {
+    
+    const data = await response.json();
+    
+    return NextResponse.json(data, { status: response.status });
+  } catch (error: any) {
     console.error('Error fetching featured article:', error);
-    return NextResponse.json(null);
+    return NextResponse.json(
+      { success: false, detail: error.message },
+      { status: 500 }
+    );
   }
 }

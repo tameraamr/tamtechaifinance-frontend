@@ -171,6 +171,8 @@ export default function AdminArticlesPage() {
       });
 
       const data = await response.json();
+      
+      console.log('Create article response:', data);
 
       if (data.success) {
         alert('Article created successfully!');
@@ -189,11 +191,11 @@ export default function AdminArticlesPage() {
         });
         fetchArticles();
       } else {
-        alert(`Error: ${data.detail || 'Failed to create article'}`);
+        alert(`Error: ${data.detail || JSON.stringify(data)}`);
       }
-    } catch (err) {
-      alert('Error creating article');
-      console.error(err);
+    } catch (err: any) {
+      alert(`Error creating article: ${err.message || err}`);
+      console.error('Create article error:', err);
     } finally {
       setLoading(false);
     }

@@ -101,7 +101,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       {/* Hero Image */}
       {article.image_url && (
-        <div className="relative w-full h-[500px] overflow-hidden">
+        <div className="relative w-full h-[300px] overflow-hidden">
           <img
             src={article.image_url}
             alt={article.title}
@@ -112,10 +112,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       )}
 
       {/* Hero Section */}
-      <div className={`bg-gradient-to-r ${gradientClass} py-20`}>
+      <div className={`bg-gradient-to-r ${gradientClass} py-12`}>
         <div className="container mx-auto px-4 text-center">
-          <div className="text-8xl mb-6">{article.hero_emoji}</div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
             {article.title}
           </h1>
           <div className="flex items-center justify-center gap-4 text-white/90">
@@ -133,10 +132,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {/* Article Content */}
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 md:p-12 shadow-2xl">
-          <article 
-            className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-white/90 prose-strong:text-white prose-ul:text-white/90 prose-ol:text-white/90"
-            dangerouslySetInnerHTML={{ __html: article.content }}
-          />
+          <article className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:font-bold prose-p:text-slate-200 prose-p:leading-relaxed prose-strong:text-white prose-ul:text-slate-200 prose-ol:text-slate-200 prose-li:marker:text-amber-400">
+            <div className="whitespace-pre-wrap text-slate-200 leading-relaxed" style={{ fontSize: '1.125rem', lineHeight: '1.8' }}>
+              {article.content}
+            </div>
+          </article>
         </div>
 
         {/* Related Stocks */}

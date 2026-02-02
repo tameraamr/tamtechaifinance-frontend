@@ -93,14 +93,12 @@ export default function ArticlesPage() {
               
               <div className="relative z-10">
                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-4 py-2 mb-6">
-                  <span className="text-2xl">⭐</span>
                   <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
                     Article of the Day
                   </span>
                 </div>
                 
                 <Link href={`/articles/${featuredArticle.slug}`} className="group block">
-                  <div className="text-5xl mb-4">{featuredArticle.hero_emoji}</div>
                   <h2 className="text-3xl md:text-4xl font-black text-white group-hover:text-amber-300 transition-colors mb-4">
                     {featuredArticle.title}
                   </h2>
@@ -154,8 +152,8 @@ export default function ArticlesPage() {
                 href={`/articles/${article.slug}`}
                 className="group bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700/50 hover:border-blue-500/50 rounded-2xl overflow-hidden transition-all hover:shadow-lg hover:shadow-blue-500/20"
               >
-                {/* Hero Image or Emoji */}
-                {article.image_url ? (
+                {/* Hero Image */}
+                {article.image_url && (
                   <div className="relative w-full h-48 overflow-hidden">
                     <img 
                       src={article.image_url} 
@@ -164,8 +162,6 @@ export default function ArticlesPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/80" />
                   </div>
-                ) : (
-                  <div className="text-5xl pt-6 px-6">{article.hero_emoji}</div>
                 )}
                 
                 <div className="p-6">

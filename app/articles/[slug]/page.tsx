@@ -132,17 +132,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {/* Article Content */}
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 md:p-12 shadow-2xl">
-          <article className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:font-bold prose-p:text-slate-200 prose-p:leading-relaxed prose-strong:text-white prose-ul:text-slate-200 prose-ol:text-slate-200 prose-li:marker:text-amber-400">
-            <div className="whitespace-pre-wrap text-slate-200 leading-relaxed" style={{ fontSize: '1.125rem', lineHeight: '1.8' }}>
-              {article.content}
-            </div>
+          <article className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:font-bold prose-p:text-slate-200 prose-p:leading-relaxed prose-strong:text-white prose-ul:text-slate-200 prose-ol:text-slate-200 prose-li:marker:text-amber-400 prose-table:text-slate-200">
+            <div 
+              className="article-content"
+              dangerouslySetInnerHTML={{ __html: article.content }}
+            />
           </article>
         </div>
 
         {/* Related Stocks */}
         {article.related_tickers && article.related_tickers.length > 0 && (
           <div className="mt-8 bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-4">📊 Related Stocks</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Related Stocks</h3>
             <div className="flex flex-wrap gap-3">
               {article.related_tickers.map((ticker) => (
                 <Link

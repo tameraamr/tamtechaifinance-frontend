@@ -150,16 +150,13 @@ export default function AdminArticlesPage() {
     setLoading(true);
 
     try {
-      // Parse related tickers to JSON array
-      const tickers = formData.related_tickers
-        .split(',')
-        .map(t => t.trim().toUpperCase())
-        .filter(t => t.length > 0);
-
+      // Keep related_tickers as comma-separated string (backend stores it as-is)
       const payload = {
         ...formData,
-        related_tickers: JSON.stringify(tickers)
+        related_tickers: formData.related_tickers.trim()
       };
+
+      console.log('Sending article payload:', payload);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles`, {
         method: 'POST',
@@ -169,6 +166,16 @@ export default function AdminArticlesPage() {
         credentials: 'include',
         body: JSON.stringify(payload)
       });
+
+      console.log('Response status:', response.status, 'OK:', response.ok);
+      
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Error response:', text);
+        alert(`Error (${response.status}): ${text.substring(0, 200)}`);
+        setLoading(false);
+        return;
+      }
 
       const data = await response.json();
       

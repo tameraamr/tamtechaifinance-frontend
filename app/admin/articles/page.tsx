@@ -46,7 +46,11 @@ export default function AdminArticlesPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        router.push('/account?message=Please login to access admin panel');
+        setError('Please login first. Redirecting to login page...');
+        setTimeout(() => {
+          router.push('/account?message=Please login to access admin panel');
+        }, 2000);
+        setLoading(false);
         return;
       }
 
@@ -57,7 +61,12 @@ export default function AdminArticlesPage() {
       });
 
       if (response.status === 401) {
-        router.push('/account?message=Please login to access admin panel');
+        setError('Session expired. Redirecting to login page...');
+        localStorage.removeItem('token'); // Clear invalid token
+        setTimeout(() => {
+          router.push('/account?message=Session expired. Please login again');
+        }, 2000);
+        setLoading(false);
         return;
       }
 

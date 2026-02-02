@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../src/context/AuthContext';
 import Navbar from '../../../src/components/Navbar';
 import Footer from '../../../src/components/Footer';
 
@@ -19,6 +20,7 @@ interface Article {
 
 export default function AdminArticlesPage() {
   const router = useRouter();
+  const { user, isLoggedIn } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -39,30 +41,25 @@ export default function AdminArticlesPage() {
   });
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      setError('Please login first. Redirecting to login page...');
+      setTimeout(() => {
+        router.push('/account?message=Please login to access admin panel');
+      }, 2000);
+      setLoading(false);
+      return;
+    }
     fetchArticles();
-  }, []);
+  }, [isLoggedIn]);
 
   const fetchArticles = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Please login first. Redirecting to login page...');
-        setTimeout(() => {
-          router.push('/account?message=Please login to access admin panel');
-        }, 2000);
-        setLoading(false);
-        return;
-      }
-
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles-list`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include' // Send HTTP-only cookies
       });
 
       if (response.status === 401) {
         setError('Session expired. Redirecting to login page...');
-        localStorage.removeItem('token'); // Clear invalid token
         setTimeout(() => {
           router.push('/account?message=Session expired. Please login again');
         }, 2000);
@@ -104,8 +101,6 @@ export default function AdminArticlesPage() {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
-      
       // Parse related tickers to JSON array
       const tickers = formData.related_tickers
         .split(',')
@@ -120,9 +115,9 @@ export default function AdminArticlesPage() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(payload)
       });
 
@@ -161,12 +156,9 @@ export default function AdminArticlesPage() {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -184,13 +176,12 @@ export default function AdminArticlesPage() {
 
   const toggleFeatured = async (id: number, currentStatus: number) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           is_featured: currentStatus === 1 ? 0 : 1
         })

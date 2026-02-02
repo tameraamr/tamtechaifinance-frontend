@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function GET() {
   try {
-    const articlesDirectory = path.join(process.cwd(), 'content/articles');
+    const articlesDirectory = path.join(process.cwd(), 'public/content/articles');
     
     const exists = fs.existsSync(articlesDirectory);
     

@@ -28,7 +28,7 @@ interface ArticleMetadata {
 // Get article by slug
 function getArticle(slug: string) {
   try {
-    const articlesDirectory = path.join(process.cwd(), 'content/articles');
+    const articlesDirectory = path.join(process.cwd(), 'public/content/articles');
     const filePath = path.join(articlesDirectory, `${slug}.mdx`);
     
     if (!fs.existsSync(filePath)) {
@@ -50,7 +50,7 @@ function getArticle(slug: string) {
 // Generate static params for all articles
 export async function generateStaticParams() {
   try {
-    const articlesDirectory = path.join(process.cwd(), 'content/articles');
+    const articlesDirectory = path.join(process.cwd(), 'public/content/articles');
     
     if (!fs.existsSync(articlesDirectory)) {
       return [];

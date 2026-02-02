@@ -24,7 +24,7 @@ interface ArticleMetadata {
 }
 
 function getAllArticles(): ArticleMetadata[] {
-  const articlesDirectory = path.join(process.cwd(), 'content/articles');
+  const articlesDirectory = path.join(process.cwd(), 'public/content/articles');
   
   if (!fs.existsSync(articlesDirectory)) {
     return [];

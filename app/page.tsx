@@ -1112,8 +1112,7 @@ export default function Home() {
               </motion.div>
             )}
           </div>
-        </div>
-          </div> {/* End of analyzer column */}
+        </div> {/* End of analyzer column */}
         </div> {/* End of 2-column grid */}
 
         {/* Article of the Day - Mobile only */}

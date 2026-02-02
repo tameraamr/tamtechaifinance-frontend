@@ -194,6 +194,7 @@ export default function AdminArticlesPage() {
           author: 'TamtechAI Research',
           hero_emoji: '🚀',
           hero_gradient: 'blue,purple,pink',
+          image_url: '',
           related_tickers: '',
           is_featured: 1,
           published: 1

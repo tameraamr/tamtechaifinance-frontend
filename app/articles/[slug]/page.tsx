@@ -79,9 +79,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  console.log('[Article Page] Rendering article with slug:', slug);
   const article = await getArticle(slug);
 
   if (!article) {
+    console.error('[Article Page] Article not found for slug:', slug);
     notFound();
   }
 

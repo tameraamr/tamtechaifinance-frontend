@@ -36,7 +36,23 @@ export default function ArticleOfTheDay() {
       });
   }, []);
 
-  if (loading || !article) return null;
+  // Show skeleton loader instead of nothing
+  if (loading) {
+    return (
+      <div className="relative mb-6 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-slate-900/90 via-slate-800/70 to-slate-900/90 backdrop-blur-xl border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl p-6">
+          <div className="animate-pulse">
+            <div className="h-8 w-48 bg-slate-700/50 rounded-full mb-4" />
+            <div className="h-10 bg-slate-700/50 rounded mb-3" />
+            <div className="h-6 bg-slate-700/50 rounded mb-2" />
+            <div className="h-6 w-3/4 bg-slate-700/50 rounded mb-4" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!article) return null;
 
   return (
     <div className="relative mb-6 overflow-hidden">
@@ -60,18 +76,18 @@ export default function ArticleOfTheDay() {
           </div>
         )}
 
-        <div className="relative z-10 p-6">
+        <div className="relative z-10 p-8">
           {/* Featured Badge */}
-          <div className="mb-4">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-4 py-2">
-              <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-              <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
+          <div className="mb-6">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-5 py-2.5">
+              <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+              <span className="text-amber-300 font-bold text-base uppercase tracking-wide">
                 {article.hero_emoji} Article of the Day
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col gap-6">
           <div className="flex-1">
             {/* Header */}
             <div className="flex items-center gap-2 mb-3">
@@ -84,15 +100,15 @@ export default function ArticleOfTheDay() {
             {/* Title */}
             <Link 
               href={`/articles/${article.slug}`}
-              className="group block mb-3"
+              className="group block mb-4"
             >
-              <h2 className="text-2xl md:text-3xl font-black text-white group-hover:text-amber-300 transition-colors leading-tight">
+              <h2 className="text-3xl md:text-4xl font-black text-white group-hover:text-amber-300 transition-colors leading-tight">
                 {article.title}
               </h2>
             </Link>
 
             {/* Description */}
-            <p className="text-slate-300 text-sm leading-relaxed mb-4 line-clamp-2">
+            <p className="text-slate-300 text-base md:text-lg leading-relaxed mb-6 line-clamp-3">
               {article.description}
             </p>
 
@@ -122,13 +138,13 @@ export default function ArticleOfTheDay() {
           </div>
 
           {/* CTA Button */}
-          <div className="md:flex-shrink-0">
+          <div className="mt-2">
             <Link
               href={`/articles/${article.slug}`}
-              className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:scale-105"
+              className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:scale-105"
             >
               Read Full Article
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>

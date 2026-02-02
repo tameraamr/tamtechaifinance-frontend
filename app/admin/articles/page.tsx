@@ -20,7 +20,7 @@ interface Article {
 
 export default function AdminArticlesPage() {
   const router = useRouter();
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, isLoading: authLoading } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -41,6 +41,11 @@ export default function AdminArticlesPage() {
   });
 
   useEffect(() => {
+    // Wait for auth to load before checking login status
+    if (authLoading) {
+      return;
+    }
+
     if (!isLoggedIn) {
       setError('Please login first. Redirecting to login page...');
       setTimeout(() => {
@@ -49,8 +54,9 @@ export default function AdminArticlesPage() {
       setLoading(false);
       return;
     }
+    
     fetchArticles();
-  }, [isLoggedIn]);
+  }, [isLoggedIn, authLoading]);
 
   const fetchArticles = async () => {
     try {
@@ -206,7 +212,7 @@ export default function AdminArticlesPage() {
     { name: 'Tech', value: 'indigo,blue,purple' }
   ];
 
-  if (loading && articles.length === 0) {
+  if (authLoading || (loading && articles.length === 0)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <Navbar />

@@ -160,7 +160,7 @@ export default function AdminArticlesPage() {
 
       console.log('Sending article payload:', payload);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles`, {
+      const response = await fetch('/api/admin/articles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Calendar, Clock, User } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import Navbar from '@/src/components/Navbar';
 import Footer from '@/src/components/Footer';
 
@@ -19,14 +19,23 @@ export default function NVDAArticle() {
     <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]">
       <Navbar />
       
-      <article className="max-w-4xl mx-auto px-4 py-12">
-        {/* Hero Image */}
-        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-green-500/20 to-teal-500/20" />
+      {/* Back Button */}
+      <div className="max-w-4xl mx-auto px-4 pt-8">
+        <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
+      <article className="max-w-4xl mx-auto px-4 py-8">
+        {/* Hero Image - Professional */}
+        <div className="relative w-full h-[300px] rounded-xl overflow-hidden mb-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/30 via-green-600/30 to-teal-600/30" />
+          <div className="absolute inset-0" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center p-8">
-              <div className="text-8xl mb-4">🖥️</div>
-              <p className="text-2xl font-bold text-white">NVIDIA AI Dominance</p>
+              <h2 className="text-3xl font-black text-white mb-2">AI Chip Market</h2>
+              <p className="text-slate-300">NVIDIA's Semiconductor Dominance</p>
             </div>
           </div>
         </div>
@@ -66,7 +75,7 @@ export default function NVDAArticle() {
             Can NVIDIA's dominance last? Or will competitors finally break the monopoly?
           </blockquote>
 
-          <h2 className="text-3xl font-bold text-white mt-12 mb-4">🏆 Why NVIDIA Dominates</h2>
+          <h2 className="text-3xl font-bold text-white mt-12 mb-4">Why NVIDIA Dominates</h2>
 
           <h3 className="text-2xl font-bold text-slate-200 mt-8 mb-3">1. CUDA: The Secret Moat</h3>
           <p>
@@ -88,7 +97,7 @@ export default function NVDAArticle() {
             <li>Better at handling massive AI workloads</li>
           </ul>
 
-          <h2 className="text-3xl font-bold text-white mt-12 mb-4">🚨 The Challengers</h2>
+          <h2 className="text-3xl font-bold text-white mt-12 mb-4">The Challengers</h2>
 
           <h3 className="text-2xl font-bold text-slate-200 mt-8 mb-3">AMD: The Scrappy Underdog</h3>
           <p>
@@ -123,7 +132,7 @@ export default function NVDAArticle() {
             If AI turns out to be overhyped, companies will stop buying chips. NVIDIA's stock would crater.
           </p>
 
-          <h2 className="text-3xl font-bold text-white mt-12 mb-4">🔥 The Verdict</h2>
+          <h2 className="text-3xl font-bold text-white mt-12 mb-4">The Verdict</h2>
 
           <p className="text-xl font-bold text-emerald-400">
             NVIDIA's dominance is safe—for now.

@@ -1,134 +1,148 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Navbar from '../../../src/components/Navbar';
+import Footer from '../../../src/components/Footer';
 import Link from 'next/link';
-import { Calendar, Clock, Tag, TrendingUp, ArrowLeft } from 'lucide-react';
-import { getArticleBySlug, getAllArticles } from '../../../lib/articles';
-import ReactMarkdown from 'react-markdown';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const revalidate = 3600; // Revalidate every hour
+// Dynamic route segment for articles
+export const dynamicParams = true;
+export const revalidate = 300; // Revalidate every 5 minutes
 
-// Generate metadata for SEO
+interface ArticleData {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  content: string;
+  author: string;
+  hero_emoji: string;
+  hero_gradient: string;
+  related_tickers: string[];
+  created_at: string;
+}
+
+async function getArticle(slug: string): Promise<ArticleData | null> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/articles/${slug}`, {
+      next: { revalidate: 300 }
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.success ? data.article : null;
+  } catch (error) {
+    console.error('Error fetching article:', error);
+    return null;
+  }
+}
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = getArticleBySlug(params.slug);
-  
+  const article = await getArticle(params.slug);
+
   if (!article) {
     return {
-      title: 'Article Not Found',
+      title: 'Article Not Found | TamtechAI',
     };
   }
-  
-  const { title, excerpt, author, date, readTime, tags, relatedTickers } = article;
-  
+
   return {
-    title: `${title} | TamtechAI Finance`,
-    description: excerpt,
-    keywords: [...tags, ...relatedTickers, 'stock analysis', 'AI finance'].join(', '),
-    authors: [{ name: author }],
+    title: `${article.title} | TamtechAI`,
+    description: article.description,
     openGraph: {
-      title: title,
-      description: excerpt,
+      title: article.title,
+      description: article.description,
       type: 'article',
-      publishedTime: date,
-      authors: [author],
-      tags: tags,
+      publishedTime: article.created_at,
+      authors: [article.author],
     },
     twitter: {
       card: 'summary_large_image',
-      title: title,
-      description: excerpt,
+      title: article.title,
+      description: article.description,
     },
   };
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = getArticleBySlug(params.slug);
-  
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+  const article = await getArticle(params.slug);
+
   if (!article) {
     notFound();
   }
-  
-  const { title, content, author, date, readTime, tags, relatedTickers, featured, featuredDate } = article;
-  const isFeatured = featured && featuredDate === new Date().toISOString().split('T')[0];
-  
+
+  // Parse gradient colors
+  const gradientColors = article.hero_gradient.split(',');
+  const fromColor = gradientColors[0] || 'blue';
+  const viaColor = gradientColors[1] || 'purple';
+  const toColor = gradientColors[2] || 'pink';
+
+  const gradientClass = `from-${fromColor}-600 via-${viaColor}-600 to-${toColor}-600`;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]">
-      {/* Back Navigation */}
-      <div className="max-w-4xl mx-auto px-4 pt-6">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-400 transition">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
-      </div>
-      
-      <article className="max-w-4xl mx-auto px-4 py-8">
-        {/* Article Header */}
-        <header className="mb-8">
-          {isFeatured && (
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-4">
-              <span className="text-yellow-400 text-sm font-bold">✨ Article of the Day</span>
-            </div>
-          )}
-          
-          <h1 className="text-5xl font-black text-white mb-4 leading-tight">
-            {title}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <Navbar />
+
+      {/* Hero Section */}
+      <div className={`bg-gradient-to-r ${gradientClass} py-20`}>
+        <div className="container mx-auto px-4 text-center">
+          <div className="text-8xl mb-6">{article.hero_emoji}</div>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            {article.title}
           </h1>
-          
-          <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-6">
-            <span className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              {readTime}
-            </span>
-            <span>{author}</span>
+          <div className="flex items-center justify-center gap-4 text-white/90">
+            <span>{article.author}</span>
+            <span>•</span>
+            <span>{new Date(article.created_at).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}</span>
           </div>
-          
-          <div className="flex flex-wrap gap-2 mb-6">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1 bg-slate-800/50 border border-slate-700 rounded-full px-3 py-1 text-xs text-slate-300"
-              >
-                <Tag className="w-3 h-3" />
-                {tag}
-              </span>
-            ))}
-          </div>
-        </header>
-        
-        {/* Article Content */}
-        <div className="prose prose-invert prose-lg max-w-none">
-          <ReactMarkdown>{content}</ReactMarkdown>
         </div>
-        
-        {/* Related Tickers Section */}
-        {relatedTickers.length > 0 && (
-          <div className="mt-12 p-6 bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700/50 rounded-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-blue-400" />
-              <h3 className="text-xl font-bold text-white">Stocks Mentioned in This Article</h3>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {relatedTickers.map((ticker) => (
+      </div>
+
+      {/* Article Content */}
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 md:p-12 shadow-2xl">
+          <article 
+            className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-white/90 prose-strong:text-white prose-ul:text-white/90 prose-ol:text-white/90"
+            dangerouslySetInnerHTML={{ __html: article.content }}
+          />
+        </div>
+
+        {/* Related Stocks */}
+        {article.related_tickers && article.related_tickers.length > 0 && (
+          <div className="mt-8 bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-2xl">
+            <h3 className="text-xl font-bold text-white mb-4">📊 Related Stocks</h3>
+            <div className="flex flex-wrap gap-3">
+              {article.related_tickers.map((ticker) => (
                 <Link
                   key={ticker}
-                  href={`/?ticker=${ticker}`}
-                  className="group bg-slate-800/50 border border-slate-700 hover:border-blue-500/50 rounded-xl p-4 text-center transition-all hover:shadow-lg hover:shadow-blue-500/20"
+                  href={`/stock-analyzer?ticker=${ticker}`}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
                 >
-                  <p className="font-black text-blue-400 group-hover:text-blue-300 text-lg mb-1">
-                    {ticker}
-                  </p>
-                  <p className="text-xs text-slate-400">Analyze Now →</p>
+                  {ticker}
                 </Link>
               ))}
             </div>
           </div>
         )}
-      </article>
+
+        {/* Back Link */}
+        <div className="mt-8 text-center">
+          <Link
+            href="/"
+            className="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 }

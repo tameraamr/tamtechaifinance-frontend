@@ -1,6 +1,4 @@
 import { MetadataRoute } from 'next'
-import fs from 'fs'
-import path from 'path'
 
 // Full ticker pool (270 stocks)
 const TICKER_POOL = [
@@ -58,7 +56,7 @@ const TICKER_POOL = [
   "GIS", "K", "HSY", "CAG", "SJM"
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
   
   // Static pages - fix type inference
@@ -125,34 +123,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
   
-  // Article pages - AUTOMATICALLY GENERATED from /articles folder
+  // Article pages - AUTOMATICALLY GENERATED from database
   const articlePages: MetadataRoute.Sitemap = [];
   
   try {
-    const articlesDir = path.join(process.cwd(), 'app', 'articles');
+    // Fetch articles from API
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/articles`, {
+      next: { revalidate: 3600 } // Cache for 1 hour
+    });
     
-    if (fs.existsSync(articlesDir)) {
-      const folders = fs.readdirSync(articlesDir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => dirent.name);
+    if (response.ok) {
+      const data = await response.json();
       
-      // Add articles index page
-      articlePages.push({
-        url: 'https://tamtech-finance.com/articles',
-        lastModified: currentDate,
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      });
-      
-      // Add each article page
-      folders.forEach(slug => {
+      if (data.success && data.articles) {
+        // Add articles index page
         articlePages.push({
-          url: `https://tamtech-finance.com/articles/${slug}`,
+          url: 'https://tamtech-finance.com/articles',
           lastModified: currentDate,
-          changeFrequency: 'monthly',
-          priority: 0.9,
+          changeFrequency: 'weekly',
+          priority: 0.8,
         });
-      });
+        
+        // Add each article page
+        data.articles.forEach((article: { slug: string; updated_at: string }) => {
+          articlePages.push({
+            url: `https://tamtech-finance.com/articles/${article.slug}`,
+            lastModified: new Date(article.updated_at),
+            changeFrequency: 'monthly',
+            priority: 0.9,
+          });
+        });
+      }
     }
   } catch (error) {
     console.error('Error generating article sitemap:', error);

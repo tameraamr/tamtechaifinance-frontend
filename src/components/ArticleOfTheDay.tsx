@@ -1,15 +1,17 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Calendar, Clock, Sparkles } from 'lucide-react';
+import { Newspaper, ArrowRight, Calendar, Sparkles } from 'lucide-react';
 
 interface Article {
+  id: number;
   title: string;
   slug: string;
-  date: string;
-  readTime: string;
-  excerpt: string;
-  tags: string[];
+  description: string;
+  author: string;
+  hero_emoji: string;
+  created_at: string;
+  related_tickers: string[];
 }
 
 export default function ArticleOfTheDay() {
@@ -17,11 +19,13 @@ export default function ArticleOfTheDay() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch featured article
-    fetch('/api/featured-article')
+    // Fetch featured article from API
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/featured-article`)
       .then(res => res.json())
       .then(data => {
-        setArticle(data);
+        if (data.success && data.article) {
+          setArticle(data.article);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -44,7 +48,7 @@ export default function ArticleOfTheDay() {
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-4 py-2">
             <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
             <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
-              📰 Article of the Day
+              {article.hero_emoji} Article of the Day
             </span>
           </div>
         </div>
@@ -69,34 +73,34 @@ export default function ArticleOfTheDay() {
               </h2>
             </Link>
 
-            {/* Excerpt */}
+            {/* Description */}
             <p className="text-slate-300 text-sm leading-relaxed mb-4 line-clamp-2">
-              {article.excerpt}
+              {article.description}
             </p>
 
             {/* Metadata */}
             <div className="flex flex-wrap items-center gap-4 text-slate-400 text-xs mb-4">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5" />
-                <span>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                <span>{new Date(article.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{article.readTime}</span>
-              </div>
+              <span>{article.author}</span>
             </div>
 
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {article.tags.slice(0, 3).map((tag) => (
-                <span
-                  key={tag}
-                  className="bg-amber-500/10 border border-amber-400/30 rounded-full px-2.5 py-1 text-xs text-amber-300 font-semibold"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {/* Related Tickers */}
+            {article.related_tickers && article.related_tickers.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {article.related_tickers.slice(0, 3).map((ticker) => (
+                  <Link
+                    key={ticker}
+                    href={`/stock-analyzer?ticker=${ticker}`}
+                    className="bg-amber-500/10 border border-amber-400/30 rounded-full px-2.5 py-1 text-xs text-amber-300 font-semibold hover:bg-amber-500/20 transition-all"
+                  >
+                    {ticker}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* CTA Button */}

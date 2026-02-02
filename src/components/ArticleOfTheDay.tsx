@@ -10,6 +10,7 @@ interface Article {
   description: string;
   author: string;
   hero_emoji: string;
+  image_url?: string;
   created_at: string;
   related_tickers: string[];
 }
@@ -38,22 +39,35 @@ export default function ArticleOfTheDay() {
       {/* Shimmer Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent -translate-x-full animate-shimmer" style={{ animation: 'shimmer 3s infinite' }} />
 
-      <div className="relative bg-gradient-to-br from-slate-900/90 via-slate-800/70 to-slate-900/90 backdrop-blur-xl border border-amber-500/30 rounded-3xl p-6 shadow-2xl overflow-hidden">
+      <div className="relative bg-gradient-to-br from-slate-900/90 via-slate-800/70 to-slate-900/90 backdrop-blur-xl border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl">
         {/* Background Glow */}
         <div className="absolute -left-20 -top-20 w-40 h-40 bg-amber-500/10 blur-3xl rounded-full" />
         <div className="absolute -right-20 -bottom-20 w-40 h-40 bg-yellow-500/10 blur-3xl rounded-full" />
 
-        {/* Featured Badge */}
-        <div className="relative z-10 mb-4">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-4 py-2">
-            <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-            <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
-              {article.hero_emoji} Article of the Day
-            </span>
+        {/* Hero Image (if provided) */}
+        {article.image_url && (
+          <div className="relative w-full h-48 overflow-hidden">
+            <img 
+              src={article.image_url} 
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-900/90" />
           </div>
-        </div>
+        )}
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="relative z-10 p-6">
+          {/* Featured Badge */}
+          <div className="mb-4">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-4 py-2">
+              <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+              <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
+                {article.hero_emoji} Article of the Day
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex-1">
             {/* Header */}
             <div className="flex items-center gap-2 mb-3">

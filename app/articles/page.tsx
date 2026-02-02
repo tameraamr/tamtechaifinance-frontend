@@ -13,6 +13,7 @@ interface Article {
   author: string;
   hero_emoji: string;
   hero_gradient: string;
+  image_url?: string;
   related_tickers: string;
   is_featured: number;
   published: number;
@@ -147,41 +148,55 @@ export default function ArticlesPage() {
               <Link
                 key={article.id}
                 href={`/articles/${article.slug}`}
-                className="group bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700/50 hover:border-blue-500/50 rounded-2xl p-6 transition-all hover:shadow-lg hover:shadow-blue-500/20"
+                className="group bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700/50 hover:border-blue-500/50 rounded-2xl overflow-hidden transition-all hover:shadow-lg hover:shadow-blue-500/20"
               >
-                <div className="text-3xl mb-3">{article.hero_emoji}</div>
-                
-                <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-3 line-clamp-2">
-                  {article.title}
-                </h3>
-                
-                <p className="text-slate-300 text-sm mb-4 line-clamp-3">
-                  {article.description}
-                </p>
-                
-                <div className="flex items-center justify-between text-slate-400 text-xs mb-4">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    <span>{new Date(article.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                {/* Hero Image or Emoji */}
+                {article.image_url ? (
+                  <div className="relative w-full h-48 overflow-hidden">
+                    <img 
+                      src={article.image_url} 
+                      alt={article.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/80" />
                   </div>
-                  <div className="flex items-center gap-1 text-blue-400">
-                    <span>Read</span>
-                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-                
-                {article.related_tickers && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {article.related_tickers.split(',').slice(0, 3).map((ticker, i) => (
-                      <span
-                        key={i}
-                        className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded"
-                      >
-                        {ticker.trim()}
-                      </span>
-                    ))}
-                  </div>
+                ) : (
+                  <div className="text-5xl pt-6 px-6">{article.hero_emoji}</div>
                 )}
+                
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-3 line-clamp-2">
+                    {article.title}
+                  </h3>
+                  
+                  <p className="text-slate-300 text-sm mb-4 line-clamp-3">
+                    {article.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-slate-400 text-xs mb-4">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(article.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-blue-400">
+                      <span>Read</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                  
+                  {article.related_tickers && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {article.related_tickers.split(',').slice(0, 3).map((ticker, i) => (
+                        <span
+                          key={i}
+                          className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded"
+                        >
+                          {ticker.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </Link>
             ))}
           </div>

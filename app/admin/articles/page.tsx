@@ -12,6 +12,7 @@ interface Article {
   title: string;
   description: string;
   author: string;
+  image_url?: string;
   is_featured: number;
   published: number;
   created_at: string;
@@ -37,6 +38,7 @@ export default function AdminArticlesPage() {
     author: 'TamtechAI Research',
     hero_emoji: '🚀',
     hero_gradient: 'blue,purple,pink',
+    image_url: '',
     related_tickers: '',
     is_featured: 1,
     published: 1
@@ -415,6 +417,18 @@ export default function AdminArticlesPage() {
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500"
                   placeholder="AAPL, MSFT, GOOGL, TSLA"
                 />
+              </div>
+
+              <div>
+                <label className="block text-white mb-2 font-semibold">Hero Image URL (Optional)</label>
+                <input
+                  type="url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-500"
+                  placeholder="https://example.com/image.jpg"
+                />
+                <p className="mt-2 text-sm text-slate-400">Leave empty to use emoji only. Image will display as hero banner.</p>
               </div>
 
               <div className="flex gap-6">

@@ -5,9 +5,6 @@ import path from 'path';
 import matter from 'gray-matter';
 import { Calendar, Clock, Tag, ArrowRight, Newspaper } from 'lucide-react';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
   title: 'Market Insights & Analysis | TamtechAI Finance',
   description: 'Expert stock market analysis, investment strategies, and financial insights powered by AI. Daily articles on trending stocks, sectors, and market opportunities.',

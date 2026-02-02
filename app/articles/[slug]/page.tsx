@@ -7,9 +7,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { Calendar, Clock, Tag, TrendingUp, ArrowLeft } from 'lucide-react';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
 // Article metadata type
 interface ArticleMetadata {
   title: string;

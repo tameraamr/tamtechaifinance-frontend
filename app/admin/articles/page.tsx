@@ -91,6 +91,9 @@ export default function AdminArticlesPage() {
       }
 
       const data = await response.json();
+      console.log('Articles data received:', data);
+      console.log('Number of articles:', data.articles?.length || 0);
+      
       if (data.success) {
         setArticles(data.articles);
         setError(''); // Clear any previous errors

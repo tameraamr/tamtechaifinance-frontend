@@ -1113,6 +1113,13 @@ export default function Home() {
             )}
           </div>
         </div>
+          </div> {/* End of analyzer column */}
+        </div> {/* End of 2-column grid */}
+
+        {/* Article of the Day - Mobile only */}
+        <div className="lg:hidden mb-6">
+          <ArticleOfTheDay />
+        </div>
 
         {/* Financial Tool Suite - Top Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10 items-start">
@@ -1295,12 +1302,6 @@ export default function Home() {
             </button>
           </motion.div>
         </div> {/* End of 3-card grid */}
-        </div> {/* End of grid layout */}
-
-        {/* Article of the Day - Mobile only */}
-        <div className="lg:hidden mb-6">
-          <ArticleOfTheDay />
-        </div>
 
         {/* 👇 Regret Machine 👇 */}
         <RegretMachine lang={lang} />

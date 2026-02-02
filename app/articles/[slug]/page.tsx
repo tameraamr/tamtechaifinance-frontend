@@ -66,41 +66,6 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         {/* Article Header */}
         <header className="mb-8">
           {isFeatured && (
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-4 py-2 mb-4">
-              <span className="text-2xl">⭐</span>
-              <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
-                Article of the Day
-              </span>
-            </div>
-          )}
-          
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
-            {metadata.title}
-          </h1>
-          
-          <div className="flex flex-wrap items-center gap-4 text-slate-400 text-sm mb-6">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span>{new Date(metadata.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>{metadata.readTime}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>By {metadata.author}</span>
-            </div>
-          </div>
-          
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {metadata.tags.map((tag) => (
-              <span
-                key={tag}
-      <article className="max-w-4xl mx-auto px-4 py-8">
-        {/* Article Header */}
-        <header className="mb-8">
-          {isFeatured && (
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-4">
               <span className="text-yellow-400 text-sm font-bold">✨ Article of the Day</span>
             </div>

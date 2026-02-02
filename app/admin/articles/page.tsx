@@ -62,9 +62,15 @@ export default function AdminArticlesPage() {
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles-list`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const fullUrl = `${apiUrl}/admin/articles-list`;
+      console.log('Fetching articles from:', fullUrl);
+      
+      const response = await fetch(fullUrl, {
         credentials: 'include' // Send HTTP-only cookies
       });
+      
+      console.log('Response status:', response.status, 'OK:', response.ok);
 
       if (response.status === 401) {
         setError('Session expired. Redirecting to login page...');

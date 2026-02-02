@@ -1,4 +1,6 @@
 import { MetadataRoute } from 'next'
+import fs from 'fs'
+import path from 'path'
 
 // Full ticker pool (270 stocks)
 const TICKER_POOL = [
@@ -123,33 +125,38 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
   
-  // Article pages (IMPORTANT FOR SEO & TRAFFIC)
-  const articlePages: MetadataRoute.Sitemap = [
-    {
-      url: 'https://tamtech-finance.com/articles',
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://tamtech-finance.com/articles/microstrategy-bitcoin-strategy-2026',
-      lastModified: new Date('2026-02-02'),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
-      url: 'https://tamtech-finance.com/articles/is-gold-a-bubble-2026',
-      lastModified: new Date('2026-02-03'),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
-      url: 'https://tamtech-finance.com/articles/nvidia-ai-dominance-2026',
-      lastModified: new Date('2026-02-04'),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-  ];
+  // Article pages - AUTOMATICALLY GENERATED from /articles folder
+  const articlePages: MetadataRoute.Sitemap = [];
+  
+  try {
+    const articlesDir = path.join(process.cwd(), 'app', 'articles');
+    
+    if (fs.existsSync(articlesDir)) {
+      const folders = fs.readdirSync(articlesDir, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
+      
+      // Add articles index page
+      articlePages.push({
+        url: 'https://tamtech-finance.com/articles',
+        lastModified: currentDate,
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      });
+      
+      // Add each article page
+      folders.forEach(slug => {
+        articlePages.push({
+          url: `https://tamtech-finance.com/articles/${slug}`,
+          lastModified: currentDate,
+          changeFrequency: 'monthly',
+          priority: 0.9,
+        });
+      });
+    }
+  } catch (error) {
+    console.error('Error generating article sitemap:', error);
+  }
   
   // Dynamic stock pages - All 270 tickers (HIGH PRIORITY FOR SEO)
   const stockPages: MetadataRoute.Sitemap = TICKER_POOL.map((ticker) => ({

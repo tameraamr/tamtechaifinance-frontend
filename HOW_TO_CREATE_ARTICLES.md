@@ -34,20 +34,7 @@ Just edit between the comments:
 {/* END WRITING HERE */}
 ```
 
-### **Step 4: Add to Sitemap (for Google)**
-
-Edit `app/sitemap.ts` and add your article:
-
-```typescript
-{
-  url: 'https://tamtech-finance.com/articles/your-article-slug-2026',
-  lastModified: new Date('2026-02-05'),
-  changeFrequency: 'monthly',
-  priority: 0.9,
-},
-```
-
-### **Step 5: Deploy**
+### **Step 4: Deploy**
 
 ```bash
 cd frontend
@@ -56,7 +43,7 @@ git commit -m "feat: Add [topic] article"
 git push
 ```
 
-✅ **Done! Google will find it automatically via sitemap.xml**
+✅ **Done! Sitemap updates automatically - Google will find it!**
 
 ---
 

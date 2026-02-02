@@ -1293,7 +1293,7 @@ export default function Home() {
         <RegretMachine lang={lang} />
         {/* X Regret Machine X */}
 
-        {/* 👇 Live Whale Feed 👇 */}}
+        {/* 👇 Live Whale Feed 👇 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

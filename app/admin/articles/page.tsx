@@ -64,8 +64,7 @@ export default function AdminArticlesPage() {
 
   const fetchArticles = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
-      const fullUrl = `${apiUrl}/admin/articles-list`;
+      const fullUrl = '/api/admin/articles-list';
       console.log('Fetching articles from:', fullUrl);
       
       const response = await fetch(fullUrl, {
@@ -220,7 +219,7 @@ export default function AdminArticlesPage() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles/${id}`, {
+      const response = await fetch(`/api/admin/articles/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -240,7 +239,7 @@ export default function AdminArticlesPage() {
 
   const toggleFeatured = async (id: number, currentStatus: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/articles/${id}`, {
+      const response = await fetch(`/api/admin/articles/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

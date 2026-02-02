@@ -127,8 +127,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articlePages: MetadataRoute.Sitemap = [];
   
   try {
-    // Fetch articles from API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/articles`, {
+    // Fetch articles from API (use full URL during build)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+    const fullUrl = apiUrl.startsWith('http') 
+      ? `${apiUrl}/articles`
+      : `https://tamtechaifinance.vercel.app${apiUrl}/articles`;
+    
+    const response = await fetch(fullUrl, {
       next: { revalidate: 3600 } // Cache for 1 hour
     });
     

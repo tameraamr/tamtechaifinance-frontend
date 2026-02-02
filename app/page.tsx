@@ -981,6 +981,17 @@ export default function Home() {
                   <Dices className="w-5 h-5 text-purple-400" />
                 </button>
               </div>
+              
+              {/* 👇 Recent Analyses - Right Under Search Bar 👇 */}
+              <div className="mt-4">
+                <RecentAnalyses
+                  recentAnalyses={recentAnalyses}
+                  lang={lang}
+                  setTicker={setTicker}
+                  handleAnalyze={handleAnalyze}
+                />
+              </div>
+              {/* X Recent Analyses X */}
 
               {showSuggestions && suggestions.length > 0 && (
                 <div className="absolute left-0 right-0 mt-2 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10" style={{
@@ -1278,20 +1289,11 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* 👇 Recent Analyses👇 */}
-        <RecentAnalyses
-          recentAnalyses={recentAnalyses}
-          lang={lang}
-          setTicker={setTicker}
-          handleAnalyze={handleAnalyze}
-        />
-        {/* X Recent Analyses X */}
-
         {/* 👇 Regret Machine 👇 */}
         <RegretMachine lang={lang} />
         {/* X Regret Machine X */}
 
-        {/* 👇 Live Whale Feed 👇 */}
+        {/* 👇 Live Whale Feed 👇 */}}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1331,22 +1333,25 @@ export default function Home() {
 
             {/* PRO FEATURE Banner */}
             <div className="relative z-20 mb-6">
-              <div className="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-400/30 rounded-2xl p-4 backdrop-blur-sm">
+              <div className="bg-gradient-to-r from-amber-500/20 to-yellow-600/20 border border-amber-400/40 rounded-2xl p-4 backdrop-blur-sm shadow-[0_0_30px_rgba(251,191,36,0.15)]">
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-2xl">🌟</span>
-                  <span className="text-yellow-300 font-bold text-sm uppercase tracking-wide">
-                    PRO FEATURE: 20+ Credits Required for Full Access
+                  <span className="text-2xl">👑</span>
+                  <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
+                    PRO EXCLUSIVE: Advanced Portfolio Analytics
                   </span>
-                  <span className="text-2xl">🌟</span>
+                  <span className="text-2xl">👑</span>
                 </div>
               </div>
             </div>
 
-            {/* Live Preview Mode Watermark */}
-            {credits < 20 && (
+            {/* Pro Status Badge */}
+            {!user?.is_pro && (
               <div className="absolute top-4 right-4 z-30">
-                <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 rounded-lg px-3 py-1">
-                  <span className="text-xs text-slate-400 font-semibold">Live Preview Mode</span>
+                <div className="bg-slate-800/90 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-1.5 shadow-lg">
+                  <span className="text-xs text-amber-400 font-bold flex items-center gap-1.5">
+                    <span className="text-base">👑</span>
+                    PRO Feature
+                  </span>
                 </div>
               </div>
             )}
@@ -1513,11 +1518,20 @@ export default function Home() {
             >
               <div className="text-center">
                 <Link
-                  href={credits >= 20 ? "/portfolio" : "#"}
-                  onClick={credits >= 20 ? undefined : () => toast("💡 Earn points by analyzing stocks and engaging with the platform!", { icon: "💡" })}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-8 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-500/30 mb-4 inline-block"
+                  href={user?.is_pro ? "/portfolio" : "/pricing"}
+                  className="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-black px-8 py-3 rounded-xl text-sm transition-all shadow-lg shadow-amber-500/30 mb-4 inline-block flex items-center gap-2 w-fit mx-auto"
                 >
-                  {credits >= 20 ? "Unlock Full Dashboard" : "How to Earn Points?"}
+                  {user?.is_pro ? (
+                    <>
+                      <PieChart className="w-4 h-4" />
+                      Open Portfolio Dashboard
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-base">👑</span>
+                      Upgrade to PRO - $14.99/mo
+                    </>
+                  )}
                 </Link>
 
                 {/* Progress Bar */}

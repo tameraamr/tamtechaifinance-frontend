@@ -1,56 +1,17 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { Calendar, Clock, Tag, TrendingUp, ArrowLeft } from 'lucide-react';
+import { getArticleBySlug, getAllArticles } from '../../../lib/articles';
+import ReactMarkdown from 'react-markdown';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600; // Revalidate every hour
 
-// Article metadata type
-interface ArticleMetadata {
-  title: string;
-  slug: string;
-  date: string;
-  author: string;
-  readTime: string;
-  featured?: boolean;
-  featuredDate?: string;
-  excerpt: string;
-  image?: string;
-  tags: string[];
-  relatedTickers: string[];
-}
-
-// Get article by slug
-function getArticle(slug: string) {
-  try {
-    const articlesDirectory = path.join(process.cwd(), 'public/content/articles');
-    const filePath = path.join(articlesDirectory, `${slug}.mdx`);
-    
-    if (!fs.existsSync(filePath)) {
-      return null;
-    }
-    
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const { data, content } = matter(fileContents);
-    
-    return {
-      metadata: data as ArticleMetadata,
-      content,
-    };
-  } catch (error) {
-    return null;
-  }
-}
-
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = getArticle(params.slug);
+  const article = getArticleBySlug(params.slug);
   
   if (!article) {
     return {
@@ -58,71 +19,38 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
   
-  const { metadata } = article;
+  const { title, excerpt, author, date, readTime, tags, relatedTickers } = article;
   
   return {
-    title: `${metadata.title} | TamtechAI Finance`,
-    description: metadata.excerpt,
-    keywords: [...metadata.tags, ...metadata.relatedTickers, 'stock analysis', 'AI finance'].join(', '),
-    authors: [{ name: metadata.author }],
+    title: `${title} | TamtechAI Finance`,
+    description: excerpt,
+    keywords: [...tags, ...relatedTickers, 'stock analysis', 'AI finance'].join(', '),
+    authors: [{ name: author }],
     openGraph: {
-      title: metadata.title,
-      description: metadata.excerpt,
+      title: title,
+      description: excerpt,
       type: 'article',
-      publishedTime: metadata.date,
-      authors: [metadata.author],
-      tags: metadata.tags,
-      images: metadata.image ? [metadata.image] : [],
+      publishedTime: date,
+      authors: [author],
+      tags: tags,
     },
     twitter: {
       card: 'summary_large_image',
-      title: metadata.title,
-      description: metadata.excerpt,
-      images: metadata.image ? [metadata.image] : [],
+      title: title,
+      description: excerpt,
     },
   };
 }
 
-// MDX Components with custom styling
-const components = {
-  h1: (props: any) => <h1 className="text-4xl font-black text-white mt-8 mb-4" {...props} />,
-  h2: (props: any) => <h2 className="text-3xl font-bold text-white mt-8 mb-4" {...props} />,
-  h3: (props: any) => <h3 className="text-2xl font-bold text-slate-200 mt-6 mb-3" {...props} />,
-  p: (props: any) => <p className="text-slate-300 text-lg leading-relaxed mb-4" {...props} />,
-  ul: (props: any) => <ul className="list-disc list-inside text-slate-300 mb-4 space-y-2" {...props} />,
-  ol: (props: any) => <ol className="list-decimal list-inside text-slate-300 mb-4 space-y-2" {...props} />,
-  li: (props: any) => <li className="text-slate-300" {...props} />,
-  blockquote: (props: any) => (
-    <blockquote className="border-l-4 border-blue-500 pl-4 py-2 my-6 bg-slate-800/50 rounded-r-lg italic text-slate-200" {...props} />
-  ),
-  a: (props: any) => (
-    <a className="text-blue-400 hover:text-blue-300 underline font-semibold" {...props} />
-  ),
-  table: (props: any) => (
-    <div className="overflow-x-auto my-6">
-      <table className="min-w-full border border-slate-700 rounded-lg" {...props} />
-    </div>
-  ),
-  th: (props: any) => <th className="bg-slate-800 text-slate-200 font-bold px-4 py-2 border border-slate-700" {...props} />,
-  td: (props: any) => <td className="px-4 py-2 border border-slate-700 text-slate-300" {...props} />,
-  code: (props: any) => (
-    <code className="bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded font-mono text-sm" {...props} />
-  ),
-  pre: (props: any) => (
-    <pre className="bg-slate-900 border border-slate-700 rounded-lg p-4 overflow-x-auto my-4" {...props} />
-  ),
-  div: (props: any) => <div {...props} />,
-};
-
 export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = getArticle(params.slug);
+  const article = getArticleBySlug(params.slug);
   
   if (!article) {
     notFound();
   }
   
-  const { metadata, content } = article;
-  const isFeatured = metadata.featured && metadata.featuredDate === new Date().toISOString().split('T')[0];
+  const { title, content, author, date, readTime, tags, relatedTickers, featured, featuredDate } = article;
+  const isFeatured = featured && featuredDate === new Date().toISOString().split('T')[0];
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]">
@@ -169,6 +97,35 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
             {metadata.tags.map((tag) => (
               <span
                 key={tag}
+      <article className="max-w-4xl mx-auto px-4 py-8">
+        {/* Article Header */}
+        <header className="mb-8">
+          {isFeatured && (
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-4">
+              <span className="text-yellow-400 text-sm font-bold">✨ Article of the Day</span>
+            </div>
+          )}
+          
+          <h1 className="text-5xl font-black text-white mb-4 leading-tight">
+            {title}
+          </h1>
+          
+          <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-6">
+            <span className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-4 h-4" />
+              {readTime}
+            </span>
+            <span>{author}</span>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 mb-6">
+            {tags.map((tag) => (
+              <span
+                key={tag}
                 className="inline-flex items-center gap-1 bg-slate-800/50 border border-slate-700 rounded-full px-3 py-1 text-xs text-slate-300"
               >
                 <Tag className="w-3 h-3" />
@@ -176,26 +133,22 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
               </span>
             ))}
           </div>
-          
-          <p className="text-xl text-slate-300 leading-relaxed">
-            {metadata.excerpt}
-          </p>
         </header>
         
         {/* Article Content */}
         <div className="prose prose-invert prose-lg max-w-none">
-          <MDXRemote source={content} components={components} />
+          <ReactMarkdown>{content}</ReactMarkdown>
         </div>
         
         {/* Related Tickers Section */}
-        {metadata.relatedTickers.length > 0 && (
+        {relatedTickers.length > 0 && (
           <div className="mt-12 p-6 bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700/50 rounded-2xl">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-5 h-5 text-blue-400" />
               <h3 className="text-xl font-bold text-white">Stocks Mentioned in This Article</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {metadata.relatedTickers.map((ticker) => (
+              {relatedTickers.map((ticker) => (
                 <Link
                   key={ticker}
                   href={`/?ticker=${ticker}`}

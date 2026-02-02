@@ -1,49 +1,13 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
 import { Calendar, Clock, Tag, ArrowRight, Newspaper } from 'lucide-react';
+import { getAllArticles } from '../../lib/articles';
 
 export const metadata: Metadata = {
   title: 'Market Insights & Analysis | TamtechAI Finance',
   description: 'Expert stock market analysis, investment strategies, and financial insights powered by AI. Daily articles on trending stocks, sectors, and market opportunities.',
   keywords: 'stock analysis, market insights, investment strategies, financial news, AI stock research',
 };
-
-interface ArticleMetadata {
-  title: string;
-  slug: string;
-  date: string;
-  author: string;
-  readTime: string;
-  featured?: boolean;
-  featuredDate?: string;
-  excerpt: string;
-  tags: string[];
-}
-
-function getAllArticles(): ArticleMetadata[] {
-  const articlesDirectory = path.join(process.cwd(), 'public/content/articles');
-  
-  if (!fs.existsSync(articlesDirectory)) {
-    return [];
-  }
-  
-  const files = fs.readdirSync(articlesDirectory);
-  
-  const articles = files
-    .filter(file => file.endsWith('.mdx'))
-    .map(file => {
-      const filePath = path.join(articlesDirectory, file);
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data } = matter(fileContents);
-      return data as ArticleMetadata;
-    })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  
-  return articles;
-}
 
 export default function ArticlesPage() {
   const articles = getAllArticles();

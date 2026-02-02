@@ -1533,29 +1533,6 @@ export default function Home() {
                     </>
                   )}
                 </Link>
-
-                {/* Progress Bar */}
-                <div className="max-w-xs mx-auto">
-                  <div className="flex justify-between text-xs text-slate-400 mb-2">
-                    <span>Points Progress</span>
-                    <span>{credits}/20 points</span>
-                  </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${Math.min((credits / 20) * 100, 100)}%` }}
-                      transition={{ duration: 1, delay: 0.5 }}
-                      viewport={{ once: true }}
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
-                    />
-                  </div>
-                  <p className="text-xs text-slate-500 mt-2">
-                    {credits >= 20
-                      ? "You've unlocked the portfolio! Visit /portfolio to access."
-                      : "Complete analyses and engage with the platform to earn points"
-                    }
-                  </p>
-                </div>
               </div>
             </motion.div>
           </div>

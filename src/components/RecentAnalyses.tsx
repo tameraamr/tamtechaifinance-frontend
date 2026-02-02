@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { History, Sparkles } from 'lucide-react';
-import Link from 'next/link';
 
 interface RecentAnalysesProps {
   recentAnalyses: any[];
@@ -42,10 +41,13 @@ export default function RecentAnalyses({ recentAnalyses, lang, setTicker, handle
 
       <div className="flex flex-wrap justify-center gap-2">
         {displayData.slice(0, 8).map((item, index) => (
-          <Link
+          <button
             key={index}
-            href={`/stocks/${item.ticker}`}
-            className="group relative flex items-center gap-2 bg-gradient-to-br from-slate-900/60 to-slate-800/40 border border-slate-700/50 hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] px-3 py-1.5 rounded-full transition-all active:scale-95 overflow-hidden"
+            onClick={() => {
+              setTicker(item.ticker);
+              handleAnalyze(item.ticker);
+            }}
+            className="group relative flex items-center gap-2 bg-gradient-to-br from-slate-900/60 to-slate-800/40 border border-slate-700/50 hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] px-3 py-1.5 rounded-full transition-all active:scale-95 overflow-hidden cursor-pointer"
           >
             {/* Fresh indicator glow */}
             {item.is_fresh && (
@@ -64,16 +66,16 @@ export default function RecentAnalyses({ recentAnalyses, lang, setTicker, handle
               }`} 
             />
             
-            {/* Fresh sparkle badge */}
-            {item.is_fresh && item.age_days <= 2 && (
+            {/* Fresh sparkle badge - show if analyzed within last 5 minutes */}
+            {item.is_fresh && (
               <Sparkles className="relative w-3 h-3 text-emerald-400 animate-pulse" />
             )}
             
-            {/* Age indicator (subtle) */}
+            {/* Age indicator - show minutes ago */}
             <span className="relative text-[9px] text-slate-500 font-mono">
-              {item.time}
+              {item.age_minutes < 60 ? `${item.age_minutes}m` : item.time}
             </span>
-          </Link>
+          </button>
         ))}
       </div>
     </div>

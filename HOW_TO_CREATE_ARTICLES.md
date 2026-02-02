@@ -1,62 +1,62 @@
 # 📝 How to Create New Articles
 
-## 🎯 Quick Guide
+## 🎯 Super Easy Method (Using Template)
 
-Creating a new article is **super easy** - just copy an existing article and modify it!
+### **Step 1: Copy the Template**
 
----
-
-## 📋 Step-by-Step Instructions
-
-### **Step 1: Create a New Folder**
-
-Navigate to:
-```
-frontend/app/articles/
+```bash
+cd frontend/app/articles
+cp ../../ARTICLE_TEMPLATE.tsx your-article-slug-2026/page.tsx
 ```
 
-Create a new folder with your article slug (URL-friendly name):
+Or manually:
+1. Open `ARTICLE_TEMPLATE.tsx` in the root
+2. Copy everything
+3. Create new folder: `app/articles/your-article-slug-2026/`
+4. Create `page.tsx` inside and paste
+
+### **Step 2: Find & Replace (5 things)**
+
+Search for these in your new file and replace:
+
+1. **YOUR_ARTICLE_TITLE** → Your actual title
+2. **YOUR_ARTICLE_DESCRIPTION** → Description for Google
+3. **2026-02-05** → Your publish date
+4. **🚀** → Your emoji (🏦📱🚗🤖📈)
+5. **AAPL, MSFT, GOOGL, NVDA** → Your related tickers
+
+### **Step 3: Write Content**
+
+Just edit between the comments:
+```tsx
+{/* START WRITING HERE */}
+... your article content ...
+{/* END WRITING HERE */}
 ```
-your-article-name-2026/
-```
 
-**Examples of good slugs:**
-- `tesla-robotaxi-revolution-2026`
-- `apple-vision-pro-sales-2026`  
-- `reddit-stocks-meme-comeback-2026`
+### **Step 4: Add to Sitemap (for Google)**
 
----
-
-### **Step 2: Copy an Existing Article**
-
-Copy `page.tsx` from any existing article:
-```
-frontend/app/articles/microstrategy-bitcoin-strategy-2026/page.tsx
-```
-
-Paste it into your new folder:
-```
-frontend/app/articles/your-article-name-2026/page.tsx
-```
-
----
-
-### **Step 3: Update the Metadata**
-
-Change these fields at the top:
+Edit `app/sitemap.ts` and add your article:
 
 ```typescript
-export const metadata = {
-  title: "Your Article Title | TamtechAI Finance",
-  description: "Your article description (appears in Google search)",
-  openGraph: {
-    title: "Your Article Title",
-    description: "Your article description",
-    type: 'article',
-    publishedTime: '2026-02-05T00:00:00.000Z', // Change date
-  },
-};
+{
+  url: 'https://tamtech-finance.com/articles/your-article-slug-2026',
+  lastModified: new Date('2026-02-05'),
+  changeFrequency: 'monthly',
+  priority: 0.9,
+},
 ```
+
+### **Step 5: Deploy**
+
+```bash
+cd frontend
+git add .
+git commit -m "feat: Add [topic] article"
+git push
+```
+
+✅ **Done! Google will find it automatically via sitemap.xml**
 
 ---
 

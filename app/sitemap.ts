@@ -123,6 +123,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
   
+  // Article pages (IMPORTANT FOR SEO & TRAFFIC)
+  const articlePages: MetadataRoute.Sitemap = [
+    {
+      url: 'https://tamtech-finance.com/articles',
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://tamtech-finance.com/articles/microstrategy-bitcoin-strategy-2026',
+      lastModified: new Date('2026-02-02'),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: 'https://tamtech-finance.com/articles/is-gold-a-bubble-2026',
+      lastModified: new Date('2026-02-03'),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: 'https://tamtech-finance.com/articles/nvidia-ai-dominance-2026',
+      lastModified: new Date('2026-02-04'),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+  ];
+  
   // Dynamic stock pages - All 270 tickers (HIGH PRIORITY FOR SEO)
   const stockPages: MetadataRoute.Sitemap = TICKER_POOL.map((ticker) => ({
     url: `https://tamtech-finance.com/stocks/${ticker}`,
@@ -131,5 +159,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
   
-  return [...staticPages, ...stockPages];
+  return [...staticPages, ...articlePages, ...stockPages];
 }

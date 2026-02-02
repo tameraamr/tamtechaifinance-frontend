@@ -17,6 +17,7 @@ interface ArticleData {
   author: string;
   hero_emoji: string;
   hero_gradient: string;
+  image_url?: string;
   related_tickers: string[];
   created_at: string;
 }
@@ -39,8 +40,9 @@ async function getArticle(slug: string): Promise<ArticleData | null> {
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = await getArticle(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticle(slug);
 
   if (!article) {
     return {
@@ -66,8 +68,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = await getArticle(params.slug);
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const article = await getArticle(slug);
 
   if (!article) {
     notFound();
@@ -84,6 +87,18 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Navbar />
+
+      {/* Hero Image */}
+      {article.image_url && (
+        <div className="relative w-full h-[500px] overflow-hidden">
+          <img
+            src={article.image_url}
+            alt={article.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-900" />
+        </div>
+      )}
 
       {/* Hero Section */}
       <div className={`bg-gradient-to-r ${gradientClass} py-20`}>

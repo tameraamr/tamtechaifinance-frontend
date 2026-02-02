@@ -75,6 +75,13 @@ export default function AdminArticlesPage() {
         return;
       }
 
+      if (!response.ok) {
+        const text = await response.text();
+        setError(`HTTP ${response.status}: ${text.substring(0, 200)}`);
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
       if (data.success) {
         setArticles(data.articles);

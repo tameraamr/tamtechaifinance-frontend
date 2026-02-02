@@ -16,7 +16,6 @@ import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
 import RecentAnalyses from '../src/components/RecentAnalyses';
 import RegretMachine from '../src/components/RegretMachine';
-import WhaleTracker from '../src/components/WhaleTracker';
 import MasterUniverseHeatmap from '../src/components/MasterUniverseHeatmap';
 import ArticleOfTheDay from '../src/components/ArticleOfTheDay';
 import Navbar from '../src/components/Navbar';
@@ -927,10 +926,17 @@ export default function Home() {
       <Navbar guestTrials={guestTrials} setShowAuthModal={setShowAuthModal} setAuthMode={setAuthMode} />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 relative">
-        {/* Compact AI Analyzer - Top Section */}
-        <div id="main-analyzer" className="relative z-20 overflow-visible bg-gradient-to-br from-[var(--bg-secondary)] via-[var(--bg-secondary)] to-[var(--accent-primary)]/20 border border-[var(--border-primary)] rounded-2xl p-4 md:p-6 shadow-2xl mb-6">
-          <div className="absolute -left-16 -top-16 w-48 h-48 bg-blue-600/10 blur-3xl" aria-hidden="true" />
-          <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
+        {/* Grid layout: Article on left, Analyzer in center */}
+        <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6 mb-6">
+          {/* Article of the Day - Left Column (Desktop only) */}
+          <div className="hidden lg:block">
+            <ArticleOfTheDay />
+          </div>
+
+          {/* Compact AI Analyzer - Center Column */}
+          <div id="main-analyzer" className="relative z-20 overflow-visible bg-gradient-to-br from-[var(--bg-secondary)] via-[var(--bg-secondary)] to-[var(--accent-primary)]/20 border border-[var(--border-primary)] rounded-2xl p-4 md:p-6 shadow-2xl">
+            <div className="absolute -left-16 -top-16 w-48 h-48 bg-blue-600/10 blur-3xl" aria-hidden="true" />
+            <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
 
           <div className="relative z-10 flex flex-col items-center text-center mb-4">
             <p className="text-xs uppercase tracking-[0.25em] text-[var(--accent-primary)] font-bold">⚡ {t.primaryEngine}</p>
@@ -1289,25 +1295,17 @@ export default function Home() {
             </button>
           </motion.div>
         </div>
+        </div> {/* End of grid layout */}
+        </div> {/* End of grid container */}
+
+        {/* Article of the Day - Mobile only */}
+        <div className="lg:hidden mb-6">
+          <ArticleOfTheDay />
+        </div>
 
         {/* 👇 Regret Machine 👇 */}
         <RegretMachine lang={lang} />
         {/* X Regret Machine X */}
-
-        {/* 👇 Article of the Day 👇 */}
-        <ArticleOfTheDay />
-        {/* X Article of the Day X */}
-
-        {/* 👇 Live Whale Feed 👇 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="relative mb-6 overflow-hidden"
-        >
-          <WhaleTracker limit={5} showHeader={true} showViewAll={true} lang={lang} />
-        </motion.div>
-        {/* X Live Whale Feed X */}
 
         {/* 👇 Master Universe Heatmap 👇 */}
         <MasterUniverseHeatmap

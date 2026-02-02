@@ -43,9 +43,6 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             <Link href="/calendar" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
               {t.calendar}
             </Link>
-            <Link href="/smart-money-radar" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
-              {t.whaleRadar}
-            </Link>
           </div>
 
           {/* Right: Credits, Language, User Actions */}
@@ -165,13 +162,6 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
               className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
             >
               📅 {t.calendar}
-            </Link>
-            <Link 
-              href="/smart-money-radar" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
-            >
-              🐳 {t.whaleRadar}
             </Link>
 
             {/* Dashboard Link - Before Language Selector */}

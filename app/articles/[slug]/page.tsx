@@ -7,6 +7,9 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { Calendar, Clock, Tag, TrendingUp, ArrowLeft } from 'lucide-react';
 
+// Enable dynamic params
+export const dynamicParams = true;
+
 // Article metadata type
 interface ArticleMetadata {
   title: string;

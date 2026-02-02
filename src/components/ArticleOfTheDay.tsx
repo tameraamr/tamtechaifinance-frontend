@@ -64,6 +64,18 @@ export default function ArticleOfTheDay() {
         <div className="absolute -left-20 -top-20 w-32 h-32 bg-amber-500/10 blur-3xl rounded-full" />
         <div className="absolute -right-20 -bottom-20 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full" />
 
+        {/* Thumbnail Image */}
+        {article.image_url && (
+          <div className="relative w-full h-40 overflow-hidden">
+            <img 
+              src={article.image_url} 
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/90" />
+          </div>
+        )}
+
         <div className="relative z-10 p-5">
           {/* Featured Badge */}
           <div className="mb-3">

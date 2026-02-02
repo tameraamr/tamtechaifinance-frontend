@@ -128,6 +128,7 @@ export default function ArticleOfTheDay() {
             </Link>
           </div>
         </div>
+        </div>
       </div>
     </div>
   );

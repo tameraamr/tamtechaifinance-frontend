@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { History } from 'lucide-react';
+import { History, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 interface RecentAnalysesProps {
   recentAnalyses: any[];
@@ -12,7 +13,7 @@ interface RecentAnalysesProps {
 export default function RecentAnalyses({ recentAnalyses, lang, setTicker, handleAnalyze }: RecentAnalysesProps) {
   const [displayData, setDisplayData] = useState<any[]>([]);
 
-  // 1. عند تحميل الصفحة: اقرأ من الـ localStorage فوراً لتجنب الـ 3 ثواني تأخير
+  // Load cached data immediately on mount
   useEffect(() => {
     const cachedData = localStorage.getItem('recent_analyses_cache');
     if (cachedData) {
@@ -20,7 +21,7 @@ export default function RecentAnalyses({ recentAnalyses, lang, setTicker, handle
     }
   }, []);
 
-  // 2. عندما تصل بيانات الباك-أند: حدث الواجهة واحفظ النسخة الجديدة في الكاش
+  // Update when new data arrives from backend
   useEffect(() => {
     if (recentAnalyses && recentAnalyses.length > 0) {
       setDisplayData(recentAnalyses);
@@ -35,30 +36,44 @@ export default function RecentAnalyses({ recentAnalyses, lang, setTicker, handle
       <div className="flex items-center gap-1.5 mr-2">
         <History className="w-3 h-3 text-slate-500" />
         <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-          {lang === 'ar' ? 'الأخيرة:' : 'Recent:'}
+          {lang === 'ar' ? 'محدث حديثاً:' : 'Recently Updated:'}
         </span>
       </div>
 
       <div className="flex flex-wrap justify-center gap-2">
-        {displayData.slice(0, 5).map((item, index) => (
-          <button
+        {displayData.slice(0, 8).map((item, index) => (
+          <Link
             key={index}
-            onClick={() => {
-              setTicker(item.ticker);
-              handleAnalyze(item.ticker);
-            }}
-            className="group flex items-center gap-2 bg-slate-900/40 border border-slate-800 hover:border-blue-500/50 px-3 py-1 rounded-full transition-all active:scale-95"
+            href={`/stocks/${item.ticker}`}
+            className="group relative flex items-center gap-2 bg-gradient-to-br from-slate-900/60 to-slate-800/40 border border-slate-700/50 hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] px-3 py-1.5 rounded-full transition-all active:scale-95 overflow-hidden"
           >
-            <span className="text-[11px] font-black text-slate-300 group-hover:text-blue-400 transition-colors uppercase font-mono">
+            {/* Fresh indicator glow */}
+            {item.is_fresh && (
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            )}
+            
+            <span className="relative text-[11px] font-black text-slate-300 group-hover:text-blue-400 transition-colors uppercase font-mono">
               {item.ticker}
             </span>
-            <div className={`w-1.5 h-1.5 rounded-full ${
+            
+            {/* Verdict indicator dot */}
+            <div className={`relative w-1.5 h-1.5 rounded-full ${
                 item.verdict?.includes('BUY') ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]' :
                 item.verdict?.includes('SELL') ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' :
                 'bg-yellow-500 shadow-[0_0_5px_rgba(245,158,11,0.5)]'
               }`} 
             />
-          </button>
+            
+            {/* Fresh sparkle badge */}
+            {item.is_fresh && item.age_days <= 2 && (
+              <Sparkles className="relative w-3 h-3 text-emerald-400 animate-pulse" />
+            )}
+            
+            {/* Age indicator (subtle) */}
+            <span className="relative text-[9px] text-slate-500 font-mono">
+              {item.time}
+            </span>
+          </Link>
         ))}
       </div>
     </div>

@@ -141,8 +141,9 @@ export default function ArticleOfTheDay() {
               </div>
             )}
           </div>
+          </div>
         </div>
-        </div>
+      </div>
       </div>
     </div>
   );

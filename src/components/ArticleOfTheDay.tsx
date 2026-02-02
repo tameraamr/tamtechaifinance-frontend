@@ -24,12 +24,16 @@ export default function ArticleOfTheDay() {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/featured-article`)
       .then(res => res.json())
       .then(data => {
+        console.log('Featured article API response:', data);
         if (data.success && data.article) {
           setArticle(data.article);
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error('Failed to load featured article:', err);
+        setLoading(false);
+      });
   }, []);
 
   if (loading || !article) return null;

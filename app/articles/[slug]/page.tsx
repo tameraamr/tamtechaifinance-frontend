@@ -6,7 +6,8 @@ import Link from 'next/link';
 
 // Dynamic route segment for articles
 export const dynamicParams = true;
-export const revalidate = 300; // Revalidate every 5 minutes
+export const revalidate = 0; // Disable caching for now
+export const dynamic = 'force-dynamic';
 
 interface ArticleData {
   id: number;
@@ -24,15 +25,23 @@ interface ArticleData {
 
 async function getArticle(slug: string): Promise<ArticleData | null> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/articles/${slug}`, {
-      next: { revalidate: 300 }
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/articles/${slug}`;
+    console.log('Fetching article from:', url);
+    
+    const response = await fetch(url, {
+      cache: 'no-store'
     });
 
+    console.log('Article response status:', response.status);
+    
     if (!response.ok) {
+      const text = await response.text();
+      console.error('Article fetch failed:', response.status, text);
       return null;
     }
 
     const data = await response.json();
+    console.log('Article data:', data);
     return data.success ? data.article : null;
   } catch (error) {
     console.error('Error fetching article:', error);

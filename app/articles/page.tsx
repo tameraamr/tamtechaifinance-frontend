@@ -33,6 +33,10 @@ export default function ArticlesPage() {
       const response = await fetch('/api/articles');
       const data = await response.json();
       
+      console.log('Articles API response:', data);
+      console.log('Articles count:', data.articles?.length);
+      console.log('Sample article:', data.articles?.[0]);
+      
       if (data.success) {
         setArticles(data.articles.filter((a: Article) => a.published === 1));
       }

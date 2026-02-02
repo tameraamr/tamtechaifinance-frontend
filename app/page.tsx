@@ -1295,8 +1295,8 @@ export default function Home() {
             </button>
           </motion.div>
         </div>
+          </div> {/* End of analyzer column */}
         </div> {/* End of grid layout */}
-        </div> {/* End of grid container */}
 
         {/* Article of the Day - Mobile only */}
         <div className="lg:hidden mb-6">

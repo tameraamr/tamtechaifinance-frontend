@@ -1,22 +1,54 @@
-import { Metadata } from 'next';
+"use client";
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, Clock, Tag, ArrowRight, Newspaper } from 'lucide-react';
-import { getAllArticles } from '../../lib/articles';
+import { Calendar, ArrowRight, Newspaper } from 'lucide-react';
+import Navbar from '../../src/components/Navbar';
+import Footer from '../../src/components/Footer';
 
-export const metadata: Metadata = {
-  title: 'Market Insights & Analysis | TamtechAI Finance',
-  description: 'Expert stock market analysis, investment strategies, and financial insights powered by AI. Daily articles on trending stocks, sectors, and market opportunities.',
-  keywords: 'stock analysis, market insights, investment strategies, financial news, AI stock research',
-};
+interface Article {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  author: string;
+  hero_emoji: string;
+  hero_gradient: string;
+  related_tickers: string;
+  is_featured: number;
+  published: number;
+  created_at: string;
+}
 
 export default function ArticlesPage() {
-  const articles = getAllArticles();
-  const today = new Date().toISOString().split('T')[0];
-  const featuredArticle = articles.find(a => a.featured && a.featuredDate === today);
-  const otherArticles = articles.filter(a => a.slug !== featuredArticle?.slug);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch('/api/articles');
+      const data = await response.json();
+      
+      if (data.success) {
+        setArticles(data.articles.filter((a: Article) => a.published === 1));
+      }
+    } catch (err) {
+      console.error('Failed to fetch articles:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const featuredArticle = articles.find(a => a.is_featured === 1);
+  const otherArticles = articles.filter(a => a.id !== featuredArticle?.id);
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121] text-white">
+      <Navbar />
+      
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-12 text-center">
@@ -33,6 +65,20 @@ export default function ArticlesPage() {
             Daily insights on trending stocks, market opportunities, and investment strategies
           </p>
         </div>
+
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="inline-block w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+            <p className="text-slate-400 mt-4">Loading articles...</p>
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="text-center py-20">
+            <Newspaper className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-300 mb-2">No Articles Yet</h2>
+            <p className="text-slate-500">Check back soon for expert market insights and analysis!</p>
+          </div>
+        ) : (
+          <>
         
         {/* Featured Article of the Day */}
         {featuredArticle && (
@@ -49,36 +95,37 @@ export default function ArticlesPage() {
                 </div>
                 
                 <Link href={`/articles/${featuredArticle.slug}`} className="group block">
+                  <div className="text-5xl mb-4">{featuredArticle.hero_emoji}</div>
                   <h2 className="text-3xl md:text-4xl font-black text-white group-hover:text-amber-300 transition-colors mb-4">
                     {featuredArticle.title}
                   </h2>
                 </Link>
                 
                 <p className="text-lg text-slate-300 mb-6 leading-relaxed">
-                  {featuredArticle.excerpt}
+                  {featuredArticle.description}
                 </p>
                 
                 <div className="flex flex-wrap items-center gap-4 text-slate-400 text-sm mb-6">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    <span>{new Date(featuredArticle.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    <span>{new Date(featuredArticle.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <span>{featuredArticle.readTime}</span>
-                  </div>
+                  <span className="text-slate-600">•</span>
+                  <span className="text-slate-400">{featuredArticle.author}</span>
                 </div>
                 
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {featuredArticle.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="bg-amber-500/10 border border-amber-400/30 rounded-full px-3 py-1 text-xs text-amber-300 font-semibold"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {featuredArticle.related_tickers && (
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {featuredArticle.related_tickers.split(',').map((ticker, i) => (
+                      <span
+                        key={i}
+                        className="bg-amber-500/10 border border-amber-400/30 rounded-full px-3 py-1 text-xs text-amber-300 font-semibold"
+                      >
+                        {ticker.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 
                 <Link
                   href={`/articles/${featuredArticle.slug}`}
@@ -98,45 +145,52 @@ export default function ArticlesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {otherArticles.map((article) => (
               <Link
-                key={article.slug}
+                key={article.id}
                 href={`/articles/${article.slug}`}
                 className="group bg-gradient-to-br from-slate-900/80 to-slate-800/60 border border-slate-700/50 hover:border-blue-500/50 rounded-2xl p-6 transition-all hover:shadow-lg hover:shadow-blue-500/20"
               >
+                <div className="text-3xl mb-3">{article.hero_emoji}</div>
+                
                 <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors mb-3 line-clamp-2">
                   {article.title}
                 </h3>
                 
                 <p className="text-slate-300 text-sm mb-4 line-clamp-3">
-                  {article.excerpt}
+                  {article.description}
                 </p>
                 
-                <div className="flex items-center gap-4 text-slate-400 text-xs mb-4">
+                <div className="flex items-center justify-between text-slate-400 text-xs mb-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
-                    <span>{new Date(article.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    <span>{new Date(article.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{article.readTime}</span>
+                  <div className="flex items-center gap-1 text-blue-400">
+                    <span>Read</span>
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
                 
-                <div className="flex flex-wrap gap-1.5">
-                  {article.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 bg-slate-800/50 border border-slate-700 rounded-full px-2 py-0.5 text-[10px] text-slate-400"
-                    >
-                      <Tag className="w-2.5 h-2.5" />
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {article.related_tickers && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {article.related_tickers.split(',').slice(0, 3).map((ticker, i) => (
+                      <span
+                        key={i}
+                        className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded"
+                      >
+                        {ticker.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </Link>
             ))}
           </div>
         </div>
+        </>
+        )}
       </div>
+      
+      <Footer />
     </div>
   );
 }

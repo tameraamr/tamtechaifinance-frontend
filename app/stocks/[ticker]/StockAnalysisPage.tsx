@@ -134,7 +134,7 @@ export default function StockAnalysisPage({ ticker, initialData }: StockAnalysis
       <UpgradeModal 
         isOpen={showUpgradeModal} 
         onClose={() => setShowUpgradeModal(false)}
-        trigger="pdf_export"
+        trigger="pdf"
       />
       
       <main className="container mx-auto px-4 py-8 max-w-6xl">

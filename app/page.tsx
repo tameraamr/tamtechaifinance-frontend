@@ -18,6 +18,7 @@ import RecentAnalyses from '../src/components/RecentAnalyses';
 import RegretMachine from '../src/components/RegretMachine';
 import WhaleTracker from '../src/components/WhaleTracker';
 import MasterUniverseHeatmap from '../src/components/MasterUniverseHeatmap';
+import ArticleOfTheDay from '../src/components/ArticleOfTheDay';
 import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
 import UpgradeModal from '../src/components/UpgradeModal';
@@ -1292,6 +1293,10 @@ export default function Home() {
         {/* 👇 Regret Machine 👇 */}
         <RegretMachine lang={lang} />
         {/* X Regret Machine X */}
+
+        {/* 👇 Article of the Day 👇 */}
+        <ArticleOfTheDay />
+        {/* X Article of the Day X */}
 
         {/* 👇 Live Whale Feed 👇 */}
         <motion.div

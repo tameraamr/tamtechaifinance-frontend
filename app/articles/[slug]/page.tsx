@@ -7,8 +7,9 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { Calendar, Clock, Tag, TrendingUp, ArrowLeft } from 'lucide-react';
 
-// Enable dynamic params
-export const dynamicParams = true;
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Revalidate every hour
 
 // Article metadata type
 interface ArticleMetadata {
@@ -44,27 +45,6 @@ function getArticle(slug: string) {
     };
   } catch (error) {
     return null;
-  }
-}
-
-// Generate static params for all articles
-export async function generateStaticParams() {
-  try {
-    const articlesDirectory = path.join(process.cwd(), 'public/content/articles');
-    
-    if (!fs.existsSync(articlesDirectory)) {
-      return [];
-    }
-    
-    const files = fs.readdirSync(articlesDirectory);
-    
-    return files
-      .filter(file => file.endsWith('.mdx'))
-      .map(file => ({
-        slug: file.replace('.mdx', ''),
-      }));
-  } catch (error) {
-    return [];
   }
 }
 

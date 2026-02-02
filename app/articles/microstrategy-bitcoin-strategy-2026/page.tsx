@@ -1,43 +1,62 @@
 import Link from 'next/link';
-import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, User } from 'lucide-react';
+import Navbar from '@/src/components/Navbar';
+import Footer from '@/src/components/Footer';
 
 export const metadata = {
   title: "MicroStrategy's $6 Billion Bitcoin Bet: Genius or Disaster? | TamtechAI Finance",
   description: "Michael Saylor has transformed MicroStrategy into a leveraged Bitcoin fund. With $6B+ in BTC, is this the most bullish bet in finance—or the setup for an epic crash?",
+  openGraph: {
+    title: "MicroStrategy's $6 Billion Bitcoin Bet: Genius or Disaster?",
+    description: "Michael Saylor has transformed MicroStrategy into a leveraged Bitcoin fund. With $6B+ in BTC, is this the most bullish bet in finance—or the setup for an epic crash?",
+    type: 'article',
+    publishedTime: '2026-02-02T00:00:00.000Z',
+  },
 };
 
 export default function MSTRArticle() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]">
-      <div className="max-w-4xl mx-auto px-4 pt-6">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-400 transition">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
-      </div>
+      <Navbar />
       
-      <article className="max-w-4xl mx-auto px-4 py-8">
-        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-4">
+      <article className="max-w-4xl mx-auto px-4 py-12">
+        {/* Hero Image */}
+        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-blue-500/20 to-purple-500/20" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center p-8">
+              <div className="text-8xl mb-4">₿</div>
+              <p className="text-2xl font-bold text-white">MicroStrategy's Bitcoin Strategy</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-full px-4 py-1.5 mb-6">
           <span className="text-yellow-400 text-sm font-bold">✨ Article of the Day - Feb 2</span>
         </div>
         
-        <h1 className="text-5xl font-black text-white mb-4 leading-tight">
+        <h1 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
           MicroStrategy's $6 Billion Bitcoin Bet: Genius or Disaster?
         </h1>
         
-        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-8">
-          <span className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-8 pb-8 border-b border-slate-800">
+          <span className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            <span className="font-medium">TamtechAI Research</span>
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             February 2, 2026
           </span>
-          <span className="flex items-center gap-1">
+          <span>•</span>
+          <span className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             8 min read
           </span>
-          <span>TamtechAI Research</span>
         </div>
 
-        <div className="prose prose-invert prose-lg max-w-none text-slate-300">
+        <div className="prose prose-invert max-w-none text-slate-300">
           <p className="text-xl mb-6">
             <strong>Michael Saylor has gone all-in on Bitcoin.</strong> And I mean <em>all-in</em>.
           </p>
@@ -136,6 +155,8 @@ export default function MSTRArticle() {
           </div>
         </div>
       </article>
+      
+      <Footer />
     </div>
   );
 }

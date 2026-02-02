@@ -1,39 +1,58 @@
 import Link from 'next/link';
-import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, User } from 'lucide-react';
+import Navbar from '@/src/components/Navbar';
+import Footer from '@/src/components/Footer';
 
 export const metadata = {
   title: "Is Gold a Bubble? Why This 5,000-Year-Old Asset Won't Die | TamtechAI Finance",
   description: "Gold just hit all-time highs. Critics call it a relic. Bugs call it the ultimate insurance. Who's right?",
+  openGraph: {
+    title: "Is Gold a Bubble? Why This 5,000-Year-Old Asset Won't Die",
+    description: "Gold just hit all-time highs. Critics call it a relic. Bugs call it the ultimate insurance. Who's right?",
+    type: 'article',
+    publishedTime: '2026-02-03T00:00:00.000Z',
+  },
 };
 
 export default function GoldArticle() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b1121] via-[#070b14] to-[#0b1121]">
-      <div className="max-w-4xl mx-auto px-4 pt-6">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-400 transition">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
-      </div>
+      <Navbar />
       
-      <article className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-5xl font-black text-white mb-4 leading-tight">
+      <article className="max-w-4xl mx-auto px-4 py-12">
+        {/* Hero Image */}
+        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 via-amber-500/20 to-orange-500/20" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center p-8">
+              <div className="text-8xl mb-4">🏆</div>
+              <p className="text-2xl font-bold text-white">Gold: 5,000 Years of Value</p>
+            </div>
+          </div>
+        </div>
+
+        <h1 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
           Is Gold a Bubble? Why This 5,000-Year-Old Asset Won't Die
         </h1>
         
-        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-8">
-          <span className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-8 pb-8 border-b border-slate-800">
+          <span className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            <span className="font-medium">TamtechAI Research</span>
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             February 3, 2026
           </span>
-          <span className="flex items-center gap-1">
+          <span>•</span>
+          <span className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
             7 min read
           </span>
-          <span>TamtechAI Research</span>
         </div>
 
-        <div className="prose prose-invert prose-lg max-w-none text-slate-300">
+        <div className="prose prose-invert max-w-none text-slate-300">
           <p className="text-xl mb-6">
             <strong>Gold is having a moment.</strong> Again.
           </p>
@@ -103,6 +122,8 @@ export default function GoldArticle() {
           </div>
         </div>
       </article>
+      
+      <Footer />
     </div>
   );
 }

@@ -1294,8 +1294,7 @@ export default function Home() {
               Launch Battle <ArrowRight size={16} />
             </button>
           </motion.div>
-        </div>
-          </div> {/* End of analyzer column */}
+        </div> {/* End of 3-card grid */}
         </div> {/* End of grid layout */}
 
         {/* Article of the Day - Mobile only */}

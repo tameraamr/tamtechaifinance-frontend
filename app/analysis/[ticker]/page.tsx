@@ -95,8 +95,17 @@ const translations: any = {
 
 const formatNewsDate = (dateString: string) => {
   if (!dateString) return "";
+  
+  // If it's already a relative time (e.g., "2 hours ago", "Oct 24"), return as-is
+  if (dateString.includes('ago') || dateString.includes('hour') || dateString.includes('min') || 
+      (/^[A-Z][a-z]{2}\s\d{1,2}$/.test(dateString))) {
+    return dateString;
+  }
+  
+  // Try to parse as date
   try {
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; // Invalid date, return original
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

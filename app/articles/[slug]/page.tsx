@@ -101,27 +101,27 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       {/* Hero Image */}
       {article.image_url && (
-        <div className="relative w-full h-[280px] md:h-[350px] overflow-hidden">
+        <div className="relative w-full h-[200px] md:h-[250px] overflow-hidden">
           <img
             src={article.image_url}
             alt={article.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-950" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 to-slate-950" />
         </div>
       )}
 
-      {/* Article Content */}
-      <div className="mx-auto px-4 md:px-8 lg:px-12 max-w-5xl">
+      {/* Article Content - No container, just max-width */}
+      <article className="max-w-3xl mx-auto px-6 md:px-8 py-8">
         {/* Article Header */}
-        <header className="py-8 md:py-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+        <header className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
             {article.title}
           </h1>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span className="text-base font-medium text-slate-300">{article.author}</span>
-            <span className="text-slate-600">•</span>
-            <time className="text-base">
+          <div className="flex items-center gap-3 text-sm text-slate-400">
+            <span className="text-slate-300">{article.author}</span>
+            <span>•</span>
+            <time>
               {new Date(article.created_at).toLocaleDateString('en-US', { 
                 year: 'numeric', 
                 month: 'long', 
@@ -132,36 +132,33 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </header>
 
         {/* Article Body */}
-        <article className="py-8 md:py-12 prose prose-invert prose-lg md:prose-xl max-w-none 
-          prose-headings:text-white prose-headings:font-bold prose-headings:mb-6 prose-headings:mt-8
-          prose-h2:text-3xl prose-h3:text-2xl
-          prose-p:text-slate-200 prose-p:leading-relaxed prose-p:mb-6 prose-p:text-lg
-          prose-strong:text-white prose-strong:font-semibold
-          prose-ul:text-slate-200 prose-ul:my-6
-          prose-ol:text-slate-200 prose-ol:my-6
-          prose-li:my-2 prose-li:text-lg
-          prose-li:marker:text-amber-400
+        <div className="prose prose-invert prose-lg max-w-none 
+          prose-headings:text-white prose-headings:font-bold prose-headings:mb-4 prose-headings:mt-8
+          prose-h2:text-2xl prose-h3:text-xl
+          prose-p:text-slate-300 prose-p:leading-relaxed prose-p:mb-4
+          prose-strong:text-white
+          prose-ul:text-slate-300 prose-ul:my-4
+          prose-ol:text-slate-300 prose-ol:my-4
+          prose-li:my-1
+          prose-li:marker:text-slate-500
           prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300
-          prose-blockquote:border-l-amber-500 prose-blockquote:text-slate-300 prose-blockquote:italic
-          prose-code:text-amber-400 prose-code:bg-slate-800/50 prose-code:px-2 prose-code:py-1 prose-code:rounded
-          prose-pre:bg-slate-800/50 prose-pre:border prose-pre:border-slate-700
-          prose-table:text-slate-200">
-          <div 
-            className="article-content"
-            dangerouslySetInnerHTML={{ __html: article.content }}
-          />
-        </article>
+          prose-blockquote:border-l-slate-700 prose-blockquote:text-slate-400 prose-blockquote:italic
+          prose-code:text-amber-400 prose-code:bg-slate-900 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+          prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-800
+          prose-table:text-slate-300">
+          <div dangerouslySetInnerHTML={{ __html: article.content }} />
+        </div>
 
         {/* Related Stocks */}
         {article.related_tickers && article.related_tickers.length > 0 && (
-          <div className="py-6 border-t border-slate-800">
-            <h3 className="text-xl font-bold text-white mb-4">Related Stocks</h3>
+          <div className="mt-8 pt-6 border-t border-slate-800">
+            <h3 className="text-lg font-semibold text-white mb-3">Related Stocks</h3>
             <div className="flex flex-wrap gap-2">
               {article.related_tickers.map((ticker) => (
                 <Link
                   key={ticker}
                   href={`/stock-analyzer?ticker=${ticker}`}
-                  className="px-4 py-2 bg-slate-800 border border-slate-700 hover:border-slate-600 text-white font-medium rounded-lg hover:bg-slate-700 transition-all"
+                  className="px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-white text-sm font-medium rounded hover:bg-slate-800 transition-all"
                 >
                   {ticker}
                 </Link>
@@ -171,8 +168,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         )}
 
         {/* Back Link */}
-        <div className="py-8 border-t border-slate-800">
+        <div className="mt-8 pt-6 border-t border-slate-800">
           <Link
+            href="/articles"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm"
+          >
+            <span>←</span>
+            <span>Back to Articles</span>
+          </Link>
+        </div>
+      </article>
             href="/articles"
             className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
           >

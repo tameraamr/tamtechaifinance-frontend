@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const subscriptionExpiry = user?.subscription_expiry || null;
 
   // 🎉 Personalized Welcome Notification
-  const showWelcomeToast = (userName: string, userCredits: number) => {
+  const showWelcomeToast = (userName: string, userCredits: number, isProUser: boolean = false) => {
     // Only show toast on client side
     if (typeof window === 'undefined') return;
 
@@ -138,8 +138,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const themeStyles = getThemeStyles();
 
+    const message = isProUser
+      ? `Welcome back, ${displayName}! ${themeStyles.icon}\n\n💎 PRO Member • Unlimited analyses available!`
+      : `Welcome back, ${displayName}! ${themeStyles.icon}\n\nYou have ${userCredits} 💎 credits available. Ready for a new analysis?`;
+
     toast.success(
-      `Welcome back, ${displayName}! ${themeStyles.icon}\n\nYou have ${userCredits} 💎 credits available. Ready for a new analysis?`,
+      message,
       {
         duration: 5000,
         position: 'top-right',
@@ -231,7 +235,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userName = completeUserData.user.first_name
           ? `${completeUserData.user.first_name} ${completeUserData.user.last_name || ''}`.trim()
           : completeUserData.user.email.split('@')[0];
-        showWelcomeToast(userName, completeUserData.credits);
+        const isProUser = completeUserData.user.is_pro === 1 || completeUserData.user.is_pro === true;
+        showWelcomeToast(userName, completeUserData.credits, isProUser);
 
         return;
       }
@@ -245,7 +250,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const userName = userData.first_name
       ? `${userData.first_name} ${userData.last_name || ''}`.trim()
       : userData.email.split('@')[0];
-    showWelcomeToast(userName, userCredits);
+    const isProUser = userData.is_pro === 1 || userData.is_pro === true;
+    showWelcomeToast(userName, userCredits, isProUser);
   };
 
   const logout = async () => {

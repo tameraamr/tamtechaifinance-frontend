@@ -241,8 +241,12 @@ export default function PortfolioPage() {
   const fetchPortfolio = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/portfolio', {
-        credentials: 'include'
+      const response = await fetch(`/api/portfolio?_=${Date.now()}`, {
+        credentials: 'include',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
       });
       
       if (!response.ok) throw new Error('Failed to fetch portfolio');

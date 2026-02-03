@@ -14,7 +14,7 @@ const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifina
 
 export default function StockAnalyzerPage() {
   const router = useRouter();
-  const { credits, isLoggedIn, updateCredits } = useAuth();
+  const { credits, isLoggedIn, isPro, updateCredits } = useAuth();
   const { t, lang } = useTranslation();
   const [ticker, setTicker] = useState("");
   const [suggestions, setSuggestions] = useState<{ symbol: string, name: string }[]>([]);
@@ -135,8 +135,8 @@ export default function StockAnalyzerPage() {
     setShowSuggestions(false);
     setUserTyping(false);
 
-    // Check credits locally for logged-in users
-    if (isLoggedIn && credits <= 0) {
+    // Check credits locally for logged-in users (but not for PRO users - they have unlimited)
+    if (isLoggedIn && !isPro && credits <= 0) {
       router.push("/?paywall=true");
       setLoading(false);
       return;
@@ -321,7 +321,9 @@ export default function StockAnalyzerPage() {
                       </div>
                       <span className="text-xs font-semibold" style={{ color: '#fde68a' }}>
                         {isLoggedIn 
-                          ? `Each analysis costs 1 credit • You have ${credits} ${credits === 1 ? 'credit' : 'credits'} remaining`
+                          ? (isPro 
+                              ? '💎 PRO Member • Unlimited analyses' 
+                              : `Each analysis costs 1 credit • You have ${credits} ${credits === 1 ? 'credit' : 'credits'} remaining`)
                           : `Free trial: ${guestTrials} ${guestTrials === 1 ? 'analysis' : 'analyses'} left • Register for more`
                         }
                       </span>

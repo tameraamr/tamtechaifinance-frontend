@@ -332,11 +332,22 @@ export default function AnalysisPage() {
         if (storedResult && storedTicker === ticker) {
           // Use stored data from recent analysis (works for both guests and users)
           const parsedResult = JSON.parse(storedResult);
+          
+          // DEBUG: Log the actual structure
+          console.log('📊 Analysis Result Structure:', parsedResult);
+          console.log('📈 Data object:', parsedResult.data);
+          console.log('🎯 Analysis object:', parsedResult.analysis);
+          console.log('💰 PE Ratio paths:', {
+            'data.pe_ratio': parsedResult?.data?.pe_ratio,
+            'pe_ratio': parsedResult?.pe_ratio,
+            'metrics.pe_ratio': parsedResult?.metrics?.pe_ratio
+          });
+          
           setResult(parsedResult);
           setLoading(false);
           
           // SEO: Update page metadata dynamically
-          const companyName = parsedResult?.company_name || ticker.toUpperCase();
+          const companyName = parsedResult?.company_name || parsedResult?.data?.companyName || ticker.toUpperCase();
           document.title = `${companyName} (${ticker.toUpperCase()}) Analysis | AI Stock Report - Tamtech Finance`;
           const metaDescription = document.querySelector('meta[name="description"]');
           if (metaDescription) {
@@ -474,9 +485,33 @@ const handleDownloadPDF = async () => {
     router.back();
   };
 
+  // Helper function to safely extract metric values from result object
+  const getMetric = (key: string) => {
+    if (!result) return null;
+    
+    // Try multiple paths in order of preference
+    const paths = [
+      result?.data?.[key],           // result.data.pe_ratio
+      result?.[key],                  // result.pe_ratio
+      result?.metrics?.[key],         // result.metrics.pe_ratio
+      result?.analysis?.metrics?.[key] // result.analysis.metrics.pe_ratio
+    ];
+    
+    for (const value of paths) {
+      if (value !== null && value !== undefined && value !== 'N/A') {
+        return value;
+      }
+    }
+    
+    return null;
+  };
+
   const getFilteredChartData = () => {
-    const chartData = result?.data?.chart_data ?? result?.chart_data;
-    if (!chartData || !Array.isArray(chartData)) return [];
+    const chartData = getMetric('chart_data') ?? getMetric('historical_data') ?? getMetric('chartData') ?? [];
+    if (!chartData || !Array.isArray(chartData)) {
+      console.log('⚠️ No chart data found. Available keys:', result ? Object.keys(result) : 'no result');
+      return [];
+    }
 
     const now = new Date();
     let daysBack = 365; // 1Y default
@@ -721,12 +756,12 @@ const handleDownloadPDF = async () => {
                 }}>{result.ticker}</span>
                 {(result?.data?.recommendationKey ?? result?.recommendationKey) !== "none" && <span className="text-[10px] uppercase font-black" style={{ color: 'var(--accent-primary)' }}>{t.analyst}: {(result?.data?.recommendationKey ?? result?.recommendationKey ?? '').replace('_', ' ')}</span>}
               </div>
-              <h2 className="text-2xl md:text-4xl font-black mb-1 leading-tight" style={{ color: 'var(--text-primary)' }}>{result?.data?.companyName ?? result?.companyName ?? result?.company_name ?? ticker}</h2>
+              <h2 className="text-2xl md:text-4xl font-black mb-1 leading-tight" style={{ color: 'var(--text-primary)' }}>{getMetric('companyName') ?? getMetric('company_name') ?? getMetric('longName') ?? ticker}</h2>
               
               {/* 💹 LIVE PRICE */}
               <div className="flex items-baseline gap-3 my-6">
                 <div className="text-4xl md:text-6xl font-mono font-black" style={{ color: 'var(--text-primary)' }} dir="ltr">
-                  ${(result?.data?.price ?? result?.price ?? 0).toFixed(2)}
+                  ${(getMetric('price') ?? getMetric('currentPrice') ?? getMetric('regularMarketPrice') ?? 0).toFixed(2)}
                 </div>
                 <div className="flex items-center gap-1.5 rounded-full px-2.5 py-1" style={{
                   backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -739,13 +774,13 @@ const handleDownloadPDF = async () => {
               
               <div className="mb-8">
                 <div className="flex justify-between text-[10px] md:text-xs font-bold mb-2" style={{ color: 'var(--text-muted)' }}>
-                  <span>{t.low}: ${result?.data?.fiftyTwoWeekLow ?? result?.fiftyTwoWeekLow ?? 0}</span>
-                  <span>{t.high}: ${result?.data?.fiftyTwoWeekHigh ?? result?.fiftyTwoWeekHigh ?? 0}</span>
+                  <span>{t.low}: ${getMetric('fiftyTwoWeekLow') ?? getMetric('52WeekLow') ?? 0}</span>
+                  <span>{t.high}: ${getMetric('fiftyTwoWeekHigh') ?? getMetric('52WeekHigh') ?? 0}</span>
                 </div>
                 <div className="w-full h-2 md:h-3 rounded-full overflow-hidden relative shadow-inner" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
                   <div className="h-full absolute transition-all duration-1000 shadow-[0_0_10px_rgba(59,130,246,0.5)]" style={{
                     background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary))',
-                    left: `${calculateRangePos(result?.data?.price ?? result?.price ?? 0, result?.data?.fiftyTwoWeekLow ?? result?.fiftyTwoWeekLow ?? 0, result?.data?.fiftyTwoWeekHigh ?? result?.fiftyTwoWeekHigh ?? 100) - 2}%`,
+                    left: `${calculateRangePos(getMetric('price') ?? getMetric('currentPrice') ?? 0, getMetric('fiftyTwoWeekLow') ?? 0, getMetric('fiftyTwoWeekHigh') ?? 100) - 2}%`,
                     width: '4%'
                   }}>
                   </div>
@@ -813,20 +848,20 @@ const handleDownloadPDF = async () => {
               {t.metricsTitle}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
-              <MetricCard label="P/E Ratio" value={result?.data?.pe_ratio ?? result?.pe_ratio} metricKey="pe" tooltipKey="pe" />
-              <MetricCard label="PEG Ratio" value={result?.data?.peg_ratio ?? result?.peg_ratio} metricKey="peg" tooltipKey="peg" />
-              <MetricCard label="Price/Sales" value={result?.data?.price_to_sales ?? result?.price_to_sales} metricKey="ps" tooltipKey="ps" />
-              <MetricCard label="Price/Book" value={result?.data?.price_to_book ?? result?.price_to_book} metricKey="pb" tooltipKey="pb" />
-              <MetricCard label="EPS (TTM)" value={result?.data?.eps ?? result?.eps} metricKey="eps" tooltipKey="pe" suffix="$" />
-              <MetricCard label="Profit Margin" value={result?.data?.profit_margins ?? result?.profit_margins} metricKey="margin" tooltipKey="margin" suffix="%" />
-              <MetricCard label="Operating Margin" value={result?.data?.operating_margins ?? result?.operating_margins} metricKey="margin" tooltipKey="margin" suffix="%" />
-              <MetricCard label="ROE" value={result?.data?.return_on_equity ?? result?.return_on_equity} metricKey="roe" tooltipKey="roe" suffix="%" />
-              <MetricCard label="Dividend Yield" value={result?.data?.dividend_yield ?? result?.dividend_yield} metricKey="div" tooltipKey="div" suffix="%" />
-              <MetricCard label="Beta" value={result?.data?.beta ?? result?.beta} metricKey="beta" tooltipKey="beta" />
-              <MetricCard label="Debt/Equity" value={result?.data?.debt_to_equity ?? result?.debt_to_equity} metricKey="debt" tooltipKey="debt" />
-              <MetricCard label="Current Ratio" value={result?.data?.current_ratio ?? result?.current_ratio} metricKey="curr" tooltipKey="curr" />
-              <MetricCard label="Rev Growth" value={result?.data?.revenue_growth ?? result?.revenue_growth} metricKey="margin" tooltipKey="margin" suffix="%" />
-              <MetricCard label="Market Cap" value={formatNumber(result?.data?.market_cap ?? result?.market_cap)} metricKey="mcap" tooltipKey="pe" />
+              <MetricCard label="P/E Ratio" value={getMetric('pe_ratio') ?? getMetric('trailingPE')} metricKey="pe" tooltipKey="pe" />
+              <MetricCard label="PEG Ratio" value={getMetric('peg_ratio') ?? getMetric('pegRatio')} metricKey="peg" tooltipKey="peg" />
+              <MetricCard label="Price/Sales" value={getMetric('price_to_sales') ?? getMetric('priceToSalesTrailing12Months')} metricKey="ps" tooltipKey="ps" />
+              <MetricCard label="Price/Book" value={getMetric('price_to_book') ?? getMetric('priceToBook')} metricKey="pb" tooltipKey="pb" />
+              <MetricCard label="EPS (TTM)" value={getMetric('eps') ?? getMetric('trailingEps')} metricKey="eps" tooltipKey="pe" suffix="$" />
+              <MetricCard label="Profit Margin" value={getMetric('profit_margins') ?? getMetric('profitMargins')} metricKey="margin" tooltipKey="margin" suffix="%" />
+              <MetricCard label="Operating Margin" value={getMetric('operating_margins') ?? getMetric('operatingMargins')} metricKey="margin" tooltipKey="margin" suffix="%" />
+              <MetricCard label="ROE" value={getMetric('return_on_equity') ?? getMetric('returnOnEquity')} metricKey="roe" tooltipKey="roe" suffix="%" />
+              <MetricCard label="Dividend Yield" value={getMetric('dividend_yield') ?? getMetric('dividendYield')} metricKey="div" tooltipKey="div" suffix="%" />
+              <MetricCard label="Beta" value={getMetric('beta')} metricKey="beta" tooltipKey="beta" />
+              <MetricCard label="Debt/Equity" value={getMetric('debt_to_equity') ?? getMetric('debtToEquity')} metricKey="debt" tooltipKey="debt" />
+              <MetricCard label="Current Ratio" value={getMetric('current_ratio') ?? getMetric('currentRatio')} metricKey="curr" tooltipKey="curr" />
+              <MetricCard label="Rev Growth" value={getMetric('revenue_growth') ?? getMetric('revenueGrowth')} metricKey="margin" tooltipKey="margin" suffix="%" />
+              <MetricCard label="Market Cap" value={formatNumber(getMetric('market_cap') ?? getMetric('marketCap'))} metricKey="mcap" tooltipKey="pe" />
             </div>
           </div>
 

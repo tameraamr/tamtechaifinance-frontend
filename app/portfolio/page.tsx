@@ -859,7 +859,7 @@ export default function PortfolioPage() {
                         borderRadius: '8px',
                         color: '#fff'
                       }}
-                      formatter={(value: any, name: string) => {
+                      formatter={(value: any, name?: string) => {
                         if (name === 'value') return formatCurrency(value);
                         if (name === 'percent') return `${value.toFixed(1)}%`;
                         return value;

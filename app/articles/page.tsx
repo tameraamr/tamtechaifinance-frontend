@@ -55,8 +55,19 @@ export default function ArticlesPage() {
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Back Home Button */}
+        <div className="mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm"
+          >
+            <span>←</span>
+            <span>Back to Home</span>
+          </Link>
+        </div>
+
         {/* Header */}
-        <div className="mb-12 text-center">
+        <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/40 rounded-full px-4 py-2 mb-4">
             <Newspaper className="w-4 h-4 text-amber-400" />
             <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
@@ -87,56 +98,55 @@ export default function ArticlesPage() {
         
         {/* Featured Article of the Day */}
         {featuredArticle && (
-          <div className="mb-12">
-            <div className="bg-gradient-to-br from-slate-900/90 to-slate-800/70 border border-amber-500/30 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/10 blur-3xl rounded-full" />
-              
-              <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-4 py-2 mb-6">
-                  <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
-                    Article of the Day
-                  </span>
-                </div>
-                
-                <Link href={`/articles/${featuredArticle.slug}`} className="group block">
-                  <h2 className="text-3xl md:text-4xl font-black text-white group-hover:text-amber-300 transition-colors mb-4">
-                    {featuredArticle.title}
-                  </h2>
-                </Link>
-                
-                <p className="text-lg text-slate-300 mb-6 leading-relaxed">
-                  {featuredArticle.description}
-                </p>
-                
-                <div className="flex flex-wrap items-center gap-4 text-slate-400 text-sm mb-6">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>{new Date(featuredArticle.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                  </div>
-                  <span className="text-slate-600">•</span>
-                  <span className="text-slate-400">{featuredArticle.author}</span>
-                </div>
-                
-                {featuredArticle.related_tickers && (
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {featuredArticle.related_tickers.split(',').map((ticker, i) => (
-                      <span
-                        key={i}
-                        className="bg-amber-500/10 border border-amber-400/30 rounded-full px-3 py-1 text-xs text-amber-300 font-semibold"
-                      >
-                        {ticker.trim()}
-                      </span>
-                    ))}
+          <div className="mb-8">
+            <div className="bg-gradient-to-br from-slate-900/90 to-slate-800/70 border border-amber-500/30 rounded-2xl overflow-hidden shadow-xl">
+              <div className="flex flex-col md:flex-row gap-4 p-4">
+                {/* Thumbnail Image */}
+                {featuredArticle.image_url && (
+                  <div className="relative w-full md:w-48 h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                    <img 
+                      src={featuredArticle.image_url} 
+                      alt={featuredArticle.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 )}
                 
-                <Link
-                  href={`/articles/${featuredArticle.slug}`}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-amber-500/30"
-                >
-                  Read Full Article
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-400/40 rounded-full px-3 py-1 mb-3">
+                    <span className="text-amber-300 font-bold text-xs uppercase tracking-wide">
+                      Article of the Day
+                    </span>
+                  </div>
+                  
+                  <Link href={`/articles/${featuredArticle.slug}`} className="group block">
+                    <h2 className="text-xl md:text-2xl font-bold text-white group-hover:text-amber-300 transition-colors mb-2 line-clamp-2">
+                      {featuredArticle.title}
+                    </h2>
+                  </Link>
+                  
+                  <p className="text-sm text-slate-300 mb-3 leading-relaxed line-clamp-2">
+                    {featuredArticle.description}
+                  </p>
+                  
+                  <div className="flex flex-wrap items-center gap-3 text-slate-400 text-xs mb-3">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(featuredArticle.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                    <span className="text-slate-600">•</span>
+                    <span>{featuredArticle.author}</span>
+                  </div>
+                  
+                  <Link
+                    href={`/articles/${featuredArticle.slug}`}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-semibold px-4 py-2 rounded-lg transition-all text-sm"
+                  >
+                    Read Article
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

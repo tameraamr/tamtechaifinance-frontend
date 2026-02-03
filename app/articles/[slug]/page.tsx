@@ -99,6 +99,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     <div className="min-h-screen bg-slate-950">
       <Navbar />
 
+      {/* Back Home Button */}
+      <div className="max-w-3xl mx-auto px-6 md:px-8 pt-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm"
+        >
+          <span>←</span>
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
       {/* Hero Image */}
       {article.image_url && (
         <div className="relative w-full h-[200px] md:h-[250px] overflow-hidden">

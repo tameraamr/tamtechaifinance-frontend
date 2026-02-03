@@ -112,12 +112,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       )}
 
       {/* Hero Section */}
-      <div className={`bg-gradient-to-r ${gradientClass} py-12`}>
+      <div className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 py-12">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
             {article.title}
           </h1>
-          <div className="flex items-center justify-center gap-4 text-white/90">
+          <div className="flex items-center justify-center gap-4 text-slate-300">
             <span>{article.author}</span>
             <span>•</span>
             <span>{new Date(article.created_at).toLocaleDateString('en-US', { 

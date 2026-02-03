@@ -178,14 +178,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           </Link>
         </div>
       </article>
-            href="/articles"
-            className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
-          >
-            <span>←</span>
-            <span>Back to Articles</span>
-          </Link>
-        </div>
-      </div>
 
       <Footer />
     </div>

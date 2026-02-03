@@ -13,6 +13,7 @@ interface Article {
   description: string;
   author: string;
   image_url?: string;
+  related_tickers?: string;
   is_featured: number;
   published: number;
   created_at: string;

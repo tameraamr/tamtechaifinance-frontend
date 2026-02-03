@@ -138,15 +138,34 @@ export default function PortfolioPage() {
 
   // Calculate All Metrics
   const calculateMetrics = (data: Holding[]) => {
+    // Handle empty data
+    if (!data || data.length === 0) {
+      setTotalValue(0);
+      setTotalCost(0);
+      setTotalPnL(0);
+      setTotalPnLPercent(0);
+      setDayChange(0);
+      setDayChangePercent(0);
+      setSectorData([]);
+      setRiskMetrics({
+        sharpeRatio: 0,
+        volatility: 0,
+        beta: 0,
+        maxDrawdown: 0,
+        diversificationScore: 0
+      });
+      return;
+    }
+
     let value = 0;
     let cost = 0;
     let dayChangeVal = 0;
     const sectorMap: { [key: string]: number } = {};
 
     data.forEach(holding => {
-      const currentVal = holding.current_price * holding.shares;
-      const costBasis = (holding.avg_buy_price || holding.current_price) * holding.shares;
-      const changeVal = (holding.change_p / 100) * currentVal;
+      const currentVal = (holding.current_price || 0) * (holding.shares || 0);
+      const costBasis = (holding.avg_buy_price || holding.current_price || 0) * (holding.shares || 0);
+      const changeVal = ((holding.change_p || 0) / 100) * currentVal;
 
       value += currentVal;
       cost += costBasis;
@@ -157,10 +176,13 @@ export default function PortfolioPage() {
       sectorMap[sector] = (sectorMap[sector] || 0) + currentVal;
     });
 
+    const pnl = value - cost;
+    const pnlPercent = cost > 0 ? (pnl / cost) * 100 : 0;
+
     setTotalValue(value);
     setTotalCost(cost);
-    setTotalPnL(value - cost);
-    setTotalPnLPercent(cost > 0 ? ((value - cost) / cost) * 100 : 0);
+    setTotalPnL(pnl);
+    setTotalPnLPercent(pnlPercent);
     setDayChange(dayChangeVal);
     setDayChangePercent(value > 0 ? (dayChangeVal / value) * 100 : 0);
 
@@ -177,14 +199,16 @@ export default function PortfolioPage() {
     setSectorData(sectors);
 
     // Risk metrics (simplified calculations)
-    const volatility = data.reduce((sum, h) => sum + Math.abs(h.change_p), 0) / (data.length || 1);
+    const volatility = data.reduce((sum, h) => sum + Math.abs(h.change_p || 0), 0) / (data.length || 1);
     const diversificationScore = Math.min(100, (sectors.length / 8) * 100);
+    const changePercentages = data.map(h => h.change_p || 0).filter(p => p !== 0);
+    const maxDrawdown = changePercentages.length > 0 ? Math.min(...changePercentages) : 0;
     
     setRiskMetrics({
-      sharpeRatio: totalPnLPercent > 0 ? totalPnLPercent / (volatility || 1) : 0,
+      sharpeRatio: pnlPercent > 0 && volatility > 0 ? pnlPercent / volatility : 0,
       volatility: volatility,
       beta: 1.0,
-      maxDrawdown: Math.min(...data.map(h => h.change_p)),
+      maxDrawdown: maxDrawdown,
       diversificationScore: diversificationScore
     });
   };

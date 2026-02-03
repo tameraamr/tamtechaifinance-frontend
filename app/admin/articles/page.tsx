@@ -13,7 +13,7 @@ interface Article {
   description: string;
   author: string;
   image_url?: string;
-  related_tickers?: string;
+  related_tickers?: string; // Ticker symbols comma-separated
   is_featured: number;
   published: number;
   created_at: string;

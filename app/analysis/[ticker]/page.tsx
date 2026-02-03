@@ -295,9 +295,10 @@ export default function AnalysisPage() {
       const companyName = data?.company_name || ticker.toUpperCase();
       document.title = `${companyName} (${ticker.toUpperCase()}) Analysis | AI Stock Report - Tamtech Finance`;
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Refresh error:', error);
-      toast.error(isRTL ? "فشل في تحديث التحليل" : "Failed to refresh analysis");
+      const errorMsg = error?.message || (isRTL ? "فشل في تحديث التحليل" : "Failed to refresh analysis");
+      toast.error(errorMsg);
     } finally {
       setIsRefreshing(false);
     }

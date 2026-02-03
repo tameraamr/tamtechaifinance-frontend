@@ -5,7 +5,7 @@ const BACKEND_URL = 'https://tamtechaifinance-backend-production.up.railway.app'
 export async function GET(request: NextRequest) {
   try {
     const response = await fetch(`${BACKEND_URL}/articles`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
+      cache: 'no-store' // Always fetch fresh data
     });
 
     const data = await response.json();

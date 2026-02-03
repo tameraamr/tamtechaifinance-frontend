@@ -409,10 +409,11 @@ export default function PortfolioPage() {
     const converted = convertCurrency(amountUSD);
     const symbols: {[key: string]: string} = {
       USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: 'C$', 
-      AUD: 'A$', CHF: 'CHF', CNY: '¥', INR: '₹'
+      AUD: 'A$', CHF: 'CHF ', CNY: '¥', INR: '₹'
     };
     const symbol = symbols[currency] || currency + ' ';
-    return `${symbol}${converted.toFixed(2)}`;
+    const formatted = converted.toFixed(2);
+    return `${symbol}${formatted}`;
   };
   
   const formatStockPrice = (price: number, ticker: string) => {

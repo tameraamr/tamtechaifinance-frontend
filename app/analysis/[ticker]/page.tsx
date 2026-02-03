@@ -482,7 +482,8 @@ const handleDownloadPDF = async () => {
     ];
     
     for (const value of paths) {
-      if (value !== null && value !== undefined && value !== 'N/A') {
+      // Treat 0, null, undefined, 'N/A', and empty strings as invalid
+      if (value !== null && value !== undefined && value !== 'N/A' && value !== 0 && value !== '') {
         return value;
       }
     }

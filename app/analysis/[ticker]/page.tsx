@@ -363,13 +363,9 @@ export default function AnalysisPage() {
           }
           canonical.setAttribute('href', `https://tamtech-finance.com/analysis/${ticker.toLowerCase()}`);
 
-          // Clean up localStorage AFTER a short delay to prevent re-render issues
-          setTimeout(() => {
-            localStorage.removeItem('analysis_result');
-            localStorage.removeItem('analysis_ticker');
-            sessionStorage.removeItem('analysis_result');
-            sessionStorage.removeItem('analysis_ticker');
-          }, 100);
+          // DON'T delete localStorage - keep it for future views
+          // This allows users to view their analysis results multiple times
+          // Only clear when navigating away or analyzing a new stock
         } else {
           // No stored result - redirect back to analyzer instead of refetching
           router.replace('/stock-analyzer');
@@ -398,20 +394,8 @@ export default function AnalysisPage() {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Cleanup localStorage on component unmount if data wasn't loaded
-  useEffect(() => {
-    return () => {
-      // Only clean up stored data if component unmounts before data was processed
-      const storedResult = localStorage.getItem('analysis_result');
-      const storedTicker = localStorage.getItem('analysis_ticker');
-      if (storedResult && storedTicker === ticker) {
-        localStorage.removeItem('analysis_result');
-        localStorage.removeItem('analysis_ticker');
-        sessionStorage.removeItem('analysis_result');
-        sessionStorage.removeItem('analysis_ticker');
-      }
-    };
-  }, [loading]);
+  // Note: We no longer clean up localStorage on unmount
+  // This allows users to navigate back to analysis results
 
 const handleDownloadPDF = async () => {
   const input = document.getElementById('report-content');

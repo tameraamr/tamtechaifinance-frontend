@@ -150,6 +150,12 @@ export default function StockAnalyzerPage() {
     }
 
     try {
+      // Clear any old analysis data before starting new analysis
+      localStorage.removeItem('analysis_result');
+      localStorage.removeItem('analysis_ticker');
+      sessionStorage.removeItem('analysis_result');
+      sessionStorage.removeItem('analysis_ticker');
+      
       // Add timeout to prevent indefinite hanging (60 seconds for AI generation)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000);

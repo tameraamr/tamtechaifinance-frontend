@@ -26,6 +26,7 @@ export default function AdminArticlesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingArticle, setEditingArticle] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshStatus, setRefreshStatus] = useState('');
 
@@ -154,7 +155,6 @@ export default function AdminArticlesPage() {
     setLoading(true);
 
     try {
-      // Keep related_tickers as comma-separated string (backend stores it as-is)
       const payload = {
         ...formData,
         related_tickers: formData.related_tickers.trim()
@@ -162,8 +162,14 @@ export default function AdminArticlesPage() {
 
       console.log('Sending article payload:', payload);
 
-      const response = await fetch('/api/admin/articles', {
-        method: 'POST',
+      const url = editingArticle 
+        ? `/api/admin/articles/${editingArticle}`
+        : '/api/admin/articles';
+      
+      const method = editingArticle ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -183,11 +189,12 @@ export default function AdminArticlesPage() {
 
       const data = await response.json();
       
-      console.log('Create article response:', data);
+      console.log('Article response:', data);
 
       if (data.success) {
-        alert('Article created successfully!');
+        alert(editingArticle ? 'Article updated successfully!' : 'Article created successfully!');
         setShowCreateForm(false);
+        setEditingArticle(null);
         setFormData({
           title: '',
           slug: '',
@@ -206,11 +213,62 @@ export default function AdminArticlesPage() {
         alert(`Error: ${data.detail || JSON.stringify(data)}`);
       }
     } catch (err: any) {
-      alert(`Error creating article: ${err.message || err}`);
-      console.error('Create article error:', err);
+      alert(`Error ${editingArticle ? 'updating' : 'creating'} article: ${err.message || err}`);
+      console.error('Article error:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditArticle = (article: Article) => {
+    setEditingArticle(article.id);
+    setFormData({
+      title: article.title,
+      slug: article.slug,
+      description: article.description,
+      content: '', // Will need to fetch full content
+      author: article.author,
+      hero_emoji: '🚀',
+      hero_gradient: 'blue,purple,pink',
+      image_url: article.image_url || '',
+      related_tickers: article.related_tickers || '',
+      is_featured: article.is_featured,
+      published: article.published
+    });
+    setShowCreateForm(true);
+    
+    // Fetch full article content
+    fetch(`https://tamtechaifinance-backend-production.up.railway.app/articles/${article.slug}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.article) {
+          setFormData(prev => ({
+            ...prev,
+            content: data.article.content,
+            hero_emoji: data.article.hero_emoji || '🚀',
+            hero_gradient: data.article.hero_gradient || 'blue,purple,pink'
+          }));
+        }
+      })
+      .catch(err => console.error('Error fetching article content:', err));
+  };
+
+  const cancelEdit = () => {
+    setEditingArticle(null);
+    setShowCreateForm(false);
+    setFormData({
+      title: '',
+      slug: '',
+      description: '',
+      content: '',
+      author: 'TamtechAI Research',
+      hero_emoji: '🚀',
+      hero_gradient: 'blue,purple,pink',
+      image_url: '',
+      related_tickers: '',
+      is_featured: 1,
+      published: 1
+    });
   };
 
   const handleDeleteArticle = async (id: number, title: string) => {
@@ -298,7 +356,10 @@ export default function AdminArticlesPage() {
                 {refreshing ? '🔄 Refreshing...' : '🔄 Refresh 270 Tickers'}
               </button>
               <button
-                onClick={() => setShowCreateForm(!showCreateForm)}
+                onClick={() => {
+                  cancelEdit();
+                  setShowCreateForm(!showCreateForm);
+                }}
                 className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
               >
                 {showCreateForm ? 'Cancel' : '+ Create New Article'}
@@ -321,7 +382,9 @@ export default function AdminArticlesPage() {
           {/* Create Article Form */}
           {showCreateForm && (
             <form onSubmit={handleCreateArticle} className="mb-8 bg-white/5 p-6 rounded-lg space-y-4">
-              <h2 className="text-2xl font-bold text-white mb-4">Create New Article</h2>
+              <h2 className="text-2xl font-bold text-white mb-4">
+                {editingArticle ? 'Edit Article' : 'Create New Article'}
+              </h2>
 
               <div>
                 <label className="block text-white mb-2 font-semibold">Title *</label>
@@ -461,7 +524,7 @@ export default function AdminArticlesPage() {
                 disabled={loading}
                 className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg disabled:opacity-50"
               >
-                {loading ? 'Creating...' : '✅ Create Article'}
+                {loading ? (editingArticle ? 'Updating...' : 'Creating...') : (editingArticle ? '✅ Update Article' : '✅ Create Article')}
               </button>
             </form>
           )}
@@ -513,8 +576,14 @@ export default function AdminArticlesPage() {
                         {article.is_featured === 1 ? '⭐' : '☆'}
                       </button>
                       <button
-                        onClick={() => router.push(`/articles/${article.slug}`)}
+                        onClick={() => handleEditArticle(article)}
                         className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-all"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => router.push(`/articles/${article.slug}`)}
+                        className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg transition-all"
                       >
                         View
                       </button>

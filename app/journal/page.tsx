@@ -8,6 +8,84 @@ import AddTradeModal from '@/src/components/AddTradeModal';
 import Link from 'next/link';
 import Navbar from '@/src/components/Navbar';
 import Footer from '@/src/components/Footer';
+import { XCircle, AlertTriangle } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtech-ai.onrender.com';
+
+const countriesList = [
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "DE", name: "Germany" },
+  { code: "FR", name: "France" },
+  { code: "IT", name: "Italy" },
+  { code: "ES", name: "Spain" },
+  { code: "NL", name: "Netherlands" },
+  { code: "BE", name: "Belgium" },
+  { code: "SE", name: "Sweden" },
+  { code: "NO", name: "Norway" },
+  { code: "DK", name: "Denmark" },
+  { code: "FI", name: "Finland" },
+  { code: "PL", name: "Poland" },
+  { code: "CH", name: "Switzerland" },
+  { code: "AT", name: "Austria" },
+  { code: "GR", name: "Greece" },
+  { code: "PT", name: "Portugal" },
+  { code: "IE", name: "Ireland" },
+  { code: "CZ", name: "Czech Republic" },
+  { code: "RO", name: "Romania" },
+  { code: "HU", name: "Hungary" },
+  { code: "BG", name: "Bulgaria" },
+  { code: "TR", name: "Turkey" },
+  { code: "AE", name: "United Arab Emirates" },
+  { code: "SA", name: "Saudi Arabia" },
+  { code: "QA", name: "Qatar" },
+  { code: "KW", name: "Kuwait" },
+  { code: "BH", name: "Bahrain" },
+  { code: "OM", name: "Oman" },
+  { code: "JO", name: "Jordan" },
+  { code: "LB", name: "Lebanon" },
+  { code: "EG", name: "Egypt" },
+  { code: "MA", name: "Morocco" },
+  { code: "DZ", name: "Algeria" },
+  { code: "TN", name: "Tunisia" },
+  { code: "LY", name: "Libya" },
+  { code: "IQ", name: "Iraq" },
+  { code: "SY", name: "Syria" },
+  { code: "PS", name: "Palestine" },
+  { code: "IL", name: "Israel" },
+  { code: "IR", name: "Iran" },
+  { code: "CN", name: "China" },
+  { code: "JP", name: "Japan" },
+  { code: "IN", name: "India" },
+  { code: "KR", name: "South Korea" },
+  { code: "SG", name: "Singapore" },
+  { code: "HK", name: "Hong Kong" },
+  { code: "TW", name: "Taiwan" },
+  { code: "MY", name: "Malaysia" },
+  { code: "TH", name: "Thailand" },
+  { code: "ID", name: "Indonesia" },
+  { code: "PH", name: "Philippines" },
+  { code: "VN", name: "Vietnam" },
+  { code: "PK", name: "Pakistan" },
+  { code: "BD", name: "Bangladesh" },
+  { code: "AU", name: "Australia" },
+  { code: "NZ", name: "New Zealand" },
+  { code: "BR", name: "Brazil" },
+  { code: "AR", name: "Argentina" },
+  { code: "CL", name: "Chile" },
+  { code: "CO", name: "Colombia" },
+  { code: "PE", name: "Peru" },
+  { code: "VE", name: "Venezuela" },
+  { code: "EC", name: "Ecuador" },
+  { code: "ZA", name: "South Africa" },
+  { code: "NG", name: "Nigeria" },
+  { code: "KE", name: "Kenya" },
+  { code: "ET", name: "Ethiopia" },
+  { code: "GH", name: "Ghana" },
+  { code: "OTHER", name: "Other" }
+];
 
 interface JournalStats {
   total_trades: number;
@@ -54,11 +132,22 @@ export default function TradingJournal() {
   const [loading, setLoading] = useState(true);
   const [showAddTrade, setShowAddTrade] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
   const [isPro, setIsPro] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtech-ai.onrender.com';
+  // Auth form state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -95,7 +184,8 @@ export default function TradingJournal() {
 
   const handleNewTradeClick = () => {
     if (!isLoggedIn) {
-      setShowLoginModal(true);
+      setShowAuthModal(true);
+      setAuthMode("signup");
       return;
     }
 
@@ -105,6 +195,117 @@ export default function TradingJournal() {
     }
 
     setShowAddTrade(true);
+  };
+
+  const handleAuth = async () => {
+    setIsSubmittingAuth(true);
+    setAuthError("");
+
+    if (authMode === "signup" && !acceptTerms) {
+      setAuthError("You must accept the Terms of Service and Privacy Policy to register.");
+      setIsSubmittingAuth(false);
+      return;
+    }
+
+    const url = authMode === "login" ? `${API_BASE}/token` : `${API_BASE}/register`;
+
+    let body, headers: any = {};
+
+    if (authMode === "login") {
+      const formData = new URLSearchParams();
+      formData.append('username', email);
+      formData.append('password', password);
+      body = formData;
+      headers = { "Content-Type": "application/x-www-form-urlencoded" };
+    } else {
+      body = JSON.stringify({
+        email,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phone,
+        country: country,
+        address: address || null
+      });
+      headers = { "Content-Type": "application/json" };
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers,
+        body,
+        credentials: 'include'
+      });
+
+      const contentType = res.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await res.json();
+      } else {
+        throw new Error(`Server Error (${res.status}): Please try again later.`);
+      }
+
+      if (!res.ok) {
+        if (data.detail) {
+          if (Array.isArray(data.detail)) {
+            const messages = data.detail.map((err: any) => err.msg).join(" & ");
+            setAuthError(messages);
+          } else {
+            setAuthError(data.detail);
+          }
+        } else {
+          setAuthError("Unknown error occurred.");
+        }
+        return;
+      }
+
+      if (authMode === "login") {
+        setShowAuthModal(false);
+        await checkAuth();
+      } else {
+        setAuthError("");
+        try {
+          const loginResponse = await fetch(`${API_BASE}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            credentials: "include",
+            body: new URLSearchParams({
+              username: email,
+              password: password
+            })
+          });
+
+          if (loginResponse.ok) {
+            toast.success("✅ Account created! Please check your email to verify your account.", {
+              duration: 7000,
+              icon: "📧"
+            });
+            setShowAuthModal(false);
+            await checkAuth();
+          } else {
+            toast.success("✅ Account created! Please log in to continue.", {
+              duration: 5000
+            });
+            setShowAuthModal(false);
+            setAuthMode("login");
+            setTimeout(() => setShowAuthModal(true), 1000);
+          }
+        } catch (error) {
+          toast.success("✅ Account created! Please log in and verify your email.", {
+            duration: 5000
+          });
+          setShowAuthModal(false);
+        }
+      }
+
+    } catch (err: any) {
+      console.error("Auth Error:", err);
+      setAuthError(err.message || "Cannot connect to server. Check your connection.");
+    } finally {
+      setIsSubmittingAuth(false);
+    }
   };
 
   const fetchStats = async () => {
@@ -180,18 +381,15 @@ export default function TradingJournal() {
                 <p className="text-base text-gray-500 mb-6">
                   Join thousands of traders mastering their craft with TamtechAI's intelligent journal system.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex justify-center">
                   <button
-                    onClick={() => setShowLoginModal(true)}
+                    onClick={() => {
+                      setShowAuthModal(true);
+                      setAuthMode("signup");
+                    }}
                     className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-lg shadow-xl shadow-amber-500/30 transition-all hover:scale-105"
                   >
-                    Start Free - 10 Trades
-                  </button>
-                  <button
-                    onClick={() => router.push('/pricing')}
-                    className="px-8 py-4 bg-gray-800 hover:bg-gray-700 rounded-lg font-semibold transition-all"
-                  >
-                    View PRO Features
+                    Start Free
                   </button>
                 </div>
               </motion.div>
@@ -201,7 +399,14 @@ export default function TradingJournal() {
 
       {/* Stats Dashboard */}
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {isLoggedIn && stats ? (
+        {isLoggedIn ? (
+          <>
+            {loading ? (
+              <div className="text-center py-20">
+                <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-400">Loading your journal...</p>
+              </div>
+            ) : stats ? (
           <>
             {/* Dashboard Header */}
             <div className="flex items-center justify-between mb-8">
@@ -383,6 +588,12 @@ export default function TradingJournal() {
             </div>
           </div>
           </>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-gray-400">Failed to load journal data. Please refresh.</p>
+              </div>
+            )}
+          </>
         ) : (
           /* Marketing content for non-logged-in users */
           <div className="space-y-16">
@@ -543,7 +754,10 @@ export default function TradingJournal() {
                 Join professional traders using TamtechAI to track, analyze, and improve their trading performance.
               </p>
               <button
-                onClick={() => setShowLoginModal(true)}
+                onClick={() => {
+                  setShowAuthModal(true);
+                  setAuthMode("signup");
+                }}
                 className="px-12 py-5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105"
               >
                 Start Free - No Credit Card Required
@@ -634,38 +848,129 @@ export default function TradingJournal() {
           </motion.div>
         )}
 
-        {showLoginModal && (
+        {showAuthModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setShowLoginModal(false)}
+            onClick={() => setShowAuthModal(false)}
           >
             <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              className="bg-gray-900 rounded-2xl p-8 max-w-md w-full border border-amber-500/20"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-slate-900 rounded-2xl p-8 max-w-md w-full border border-slate-700 relative"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="text-center">
-                <div className="text-5xl mb-4">🔐</div>
-                <h3 className="text-2xl font-bold mb-4">Login Required</h3>
-                <p className="text-gray-400 mb-8">
-                  Create a free account to start logging your trades and track your performance.
+              <button onClick={() => setShowAuthModal(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white transition-colors"><XCircle className="w-6 h-6" /></button>
+
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {authMode === "login" ? "Login" : "Create Account"}
+                </h2>
+                <p className="text-slate-400 text-sm">
+                  {authMode === "signup" ? "Sign up to access your trading journal." : "Enter your credentials to access your dashboard."}
                 </p>
+              </div>
+
+              {authError && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-xs font-bold mb-5 text-center flex items-center justify-center gap-2"><AlertTriangle size={16} /> {authError}</div>}
+
+              <div className="space-y-4">
+                {authMode === "signup" && (
+                  <>
+                    <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-bottom-2">
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">First Name <span className="text-red-500">*</span></label>
+                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={firstName} onChange={e => setFirstName(e.target.value)} />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Last Name <span className="text-red-500">*</span></label>
+                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={lastName} onChange={e => setLastName(e.target.value)} />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-bottom-3">
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Country <span className="text-red-500">*</span></label>
+                        <select
+                          className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
+                          value={country}
+                          onChange={e => setCountry(e.target.value)}
+                        >
+                          <option value="" disabled>Select Country</option>
+                          {countriesList.map((c) => (
+                            <option key={c.code} value={c.code}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Address</label>
+                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={address} onChange={e => setAddress(e.target.value)} />
+                      </div>
+                    </div>
+
+                    <div className="animate-in slide-in-from-bottom-4">
+                      <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Phone <span className="text-red-500">*</span></label>
+                      <input type="tel" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={phone} onChange={e => setPhone(e.target.value)} />
+                    </div>
+                  </>
+                )}
+
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Email <span className="text-red-500">*</span></label>
+                  <input type="email" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Password <span className="text-red-500">*</span></label>
+                  <input type="password" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={password} onChange={e => setPassword(e.target.value)} />
+                </div>
+
+                {authMode === "signup" && (
+                  <div className="flex items-start gap-3 p-4 bg-slate-900/50 border border-slate-700 rounded-lg animate-in slide-in-from-bottom-5">
+                    <input
+                      type="checkbox"
+                      id="acceptTerms"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-800 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <label htmlFor="acceptTerms" className="text-xs text-slate-300 leading-relaxed cursor-pointer">
+                      I agree to the{" "}
+                      <Link href="/terms" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-semibold">
+                        Terms of Service
+                      </Link>
+                      {" "}and{" "}
+                      <Link href="/privacy" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-semibold">
+                        Privacy Policy
+                      </Link>
+                    </label>
+                  </div>
+                )}
+
                 <button
-                  onClick={() => router.push('/')}
-                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105 mb-4"
+                  onClick={handleAuth}
+                  disabled={isSubmittingAuth}
+                  className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm text-white transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Go to Login
+                  {isSubmittingAuth ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>{authMode === "login" ? "Logging in..." : "Creating Account..."}</span>
+                    </>
+                  ) : (
+                    authMode === "login" ? "Login" : "Register"
+                  )}
                 </button>
-                <button
-                  onClick={() => setShowLoginModal(false)}
-                  className="text-gray-500 hover:text-gray-300 text-sm"
-                >
-                  Cancel
-                </button>
+
+                <div className="text-center pt-2">
+                  <button onClick={() => { setAuthMode(authMode === "login" ? "signup" : "login"); setAuthError(""); }} className="text-xs text-slate-400 hover:text-white transition-colors">
+                    {authMode === "login" ? "Don't have an account? Sign up" : "Already have an account? Login"}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

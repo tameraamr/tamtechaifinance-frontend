@@ -147,32 +147,102 @@ export default function TradingJournal() {
     }
   };
 
+  // Demo data for non-logged-in users
+  const demoTrades = [
+    { id: 1, pair: 'XAUUSD', type: 'Buy', entry: '2650.50', exit: '2665.00', pips: '+14.5', pl: '+$145', rr: '1:2.6', status: 'win' },
+    { id: 2, pair: 'EURUSD', type: 'Sell', entry: '1.08450', exit: '1.08320', pips: '+13.0', pl: '+$130', rr: '1:2.1', status: 'win' },
+    { id: 3, pair: 'NAS100', type: 'Buy', entry: '18250', exit: '18190', pips: '-60', pl: '-$60', rr: '1:3.0', status: 'loss' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
-      {/* Header */}
-      <div className="border-b border-amber-500/20 bg-black/40 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
-                Trading Journal
-              </h1>
-              <p className="text-gray-400 mt-1">Track every pip, master every trade</p>
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
+        {/* Navbar */}
+        <nav className="border-b border-amber-500/20 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-2">
+                <span className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+                  TamtechAI
+                </span>
+              </Link>
+              <div className="flex items-center gap-4">
+                <Link href="/" className="text-gray-400 hover:text-white transition-colors">
+                  Home
+                </Link>
+                <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
+                  Pricing
+                </Link>
+                {!isLoggedIn && (
+                  <button
+                    onClick={() => router.push('/')}
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold transition-all"
+                  >
+                    Login
+                  </button>
+                )}
+              </div>
             </div>
-            <button
-              onClick={handleNewTradeClick}
-              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
-            >
-              + New Trade
-            </button>
           </div>
-        </div>
-      </div>
+        </nav>
+
+        {/* Hero Section for non-logged-in users */}
+        {!isLoggedIn && (
+          <div className="border-b border-amber-500/10">
+            <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent mb-6">
+                  Professional Trading Journal
+                </h1>
+                <p className="text-xl text-gray-400 mb-4 max-w-3xl mx-auto">
+                  Track every Forex, Gold (XAUUSD), and Indices trade with military precision. 
+                  Automatic pip calculations, R:R ratios, and AI-powered trade analysis.
+                </p>
+                <p className="text-lg text-gray-500 mb-8">
+                  Join thousands of traders mastering their craft with TamtechAI's intelligent journal system.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button
+                    onClick={() => router.push('/')}
+                    className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-lg shadow-xl shadow-amber-500/30 transition-all hover:scale-105"
+                  >
+                    Start Free - 10 Trades
+                  </button>
+                  <button
+                    onClick={() => router.push('/pricing')}
+                    className="px-8 py-4 bg-gray-800 hover:bg-gray-700 rounded-lg font-semibold transition-all"
+                  >
+                    View PRO Features
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        )}
 
       {/* Stats Dashboard */}
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {isLoggedIn && stats ? (
           <>
+            {/* Dashboard Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+                  Your Trading Journal
+                </h2>
+                <p className="text-gray-400 mt-1">Track every pip, master every trade</p>
+              </div>
+              <button
+                onClick={handleNewTradeClick}
+                className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
+              >
+                + New Trade
+              </button>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Net Profit Card */}
             <motion.div
@@ -338,27 +408,199 @@ export default function TradingJournal() {
           </div>
           </>
         ) : (
-          /* Not logged in - show CTA */
-          <div className="text-center py-20">
-            <div className="text-6xl mb-6">📊</div>
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Professional Trading Journal
-            </h2>
-            <p className="text-gray-400 mb-8 max-w-md mx-auto">
-              Track your Forex, Gold, and Indices trades with precision. 
-              Log in to start building your trading legacy.
-            </p>
-            <button
-              onClick={() => router.push('/')}
-              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
-            >
-              Login to Start Tracking
-            </button>
+          /* Marketing content for non-logged-in users */
+          <div className="space-y-16">
+            {/* Features Section */}
+            <section>
+              <h2 className="text-3xl font-bold text-center mb-12">
+                Why TamtechAI Trading Journal?
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+                  <div className="text-4xl mb-4">🎯</div>
+                  <h3 className="text-xl font-bold text-amber-400 mb-3">Automatic Calculations</h3>
+                  <p className="text-gray-400">
+                    No manual math! We automatically calculate pips, R:R ratios, risk %, and P&L for Forex (5 decimals), 
+                    Gold (2 decimals), and Indices.
+                  </p>
+                </div>
+
+                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+                  <div className="text-4xl mb-4">🤖</div>
+                  <h3 className="text-xl font-bold text-amber-400 mb-3">AI Trade Scoring</h3>
+                  <p className="text-gray-400">
+                    Gemini AI analyzes your trades and provides actionable feedback. 
+                    Learn from wins and losses with intelligent insights.
+                  </p>
+                </div>
+
+                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+                  <div className="text-4xl mb-4">📊</div>
+                  <h3 className="text-xl font-bold text-amber-400 mb-3">Performance Analytics</h3>
+                  <p className="text-gray-400">
+                    Track win rates, profit factors, and session-based performance. 
+                    Identify your edge across different market conditions.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Demo Section */}
+            <section className="bg-gray-900/30 rounded-2xl p-8 border border-amber-500/20">
+              <h2 className="text-2xl font-bold text-center mb-6">
+                See It In Action
+              </h2>
+              <p className="text-gray-400 text-center mb-8">
+                This is what your trading journal looks like. Clean, professional, and data-driven.
+              </p>
+
+              <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl border border-gray-800 overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-800/50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Pair</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Entry</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Exit</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Pips</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">P&L</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">R:R</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase">Result</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800">
+                    {demoTrades.map((trade) => (
+                      <tr key={trade.id} className="hover:bg-gray-800/30">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-amber-400">{trade.pair}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            trade.type === 'Buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                          }`}>
+                            {trade.type}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-300">{trade.entry}</td>
+                        <td className="px-6 py-4 text-sm text-gray-300">{trade.exit}</td>
+                        <td className="px-6 py-4">
+                          <span className={trade.pips.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}>
+                            {trade.pips}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`font-semibold ${trade.pl.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
+                            {trade.pl}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-300">{trade.rr}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            trade.status === 'win' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                          }`}>
+                            {trade.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* How It Works */}
+            <section>
+              <h2 className="text-3xl font-bold text-center mb-12">
+                How It Works
+              </h2>
+              <div className="grid md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-5xl mb-4">1️⃣</div>
+                  <h3 className="text-lg font-bold mb-2">Create Account</h3>
+                  <p className="text-gray-400 text-sm">Sign up free in 30 seconds</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-5xl mb-4">2️⃣</div>
+                  <h3 className="text-lg font-bold mb-2">Log Your Trade</h3>
+                  <p className="text-gray-400 text-sm">Enter pair, entry, SL, TP, lot size</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-5xl mb-4">3️⃣</div>
+                  <h3 className="text-lg font-bold mb-2">Auto-Calculate</h3>
+                  <p className="text-gray-400 text-sm">Pips, R:R, risk %, P&L done instantly</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-5xl mb-4">4️⃣</div>
+                  <h3 className="text-lg font-bold mb-2">Review & Improve</h3>
+                  <p className="text-gray-400 text-sm">Analyze stats, get AI feedback, grow</p>
+                </div>
+              </div>
+            </section>
+
+            {/* CTA */}
+            <section className="text-center bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-2xl p-12 border border-amber-500/30">
+              <h2 className="text-4xl font-bold mb-4">
+                Ready to Master Your Trades?
+              </h2>
+              <p className="text-xl text-gray-400 mb-8">
+                Join professional traders using TamtechAI to track, analyze, and improve their trading performance.
+              </p>
+              <button
+                onClick={() => router.push('/')}
+                className="px-12 py-5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105"
+              >
+                Start Free - No Credit Card Required
+              </button>
+            </section>
           </div>
         )}
       </div>
 
-      {/* Add Trade Modal */}
+      {/* Footer */}
+      <footer className="border-t border-gray-800 mt-20">
+        <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent mb-4">
+                TamtechAI
+              </h3>
+              <p className="text-gray-400 text-sm">
+                AI-powered financial analysis and trading tools for the modern investor.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li><Link href="/stock-analyzer" className="hover:text-white">Stock Analyzer</Link></li>
+                <li><Link href="/portfolio" className="hover:text-white">Portfolio</Link></li>
+                <li><Link href="/journal" className="hover:text-white">Trading Journal</Link></li>
+                <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li><Link href="/about" className="hover:text-white">About</Link></li>
+                <li><Link href="/articles" className="hover:text-white">Blog</Link></li>
+                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+            © 2026 TamtechAI. All rights reserved. Trade responsibly.
+          </div>
+        </div>
+      </footer>
+    </div>
+
+      {/* Modals */}
       <AddTradeModal
         isOpen={showAddTrade}
         onClose={() => setShowAddTrade(false)}
@@ -434,7 +676,44 @@ export default function TradingJournal() {
             </motion.div>
           </motion.div>
         )}
+
+        {showLoginModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowLoginModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="bg-gray-900 rounded-2xl p-8 max-w-md w-full border border-amber-500/20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center">
+                <div className="text-5xl mb-4">🔐</div>
+                <h3 className="text-2xl font-bold mb-4">Login Required</h3>
+                <p className="text-gray-400 mb-8">
+                  Create a free account to start logging your trades and track your performance.
+                </p>
+                <button
+                  onClick={() => router.push('/')}
+                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105 mb-4"
+                >
+                  Go to Login
+                </button>
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="text-gray-500 hover:text-gray-300 text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

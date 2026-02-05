@@ -32,14 +32,12 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtechaifinance-backend-production.up.railway.app';
+  const API_BASE = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
-    const token = Cookies.get('access_token');
 
     try {
       const payload = {
@@ -52,9 +50,9 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
       const res = await fetch(`${API_BASE}/journal/trades`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(payload)
       });
 
@@ -75,14 +73,14 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-gray-900 rounded-2xl p-8 max-w-2xl w-full my-8 border border-amber-500/20"
+        className="bg-gray-900 rounded-2xl p-4 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto border border-amber-500/20"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
             Log New Trade
           </h2>
           <button
@@ -94,16 +92,16 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+          <div className="mb-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* Asset Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Pair/Ticker *
               </label>
               <input
@@ -112,19 +110,19 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 value={formData.pair_ticker}
                 onChange={(e) => setFormData({ ...formData, pair_ticker: e.target.value.toUpperCase() })}
                 placeholder="XAUUSD, NAS100, EURUSD"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Asset Type *
               </label>
               <select
                 required
                 value={formData.asset_type}
                 onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               >
                 <option value="forex">Forex</option>
                 <option value="gold">Gold (XAUUSD)</option>
@@ -134,15 +132,15 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
           </div>
 
           {/* Market Context */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Market Trend
+              <label className="block text-xs font-medium text-gray-300 mb-1">
+                Trend
               </label>
               <select
                 value={formData.market_trend}
                 onChange={(e) => setFormData({ ...formData, market_trend: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-2 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               >
                 <option value="Bullish">Bullish</option>
                 <option value="Bearish">Bearish</option>
@@ -151,13 +149,13 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Trading Session
               </label>
               <select
                 value={formData.trading_session}
                 onChange={(e) => setFormData({ ...formData, trading_session: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               >
                 <option value="Asia">Asia</option>
                 <option value="London">London</option>
@@ -167,7 +165,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Strategy
               </label>
               <input
@@ -175,22 +173,22 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 value={formData.strategy}
                 onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
                 placeholder="Breakout, Reversal, etc."
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
 
           {/* Order Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Order Type *
               </label>
               <select
                 required
                 value={formData.order_type}
                 onChange={(e) => setFormData({ ...formData, order_type: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               >
                 <option value="Buy">Buy</option>
                 <option value="Sell">Sell</option>
@@ -198,7 +196,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Lot Size *
               </label>
               <input
@@ -208,7 +206,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 value={formData.lot_size}
                 onChange={(e) => setFormData({ ...formData, lot_size: parseFloat(e.target.value) })}
                 placeholder="0.01, 0.1, 1.0"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Standard: 1.0 | Mini: 0.1 | Micro: 0.01
@@ -217,9 +215,9 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
           </div>
 
           {/* Price Levels */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Entry Price *
               </label>
               <input
@@ -228,12 +226,12 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 required
                 value={formData.entry_price || ''}
                 onChange={(e) => setFormData({ ...formData, entry_price: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Stop Loss *
               </label>
               <input
@@ -242,12 +240,12 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 required
                 value={formData.stop_loss || ''}
                 onChange={(e) => setFormData({ ...formData, stop_loss: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Take Profit *
               </label>
               <input
@@ -256,15 +254,15 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 required
                 value={formData.take_profit || ''}
                 onChange={(e) => setFormData({ ...formData, take_profit: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
 
           {/* Exit Details (Optional) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Exit Price (if closed)
               </label>
               <input
@@ -272,27 +270,27 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 step="0.00001"
                 value={formData.exit_price || ''}
                 onChange={(e) => setFormData({ ...formData, exit_price: e.target.value ? parseFloat(e.target.value) : null })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Exit Time (if closed)
               </label>
               <input
                 type="datetime-local"
                 value={formData.exit_time || ''}
                 onChange={(e) => setFormData({ ...formData, exit_time: e.target.value || null })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
 
           {/* Account & Timing */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Account Size *
               </label>
               <input
@@ -301,12 +299,12 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 required
                 value={formData.account_size_at_entry}
                 onChange={(e) => setFormData({ ...formData, account_size_at_entry: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Entry Time *
               </label>
               <input
@@ -314,14 +312,14 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 required
                 value={formData.entry_time}
                 onChange={(e) => setFormData({ ...formData, entry_time: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-xs font-medium text-gray-300 mb-1">
               Trade Notes
             </label>
             <textarea
@@ -329,12 +327,12 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               placeholder="Entry reasons, market conditions, emotional state..."
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500 resize-none"
+              className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500 resize-none"
             />
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}

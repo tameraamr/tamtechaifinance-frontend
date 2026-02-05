@@ -154,34 +154,23 @@ export default function TradingJournal() {
   }, []);
 
   const checkAuth = async () => {
-    const token = Cookies.get('access_token');
-    console.log('[Journal] Checking auth, token exists:', !!token);
-    if (!token) {
-      setIsLoggedIn(false);
-      setLoading(false);
-      return;
-    }
-
-    setIsLoggedIn(true);
     try {
       const res = await fetch(`${API_BASE}/users/me`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-        credentials: 'include'
+        credentials: 'include' // httpOnly cookie sent automatically
       });
-      console.log('[Journal] Auth check response status:', res.status);
+      
       if (res.ok) {
         const data = await res.json();
-        console.log('[Journal] User data:', data);
+        setIsLoggedIn(true);
         setIsPro(data.is_pro === 1);
         fetchStats();
         fetchTrades();
       } else {
-        console.error('[Journal] Auth check failed with status:', res.status);
         setIsLoggedIn(false);
         setLoading(false);
       }
     } catch (error) {
-      console.error('[Journal] Auth check error:', error);
+      console.error('Auth check failed:', error);
       setIsLoggedIn(false);
       setLoading(false);
     }
@@ -314,10 +303,9 @@ export default function TradingJournal() {
   };
 
   const fetchStats = async () => {
-    const token = Cookies.get('access_token');
     try {
       const res = await fetch(`${API_BASE}/journal/stats`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        credentials: 'include'
       });
       if (res.ok) {
         const data = await res.json();
@@ -336,11 +324,10 @@ export default function TradingJournal() {
   };
 
   const fetchTrades = async () => {
-    const token = Cookies.get('access_token');
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/journal/trades?limit=50`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        credentials: 'include'
       });
       if (res.ok) {
         const data = await res.json();

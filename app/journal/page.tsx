@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import AddTradeModal from '@/src/components/AddTradeModal';
+import Link from 'next/link';
 
 interface JournalStats {
   total_trades: number;
@@ -51,6 +52,7 @@ export default function TradingJournal() {
   const [loading, setLoading] = useState(true);
   const [showAddTrade, setShowAddTrade] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isPro, setIsPro] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -76,26 +78,25 @@ export default function TradingJournal() {
       if (res.ok) {
         const data = await res.json();
         setIsPro(data.is_pro === 1);
-        // User is logged in, fetch their trades
         fetchStats();
         fetchTrades();
       } else {
+        setIsLoggedIn(false);
         setLoading(false);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      setIsLoggedIn(false);
       setLoading(false);
     }
   };
 
   const handleNewTradeClick = () => {
     if (!isLoggedIn) {
-      // Not logged in - redirect to homepage to login
-      router.push('/');
+      setShowLoginModal(true);
       return;
     }
 
-    // Check if free user hit 10-trade limit
     if (!isPro && stats && stats.total_trades >= 10) {
       setShowPremiumModal(true);
       return;

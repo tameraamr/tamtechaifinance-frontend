@@ -64,7 +64,7 @@ export default function TradingJournal() {
   const checkAuth = async () => {
     const token = Cookies.get('access_token');
     if (!token) {
-      router.push('/login');
+      router.push('/');
       return;
     }
 
@@ -75,9 +75,13 @@ export default function TradingJournal() {
       if (res.ok) {
         const data = await res.json();
         setIsPro(data.is_pro === 1);
+      } else {
+        // Token invalid, redirect to home
+        router.push('/');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      router.push('/');
     }
   };
 

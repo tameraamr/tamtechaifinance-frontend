@@ -169,9 +169,10 @@ export default function TradingJournal() {
       </div>
 
       {/* Stats Dashboard */}
-      {stats && (
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {isLoggedIn && stats ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Net Profit Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -334,8 +335,27 @@ export default function TradingJournal() {
               </table>
             </div>
           </div>
-        </div>
-      )}
+          </>
+        ) : (
+          /* Not logged in - show CTA */
+          <div className="text-center py-20">
+            <div className="text-6xl mb-6">📊</div>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Professional Trading Journal
+            </h2>
+            <p className="text-gray-400 mb-8 max-w-md mx-auto">
+              Track your Forex, Gold, and Indices trades with precision. 
+              Log in to start building your trading legacy.
+            </p>
+            <button
+              onClick={() => router.push('/')}
+              className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
+            >
+              Login to Start Tracking
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Add Trade Modal */}
       <AddTradeModal

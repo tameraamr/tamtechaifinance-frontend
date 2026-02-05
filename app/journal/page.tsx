@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import AddTradeModal from '@/src/components/AddTradeModal';
 import Link from 'next/link';
+import Navbar from '@/src/components/Navbar';
+import Footer from '@/src/components/Footer';
 
 interface JournalStats {
   total_trades: number;
@@ -157,34 +159,8 @@ export default function TradingJournal() {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
-        {/* Navbar */}
-        <nav className="border-b border-amber-500/20 bg-black/40 backdrop-blur-xl sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-2">
-                <span className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
-                  TamtechAI
-                </span>
-              </Link>
-              <div className="flex items-center gap-4">
-                <Link href="/" className="text-gray-400 hover:text-white transition-colors">
-                  Home
-                </Link>
-                <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
-                  Pricing
-                </Link>
-                {!isLoggedIn && (
-                  <button
-                    onClick={() => router.push('/')}
-                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold transition-all"
-                  >
-                    Login
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </nav>
+        {/* Homepage Navbar */}
+        <Navbar />
 
         {/* Hero Section for non-logged-in users */}
         {!isLoggedIn && (
@@ -194,19 +170,19 @@ export default function TradingJournal() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent mb-6">
+                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent mb-4">
                   Professional Trading Journal
                 </h1>
-                <p className="text-xl text-gray-400 mb-4 max-w-3xl mx-auto">
+                <p className="text-lg text-gray-400 mb-3 max-w-3xl mx-auto">
                   Track every Forex, Gold (XAUUSD), and Indices trade with military precision. 
                   Automatic pip calculations, R:R ratios, and AI-powered trade analysis.
                 </p>
-                <p className="text-lg text-gray-500 mb-8">
+                <p className="text-base text-gray-500 mb-6">
                   Join thousands of traders mastering their craft with TamtechAI's intelligent journal system.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
-                    onClick={() => router.push('/')}
+                    onClick={() => setShowLoginModal(true)}
                     className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-lg shadow-xl shadow-amber-500/30 transition-all hover:scale-105"
                   >
                     Start Free - 10 Trades
@@ -410,47 +386,12 @@ export default function TradingJournal() {
         ) : (
           /* Marketing content for non-logged-in users */
           <div className="space-y-16">
-            {/* Features Section */}
-            <section>
-              <h2 className="text-3xl font-bold text-center mb-12">
-                Why TamtechAI Trading Journal?
-              </h2>
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
-                  <div className="text-4xl mb-4">🎯</div>
-                  <h3 className="text-xl font-bold text-amber-400 mb-3">Automatic Calculations</h3>
-                  <p className="text-gray-400">
-                    No manual math! We automatically calculate pips, R:R ratios, risk %, and P&L for Forex (5 decimals), 
-                    Gold (2 decimals), and Indices.
-                  </p>
-                </div>
-
-                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
-                  <div className="text-4xl mb-4">🤖</div>
-                  <h3 className="text-xl font-bold text-amber-400 mb-3">AI Trade Scoring</h3>
-                  <p className="text-gray-400">
-                    Gemini AI analyzes your trades and provides actionable feedback. 
-                    Learn from wins and losses with intelligent insights.
-                  </p>
-                </div>
-
-                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
-                  <div className="text-4xl mb-4">📊</div>
-                  <h3 className="text-xl font-bold text-amber-400 mb-3">Performance Analytics</h3>
-                  <p className="text-gray-400">
-                    Track win rates, profit factors, and session-based performance. 
-                    Identify your edge across different market conditions.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Demo Section */}
+            {/* Demo Section - MOVED UP */}
             <section className="bg-gray-900/30 rounded-2xl p-8 border border-amber-500/20">
-              <h2 className="text-2xl font-bold text-center mb-6">
+              <h2 className="text-2xl font-bold text-center mb-4">
                 See It In Action
               </h2>
-              <p className="text-gray-400 text-center mb-8">
+              <p className="text-gray-400 text-center mb-6">
                 This is what your trading journal looks like. Clean, professional, and data-driven.
               </p>
 
@@ -508,6 +449,41 @@ export default function TradingJournal() {
               </div>
             </section>
 
+            {/* Features Section */}
+            <section>
+              <h2 className="text-3xl font-bold text-center mb-12">
+                Why TamtechAI Trading Journal?
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+                  <div className="text-4xl mb-4">🎯</div>
+                  <h3 className="text-xl font-bold text-amber-400 mb-3">Automatic Calculations</h3>
+                  <p className="text-gray-400">
+                    No manual math! We automatically calculate pips, R:R ratios, risk %, and P&L for Forex (5 decimals), 
+                    Gold (2 decimals), and Indices.
+                  </p>
+                </div>
+
+                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+                  <div className="text-4xl mb-4">🤖</div>
+                  <h3 className="text-xl font-bold text-amber-400 mb-3">AI Trade Scoring</h3>
+                  <p className="text-gray-400">
+                    Gemini AI analyzes your trades and provides actionable feedback. 
+                    Learn from wins and losses with intelligent insights.
+                  </p>
+                </div>
+
+                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+                  <div className="text-4xl mb-4">📊</div>
+                  <h3 className="text-xl font-bold text-amber-400 mb-3">Performance Analytics</h3>
+                  <p className="text-gray-400">
+                    Track win rates, profit factors, and session-based performance. 
+                    Identify your edge across different market conditions.
+                  </p>
+                </div>
+              </div>
+            </section>
+
             {/* How It Works */}
             <section>
               <h2 className="text-3xl font-bold text-center mb-12">
@@ -537,6 +513,27 @@ export default function TradingJournal() {
               </div>
             </section>
 
+            {/* SEO Content Section */}
+            <section className="max-w-4xl mx-auto space-y-6 text-gray-300">
+              <h2 className="text-2xl font-bold text-white mb-6">Master Your Trading Psychology with Data-Driven Insights</h2>
+              
+              <p className="leading-relaxed">
+                Professional traders understand that consistency comes from meticulous record-keeping. TamtechAI's Trading Journal transforms your trade data into actionable insights, helping you identify patterns, eliminate emotional trading, and build a systematic approach to the markets. Whether you're trading Forex pairs like EUR/USD and GBP/JPY, precious metals like Gold (XAUUSD), or major indices like NAS100 and S&P 500, our platform automatically calculates your performance metrics in real-time.
+              </p>
+
+              <p className="leading-relaxed">
+                Unlike manual spreadsheets or basic trading logs, our AI-powered journal understands the nuances of different asset classes. Forex trades are calculated with 5-decimal precision (3 decimals for JPY pairs), Gold with 2-decimal accuracy, and indices with 1-point increments. This ensures your pip calculations, risk-reward ratios, and profit/loss tracking are always 100% accurate, saving you hours of manual calculations and eliminating costly errors.
+              </p>
+
+              <p className="leading-relaxed">
+                The integration of Gemini AI takes your trading analysis to the next level. Each trade can be reviewed by our AI engine, which examines your entry timing, exit strategy, risk management, and market conditions. You'll receive personalized feedback on what you did right, what could be improved, and how to replicate your winning strategies while avoiding past mistakes. This is like having a professional trading mentor available 24/7.
+              </p>
+
+              <p className="leading-relaxed">
+                Track your progress across different trading sessions (London, New York, Asian, Sydney) and discover when you perform best. Are your London session trades more profitable? Do you overtrade during New York volatility? Our analytics reveal these patterns, helping you optimize your trading schedule and focus on your highest-probability setups. Build discipline, improve consistency, and grow your account with confidence.
+              </p>
+            </section>
+
             {/* CTA */}
             <section className="text-center bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-2xl p-12 border border-amber-500/30">
               <h2 className="text-4xl font-bold mb-4">
@@ -546,7 +543,7 @@ export default function TradingJournal() {
                 Join professional traders using TamtechAI to track, analyze, and improve their trading performance.
               </p>
               <button
-                onClick={() => router.push('/')}
+                onClick={() => setShowLoginModal(true)}
                 className="px-12 py-5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105"
               >
                 Start Free - No Credit Card Required
@@ -556,48 +553,8 @@ export default function TradingJournal() {
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-800 mt-20">
-        <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent mb-4">
-                TamtechAI
-              </h3>
-              <p className="text-gray-400 text-sm">
-                AI-powered financial analysis and trading tools for the modern investor.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link href="/stock-analyzer" className="hover:text-white">Stock Analyzer</Link></li>
-                <li><Link href="/portfolio" className="hover:text-white">Portfolio</Link></li>
-                <li><Link href="/journal" className="hover:text-white">Trading Journal</Link></li>
-                <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link href="/about" className="hover:text-white">About</Link></li>
-                <li><Link href="/articles" className="hover:text-white">Blog</Link></li>
-                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            © 2026 TamtechAI. All rights reserved. Trade responsibly.
-          </div>
-        </div>
-      </footer>
+      {/* Homepage Footer */}
+      <Footer />
     </div>
 
       {/* Modals */}

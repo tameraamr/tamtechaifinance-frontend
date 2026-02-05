@@ -133,7 +133,7 @@ export default function TradingJournal() {
   const [showAddTrade, setShowAddTrade] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [isPro, setIsPro] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -185,7 +185,7 @@ export default function TradingJournal() {
   const handleNewTradeClick = () => {
     if (!isLoggedIn) {
       setShowAuthModal(true);
-      setAuthMode("signup");
+      setAuthMode("login");
       return;
     }
 
@@ -385,7 +385,7 @@ export default function TradingJournal() {
                   <button
                     onClick={() => {
                       setShowAuthModal(true);
-                      setAuthMode("signup");
+                      setAuthMode("login");
                     }}
                     className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-lg shadow-xl shadow-amber-500/30 transition-all hover:scale-105"
                   >
@@ -756,7 +756,7 @@ export default function TradingJournal() {
               <button
                 onClick={() => {
                   setShowAuthModal(true);
-                  setAuthMode("signup");
+                  setAuthMode("login");
                 }}
                 className="px-12 py-5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-105"
               >
@@ -860,41 +860,41 @@ export default function TradingJournal() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-slate-900 rounded-2xl p-8 max-w-md w-full border border-slate-700 relative"
+              className="bg-slate-900 rounded-2xl p-6 max-w-sm w-full border border-slate-700 relative"
               onClick={(e) => e.stopPropagation()}
             >
               <button onClick={() => setShowAuthModal(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white transition-colors"><XCircle className="w-6 h-6" /></button>
 
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-white mb-2">
+              <div className="text-center mb-5">
+                <h2 className="text-xl font-bold text-white mb-1">
                   {authMode === "login" ? "Login" : "Create Account"}
                 </h2>
-                <p className="text-slate-400 text-sm">
+                <p className="text-slate-400 text-xs">
                   {authMode === "signup" ? "Sign up to access your trading journal." : "Enter your credentials to access your dashboard."}
                 </p>
               </div>
 
-              {authError && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-xs font-bold mb-5 text-center flex items-center justify-center gap-2"><AlertTriangle size={16} /> {authError}</div>}
+              {authError && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-2 rounded-lg text-xs font-bold mb-4 text-center flex items-center justify-center gap-2"><AlertTriangle size={14} /> {authError}</div>}
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {authMode === "signup" && (
                   <>
-                    <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-bottom-2">
+                    <div className="grid grid-cols-2 gap-2 animate-in slide-in-from-bottom-2">
                       <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">First Name <span className="text-red-500">*</span></label>
-                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={firstName} onChange={e => setFirstName(e.target.value)} />
+                        <label className="text-[9px] uppercase font-bold text-slate-500 ml-1 block mb-1">First Name <span className="text-red-500">*</span></label>
+                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-2 text-sm text-white outline-none transition-all" value={firstName} onChange={e => setFirstName(e.target.value)} />
                       </div>
                       <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Last Name <span className="text-red-500">*</span></label>
-                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={lastName} onChange={e => setLastName(e.target.value)} />
+                        <label className="text-[9px] uppercase font-bold text-slate-500 ml-1 block mb-1">Last Name <span className="text-red-500">*</span></label>
+                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-2 text-sm text-white outline-none transition-all" value={lastName} onChange={e => setLastName(e.target.value)} />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-bottom-3">
+                    <div className="grid grid-cols-2 gap-2 animate-in slide-in-from-bottom-3">
                       <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Country <span className="text-red-500">*</span></label>
+                        <label className="text-[9px] uppercase font-bold text-slate-500 ml-1 block mb-1">Country <span className="text-red-500">*</span></label>
                         <select
-                          className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
+                          className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-2 text-sm text-white outline-none transition-all appearance-none cursor-pointer"
                           value={country}
                           onChange={e => setCountry(e.target.value)}
                         >
@@ -907,38 +907,38 @@ export default function TradingJournal() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Address</label>
-                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={address} onChange={e => setAddress(e.target.value)} />
+                        <label className="text-[9px] uppercase font-bold text-slate-500 ml-1 block mb-1">Address</label>
+                        <input type="text" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-2 text-sm text-white outline-none transition-all" value={address} onChange={e => setAddress(e.target.value)} />
                       </div>
                     </div>
 
                     <div className="animate-in slide-in-from-bottom-4">
-                      <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Phone <span className="text-red-500">*</span></label>
-                      <input type="tel" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={phone} onChange={e => setPhone(e.target.value)} />
+                      <label className="text-[9px] uppercase font-bold text-slate-500 ml-1 block mb-1">Phone <span className="text-red-500">*</span></label>
+                      <input type="tel" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-2 text-sm text-white outline-none transition-all" value={phone} onChange={e => setPhone(e.target.value)} />
                     </div>
                   </>
                 )}
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Email <span className="text-red-500">*</span></label>
-                  <input type="email" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={email} onChange={e => setEmail(e.target.value)} />
+                  <label className="text-[9px] uppercase font-bold text-slate-500 ml-1 block mb-1">Email <span className="text-red-500">*</span></label>
+                  <input type="email" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-2 text-sm text-white outline-none transition-all" value={email} onChange={e => setEmail(e.target.value)} />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-500 ml-1 block mb-1">Password <span className="text-red-500">*</span></label>
-                  <input type="password" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-3 text-sm text-white outline-none transition-all" value={password} onChange={e => setPassword(e.target.value)} />
+                  <label className="text-[9px] uppercase font-bold text-slate-500 ml-1 block mb-1">Password <span className="text-red-500">*</span></label>
+                  <input type="password" className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg p-2 text-sm text-white outline-none transition-all" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
 
                 {authMode === "signup" && (
-                  <div className="flex items-start gap-3 p-4 bg-slate-900/50 border border-slate-700 rounded-lg animate-in slide-in-from-bottom-5">
+                  <div className="flex items-start gap-2 p-3 bg-slate-900/50 border border-slate-700 rounded-lg animate-in slide-in-from-bottom-5">
                     <input
                       type="checkbox"
                       id="acceptTerms"
                       checked={acceptTerms}
                       onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-800 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+                      className="mt-0.5 w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
                     />
-                    <label htmlFor="acceptTerms" className="text-xs text-slate-300 leading-relaxed cursor-pointer">
+                    <label htmlFor="acceptTerms" className="text-[11px] text-slate-300 leading-relaxed cursor-pointer">
                       I agree to the{" "}
                       <Link href="/terms" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-semibold">
                         Terms of Service
@@ -954,7 +954,7 @@ export default function TradingJournal() {
                 <button
                   onClick={handleAuth}
                   disabled={isSubmittingAuth}
-                  className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm text-white transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full bg-blue-600 hover:bg-blue-500 py-2.5 rounded-lg font-bold text-sm text-white transition-all mt-3 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSubmittingAuth ? (
                     <>

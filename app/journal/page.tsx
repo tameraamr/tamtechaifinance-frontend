@@ -138,6 +138,8 @@ export default function TradingJournal() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [tradeToDelete, setTradeToDelete] = useState<number | null>(null);
 
   // Auth form state
   const [email, setEmail] = useState("");
@@ -347,10 +349,6 @@ export default function TradingJournal() {
   };
 
   const handleDeleteTrade = async (tradeId: number) => {
-    if (!confirm('Are you sure you want to delete this trade? This cannot be undone.')) {
-      return;
-    }
-
     try {
       const res = await fetch(`${API_BASE}/journal/trades/${tradeId}`, {
         method: 'DELETE',
@@ -358,7 +356,9 @@ export default function TradingJournal() {
       });
 
       if (res.ok) {
-        toast.success('Trade deleted successfully');
+        toast.success('🗑️ Trade deleted successfully');
+        setShowDeleteConfirm(false);
+        setTradeToDelete(null);
         fetchStats();
         fetchTrades();
       } else {
@@ -437,12 +437,24 @@ export default function TradingJournal() {
                 </h2>
                 <p className="text-gray-400 mt-1">Track every pip, master every trade</p>
               </div>
-              <button
-                onClick={handleNewTradeClick}
-                className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
-              >
-                + New Trade
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    const shareUrl = `${window.location.origin}/journal/share/me`;
+                    navigator.clipboard.writeText(shareUrl);
+                    toast.success('Share link copied to clipboard! 🔗');
+                  }}
+                  className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg font-semibold shadow-lg shadow-blue-500/30 transition-all hover:scale-105 flex items-center gap-2"
+                >
+                  🔗 Share Journal
+                </button>
+                <button
+                  onClick={handleNewTradeClick}
+                  className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
+                >
+                  + New Trade
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -515,107 +527,144 @@ export default function TradingJournal() {
             </div>
           )}
 
-          {/* Trades Table */}
-          <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl border border-gray-800 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-800/50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Pair</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Entry</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Exit</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Pips</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">P&L</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">R:R</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
-                        Loading trades...
-                      </td>
-                    </tr>
-                  ) : trades.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
-                        No trades yet. Start logging your journey! 📈
-                      </td>
-                    </tr>
-                  ) : (
-                    trades.map((trade) => (
-                      <motion.tr
-                        key={trade.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="hover:bg-gray-800/30 transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-amber-400">{trade.pair_ticker}</div>
-                          <div className="text-xs text-gray-500">{trade.asset_type}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+          {/* Trades Grid */}
+          <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl border border-gray-800 p-4">
+            {loading ? (
+              <div className="py-12 text-center text-gray-500">
+                Loading trades...
+              </div>
+            ) : trades.length === 0 ? (
+              <div className="py-12 text-center text-gray-500">
+                No trades yet. Start logging your journey! 📈
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {trades.map((trade) => (
+                  <motion.div
+                    key={trade.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`relative rounded-xl p-4 border-2 ${
+                      trade.result === 'win' ? 'bg-emerald-500/5 border-emerald-500/30' :
+                      trade.result === 'loss' ? 'bg-red-500/5 border-red-500/30' :
+                      'bg-amber-500/5 border-amber-500/30'
+                    }`}
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="text-lg font-bold text-amber-400">{trade.pair_ticker}</h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
                             trade.order_type === 'Buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
                           }`}>
                             {trade.order_type}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          <span className="text-xs text-gray-500 capitalize">{trade.asset_type}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedTrade(trade);
+                            setShowEditModal(true);
+                          }}
+                          className="text-blue-400 hover:text-blue-300 transition-colors text-lg"
+                          title="Edit trade"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => {
+                            setTradeToDelete(trade.id);
+                            setShowDeleteConfirm(true);
+                          }}
+                          className="text-red-400 hover:text-red-300 transition-colors text-lg"
+                          title="Delete trade"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* P&L Highlight */}
+                    <div className="mb-3 p-3 rounded-lg bg-gray-800/50">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-400">Profit/Loss</span>
+                        <span className={`text-xl font-bold ${
+                          (trade.profit_loss_usd || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
+                        }`}>
+                          ${(trade.profit_loss_usd || 0) >= 0 ? '+' : ''}{(trade.profit_loss_usd || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs text-gray-400">Pips</span>
+                        <span className={`text-sm font-semibold ${
+                          (trade.profit_loss_pips || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
+                        }`}>
+                          {(trade.profit_loss_pips || 0) >= 0 ? '+' : ''}{(trade.profit_loss_pips || 0).toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Trade Details */}
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Entry</span>
+                        <span className="text-white font-medium">
                           {trade.entry_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {trade.exit_price ? trade.exit_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {trade.profit_loss_pips !== null && trade.profit_loss_pips !== undefined ? (
-                            <span className={trade.profit_loss_pips >= 0 ? 'text-emerald-400' : 'text-red-400'}>
-                              {trade.profit_loss_pips >= 0 ? '+' : ''}{trade.profit_loss_pips.toFixed(1)}
-                            </span>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {trade.profit_loss_usd !== null && trade.profit_loss_usd !== undefined ? (
-                            <span className={`font-semibold ${trade.profit_loss_usd >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                              ${trade.profit_loss_usd >= 0 ? '+' : ''}{trade.profit_loss_usd.toFixed(2)}
-                            </span>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          1:{trade.risk_reward_ratio.toFixed(1)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                            trade.status === 'open' ? 'bg-amber-500/20 text-amber-400' : 
-                            trade.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
-                            trade.result === 'loss' ? 'bg-red-500/20 text-red-400' :
-                            'bg-gray-500/20 text-gray-400'
-                          }`}>
-                            {trade.status === 'open' ? 'Open' : trade.result}
+                        </span>
+                      </div>
+                      {trade.exit_price && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Exit</span>
+                          <span className="text-white font-medium">
+                            {trade.exit_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5)}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button
-                            onClick={() => handleDeleteTrade(trade.id)}
-                            className="text-red-400 hover:text-red-300 transition-colors text-sm"
-                            title="Delete trade"
-                          >
-                            🗑️
-                          </button>
-                        </td>
-                      </motion.tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Lot Size</span>
+                        <span className="text-white">{trade.lot_size}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">R:R</span>
+                        <span className="text-white">1:{trade.risk_reward_ratio.toFixed(1)}</span>
+                      </div>
+                      {trade.strategy && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Strategy</span>
+                          <span className="text-white text-xs">{trade.strategy}</span>
+                        </div>
+                      )}
+                      {trade.trading_session && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Session</span>
+                          <span className="text-white">{trade.trading_session}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className="mt-3 pt-3 border-t border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                          trade.status === 'open' ? 'bg-amber-500/20 text-amber-400' : 
+                          trade.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
+                          trade.result === 'loss' ? 'bg-red-500/20 text-red-400' :
+                          'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {trade.status === 'open' ? 'Open' : trade.result}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {new Date(trade.entry_time).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
           </>
             ) : (
@@ -1002,6 +1051,207 @@ export default function TradingJournal() {
                   </button>
                 </div>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && tradeToDelete !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gradient-to-br from-gray-900 to-gray-800 border border-red-500/30 rounded-xl max-w-md w-full p-6"
+            >
+              <h3 className="text-xl font-bold text-white mb-4">Delete Trade?</h3>
+              <p className="text-gray-300 mb-6">
+                Are you sure you want to delete this trade? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2.5 rounded-lg font-semibold transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await fetch(`${API_BASE}/journal/trades/${tradeToDelete}`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                      });
+                      if (!res.ok) throw new Error('Failed to delete trade');
+                      
+                      toast.success('Trade deleted successfully');
+                      setShowDeleteConfirm(false);
+                      setTradeToDelete(null);
+                      fetchTrades();
+                      fetchStats();
+                    } catch (error) {
+                      console.error('Error deleting trade:', error);
+                      toast.error('Failed to delete trade');
+                    }
+                  }}
+                  className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-semibold transition-all"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit Trade Modal */}
+      <AnimatePresence>
+        {showEditModal && selectedTrade && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto"
+            onClick={() => setShowEditModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gradient-to-br from-gray-900 to-gray-800 border border-amber-500/30 rounded-xl max-w-2xl w-full p-6 my-8"
+            >
+              <h3 className="text-2xl font-bold text-amber-400 mb-6">Edit Trade</h3>
+              
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const data = {
+                  asset_type: formData.get('asset_type'),
+                  pair_ticker: formData.get('pair_ticker'),
+                  order_type: formData.get('order_type'),
+                  entry_price: parseFloat(formData.get('entry_price') as string),
+                  exit_price: formData.get('exit_price') ? parseFloat(formData.get('exit_price') as string) : null,
+                  lot_size: parseFloat(formData.get('lot_size') as string),
+                  risk_reward_ratio: parseFloat(formData.get('risk_reward_ratio') as string),
+                  strategy: formData.get('strategy') || null,
+                  trading_session: formData.get('trading_session') || null,
+                  status: formData.get('status'),
+                };
+
+                try {
+                  const res = await fetch(`${API_BASE}/journal/trades/${selectedTrade.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(data),
+                  });
+                  
+                  if (!res.ok) throw new Error('Failed to update trade');
+                  
+                  toast.success('Trade updated successfully');
+                  setShowEditModal(false);
+                  setSelectedTrade(null);
+                  fetchTrades();
+                  fetchStats();
+                } catch (error) {
+                  console.error('Error updating trade:', error);
+                  toast.error('Failed to update trade');
+                }
+              }} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Asset Type</label>
+                    <select name="asset_type" defaultValue={selectedTrade.asset_type} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                      <option value="forex">Forex</option>
+                      <option value="gold">Gold</option>
+                      <option value="indices">Indices</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Pair/Ticker</label>
+                    <input name="pair_ticker" defaultValue={selectedTrade.pair_ticker} required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white" />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Order Type</label>
+                    <select name="order_type" defaultValue={selectedTrade.order_type} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                      <option value="Buy">Buy</option>
+                      <option value="Sell">Sell</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Entry Price</label>
+                    <input name="entry_price" type="number" step="any" defaultValue={selectedTrade.entry_price} required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white" />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Exit Price</label>
+                    <input name="exit_price" type="number" step="any" defaultValue={selectedTrade.exit_price || ''} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white" />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Lot Size</label>
+                    <input name="lot_size" type="number" step="0.01" defaultValue={selectedTrade.lot_size} required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white" />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Risk:Reward Ratio</label>
+                    <input name="risk_reward_ratio" type="number" step="0.1" defaultValue={selectedTrade.risk_reward_ratio} required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white" />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Strategy</label>
+                    <input name="strategy" defaultValue={selectedTrade.strategy || ''} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white" />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Trading Session</label>
+                    <select name="trading_session" defaultValue={selectedTrade.trading_session || ''} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                      <option value="">Select Session</option>
+                      <option value="London">London</option>
+                      <option value="New York">New York</option>
+                      <option value="Tokyo">Tokyo</option>
+                      <option value="Sydney">Sydney</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Status</label>
+                    <select name="status" defaultValue={selectedTrade.status} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white">
+                      <option value="open">Open</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2.5 rounded-lg font-semibold transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-lg font-semibold transition-all"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </motion.div>
         )}

@@ -657,7 +657,7 @@ export default function TradingJournal() {
                           {trade.status === 'open' ? 'Open' : trade.result}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {new Date(trade.entry_time).toLocaleDateString()}
+                          {new Date(trade.entry_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       </div>
                     </div>

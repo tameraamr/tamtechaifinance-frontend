@@ -257,6 +257,7 @@ export default function TradingJournal() {
 
       if (authMode === "login") {
         setShowAuthModal(false);
+        router.refresh(); // Refresh to update Navbar
         await checkAuth();
       } else {
         setAuthError("");
@@ -277,6 +278,7 @@ export default function TradingJournal() {
               icon: "📧"
             });
             setShowAuthModal(false);
+            router.refresh(); // Refresh to update Navbar
             await checkAuth();
           } else {
             toast.success("✅ Account created! Please log in to continue.", {

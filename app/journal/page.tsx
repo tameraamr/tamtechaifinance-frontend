@@ -155,6 +155,7 @@ export default function TradingJournal() {
 
   const checkAuth = async () => {
     const token = Cookies.get('access_token');
+    console.log('[Journal] Checking auth, token exists:', !!token);
     if (!token) {
       setIsLoggedIn(false);
       setLoading(false);
@@ -164,19 +165,23 @@ export default function TradingJournal() {
     setIsLoggedIn(true);
     try {
       const res = await fetch(`${API_BASE}/users/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include'
       });
+      console.log('[Journal] Auth check response status:', res.status);
       if (res.ok) {
         const data = await res.json();
+        console.log('[Journal] User data:', data);
         setIsPro(data.is_pro === 1);
         fetchStats();
         fetchTrades();
       } else {
+        console.error('[Journal] Auth check failed with status:', res.status);
         setIsLoggedIn(false);
         setLoading(false);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('[Journal] Auth check error:', error);
       setIsLoggedIn(false);
       setLoading(false);
     }

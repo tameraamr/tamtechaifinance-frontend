@@ -52,22 +52,23 @@ export default function TradingJournal() {
   const [showAddTrade, setShowAddTrade] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [isPro, setIsPro] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtech-ai.onrender.com';
 
   useEffect(() => {
     checkAuth();
-    fetchStats();
-    fetchTrades();
   }, []);
 
   const checkAuth = async () => {
     const token = Cookies.get('access_token');
     if (!token) {
-      router.push('/');
+      setIsLoggedIn(false);
+      setLoading(false);
       return;
     }
 
+    setIsLoggedIn(true);
     try {
       const res = await fetch(`${API_BASE}/users/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -75,14 +76,32 @@ export default function TradingJournal() {
       if (res.ok) {
         const data = await res.json();
         setIsPro(data.is_pro === 1);
+        // User is logged in, fetch their trades
+        fetchStats();
+        fetchTrades();
       } else {
-        // Token invalid, redirect to home
-        router.push('/');
+        setLoading(false);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      router.push('/');
+      setLoading(false);
     }
+  };
+
+  const handleNewTradeClick = () => {
+    if (!isLoggedIn) {
+      // Not logged in - redirect to homepage to login
+      router.push('/');
+      return;
+    }
+
+    // Check if free user hit 10-trade limit
+    if (!isPro && stats && stats.total_trades >= 10) {
+      setShowPremiumModal(true);
+      return;
+    }
+
+    setShowAddTrade(true);
   };
 
   const fetchStats = async () => {
@@ -127,14 +146,6 @@ export default function TradingJournal() {
     }
   };
 
-  const handleAddTrade = () => {
-    if (!isPro && stats && stats.trades_remaining_free === 0) {
-      setShowPremiumModal(true);
-    } else {
-      setShowAddTrade(true);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
       {/* Header */}
@@ -148,7 +159,7 @@ export default function TradingJournal() {
               <p className="text-gray-400 mt-1">Track every pip, master every trade</p>
             </div>
             <button
-              onClick={handleAddTrade}
+              onClick={handleNewTradeClick}
               className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
             >
               + New Trade

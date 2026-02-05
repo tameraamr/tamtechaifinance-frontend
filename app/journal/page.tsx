@@ -136,6 +136,8 @@ export default function TradingJournal() {
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [isPro, setIsPro] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Auth form state
   const [email, setEmail] = useState("");
@@ -257,8 +259,8 @@ export default function TradingJournal() {
 
       if (authMode === "login") {
         setShowAuthModal(false);
-        router.refresh(); // Refresh to update Navbar
         await checkAuth();
+        window.location.reload(); // Force full reload to update Navbar
       } else {
         setAuthError("");
         try {
@@ -278,8 +280,8 @@ export default function TradingJournal() {
               icon: "📧"
             });
             setShowAuthModal(false);
-            router.refresh(); // Refresh to update Navbar
             await checkAuth();
+            window.location.reload(); // Force full reload to update Navbar
           } else {
             toast.success("✅ Account created! Please log in to continue.", {
               duration: 5000
@@ -341,6 +343,31 @@ export default function TradingJournal() {
       console.error('Failed to fetch trades:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteTrade = async (tradeId: number) => {
+    if (!confirm('Are you sure you want to delete this trade? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/journal/trades/${tradeId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (res.ok) {
+        toast.success('Trade deleted successfully');
+        fetchStats();
+        fetchTrades();
+      } else {
+        const data = await res.json();
+        toast.error(data.detail || 'Failed to delete trade');
+      }
+    } catch (error) {
+      console.error('Failed to delete trade:', error);
+      toast.error('Failed to delete trade');
     }
   };
 
@@ -502,6 +529,7 @@ export default function TradingJournal() {
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">P&L</th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">R:R</th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
@@ -513,7 +541,7 @@ export default function TradingJournal() {
                     </tr>
                   ) : trades.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
                         No trades yet. Start logging your journey! 📈
                       </td>
                     </tr>
@@ -523,8 +551,7 @@ export default function TradingJournal() {
                         key={trade.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="hover:bg-gray-800/30 transition-colors cursor-pointer"
-                        onClick={() => router.push(`/journal/${trade.id}`)}
+                        className="hover:bg-gray-800/30 transition-colors"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="font-medium text-amber-400">{trade.pair_ticker}</div>
@@ -573,6 +600,15 @@ export default function TradingJournal() {
                           }`}>
                             {trade.status === 'open' ? 'Open' : trade.result}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            onClick={() => handleDeleteTrade(trade.id)}
+                            className="text-red-400 hover:text-red-300 transition-colors text-sm"
+                            title="Delete trade"
+                          >
+                            🗑️
+                          </button>
                         </td>
                       </motion.tr>
                     ))

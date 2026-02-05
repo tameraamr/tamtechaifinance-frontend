@@ -291,20 +291,6 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-300 mb-1">
-                Account Size *
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                required
-                value={formData.account_size_at_entry}
-                onChange={(e) => setFormData({ ...formData, account_size_at_entry: parseFloat(e.target.value) })}
-                className="w-full px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-amber-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-300 mb-1">
                 Entry Time *
               </label>
               <input

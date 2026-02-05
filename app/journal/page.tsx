@@ -527,144 +527,138 @@ export default function TradingJournal() {
             </div>
           )}
 
-          {/* Trades Grid */}
-          <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl border border-gray-800 p-4">
-            {loading ? (
-              <div className="py-12 text-center text-gray-500">
-                Loading trades...
-              </div>
-            ) : trades.length === 0 ? (
-              <div className="py-12 text-center text-gray-500">
-                No trades yet. Start logging your journey! 📈
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {trades.map((trade) => (
-                  <motion.div
-                    key={trade.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className={`relative rounded-xl p-4 border-2 ${
-                      trade.result === 'win' ? 'bg-emerald-500/5 border-emerald-500/30' :
-                      trade.result === 'loss' ? 'bg-red-500/5 border-red-500/30' :
-                      'bg-amber-500/5 border-amber-500/30'
-                    }`}
-                  >
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="text-lg font-bold text-amber-400">{trade.pair_ticker}</h3>
-                        <div className="flex items-center gap-2 mt-1">
+          {/* Trades Table */}
+          <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl border border-gray-800 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-800/50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Pair</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Entry</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Exit</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Lot</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Pips</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">P&L</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">R:R</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Strategy</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Session</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={13} className="px-4 py-8 text-center text-gray-500 text-sm">
+                        Loading trades...
+                      </td>
+                    </tr>
+                  ) : trades.length === 0 ? (
+                    <tr>
+                      <td colSpan={13} className="px-4 py-8 text-center text-gray-500 text-sm">
+                        No trades yet. Start logging your journey! 📈
+                      </td>
+                    </tr>
+                  ) : (
+                    trades.map((trade) => (
+                      <motion.tr
+                        key={trade.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="hover:bg-gray-800/30 transition-colors"
+                      >
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
+                          {new Date(trade.entry_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="font-medium text-amber-400 text-sm">{trade.pair_ticker}</div>
+                          <div className="text-xs text-gray-500">{trade.asset_type}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
                             trade.order_type === 'Buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
                           }`}>
                             {trade.order_type}
                           </span>
-                          <span className="text-xs text-gray-500 capitalize">{trade.asset_type}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedTrade(trade);
-                            setShowEditModal(true);
-                          }}
-                          className="text-blue-400 hover:text-blue-300 transition-colors text-lg"
-                          title="Edit trade"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => {
-                            setTradeToDelete(trade.id);
-                            setShowDeleteConfirm(true);
-                          }}
-                          className="text-red-400 hover:text-red-300 transition-colors text-lg"
-                          title="Delete trade"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* P&L Highlight */}
-                    <div className="mb-3 p-3 rounded-lg bg-gray-800/50">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-400">Profit/Loss</span>
-                        <span className={`text-xl font-bold ${
-                          (trade.profit_loss_usd || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
-                        }`}>
-                          ${(trade.profit_loss_usd || 0) >= 0 ? '+' : ''}{(trade.profit_loss_usd || 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs text-gray-400">Pips</span>
-                        <span className={`text-sm font-semibold ${
-                          (trade.profit_loss_pips || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
-                        }`}>
-                          {(trade.profit_loss_pips || 0) >= 0 ? '+' : ''}{(trade.profit_loss_pips || 0).toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Trade Details */}
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Entry</span>
-                        <span className="text-white font-medium">
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
                           {trade.entry_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5)}
-                        </span>
-                      </div>
-                      {trade.exit_price && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Exit</span>
-                          <span className="text-white font-medium">
-                            {trade.exit_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5)}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
+                          {trade.exit_price ? trade.exit_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
+                          {trade.lot_size}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs">
+                          {trade.profit_loss_pips !== null && trade.profit_loss_pips !== undefined ? (
+                            <span className={trade.profit_loss_pips >= 0 ? 'text-emerald-400 font-medium' : 'text-red-400 font-medium'}>
+                              {trade.profit_loss_pips >= 0 ? '+' : ''}{trade.profit_loss_pips.toFixed(1)}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs">
+                          {trade.profit_loss_usd !== null && trade.profit_loss_usd !== undefined ? (
+                            <span className={`font-semibold ${trade.profit_loss_usd >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                              ${trade.profit_loss_usd >= 0 ? '+' : ''}{trade.profit_loss_usd.toFixed(2)}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
+                          1:{trade.risk_reward_ratio.toFixed(1)}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
+                          {trade.strategy || '-'}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
+                          {trade.trading_session || '-'}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                            trade.status === 'open' ? 'bg-amber-500/20 text-amber-400' : 
+                            trade.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
+                            trade.result === 'loss' ? 'bg-red-500/20 text-red-400' :
+                            'bg-gray-500/20 text-gray-400'
+                          }`}>
+                            {trade.status === 'open' ? 'Open' : trade.result}
                           </span>
-                        </div>
-                      )}
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Lot Size</span>
-                        <span className="text-white">{trade.lot_size}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">R:R</span>
-                        <span className="text-white">1:{trade.risk_reward_ratio.toFixed(1)}</span>
-                      </div>
-                      {trade.strategy && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Strategy</span>
-                          <span className="text-white text-xs">{trade.strategy}</span>
-                        </div>
-                      )}
-                      {trade.trading_session && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Session</span>
-                          <span className="text-white">{trade.trading_session}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Status Badge */}
-                    <div className="mt-3 pt-3 border-t border-gray-700">
-                      <div className="flex items-center justify-between">
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                          trade.status === 'open' ? 'bg-amber-500/20 text-amber-400' : 
-                          trade.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
-                          trade.result === 'loss' ? 'bg-red-500/20 text-red-400' :
-                          'bg-gray-500/20 text-gray-400'
-                        }`}>
-                          {trade.status === 'open' ? 'Open' : trade.result}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {new Date(trade.entry_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedTrade(trade);
+                                setShowEditModal(true);
+                              }}
+                              className="text-blue-400 hover:text-blue-300 transition-colors"
+                              title="Edit trade"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => {
+                                setTradeToDelete(trade.id);
+                                setShowDeleteConfirm(true);
+                              }}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                              title="Delete trade"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
           </>
             ) : (

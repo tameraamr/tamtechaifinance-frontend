@@ -95,6 +95,8 @@ export default function TradingJournal() {
         if (!isPro && data.trades_remaining_free === 0 && data.total_trades === 10) {
           setShowPremiumModal(true);
         }
+      } else {
+        console.error(`Stats fetch failed with status ${res.status}: ${API_BASE}/journal/stats`);
       }
     } catch (error) {
       console.error('Failed to fetch stats:', error);
@@ -111,6 +113,8 @@ export default function TradingJournal() {
       if (res.ok) {
         const data = await res.json();
         setTrades(data);
+      } else {
+        console.error(`Trades fetch failed with status ${res.status}: ${API_BASE}/journal/trades`);
       }
     } catch (error) {
       console.error('Failed to fetch trades:', error);

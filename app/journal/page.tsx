@@ -11,7 +11,7 @@ import Footer from '@/src/components/Footer';
 import { XCircle, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtech-ai.onrender.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtechaifinance-backend-production.up.railway.app';
 
 const countriesList = [
   { code: "US", name: "United States" },

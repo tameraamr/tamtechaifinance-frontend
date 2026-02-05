@@ -32,7 +32,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtech-ai.onrender.com';
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://tamtechaifinance-backend-production.up.railway.app';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

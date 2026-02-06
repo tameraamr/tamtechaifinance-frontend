@@ -1526,6 +1526,188 @@ export default function Home() {
         </motion.div>
         {/* X Portfolio Teaser - High-End Advertisement X */}
 
+        {/* 👇 Trading Journal Showcase - Professional & Clean 👇 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="relative mb-6 overflow-hidden cursor-pointer"
+          onClick={() => router.push('/journal')}
+        >
+          {/* Shimmer Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent -translate-x-full animate-shimmer opacity-0" style={{ animation: 'shimmer 3s infinite' }} />
+
+          {/* Glassmorphism Card */}
+          <motion.div 
+            whileHover={{ y: -6, scale: 1.01 }}
+            className="relative bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 backdrop-blur-xl border border-amber-500/30 rounded-3xl p-8 shadow-2xl overflow-hidden hover:border-amber-500/50 transition-all duration-300"
+          >
+            {/* Background Effects */}
+            <div className="absolute -left-20 -top-20 w-40 h-40 bg-amber-500/10 blur-3xl rounded-full" />
+            <div className="absolute -right-20 -bottom-20 w-40 h-40 bg-yellow-500/10 blur-3xl rounded-full" />
+
+            {/* Fully Visible Content */}
+            <div className="relative z-10">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-amber-300 font-bold">📓 Trading Journal</p>
+                  <h3 className="text-2xl font-black text-white mt-1">Master Every Trade</h3>
+                  <p className="text-xs text-amber-200 font-semibold mt-1">Track, analyze & improve your trading performance</p>
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-600/30 to-yellow-600/10 border border-amber-400/40 flex items-center justify-center shadow-lg">
+                  <BarChart3 className="text-amber-100" size={28} />
+                </div>
+              </div>
+
+              {/* Stats Preview */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
+                className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 mb-6"
+              >
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="border-r border-slate-700/50">
+                    <p className="text-xs text-slate-400 mb-1">Total Trades</p>
+                    <p className="text-2xl font-black text-white">76</p>
+                  </div>
+                  <div className="border-r border-slate-700/50">
+                    <p className="text-xs text-slate-400 mb-1">Win Rate</p>
+                    <p className="text-2xl font-black text-emerald-400">55%</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">Net Profit</p>
+                    <p className="text-2xl font-black text-amber-400">+$140</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Recent Trades Preview */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+                className="mb-6"
+              >
+                <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                  Recent Activity
+                  <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full border border-emerald-500/30">Live</span>
+                </h4>
+                <div className="space-y-2">
+                  {[
+                    { pair: 'EUR/USD', type: 'Buy', pips: '+12.3', profit: '+$45.20', result: 'win' },
+                    { pair: 'GBP/JPY', type: 'Sell', pips: '-8.5', profit: '-$32.10', result: 'loss' },
+                    { pair: 'GOLD', type: 'Buy', pips: '+21.7', profit: '+$78.50', result: 'win' }
+                  ].map((trade, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                        trade.result === 'win' 
+                          ? 'bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/15' 
+                          : 'bg-red-500/10 border-red-500/30 hover:bg-red-500/15'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                          trade.type === 'Buy' ? 'bg-blue-500/20 text-blue-400' : 'bg-orange-500/20 text-orange-400'
+                        }`}>
+                          {trade.type}
+                        </span>
+                        <span className="text-white font-semibold">{trade.pair}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-bold ${trade.result === 'win' ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {trade.profit}
+                        </p>
+                        <p className="text-xs text-slate-400">{trade.pips} pips</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Features */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="mb-6"
+              >
+                <h4 className="text-lg font-bold text-white mb-4">Key Features</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span className="text-slate-300 text-sm">Automatic P&L Calculation</span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.5 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span className="text-slate-300 text-sm">Risk:Reward Tracking</span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.6 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span className="text-slate-300 text-sm">Performance Analytics</span>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.7 }}
+                    viewport={{ once: true }}
+                    className="flex items-center gap-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span className="text-slate-300 text-sm">Trade Notes & Strategy</span>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* CTA Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="relative z-30 mt-6 pt-6 border-t border-slate-700/50"
+            >
+              <div className="text-center">
+                <div className="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-black px-8 py-3 rounded-xl text-sm transition-all shadow-lg shadow-amber-500/30 mb-4 inline-block flex items-center gap-2 w-fit mx-auto">
+                  <BarChart3 className="w-4 h-4" />
+                  Open Trading Journal
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+                <p className="text-xs text-slate-400">Start tracking your trades today</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+        {/* X Trading Journal Showcase X */}
+
 
         {/* --- الصق الكود هنا --- */}
         {randomTicker && (

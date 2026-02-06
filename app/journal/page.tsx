@@ -437,14 +437,20 @@ export default function TradingJournal() {
             ) : stats ? (
           <>
             {/* Dashboard Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="mb-8">
               <div>
+                <Link 
+                  href="/" 
+                  className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-amber-400 transition-colors mb-3"
+                >
+                  ← Back to Home
+                </Link>
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
                   Your Trading Journal
                 </h2>
                 <p className="text-gray-400 mt-1">Track every pip, master every trade</p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3 mt-6">
                 <button
                   onClick={() => {
                     if (!userId) {
@@ -703,6 +709,16 @@ export default function TradingJournal() {
         ) : (
           /* Marketing content for non-logged-in users */
           <div className="space-y-16">
+            {/* Back to Home Button for Non-Logged-In Users */}
+            <div className="mb-6">
+              <Link 
+                href="/" 
+                className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-amber-400 transition-colors"
+              >
+                ← Back to Home
+              </Link>
+            </div>
+
             {/* Demo Section - MOVED UP */}
             <section className="bg-gray-900/30 rounded-2xl p-8 border border-amber-500/20">
               <h2 className="text-2xl font-bold text-center mb-4">

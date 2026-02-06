@@ -176,6 +176,13 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             >
               📰 Articles
             </Link>
+            <Link 
+              href="/journal" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
+            >
+              📓 Trading Journal
+            </Link>
 
             {/* Dashboard Link - Before Language Selector */}
             {isLoggedIn && (
@@ -194,13 +201,6 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
                   className="block text-sm font-bold bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/50 px-4 py-3 rounded-lg transition-all text-green-300 flex items-center gap-2"
                 >
                   📊 Portfolio Tracker
-                </Link>
-                <Link 
-                  href="/journal" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm font-bold bg-gradient-to-r from-amber-600/20 to-yellow-600/20 border border-amber-500/50 px-4 py-3 rounded-lg transition-all text-amber-300 flex items-center gap-2"
-                >
-                  📓 Trading Journal
                 </Link>
               </>
             )}

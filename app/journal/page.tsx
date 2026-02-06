@@ -152,6 +152,7 @@ export default function TradingJournal() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [authError, setAuthError] = useState("");
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     checkAuth();
@@ -167,6 +168,7 @@ export default function TradingJournal() {
         const data = await res.json();
         setIsLoggedIn(true);
         setIsPro(data.is_pro === 1);
+        setUserId(data.id);
         fetchStats();
         fetchTrades();
       } else {
@@ -440,7 +442,11 @@ export default function TradingJournal() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => {
-                    const shareUrl = `${window.location.origin}/journal/share/me`;
+                    if (!userId) {
+                      toast.error('Please log in to share your journal');
+                      return;
+                    }
+                    const shareUrl = `${window.location.origin}/journal/share/${userId}`;
                     navigator.clipboard.writeText(shareUrl);
                     toast.success('Share link copied to clipboard! 🔗');
                   }}

@@ -123,6 +123,11 @@ interface Trade {
   exit_time?: string;
   strategy?: string;
   trading_session?: string;
+  notes?: string;
+  stop_loss?: number;
+  take_profit?: number;
+  market_trend?: string;
+  account_size_at_entry?: number;
 }
 
 export default function TradingJournal() {

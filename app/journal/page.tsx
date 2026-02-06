@@ -582,7 +582,13 @@ export default function TradingJournal() {
                         key={trade.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="hover:bg-gray-800/30 transition-colors"
+                        className={`transition-colors ${
+                          trade.result === 'win' 
+                            ? 'bg-emerald-500/10 hover:bg-emerald-500/20' 
+                            : trade.result === 'loss' 
+                            ? 'bg-red-500/10 hover:bg-red-500/20' 
+                            : 'hover:bg-gray-800/30'
+                        }`}
                       >
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 font-mono">
                           #{trade.id}

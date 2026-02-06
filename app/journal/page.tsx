@@ -893,34 +893,34 @@ export default function TradingJournal() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8"
+              className="mb-6"
             >
               <Link 
                 href="/" 
-                className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-amber-400 transition-colors mb-4"
+                className="inline-flex items-center gap-2 text-xs text-gray-400 hover:text-amber-400 transition-colors mb-3"
               >
                 ← Back to Home
               </Link>
               
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div>
-                  <h1 className="text-4xl md:text-5xl font-black mb-2">
+                  <h1 className="text-2xl md:text-3xl font-black mb-1">
                     <span className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
                       Your Trading Empire
                     </span>
                   </h1>
-                  <p className="text-gray-400 flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-amber-500" />
+                  <p className="text-gray-400 text-sm flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-amber-500" />
                     {unlockedAchievements}/{totalAchievements} Achievements Unlocked
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setShowAchievements(true)}
-                    className="px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-xl font-semibold shadow-lg shadow-purple-500/30 transition-all hover:scale-105 flex items-center gap-2"
+                    className="px-3 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg text-sm font-semibold shadow-lg shadow-purple-500/30 transition-all hover:scale-105 flex items-center gap-2"
                   >
-                    <Star className="w-5 h-5" />
+                    <Star className="w-4 h-4" />
                     Achievements
                   </button>
                   
@@ -976,27 +976,27 @@ export default function TradingJournal() {
                 </button>
                 <button
                   onClick={() => setActiveView('analytics')}
-                  className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                     activeView === 'analytics'
                       ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg'
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5" />
+                    <BarChart3 className="w-4 h-4" />
                     Analytics
                   </div>
                 </button>
                 <button
                   onClick={() => setActiveView('trades')}
-                  className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                     activeView === 'trades'
                       ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg'
                       : 'text-gray-400 hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <LineChart className="w-5 h-5" />
+                    <LineChart className="w-4 h-4" />
                     All Trades
                   </div>
                 </button>
@@ -1235,57 +1235,98 @@ export default function TradingJournal() {
                   </div>
                 )}
 
-                {/* 🔥 Recent Trades Timeline */}
+                {/* � All Trades Table */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4"
                 >
-                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                    <Clock className="w-6 h-6 text-amber-500" />
-                    Recent Trades
+                  <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-amber-500" />
+                    All Trades
                   </h3>
-                  <div className="space-y-3">
-                    {trades.slice(0, 5).map((trade, index) => (
-                      <motion.div
-                        key={trade.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.6 + index * 0.1 }}
-                        className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-amber-500/30 transition-all"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={`w-2 h-2 rounded-full ${
-                            trade.status === 'open' ? 'bg-blue-500' : 
-                            (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500' : 'bg-red-500'
-                          }`}></div>
-                          <div>
-                            <div className="font-bold text-white">{trade.pair_ticker}</div>
-                            <div className="text-sm text-gray-400">
-                              {trade.order_type} • {format(new Date(trade.entry_time), 'MMM dd, HH:mm')}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          {trade.status === 'closed' && (
-                            <div className={`font-bold ${
-                              (trade.profit_loss_usd || 0) > 0 ? 'text-emerald-400' : 'text-red-400'
-                            }`}>
-                              {(trade.profit_loss_usd || 0) > 0 ? '+' : ''}${(trade.profit_loss_usd || 0).toFixed(2)}
-                            </div>
-                          )}
-                          <div className="text-sm">
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                              trade.status === 'open' ? 'bg-blue-500/20 text-blue-400' :
-                              (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                            }`}>
-                              {trade.status === 'open' ? 'OPEN' : (trade.profit_loss_usd || 0) > 0 ? 'WIN' : 'LOSS'}
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-white/5 border-b border-white/10">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">#</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Date</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Pair</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Type</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Entry</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Exit</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Lot</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Pips</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">P/L</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">R:R</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Session</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Notes</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {trades.map((trade, index) => (
+                          <tr key={trade.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-3 py-2 text-gray-500 font-mono text-xs">#{trades.length - index}</td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-400">
+                              {format(new Date(trade.entry_time), 'MMM dd')}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap">
+                              <div className="font-semibold text-amber-400 text-xs">{trade.pair_ticker}</div>
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap">
+                              <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                                trade.order_type === 'Buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {trade.order_type}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-300">
+                              {trade.entry_price ? trade.entry_price.toFixed(5) : '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-300">
+                              {trade.exit_price ? trade.exit_price.toFixed(5) : '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-300">
+                              {trade.lot_size || '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs">
+                              {trade.profit_loss_pips !== null && trade.profit_loss_pips !== undefined ? (
+                                <span className={trade.profit_loss_pips >= 0 ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
+                                  {trade.profit_loss_pips >= 0 ? '+' : ''}{trade.profit_loss_pips.toFixed(1)}
+                                </span>
+                              ) : '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs">
+                              {trade.profit_loss_usd !== null && trade.profit_loss_usd !== undefined ? (
+                                <span className={`font-bold ${trade.profit_loss_usd >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                  ${trade.profit_loss_usd >= 0 ? '+' : ''}{trade.profit_loss_usd.toFixed(2)}
+                                </span>
+                              ) : '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-300">
+                              {trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-400">
+                              {trade.trading_session || '-'}
+                            </td>
+                            <td className="px-3 py-2 text-xs text-gray-400 max-w-[150px] truncate" title={trade.notes || ''}>
+                              {trade.notes || '-'}
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap">
+                              <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                                trade.status === 'open' ? 'bg-blue-500/20 text-blue-400' :
+                                (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {trade.status === 'open' ? 'OPEN' : (trade.profit_loss_usd || 0) > 0 ? 'WIN' : 'LOSS'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </motion.div>
               </motion.div>

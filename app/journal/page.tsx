@@ -1,15 +1,43 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 import AddTradeModal from '@/src/components/AddTradeModal';
 import Link from 'next/link';
 import Navbar from '@/src/components/Navbar';
 import Footer from '@/src/components/Footer';
-import { XCircle, AlertTriangle } from 'lucide-react';
+import { 
+  XCircle, AlertTriangle, TrendingUp, TrendingDown, Target, Award,
+  Calendar, Clock, DollarSign, Zap, BarChart3, PieChart, Activity,
+  Filter, Download, Share2, Trophy, Star, Flame, Crown, Medal,
+  Brain, Eye, ChevronDown, ChevronUp, Search, Settings, Bell,
+  LineChart, ArrowUp, ArrowDown, Sparkles, Rocket, Shield
+} from 'lucide-react';
 import toast from 'react-hot-toast';
+import { 
+  LineChart as RechartsLine, 
+  Line, 
+  AreaChart, 
+  Area, 
+  BarChart,
+  Bar,
+  PieChart as RechartsPie,
+  Pie,
+  Cell,
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar
+} from 'recharts';
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, parseISO } from 'date-fns';
 
 const API_BASE = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
 
@@ -130,6 +158,43 @@ interface Trade {
   account_size_at_entry?: number;
 }
 
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  progress?: number;
+  target?: number;
+}
+
+// 🌟 Legendary Particle Background Effect
+const ParticleBackground = () => {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {[...Array(50)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 bg-amber-500/30 rounded-full"
+          initial={{
+            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1920),
+            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1080),
+          }}
+          animate={{
+            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1920),
+            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1080),
+          }}
+          transition={{
+            duration: Math.random() * 20 + 10,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 export default function TradingJournal() {
   const router = useRouter();
   const [stats, setStats] = useState<JournalStats | null>(null);
@@ -145,6 +210,14 @@ export default function TradingJournal() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [tradeToDelete, setTradeToDelete] = useState<number | null>(null);
+  
+  // 🚀 Epic new features state
+  const [activeView, setActiveView] = useState<'dashboard' | 'analytics' | 'trades'>('dashboard');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'open' | 'closed'>('all');
+  const [filterResult, setFilterResult] = useState<'all' | 'win' | 'loss'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'day' | 'week' | 'month' | 'all'>('week');
 
   // Auth form state
   const [email, setEmail] = useState("");
@@ -378,6 +451,308 @@ export default function TradingJournal() {
     }
   };
 
+  const handleEditTrade = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedTrade) return;
+
+    const formData = new FormData(e.currentTarget);
+    const updatedTrade = {
+      pair_ticker: formData.get('pair_ticker') as string,
+      asset_type: formData.get('asset_type') as string,
+      order_type: formData.get('order_type') as string,
+      entry_price: parseFloat(formData.get('entry_price') as string),
+      exit_price: formData.get('exit_price') ? parseFloat(formData.get('exit_price') as string) : null,
+      lot_size: parseFloat(formData.get('lot_size') as string),
+      risk_reward_ratio: parseFloat(formData.get('risk_reward_ratio') as string),
+      strategy: formData.get('strategy') as string || null,
+      trading_session: formData.get('trading_session') as string || null,
+      status: formData.get('status') as string,
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/journal/trades/${selectedTrade.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(updatedTrade)
+      });
+
+      if (res.ok) {
+        toast.success('✅ Trade updated successfully');
+        setShowEditModal(false);
+        setSelectedTrade(null);
+        fetchStats();
+        fetchTrades();
+      } else {
+        const data = await res.json();
+        toast.error(data.detail || 'Failed to update trade');
+      }
+    } catch (error) {
+      console.error('Failed to update trade:', error);
+      toast.error('Failed to update trade');
+    }
+  };
+
+  // 🧠 LEGENDARY ADVANCED ANALYTICS
+  const advancedMetrics = useMemo(() => {
+    if (!trades.length) return null;
+
+    const closedTrades = trades.filter(t => t.status === 'closed' && t.profit_loss_usd !== undefined);
+    
+    if (!closedTrades.length) return null;
+
+    // Calculate Sharpe Ratio (simplified)
+    const returns = closedTrades.map(t => t.profit_loss_usd || 0);
+    const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
+    const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+    const stdDev = Math.sqrt(variance);
+    const sharpeRatio = stdDev !== 0 ? (avgReturn / stdDev) : 0;
+
+    // Calculate Max Drawdown
+    let peak = 0;
+    let maxDrawdown = 0;
+    let currentBalance = 0;
+    
+    closedTrades.forEach(trade => {
+      currentBalance += trade.profit_loss_usd || 0;
+      if (currentBalance > peak) peak = currentBalance;
+      const drawdown = peak - currentBalance;
+      if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+    });
+
+    // Calculate Expectancy
+    const winningTrades = closedTrades.filter(t => (t.profit_loss_usd || 0) > 0);
+    const losingTrades = closedTrades.filter(t => (t.profit_loss_usd || 0) < 0);
+    
+    const avgWin = winningTrades.length > 0 
+      ? winningTrades.reduce((sum, t) => sum + (t.profit_loss_usd || 0), 0) / winningTrades.length 
+      : 0;
+    const avgLoss = losingTrades.length > 0
+      ? Math.abs(losingTrades.reduce((sum, t) => sum + (t.profit_loss_usd || 0), 0) / losingTrades.length)
+      : 0;
+    
+    const winRate = winningTrades.length / closedTrades.length;
+    const expectancy = (winRate * avgWin) - ((1 - winRate) * avgLoss);
+
+    // Win/Loss Streaks
+    let currentStreak = 0;
+    let maxWinStreak = 0;
+    let maxLossStreak = 0;
+    let lastResult = '';
+
+    closedTrades.forEach(trade => {
+      const isWin = (trade.profit_loss_usd || 0) > 0;
+      
+      if (isWin && lastResult === 'win') {
+        currentStreak++;
+      } else if (!isWin && lastResult === 'loss') {
+        currentStreak++;
+      } else {
+        currentStreak = 1;
+      }
+
+      if (isWin && currentStreak > maxWinStreak) maxWinStreak = currentStreak;
+      if (!isWin && currentStreak > maxLossStreak) maxLossStreak = currentStreak;
+
+      lastResult = isWin ? 'win' : 'loss';
+    });
+
+    return {
+      sharpeRatio,
+      maxDrawdown,
+      expectancy,
+      maxWinStreak,
+      maxLossStreak,
+      avgWin,
+      avgLoss
+    };
+  }, [trades]);
+
+  // 📊 Chart Data Calculations
+  const profitCurveData = useMemo(() => {
+    const closedTrades = trades.filter(t => t.status === 'closed').sort((a, b) => 
+      new Date(a.exit_time || a.entry_time).getTime() - new Date(b.exit_time || b.entry_time).getTime()
+    );
+
+    let cumulative = 0;
+    return closedTrades.map(trade => {
+      cumulative += trade.profit_loss_usd || 0;
+      return {
+        date: format(new Date(trade.exit_time || trade.entry_time), 'MMM dd'),
+        profit: parseFloat(cumulative.toFixed(2)),
+        trade: trade.pair_ticker
+      };
+    });
+  }, [trades]);
+
+  const performanceByPair = useMemo(() => {
+    const pairStats: { [key: string]: { profit: number, trades: number } } = {};
+    
+    trades.filter(t => t.status === 'closed').forEach(trade => {
+      if (!pairStats[trade.pair_ticker]) {
+        pairStats[trade.pair_ticker] = { profit: 0, trades: 0 };
+      }
+      pairStats[trade.pair_ticker].profit += trade.profit_loss_usd || 0;
+      pairStats[trade.pair_ticker].trades += 1;
+    });
+
+    return Object.entries(pairStats)
+      .map(([pair, data]) => ({
+        pair,
+        profit: parseFloat(data.profit.toFixed(2)),
+        trades: data.trades
+      }))
+      .sort((a, b) => b.profit - a.profit)
+      .slice(0, 10);
+  }, [trades]);
+
+  const performanceBySession = useMemo(() => {
+    const sessionStats: { [key: string]: { wins: number, losses: number, profit: number } } = {
+      'London': { wins: 0, losses: 0, profit: 0 },
+      'New York': { wins: 0, losses: 0, profit: 0 },
+      'Tokyo': { wins: 0, losses: 0, profit: 0 },
+      'Sydney': { wins: 0, losses: 0, profit: 0 }
+    };
+
+    trades.filter(t => t.status === 'closed' && t.trading_session).forEach(trade => {
+      const session = trade.trading_session || 'Unknown';
+      if (sessionStats[session]) {
+        const profit = trade.profit_loss_usd || 0;
+        if (profit > 0) sessionStats[session].wins++;
+        else if (profit < 0) sessionStats[session].losses++;
+        sessionStats[session].profit += profit;
+      }
+    });
+
+    return Object.entries(sessionStats).map(([session, data]) => ({
+      session,
+      winRate: data.wins + data.losses > 0 ? (data.wins / (data.wins + data.losses) * 100) : 0,
+      profit: parseFloat(data.profit.toFixed(2)),
+      total: data.wins + data.losses
+    }));
+  }, [trades]);
+
+  const winLossDistribution = useMemo(() => {
+    const distribution = trades.filter(t => t.status === 'closed' && t.profit_loss_usd !== undefined)
+      .map(t => ({
+        range: t.profit_loss_usd! > 0 
+          ? `+$${Math.floor(Math.abs(t.profit_loss_usd!) / 50) * 50}` 
+          : `-$${Math.floor(Math.abs(t.profit_loss_usd!) / 50) * 50}`,
+        value: t.profit_loss_usd!,
+        count: 1
+      }))
+      .reduce((acc, curr) => {
+        const existing = acc.find(item => item.range === curr.range);
+        if (existing) {
+          existing.count++;
+        } else {
+          acc.push({ ...curr });
+        }
+        return acc;
+      }, [] as any[])
+      .sort((a, b) => parseFloat(a.range.replace(/[^0-9.-]/g, '')) - parseFloat(b.range.replace(/[^0-9.-]/g, '')));
+
+    return distribution;
+  }, [trades]);
+
+  // 🏆 ACHIEVEMENTS SYSTEM
+  const achievements = useMemo((): Achievement[] => {
+    const totalTrades = stats?.total_trades || 0;
+    const winRate = stats?.win_rate || 0;
+    const netProfit = stats?.net_profit_usd || 0;
+
+    return [
+      {
+        id: 'first_trade',
+        title: 'First Steps',
+        description: 'Log your first trade',
+        icon: '🎯',
+        unlocked: totalTrades >= 1,
+        progress: Math.min(totalTrades, 1),
+        target: 1
+      },
+      {
+        id: 'ten_trades',
+        title: 'Getting Started',
+        description: 'Complete 10 trades',
+        icon: '📊',
+        unlocked: totalTrades >= 10,
+        progress: totalTrades,
+        target: 10
+      },
+      {
+        id: 'fifty_trades',
+        title: 'Experienced Trader',
+        description: 'Complete 50 trades',
+        icon: '⭐',
+        unlocked: totalTrades >= 50,
+        progress: totalTrades,
+        target: 50
+      },
+      {
+        id: 'hundred_trades',
+        title: 'Veteran',
+        description: 'Complete 100 trades',
+        icon: '🏆',
+        unlocked: totalTrades >= 100,
+        progress: totalTrades,
+        target: 100
+      },
+      {
+        id: 'profitable',
+        title: 'In The Green',
+        description: 'Reach +$1,000 net profit',
+        icon: '💰',
+        unlocked: netProfit >= 1000,
+        progress: netProfit,
+        target: 1000
+      },
+      {
+        id: 'high_winrate',
+        title: 'Sharpshooter',
+        description: 'Achieve 70% win rate',
+        icon: '🎯',
+        unlocked: winRate >= 70,
+        progress: winRate,
+        target: 70
+      },
+      {
+        id: 'big_winner',
+        title: 'Big Win',
+        description: 'Win $500 on a single trade',
+        icon: '💎',
+        unlocked: (stats?.largest_win_usd || 0) >= 500,
+        progress: stats?.largest_win_usd || 0,
+        target: 500
+      },
+      {
+        id: 'consistent',
+        title: 'Consistency King',
+        description: 'Win 5 trades in a row',
+        icon: '👑',
+        unlocked: advancedMetrics?.maxWinStreak ? advancedMetrics.maxWinStreak >= 5 : false,
+        progress: advancedMetrics?.maxWinStreak || 0,
+        target: 5
+      }
+    ];
+  }, [stats, advancedMetrics]);
+
+  const unlockedAchievements = achievements.filter(a => a.unlocked).length;
+  const totalAchievements = achievements.length;
+
+  // 🔍 Filtered trades
+  const filteredTrades = useMemo(() => {
+    return trades.filter(trade => {
+      if (filterStatus !== 'all' && trade.status !== filterStatus) return false;
+      if (filterResult !== 'all') {
+        if (filterResult === 'win' && (trade.profit_loss_usd || 0) <= 0) return false;
+        if (filterResult === 'loss' && (trade.profit_loss_usd || 0) >= 0) return false;
+      }
+      if (searchQuery && !trade.pair_ticker.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    });
+  }, [trades, filterStatus, filterResult, searchQuery]);
+
   // Demo data for non-logged-in users
   const demoTrades = [
     { id: 1, pair: 'XAUUSD', type: 'Buy', entry: '2650.50', exit: '2665.00', pips: '+14.5', pl: '+$145', rr: '1:2.6', status: 'win' },
@@ -386,154 +761,872 @@ export default function TradingJournal() {
   ];
 
   return (
-    <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
-        {/* Homepage Navbar */}
-        <Navbar />
+    <div>
+      <div className="min-h-screen bg-black text-white relative overflow-hidden">
+        {/* 🌌 Animated Background */}
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-black to-black"></div>
+        <ParticleBackground />
+        
+        {/* 🌐 Grid overlay */}
+        <div className="fixed inset-0 bg-[linear-gradient(rgba(251,191,36,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(251,191,36,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
 
-        {/* Hero Section for non-logged-in users */}
-        {!isLoggedIn && (
-          <div className="border-b border-amber-500/10">
-            <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent mb-4">
-                  Professional Trading Journal
-                </h1>
-                <p className="text-lg text-gray-400 mb-3 max-w-3xl mx-auto">
-                  Track every Forex, Gold (XAUUSD), and Indices trade with military precision. 
-                  Automatic pip calculations, R:R ratios, and AI-powered trade analysis.
-                </p>
-                <p className="text-base text-gray-500 mb-6">
-                  Join thousands of traders mastering their craft with TamtechAI's intelligent journal system.
-                </p>
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => {
-                      setShowAuthModal(true);
-                      setAuthMode("login");
-                    }}
-                    className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-bold text-lg shadow-xl shadow-amber-500/30 transition-all hover:scale-105"
-                  >
-                    Start Free
-                  </button>
-                </div>
-              </motion.div>
+        {/* Content */}
+        <div className="relative z-10">
+          <Navbar />
+
+          {/* 🚀 EPIC Hero Section for non-logged-in users */}
+          {!isLoggedIn && (
+            <div className="border-b border-amber-500/10">
+              <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8 text-center">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <div className="flex justify-center mb-6">
+                    <div className="relative">
+                      <Sparkles className="w-20 h-20 text-amber-500 animate-pulse" />
+                      <motion.div
+                        className="absolute inset-0"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Trophy className="w-20 h-20 text-amber-400/30" />
+                      </motion.div>
+                    </div>
+                  </div>
+                  
+                  <h1 className="text-5xl md:text-7xl font-black mb-6">
+                    <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-600 bg-clip-text text-transparent">
+                      The Ultimate
+                    </span>
+                    <br />
+                    <span className="text-white">Trading Journal</span>
+                  </h1>
+                  
+                  <p className="text-xl md:text-2xl text-gray-300 mb-4 max-w-4xl mx-auto font-light">
+                    🚀 AI-Powered Analytics • 📊 Real-Time Charts • 🏆 Achievement System
+                  </p>
+                  
+                  <p className="text-lg text-amber-400/80 mb-8 max-w-3xl mx-auto">
+                    Track every trade with military precision. Advanced metrics, beautiful visualizations, 
+                    and insights that actually make you a better trader.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                    <button
+                      onClick={() => {
+                        setShowAuthModal(true);
+                        setAuthMode("signup");
+                      }}
+                      className="group px-8 py-5 bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 hover:from-amber-600 hover:via-amber-700 hover:to-yellow-700 rounded-xl font-bold text-xl shadow-2xl shadow-amber-500/50 transition-all hover:scale-110 hover:shadow-amber-500/70 flex items-center gap-3"
+                    >
+                      <Rocket className="w-6 h-6 group-hover:animate-bounce" />
+                      Start Free Today
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowAuthModal(true);
+                        setAuthMode("login");
+                      }}
+                      className="px-8 py-5 bg-white/5 backdrop-blur-sm border-2 border-amber-500/30 hover:border-amber-500 rounded-xl font-bold text-xl transition-all hover:scale-105 hover:bg-white/10"
+                    >
+                      Sign In
+                    </button>
+                  </div>
+
+                  {/* Feature Highlights */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-gradient-to-br from-amber-500/10 to-transparent backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6 hover:border-amber-500/40 transition-all hover:scale-105"
+                    >
+                      <Brain className="w-12 h-12 text-amber-400 mb-4 mx-auto" />
+                      <h3 className="text-xl font-bold mb-2">AI Insights</h3>
+                      <p className="text-gray-400">Get intelligent pattern recognition and performance suggestions</p>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-gradient-to-br from-blue-500/10 to-transparent backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/40 transition-all hover:scale-105"
+                    >
+                      <BarChart3 className="w-12 h-12 text-blue-400 mb-4 mx-auto" />
+                      <h3 className="text-xl font-bold mb-2">Advanced Analytics</h3>
+                      <p className="text-gray-400">Sharpe ratio, drawdown, expectancy, and more pro metrics</p>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-gradient-to-br from-purple-500/10 to-transparent backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/40 transition-all hover:scale-105"
+                    >
+                      <Trophy className="w-12 h-12 text-purple-400 mb-4 mx-auto" />
+                      <h3 className="text-xl font-bold mb-2">Gamification</h3>
+                      <p className="text-gray-400">Unlock achievements and track your trading journey</p>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
       {/* Stats Dashboard */}
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {isLoggedIn ? (
           <>
             {loading ? (
-              <div className="text-center py-20">
-                <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-400">Loading your journal...</p>
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full"
+                />
               </div>
             ) : stats ? (
           <>
-            {/* Dashboard Header */}
-            <div className="mb-8">
-              <div>
-                <Link 
-                  href="/" 
-                  className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-amber-400 transition-colors mb-3"
-                >
-                  ← Back to Home
-                </Link>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
-                  Your Trading Journal
-                </h2>
-                <p className="text-gray-400 mt-1">Track every pip, master every trade</p>
+            {/* 💪 EPIC Dashboard Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <Link 
+                href="/" 
+                className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-amber-400 transition-colors mb-4"
+              >
+                ← Back to Home
+              </Link>
+              
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-black mb-2">
+                    <span className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
+                      Your Trading Empire
+                    </span>
+                  </h1>
+                  <p className="text-gray-400 flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-amber-500" />
+                    {unlockedAchievements}/{totalAchievements} Achievements Unlocked
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setShowAchievements(true)}
+                    className="px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-xl font-semibold shadow-lg shadow-purple-500/30 transition-all hover:scale-105 flex items-center gap-2"
+                  >
+                    <Star className="w-5 h-5" />
+                    Achievements
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      if (!userId) {
+                        toast.error('Please log in to share your journal');
+                        return;
+                      }
+                      const shareUrl = `${window.location.origin}/journal/share/${userId}`;
+                      navigator.clipboard.writeText(shareUrl);
+                      toast.success('🔗 Share link copied!', {
+                        icon: '🚀',
+                        style: {
+                          background: '#1f2937',
+                          color: '#fff',
+                          border: '1px solid #f59e0b'
+                        }
+                      });
+                    }}
+                    className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-xl font-semibold shadow-lg shadow-blue-500/30 transition-all hover:scale-105 flex items-center gap-2"
+                  >
+                    <Share2 className="w-5 h-5" />
+                    Share
+                  </button>
+
+                  <button
+                    onClick={handleNewTradeClick}
+                    className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-xl font-bold shadow-lg shadow-amber-500/30 transition-all hover:scale-105 flex items-center gap-2"
+                  >
+                    <Zap className="w-5 h-5" />
+                    New Trade
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-3 mt-6">
+            </motion.div>
+
+            {/* 🎯 View Tabs */}
+            <div className="mb-8">
+              <div className="flex gap-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1 w-fit">
                 <button
-                  onClick={() => {
-                    if (!userId) {
-                      toast.error('Please log in to share your journal');
-                      return;
-                    }
-                    const shareUrl = `${window.location.origin}/journal/share/${userId}`;
-                    navigator.clipboard.writeText(shareUrl);
-                    toast.success('Share link copied to clipboard! 🔗');
-                  }}
-                  className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg font-semibold shadow-lg shadow-blue-500/30 transition-all hover:scale-105 flex items-center gap-2"
+                  onClick={() => setActiveView('dashboard')}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                    activeView === 'dashboard'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
                 >
-                  🔗 Share Journal
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Dashboard
+                  </div>
                 </button>
                 <button
-                  onClick={handleNewTradeClick}
-                  className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 rounded-lg font-semibold shadow-lg shadow-amber-500/30 transition-all hover:scale-105"
+                  onClick={() => setActiveView('analytics')}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                    activeView === 'analytics'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
                 >
-                  + New Trade
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5" />
+                    Analytics
+                  </div>
+                </button>
+                <button
+                  onClick={() => setActiveView('trades')}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                    activeView === 'trades'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <LineChart className="w-5 h-5" />
+                    All Trades
+                  </div>
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* Net Profit Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 border border-amber-500/20 shadow-xl"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">Net Profit</span>
-                <span className="text-2xl">💰</span>
-              </div>
-              <div className={`text-3xl font-bold ${stats.net_profit_usd >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                ${stats.net_profit_usd.toFixed(2)}
-              </div>
-              <div className="text-gray-500 text-sm mt-1">
-                {stats.total_pips >= 0 ? '+' : ''}{stats.total_pips.toFixed(1)} pips
-              </div>
-            </motion.div>
+            {/* 🌟 DASHBOARD VIEW - Conditional rendering based on activeView */}
+            {activeView === 'dashboard' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                {/* 💎 Primary Stats Grid - EPIC DESIGN */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  {/* Net Profit Card */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="group relative bg-gradient-to-br from-emerald-500/10 via-black to-black backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-6 hover:border-emerald-500/60 transition-all hover:scale-105 overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-400 text-sm font-medium">Net Profit</span>
+                        <DollarSign className="w-8 h-8 text-emerald-400" />
+                      </div>
+                      <div className={`text-4xl font-black mb-2 ${
+                        stats.net_profit_usd >= 0 ? 'text-emerald-400' : 'text-red-400'
+                      }`}>
+                        ${Math.abs(stats.net_profit_usd).toFixed(2)}
+                      </div>
+                      <div className="text-gray-500 text-sm flex items-center gap-1">
+                        {stats.total_pips >= 0 ? (
+                          <ArrowUp className="w-4 h-4 text-emerald-400" />
+                        ) : (
+                          <ArrowDown className="w-4 h-4 text-red-400" />
+                        )}
+                        {Math.abs(stats.total_pips).toFixed(1)} pips
+                      </div>
+                    </div>
+                  </motion.div>
 
-            {/* Win Rate Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 border border-amber-500/20 shadow-xl"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">Win Rate</span>
-                <span className="text-2xl">🎯</span>
-              </div>
-              <div className="text-3xl font-bold text-amber-400">
-                {stats.win_rate.toFixed(1)}%
-              </div>
-              <div className="text-gray-500 text-sm mt-1">
-                {stats.wins}W / {stats.losses}L / {stats.breakeven}BE
-              </div>
-            </motion.div>
+                  {/* Win Rate Card */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="group relative bg-gradient-to-br from-amber-500/10 via-black to-black backdrop-blur-sm border border-amber-500/30 rounded-2xl p-6 hover:border-amber-500/60 transition-all hover:scale-105 overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-400 text-sm font-medium">Win Rate</span>
+                        <Target className="w-8 h-8 text-amber-400" />
+                      </div>
+                      <div className="text-4xl font-black text-amber-400 mb-2">
+                        {stats.win_rate.toFixed(1)}%
+                      </div>
+                      <div className="text-gray-500 text-sm">
+                        {stats.wins}W / {stats.losses}L
+                      </div>
+                    </div>
+                  </motion.div>
 
-            {/* Profit Factor Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 border border-amber-500/20 shadow-xl"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">Profit Factor</span>
-                <span className="text-2xl">📊</span>
-              </div>
-              <div className={`text-3xl font-bold ${stats.profit_factor >= 1.5 ? 'text-emerald-400' : stats.profit_factor >= 1 ? 'text-amber-400' : 'text-red-400'}`}>
-                {stats.profit_factor.toFixed(2)}
-              </div>
-              <div className="text-gray-500 text-sm mt-1">
-                {stats.closed_trades} closed trades
-              </div>
-            </motion.div>
-          </div>
+                  {/* Total Trades Card */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="group relative bg-gradient-to-br from-blue-500/10 via-black to-black backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6 hover:border-blue-500/60 transition-all hover:scale-105 overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-400 text-sm font-medium">Total Trades</span>
+                        <BarChart3 className="w-8 h-8 text-blue-400" />
+                      </div>
+                      <div className="text-4xl font-black text-blue-400 mb-2">
+                        {stats.total_trades}
+                      </div>
+                      <div className="text-gray-500 text-sm">
+                        {stats.open_trades} open • {stats.closed_trades} closed
+                      </div>
+                    </div>
+                  </motion.div>
 
-          {/* Free Tier Notice */}
-          {!isPro && stats.trades_remaining_free > 0 && (
+                  {/* Profit Factor Card */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="group relative bg-gradient-to-br from-purple-500/10 via-black to-black backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6 hover:border-purple-500/60 transition-all hover:scale-105 overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all"></div>
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-400 text-sm font-medium">Profit Factor</span>
+                        <Flame className="w-8 h-8 text-purple-400" />
+                      </div>
+                      <div className="text-4xl font-black text-purple-400 mb-2">
+                        {stats.profit_factor.toFixed(2)}
+                      </div>
+                      <div className="text-gray-500 text-sm">
+                        {stats.profit_factor >= 2 ? 'Excellent' : stats.profit_factor >= 1.5 ? 'Good' : 'Needs Work'}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* 🎯 Secondary Advanced Metrics */}
+                {advancedMetrics && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:border-amber-500/30 transition-all"
+                    >
+                      <div className="text-gray-400 text-xs mb-1">Sharpe Ratio</div>
+                      <div className="text-2xl font-bold text-white">
+                        {advancedMetrics.sharpeRatio.toFixed(2)}
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:border-red-500/30 transition-all"
+                    >
+                      <div className="text-gray-400 text-xs mb-1">Max Drawdown</div>
+                      <div className="text-2xl font-bold text-red-400">
+                        ${advancedMetrics.maxDrawdown.toFixed(2)}
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:border-emerald-500/30 transition-all"
+                    >
+                      <div className="text-gray-400 text-xs mb-1">Expectancy</div>
+                      <div className="text-2xl font-bold text-emerald-400">
+                        ${advancedMetrics.expectancy.toFixed(2)}
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 }}
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:border-amber-500/30 transition-all"
+                    >
+                      <div className="text-gray-400 text-xs mb-1">Max Win Streak</div>
+                      <div className="text-2xl font-bold text-amber-400 flex items-center gap-2">
+                        <Flame className="w-6 h-6" />
+                        {advancedMetrics.maxWinStreak}
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+
+                {/* 📊 Interactive Charts */}
+                {profitCurveData.length > 0 && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    {/* Profit Curve Chart */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                    >
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <TrendingUp className="w-6 h-6 text-amber-500" />
+                        Profit Curve
+                      </h3>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <AreaChart data={profitCurveData}>
+                          <defs>
+                            <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                          <XAxis dataKey="date" stroke="#666" />
+                          <YAxis stroke="#666" />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#1f2937', 
+                              border: '1px solid #f59e0b',
+                              borderRadius: '8px'
+                            }} 
+                          />
+                          <Area 
+                            type="monotone" 
+                            dataKey="profit" 
+                            stroke="#f59e0b" 
+                            strokeWidth={3}
+                            fill="url(#profitGradient)" 
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </motion.div>
+
+                    {/* Performance by Pair Chart */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                    >
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <PieChart className="w-6 h-6 text-blue-500" />
+                        Top Pairs
+                      </h3>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={performanceByPair}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                          <XAxis dataKey="pair" stroke="#666" />
+                          <YAxis stroke="#666" />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#1f2937', 
+                              border: '1px solid #3b82f6',
+                              borderRadius: '8px'
+                            }} 
+                          />
+                          <Bar dataKey="profit" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </motion.div>
+                  </div>
+                )}
+
+                {/* 🔥 Recent Trades Timeline */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                >
+                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                    <Clock className="w-6 h-6 text-amber-500" />
+                    Recent Trades
+                  </h3>
+                  <div className="space-y-3">
+                    {trades.slice(0, 5).map((trade, index) => (
+                      <motion.div
+                        key={trade.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 + index * 0.1 }}
+                        className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:border-amber-500/30 transition-all"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`w-2 h-2 rounded-full ${
+                            trade.status === 'open' ? 'bg-blue-500' : 
+                            (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500' : 'bg-red-500'
+                          }`}></div>
+                          <div>
+                            <div className="font-bold text-white">{trade.pair_ticker}</div>
+                            <div className="text-sm text-gray-400">
+                              {trade.order_type} • {format(new Date(trade.entry_time), 'MMM dd, HH:mm')}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {trade.status === 'closed' && (
+                            <div className={`font-bold ${
+                              (trade.profit_loss_usd || 0) > 0 ? 'text-emerald-400' : 'text-red-400'
+                            }`}>
+                              {(trade.profit_loss_usd || 0) > 0 ? '+' : ''}${trade.profit_loss_usd?.toFixed(2)}
+                            </div>
+                          )}
+                          <div className="text-sm text-gray-400">{trade.status}</div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+
+            {/* 📊 ANALYTICS VIEW - Advanced Metrics & Charts */}
+            {activeView === 'analytics' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="space-y-6"
+              >
+                {/* Performance by Session */}
+                {performanceBySession.some(s => s.total > 0) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                  >
+                    <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                      <Clock className="w-7 h-7 text-amber-500" />
+                      Performance by Trading Session
+                    </h3>
+                    <ResponsiveContainer width="100%" height={350}>
+                      <BarChart data={performanceBySession}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                        <XAxis dataKey="session" stroke="#666" />
+                        <YAxis stroke="#666" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#1f2937', 
+                            border: '1px solid #f59e0b',
+                            borderRadius: '8px'
+                          }} 
+                        />
+                        <Legend />
+                        <Bar dataKey="profit" fill="#f59e0b" name="Profit ($)" radius={[8, 8, 0, 0]} />
+                        <Bar dataKey="winRate" fill="#10b981" name="Win Rate (%)" radius={[8, 8, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </motion.div>
+                )}
+
+                {/* Win/Loss Distribution */}
+                {winLossDistribution.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                  >
+                    <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                      <BarChart3 className="w-7 h-7 text-blue-500" />
+                      Win/Loss Distribution
+                    </h3>
+                    <ResponsiveContainer width="100%" height={350}>
+                      <BarChart data={winLossDistribution}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                        <XAxis dataKey="range" stroke="#666" />
+                        <YAxis stroke="#666" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#1f2937', 
+                            border: '1px solid #3b82f6',
+                            borderRadius: '8px'
+                          }} 
+                        />
+                        <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 0, 0]}>
+                          {winLossDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.value > 0 ? '#10b981' : '#ef4444'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </motion.div>
+                )}
+
+                {/* Advanced Metrics Grid */}
+                {advancedMetrics && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-gradient-to-br from-emerald-500/10 to-transparent backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-300">Avg Win</h4>
+                        <TrendingUp className="w-6 h-6 text-emerald-400" />
+                      </div>
+                      <div className="text-3xl font-black text-emerald-400">
+                        ${advancedMetrics.avgWin.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-2">
+                        {stats.average_win_pips.toFixed(1)} pips avg
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-gradient-to-br from-red-500/10 to-transparent backdrop-blur-sm border border-red-500/30 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-300">Avg Loss</h4>
+                        <TrendingDown className="w-6 h-6 text-red-400" />
+                      </div>
+                      <div className="text-3xl font-black text-red-400">
+                        ${advancedMetrics.avgLoss.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-2">
+                        {Math.abs(stats.average_loss_pips).toFixed(1)} pips avg
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-gradient-to-br from-amber-500/10 to-transparent backdrop-blur-sm border border-amber-500/30 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-300">Max Loss Streak</h4>
+                        <AlertTriangle className="w-6 h-6 text-amber-400" />
+                      </div>
+                      <div className="text-3xl font-black text-amber-400">
+                        {advancedMetrics.maxLossStreak}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-2">
+                        Consecutive losses
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="bg-gradient-to-br from-purple-500/10 to-transparent backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-300">Largest Win</h4>
+                        <Trophy className="w-6 h-6 text-purple-400" />
+                      </div>
+                      <div className="text-3xl font-black text-purple-400">
+                        ${stats.largest_win_usd.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-2">
+                        Best single trade
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="bg-gradient-to-br from-orange-500/10 to-transparent backdrop-blur-sm border border-orange-500/30 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-300">Largest Loss</h4>
+                        <XCircle className="w-6 h-6 text-orange-400" />
+                      </div>
+                      <div className="text-3xl font-black text-orange-400">
+                        ${Math.abs(stats.largest_loss_usd).toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-2">
+                        Worst single trade
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.7 }}
+                      className="bg-gradient-to-br from-blue-500/10 to-transparent backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-300">Risk/Reward</h4>
+                        <Shield className="w-6 h-6 text-blue-400" />
+                      </div>
+                      <div className="text-3xl font-black text-blue-400">
+                        1:{(advancedMetrics.avgWin / advancedMetrics.avgLoss).toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-2">
+                        Average R:R ratio
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* 📋 ALL TRADES VIEW - Complete Table with Filters */}
+            {activeView === 'trades' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                {/* Filters */}
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mb-6">
+                  <div className="flex flex-wrap gap-4 items-center">
+                    <div className="flex items-center gap-2">
+                      <Search className="w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search pairs..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value as any)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:outline-none"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="open">Open</option>
+                      <option value="closed">Closed</option>
+                    </select>
+
+                    <select
+                      value={filterResult}
+                      onChange={(e) => setFilterResult(e.target.value as any)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:outline-none"
+                    >
+                      <option value="all">All Results</option>
+                      <option value="win">Wins</option>
+                      <option value="loss">Losses</option>
+                    </select>
+
+                    <div className="ml-auto text-gray-400">
+                      {filteredTrades.length} trades
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trades Table */}
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-white/5 border-b border-white/10">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Pair</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Type</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Entry</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Exit</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">P/L</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Pips</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">R:R</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/10">
+                        {filteredTrades.map((trade, index) => (
+                          <motion.tr
+                            key={trade.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="hover:bg-white/5 transition-all"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="font-bold text-white">{trade.pair_ticker}</div>
+                              <div className="text-xs text-gray-500">{trade.asset_type}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                trade.order_type === 'Buy' 
+                                  ? 'bg-emerald-500/20 text-emerald-400' 
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {trade.order_type}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-300">
+                              {trade.entry_price.toFixed(5)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-300">
+                              {trade.exit_price ? trade.exit_price.toFixed(5) : '-'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {trade.profit_loss_usd !== undefined && (
+                                <span className={`font-bold ${
+                                  trade.profit_loss_usd > 0 ? 'text-emerald-400' : 'text-red-400'
+                                }`}>
+                                  {trade.profit_loss_usd > 0 ? '+' : ''}${trade.profit_loss_usd.toFixed(2)}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {trade.profit_loss_pips !== undefined && (
+                                <span className={`font-semibold ${
+                                  trade.profit_loss_pips > 0 ? 'text-emerald-400' : 'text-red-400'
+                                }`}>
+                                  {trade.profit_loss_pips > 0 ? '+' : ''}{trade.profit_loss_pips.toFixed(1)}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-300">
+                              1:{trade.risk_reward_ratio.toFixed(1)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                trade.status === 'open' 
+                                  ? 'bg-blue-500/20 text-blue-400' 
+                                  : 'bg-gray-500/20 text-gray-400'
+                              }`}>
+                                {trade.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => {
+                                    setSelectedTrade(trade);
+                                    setShowEditModal(true);
+                                  }}
+                                  className="text-amber-400 hover:text-amber-300 transition-colors"
+                                >
+                                  <Settings className="w-5 h-5" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setTradeToDelete(trade.id);
+                                    setShowDeleteConfirm(true);
+                                  }}
+                                  className="text-red-400 hover:text-red-300 transition-colors"
+                                >
+                                  <XCircle className="w-5 h-5" />
+                                </button>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Free Tier Notice */}
+            {!isPro && stats.trades_remaining_free > 0 && (
             <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
               <p className="text-amber-400 text-sm">
                 ⚡ {stats.trades_remaining_free} free trades remaining. 
@@ -544,167 +1637,12 @@ export default function TradingJournal() {
             </div>
           )}
 
-          {/* Trades Table */}
-          <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl border border-gray-800 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-800/50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">ID#</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Pair</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Entry</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Entry Time</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Exit</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Exit Time</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Lot</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Pips</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">P&L</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">R:R</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Strategy</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Session</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Notes</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={17} className="px-4 py-8 text-center text-gray-500 text-sm">
-                        Loading trades...
-                      </td>
-                    </tr>
-                  ) : trades.length === 0 ? (
-                    <tr>
-                      <td colSpan={17} className="px-4 py-8 text-center text-gray-500 text-sm">
-                        No trades yet. Start logging your journey! 📈
-                      </td>
-                    </tr>
-                  ) : (
-                    trades.map((trade, index) => (
-                      <motion.tr
-                        key={trade.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className={`transition-colors ${
-                          trade.result === 'win' 
-                            ? 'bg-emerald-500/10 hover:bg-emerald-500/20' 
-                            : trade.result === 'loss' 
-                            ? 'bg-red-500/10 hover:bg-red-500/20' 
-                            : 'hover:bg-gray-800/30'
-                        }`}
-                      >
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 font-mono">
-                          #{trades.length - index}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
-                          {new Date(trade.entry_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="font-medium text-amber-400 text-sm">{trade.pair_ticker}</div>
-                          <div className="text-xs text-gray-500">{trade.asset_type}</div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                            trade.order_type === 'Buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-                          }`}>
-                            {trade.order_type}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
-                          {trade.entry_price ? trade.entry_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
-                          {trade.entry_time ? new Date(trade.entry_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
-                          {trade.exit_price ? trade.exit_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
-                          {trade.exit_time ? new Date(trade.exit_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
-                          {trade.lot_size || '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs">
-                          {trade.profit_loss_pips !== null && trade.profit_loss_pips !== undefined ? (
-                            <span className={trade.profit_loss_pips >= 0 ? 'text-emerald-400 font-medium' : 'text-red-400 font-medium'}>
-                              {trade.profit_loss_pips >= 0 ? '+' : ''}{trade.profit_loss_pips.toFixed(1)}
-                            </span>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs">
-                          {trade.profit_loss_usd !== null && trade.profit_loss_usd !== undefined ? (
-                            <span className={`font-semibold ${trade.profit_loss_usd >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                              ${trade.profit_loss_usd >= 0 ? '+' : ''}{trade.profit_loss_usd.toFixed(2)}
-                            </span>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
-                          {trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
-                          {trade.strategy || '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
-                          {trade.trading_session || '-'}
-                        </td>
-                        <td className="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate" title={trade.notes || '-'}>
-                          {trade.notes || '-'}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                            trade.status === 'open' ? 'bg-amber-500/20 text-amber-400' : 
-                            trade.result === 'win' ? 'bg-emerald-500/20 text-emerald-400' :
-                            trade.result === 'loss' ? 'bg-red-500/20 text-red-400' :
-                            'bg-gray-500/20 text-gray-400'
-                          }`}>
-                            {trade.status === 'open' ? 'Open' : trade.result}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => {
-                                setSelectedTrade(trade);
-                                setShowEditModal(true);
-                              }}
-                              className="text-blue-400 hover:text-blue-300 transition-colors"
-                              title="Edit trade"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              onClick={() => {
-                                setTradeToDelete(trade.id);
-                                setShowDeleteConfirm(true);
-                              }}
-                              className="text-red-400 hover:text-red-300 transition-colors"
-                              title="Delete trade"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
           </>
-            ) : (
-              <div className="text-center py-20">
-                <p className="text-gray-400">Failed to load journal data. Please refresh.</p>
-              </div>
-            )}
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-gray-400">Failed to load journal data. Please refresh.</p>
+          </div>
+        )}
           </>
         ) : (
           /* Marketing content for non-logged-in users */
@@ -876,8 +1814,9 @@ export default function TradingJournal() {
         )}
       </div>
 
-      {/* Homepage Footer */}
-      <Footer />
+        {/* Homepage Footer */}
+        <Footer />
+      </div>
     </div>
 
       {/* Modals */}
@@ -1279,6 +2218,6 @@ export default function TradingJournal() {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }

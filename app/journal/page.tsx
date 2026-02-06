@@ -1275,7 +1275,14 @@ export default function TradingJournal() {
                               {(trade.profit_loss_usd || 0) > 0 ? '+' : ''}${(trade.profit_loss_usd || 0).toFixed(2)}
                             </div>
                           )}
-                          <div className="text-sm text-gray-400">{trade.status}</div>
+                          <div className="text-sm">
+                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                              trade.status === 'open' ? 'bg-blue-500/20 text-blue-400' :
+                              (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                            }`}>
+                              {trade.status === 'open' ? 'OPEN' : (trade.profit_loss_usd || 0) > 0 ? 'WIN' : 'LOSS'}
+                            </span>
+                          </div>
                         </div>
                       </motion.div>
                     ))}
@@ -1525,6 +1532,7 @@ export default function TradingJournal() {
                     <table className="w-full">
                       <thead className="bg-white/5 border-b border-white/10">
                         <tr>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">#</th>
                           <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Pair</th>
                           <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Type</th>
                           <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Entry</th>
@@ -1545,6 +1553,9 @@ export default function TradingJournal() {
                             transition={{ delay: index * 0.05 }}
                             className="hover:bg-white/5 transition-all"
                           >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-gray-500 font-mono text-sm">#{filteredTrades.length - index}</div>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="font-bold text-white">{trade.pair_ticker}</div>
                               <div className="text-xs text-gray-500">{trade.asset_type}</div>
@@ -1589,9 +1600,11 @@ export default function TradingJournal() {
                               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                                 trade.status === 'open' 
                                   ? 'bg-blue-500/20 text-blue-400' 
-                                  : 'bg-gray-500/20 text-gray-400'
+                                  : (trade.profit_loss_usd || 0) > 0 
+                                  ? 'bg-emerald-500/20 text-emerald-400'
+                                  : 'bg-red-500/20 text-red-400'
                               }`}>
-                                {trade.status}
+                                {trade.status === 'open' ? 'OPEN' : (trade.profit_loss_usd || 0) > 0 ? 'WIN' : 'LOSS'}
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -1828,6 +1841,99 @@ export default function TradingJournal() {
           fetchTrades();
         }}
       />
+
+      {/* Achievements Modal */}
+      <AnimatePresence>
+        {showAchievements && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowAchievements(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-900 border border-amber-500/30 rounded-2xl p-8 max-w-4xl w-full max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+                  🏆 Your Achievements
+                </h2>
+                <button
+                  onClick={() => setShowAchievements(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-300">Overall Progress</span>
+                  <span className="text-amber-400 font-bold">{unlockedAchievements}/{totalAchievements}</span>
+                </div>
+                <div className="w-full bg-gray-800 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-amber-500 to-yellow-500 h-3 rounded-full transition-all"
+                    style={{ width: `${(unlockedAchievements / totalAchievements) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {achievements.map((achievement, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`p-6 rounded-xl border-2 transition-all ${
+                      achievement.unlocked
+                        ? 'bg-gradient-to-br from-amber-500/20 to-yellow-500/20 border-amber-500/50'
+                        : 'bg-gray-800/50 border-gray-700 grayscale'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="text-4xl">{achievement.icon}</div>
+                      <div className="flex-1">
+                        <h3 className={`font-bold text-lg mb-1 ${
+                          achievement.unlocked ? 'text-amber-400' : 'text-gray-500'
+                        }`}>
+                          {achievement.title}
+                        </h3>
+                        <p className="text-sm text-gray-400 mb-3">{achievement.description}</p>
+                        
+                        {achievement.unlocked ? (
+                          <div className="flex items-center gap-2 text-emerald-400 text-sm font-semibold">
+                            <span>✓</span> Unlocked!
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                              <span>Progress</span>
+                              <span>{achievement.progress || 0}/{achievement.target || 0}</span>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-2">
+                              <div 
+                                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all"
+                                style={{ width: `${((achievement.progress || 0) / (achievement.target || 1)) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Premium Modal */}
       <AnimatePresence>

@@ -1026,17 +1026,17 @@ export default function TradingJournal() {
                         <DollarSign className="w-8 h-8 text-emerald-400" />
                       </div>
                       <div className={`text-4xl font-black mb-2 ${
-                        stats.net_profit_usd >= 0 ? 'text-emerald-400' : 'text-red-400'
+                        (stats.net_profit_usd || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
                       }`}>
-                        ${Math.abs(stats.net_profit_usd).toFixed(2)}
+                        ${Math.abs(stats.net_profit_usd || 0).toFixed(2)}
                       </div>
                       <div className="text-gray-500 text-sm flex items-center gap-1">
-                        {stats.total_pips >= 0 ? (
+                        {(stats.total_pips || 0) >= 0 ? (
                           <ArrowUp className="w-4 h-4 text-emerald-400" />
                         ) : (
                           <ArrowDown className="w-4 h-4 text-red-400" />
                         )}
-                        {Math.abs(stats.total_pips).toFixed(1)} pips
+                        {Math.abs(stats.total_pips || 0).toFixed(1)} pips
                       </div>
                     </div>
                   </motion.div>
@@ -1055,7 +1055,7 @@ export default function TradingJournal() {
                         <Target className="w-8 h-8 text-amber-400" />
                       </div>
                       <div className="text-4xl font-black text-amber-400 mb-2">
-                        {stats.win_rate.toFixed(1)}%
+                        {(stats.win_rate || 0).toFixed(1)}%
                       </div>
                       <div className="text-gray-500 text-sm">
                         {stats.wins}W / {stats.losses}L
@@ -1099,10 +1099,10 @@ export default function TradingJournal() {
                         <Flame className="w-8 h-8 text-purple-400" />
                       </div>
                       <div className="text-4xl font-black text-purple-400 mb-2">
-                        {stats.profit_factor.toFixed(2)}
+                        {(stats.profit_factor || 0).toFixed(2)}
                       </div>
                       <div className="text-gray-500 text-sm">
-                        {stats.profit_factor >= 2 ? 'Excellent' : stats.profit_factor >= 1.5 ? 'Good' : 'Needs Work'}
+                        {(stats.profit_factor || 0) >= 2 ? 'Excellent' : (stats.profit_factor || 0) >= 1.5 ? 'Good' : 'Needs Work'}
                       </div>
                     </div>
                   </motion.div>
@@ -1119,7 +1119,7 @@ export default function TradingJournal() {
                     >
                       <div className="text-gray-400 text-xs mb-1">Sharpe Ratio</div>
                       <div className="text-2xl font-bold text-white">
-                        {advancedMetrics.sharpeRatio.toFixed(2)}
+                        {(advancedMetrics.sharpeRatio || 0).toFixed(2)}
                       </div>
                     </motion.div>
 
@@ -1131,7 +1131,7 @@ export default function TradingJournal() {
                     >
                       <div className="text-gray-400 text-xs mb-1">Max Drawdown</div>
                       <div className="text-2xl font-bold text-red-400">
-                        ${advancedMetrics.maxDrawdown.toFixed(2)}
+                        ${(advancedMetrics.maxDrawdown || 0).toFixed(2)}
                       </div>
                     </motion.div>
 
@@ -1143,7 +1143,7 @@ export default function TradingJournal() {
                     >
                       <div className="text-gray-400 text-xs mb-1">Expectancy</div>
                       <div className="text-2xl font-bold text-emerald-400">
-                        ${advancedMetrics.expectancy.toFixed(2)}
+                        ${(advancedMetrics.expectancy || 0).toFixed(2)}
                       </div>
                     </motion.div>
 
@@ -1272,7 +1272,7 @@ export default function TradingJournal() {
                             <div className={`font-bold ${
                               (trade.profit_loss_usd || 0) > 0 ? 'text-emerald-400' : 'text-red-400'
                             }`}>
-                              {(trade.profit_loss_usd || 0) > 0 ? '+' : ''}${trade.profit_loss_usd?.toFixed(2)}
+                              {(trade.profit_loss_usd || 0) > 0 ? '+' : ''}${(trade.profit_loss_usd || 0).toFixed(2)}
                             </div>
                           )}
                           <div className="text-sm text-gray-400">{trade.status}</div>
@@ -1371,10 +1371,10 @@ export default function TradingJournal() {
                         <TrendingUp className="w-6 h-6 text-emerald-400" />
                       </div>
                       <div className="text-3xl font-black text-emerald-400">
-                        ${advancedMetrics.avgWin.toFixed(2)}
+                        ${(advancedMetrics.avgWin || 0).toFixed(2)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
-                        {stats.average_win_pips.toFixed(1)} pips avg
+                        {(stats.average_win_pips || 0).toFixed(1)} pips avg
                       </div>
                     </motion.div>
 
@@ -1389,10 +1389,10 @@ export default function TradingJournal() {
                         <TrendingDown className="w-6 h-6 text-red-400" />
                       </div>
                       <div className="text-3xl font-black text-red-400">
-                        ${advancedMetrics.avgLoss.toFixed(2)}
+                        ${(advancedMetrics.avgLoss || 0).toFixed(2)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
-                        {Math.abs(stats.average_loss_pips).toFixed(1)} pips avg
+                        {Math.abs(stats.average_loss_pips || 0).toFixed(1)} pips avg
                       </div>
                     </motion.div>
 
@@ -1425,7 +1425,7 @@ export default function TradingJournal() {
                         <Trophy className="w-6 h-6 text-purple-400" />
                       </div>
                       <div className="text-3xl font-black text-purple-400">
-                        ${stats.largest_win_usd.toFixed(2)}
+                        ${(stats.largest_win_usd || 0).toFixed(2)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
                         Best single trade
@@ -1443,7 +1443,7 @@ export default function TradingJournal() {
                         <XCircle className="w-6 h-6 text-orange-400" />
                       </div>
                       <div className="text-3xl font-black text-orange-400">
-                        ${Math.abs(stats.largest_loss_usd).toFixed(2)}
+                        ${Math.abs(stats.largest_loss_usd || 0).toFixed(2)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
                         Worst single trade
@@ -1461,7 +1461,7 @@ export default function TradingJournal() {
                         <Shield className="w-6 h-6 text-blue-400" />
                       </div>
                       <div className="text-3xl font-black text-blue-400">
-                        1:{(advancedMetrics.avgWin / advancedMetrics.avgLoss).toFixed(2)}
+                        1:{((advancedMetrics.avgWin || 0) / (Math.abs(advancedMetrics.avgLoss) || 1)).toFixed(2)}
                       </div>
                       <div className="text-sm text-gray-500 mt-2">
                         Average R:R ratio
@@ -1559,13 +1559,13 @@ export default function TradingJournal() {
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-gray-300">
-                              {trade.entry_price.toFixed(5)}
+                              {trade.entry_price ? trade.entry_price.toFixed(5) : '-'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-gray-300">
                               {trade.exit_price ? trade.exit_price.toFixed(5) : '-'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {trade.profit_loss_usd !== undefined && (
+                              {trade.profit_loss_usd !== undefined && trade.profit_loss_usd !== null && (
                                 <span className={`font-bold ${
                                   trade.profit_loss_usd > 0 ? 'text-emerald-400' : 'text-red-400'
                                 }`}>
@@ -1574,7 +1574,7 @@ export default function TradingJournal() {
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {trade.profit_loss_pips !== undefined && (
+                              {trade.profit_loss_pips !== undefined && trade.profit_loss_pips !== null && (
                                 <span className={`font-semibold ${
                                   trade.profit_loss_pips > 0 ? 'text-emerald-400' : 'text-red-400'
                                 }`}>
@@ -1583,7 +1583,7 @@ export default function TradingJournal() {
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-gray-300">
-                              1:{trade.risk_reward_ratio.toFixed(1)}
+                              {trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${

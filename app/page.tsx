@@ -1516,7 +1516,7 @@ export default function Home() {
                   ) : (
                     <>
                       <span className="text-base">👑</span>
-                      Upgrade to PRO - $14.99/mo
+                      Upgrade to PRO - $9.99/mo
                     </>
                   )}
                 </Link>

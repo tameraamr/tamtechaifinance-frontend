@@ -71,7 +71,7 @@ export default function PricingPage() {
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-6xl font-black text-yellow-300">$10</span>
+                  <span className="text-6xl font-black text-yellow-300">$9.99</span>
                   <span className="text-slate-400 text-xl">/mo</span>
                 </div>
                 <p className="text-green-400 text-sm font-bold mt-2">Best value for power users!</p>
@@ -109,7 +109,7 @@ export default function PricingPage() {
                 className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] shadow-xl shadow-yellow-600/30 group"
               >
                 <Crown className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                Get Pro - $10/month
+                Get Pro - $9.99/month
               </a>
               <p className="text-center text-xs text-slate-500 mt-3">Cancel anytime, no commitments</p>
             </div>
@@ -173,7 +173,7 @@ export default function PricingPage() {
               <ShoppingCart className="text-blue-500 w-8 h-8" />
             </div>
             <h4 className="font-bold text-white mb-2">{t.purchase}</h4>
-            <p className="text-sm text-slate-500 leading-relaxed italic">Choose TamtechAI Pro ($10/month) for unlimited access, or 10 Credits ($5) for pay-as-you-go.</p>
+            <p className="text-sm text-slate-500 leading-relaxed italic">Choose TamtechAI Pro ($9.99/month) for unlimited access, or 10 Credits ($5) for pay-as-you-go.</p>
           </div>
           <div className="text-center p-6">
             <div className="bg-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-slate-800 shadow-lg">

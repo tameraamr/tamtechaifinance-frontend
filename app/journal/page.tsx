@@ -334,7 +334,7 @@ export default function TradingJournal() {
   const fetchTrades = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/journal/trades?limit=50`, {
+      const res = await fetch(`${API_BASE}/journal/trades?limit=1000`, {
         credentials: 'include'
       });
       if (res.ok) {
@@ -590,13 +590,13 @@ export default function TradingJournal() {
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
-                          {trade.entry_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5)}
+                          {trade.entry_price ? trade.entry_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
                           {trade.exit_price ? trade.exit_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
-                          {trade.lot_size}
+                          {trade.lot_size || '-'}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs">
                           {trade.profit_loss_pips !== null && trade.profit_loss_pips !== undefined ? (
@@ -617,7 +617,7 @@ export default function TradingJournal() {
                           )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
-                          1:{trade.risk_reward_ratio.toFixed(1)}
+                          {trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
                           {trade.strategy || '-'}

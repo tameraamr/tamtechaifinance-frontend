@@ -583,7 +583,7 @@ export default function TradingJournal() {
                       </td>
                     </tr>
                   ) : (
-                    trades.map((trade) => (
+                    trades.map((trade, index) => (
                       <motion.tr
                         key={trade.id}
                         initial={{ opacity: 0 }}
@@ -597,7 +597,7 @@ export default function TradingJournal() {
                         }`}
                       >
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 font-mono">
-                          #{trade.id}
+                          #{index + 1}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
                           {new Date(trade.entry_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

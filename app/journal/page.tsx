@@ -1247,6 +1247,43 @@ export default function TradingJournal() {
                     All Trades
                   </h3>
                   
+                  {/* Filters Bar */}
+                  <div className="mb-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <div className="flex items-center gap-2">
+                        <Search className="w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Search pairs..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none"
+                        />
+                      </div>
+                      <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value as any)}
+                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-amber-500 focus:outline-none"
+                      >
+                        <option value="all">All Status</option>
+                        <option value="open">Open</option>
+                        <option value="closed">Closed</option>
+                      </select>
+                      <select
+                        value={filterResult}
+                        onChange={(e) => setFilterResult(e.target.value as any)}
+                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-amber-500 focus:outline-none"
+                      >
+                        <option value="all">All Results</option>
+                        <option value="win">Wins</option>
+                        <option value="loss">Losses</option>
+                      </select>
+                      <div className="ml-auto text-gray-400 text-xs">
+                        {filteredTrades.length} trades
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="bg-white/5 border-b border-white/10">
@@ -1268,9 +1305,9 @@ export default function TradingJournal() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
-                        {trades.map((trade, index) => (
+                        {filteredTrades.map((trade, index) => (
                           <tr key={trade.id} className="hover:bg-white/5 transition-colors">
-                            <td className="px-3 py-2 text-gray-500 font-mono text-xs">#{trades.length - index}</td>
+                            <td className="px-3 py-2 text-gray-500 font-mono text-xs">#{filteredTrades.length - index}</td>
                             <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-400">
                               {format(new Date(trade.entry_time), 'MMM dd')}
                             </td>

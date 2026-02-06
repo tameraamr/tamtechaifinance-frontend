@@ -1264,6 +1264,7 @@ export default function TradingJournal() {
                           <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Session</th>
                           <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Notes</th>
                           <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Status</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -1322,6 +1323,28 @@ export default function TradingJournal() {
                               }`}>
                                 {trade.status === 'open' ? 'OPEN' : (trade.profit_loss_usd || 0) > 0 ? 'WIN' : 'LOSS'}
                               </span>
+                            </td>
+                            <td className="px-3 py-2 whitespace-nowrap">
+                              <div className="flex gap-1">
+                                <button
+                                  onClick={() => {
+                                    setSelectedTrade(trade);
+                                    setShowEditModal(true);
+                                  }}
+                                  className="text-amber-400 hover:text-amber-300 transition-colors"
+                                >
+                                  <Settings className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setTradeToDelete(trade.id);
+                                    setShowDeleteConfirm(true);
+                                  }}
+                                  className="text-red-400 hover:text-red-300 transition-colors"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -1527,130 +1550,129 @@ export default function TradingJournal() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                {/* All Trades Table (Dashboard style, compact, with actions/filters) */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-2"
-                >
-                  <h3 className="text-base font-bold mb-2 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-amber-500" />
-                    All Trades
-                  </h3>
-                  {/* Filters Bar */}
-                  <div className="flex flex-wrap gap-2 items-center mb-2">
-                    <div className="flex items-center gap-1">
-                      <Search className="w-4 h-4 text-gray-400" />
+                {/* Filters */}
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 mb-6">
+                  <div className="flex flex-wrap gap-4 items-center">
+                    <div className="flex items-center gap-2">
+                      <Search className="w-5 h-5 text-gray-400" />
                       <input
                         type="text"
                         placeholder="Search pairs..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none"
+                        className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none"
                       />
                     </div>
+
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value as any)}
-                      className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-amber-500 focus:outline-none"
+                      className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:outline-none"
                     >
                       <option value="all">All Status</option>
                       <option value="open">Open</option>
                       <option value="closed">Closed</option>
                     </select>
+
                     <select
                       value={filterResult}
                       onChange={(e) => setFilterResult(e.target.value as any)}
-                      className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white focus:border-amber-500 focus:outline-none"
+                      className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-amber-500 focus:outline-none"
                     >
                       <option value="all">All Results</option>
                       <option value="win">Wins</option>
                       <option value="loss">Losses</option>
                     </select>
-                    <div className="ml-auto text-gray-400 text-xs">
+
+                    <div className="ml-auto text-gray-400">
                       {filteredTrades.length} trades
                     </div>
                   </div>
+                </div>
+
+                {/* Trades Table */}
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
+                    <table className="w-full">
                       <thead className="bg-white/5 border-b border-white/10">
                         <tr>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">#</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Date</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Pair</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Type</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Entry</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Exit</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Lot</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Pips</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">P/L</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">R:R</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Session</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Notes</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Status</th>
-                          <th className="px-2 py-1 text-left text-[10px] font-semibold text-gray-400 uppercase">Actions</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">#</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Pair</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Type</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Entry</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Exit</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">P/L</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Pips</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">R:R</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5">
+                      <tbody className="divide-y divide-white/10">
                         {filteredTrades.map((trade, index) => (
-                          <tr key={trade.id} className="hover:bg-white/5 transition-colors">
-                            <td className="px-2 py-1 text-gray-500 font-mono text-[10px]">#{filteredTrades.length - index}</td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px] text-gray-400">
-                              {format(new Date(trade.entry_time), 'MMM dd')}
+                          <motion.tr
+                            key={trade.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="hover:bg-white/5 transition-all"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-gray-500 font-mono text-sm">#{filteredTrades.length - index}</div>
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap">
-                              <div className="font-semibold text-amber-400 text-[10px]">{trade.pair_ticker}</div>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="font-bold text-white">{trade.pair_ticker}</div>
+                              <div className="text-xs text-gray-500">{trade.asset_type}</div>
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap">
-                              <span className={`px-1 py-0.5 rounded text-[10px] font-semibold ${
-                                trade.order_type === 'Buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                trade.order_type === 'Buy' 
+                                  ? 'bg-emerald-500/20 text-emerald-400' 
+                                  : 'bg-red-500/20 text-red-400'
                               }`}>
                                 {trade.order_type}
                               </span>
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px] text-gray-300">
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-300">
                               {trade.entry_price ? trade.entry_price.toFixed(5) : '-'}
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px] text-gray-300">
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-300">
                               {trade.exit_price ? trade.exit_price.toFixed(5) : '-'}
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px] text-gray-300">
-                              {trade.lot_size || '-'}
-                            </td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px]">
-                              {trade.profit_loss_pips !== null && trade.profit_loss_pips !== undefined ? (
-                                <span className={trade.profit_loss_pips >= 0 ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
-                                  {trade.profit_loss_pips >= 0 ? '+' : ''}{trade.profit_loss_pips.toFixed(1)}
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {trade.profit_loss_usd !== undefined && trade.profit_loss_usd !== null && (
+                                <span className={`font-bold ${
+                                  trade.profit_loss_usd > 0 ? 'text-emerald-400' : 'text-red-400'
+                                }`}>
+                                  {trade.profit_loss_usd > 0 ? '+' : ''}${trade.profit_loss_usd.toFixed(2)}
                                 </span>
-                              ) : '-'}
+                              )}
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px]">
-                              {trade.profit_loss_usd !== null && trade.profit_loss_usd !== undefined ? (
-                                <span className={`font-bold ${trade.profit_loss_usd >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                                  ${trade.profit_loss_usd >= 0 ? '+' : ''}{trade.profit_loss_usd.toFixed(2)}
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {trade.profit_loss_pips !== undefined && trade.profit_loss_pips !== null && (
+                                <span className={`font-semibold ${
+                                  trade.profit_loss_pips > 0 ? 'text-emerald-400' : 'text-red-400'
+                                }`}>
+                                  {trade.profit_loss_pips > 0 ? '+' : ''}{trade.profit_loss_pips.toFixed(1)}
                                 </span>
-                              ) : '-'}
+                              )}
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px] text-gray-300">
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-300">
                               {trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap text-[10px] text-gray-400">
-                              {trade.trading_session || '-'}
-                            </td>
-                            <td className="px-2 py-1 text-[10px] text-gray-400 max-w-[100px] truncate" title={trade.notes || ''}>
-                              {trade.notes || '-'}
-                            </td>
-                            <td className="px-2 py-1 whitespace-nowrap">
-                              <span className={`px-1 py-0.5 rounded text-[10px] font-semibold ${
-                                trade.status === 'open' ? 'bg-blue-500/20 text-blue-400' :
-                                (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                trade.status === 'open' 
+                                  ? 'bg-blue-500/20 text-blue-400' 
+                                  : (trade.profit_loss_usd || 0) > 0 
+                                  ? 'bg-emerald-500/20 text-emerald-400'
+                                  : 'bg-red-500/20 text-red-400'
                               }`}>
                                 {trade.status === 'open' ? 'OPEN' : (trade.profit_loss_usd || 0) > 0 ? 'WIN' : 'LOSS'}
                               </span>
                             </td>
-                            <td className="px-2 py-1 whitespace-nowrap">
-                              <div className="flex gap-1">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex gap-2">
                                 <button
                                   onClick={() => {
                                     setSelectedTrade(trade);
@@ -1658,7 +1680,7 @@ export default function TradingJournal() {
                                   }}
                                   className="text-amber-400 hover:text-amber-300 transition-colors"
                                 >
-                                  <Settings className="w-4 h-4" />
+                                  <Settings className="w-5 h-5" />
                                 </button>
                                 <button
                                   onClick={() => {
@@ -1667,16 +1689,16 @@ export default function TradingJournal() {
                                   }}
                                   className="text-red-400 hover:text-red-300 transition-colors"
                                 >
-                                  <XCircle className="w-4 h-4" />
+                                  <XCircle className="w-5 h-5" />
                                 </button>
                               </div>
                             </td>
-                          </tr>
+                          </motion.tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                </motion.div>
+                </div>
               </motion.div>
             )}
 

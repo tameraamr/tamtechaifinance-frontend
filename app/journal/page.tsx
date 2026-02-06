@@ -597,7 +597,7 @@ export default function TradingJournal() {
                         }`}
                       >
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 font-mono">
-                          #{index + 1}
+                          #{trades.length - index}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
                           {new Date(trade.entry_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

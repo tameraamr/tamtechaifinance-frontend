@@ -219,23 +219,13 @@ export default function Home() {
     }
   }, []);
 
-  const [sentiment, setSentiment] = useState<{ sentiment: string; score: number }>({ sentiment: "Neutral", score: 50 });
-  const fetchMarketDashboardData = useCallback(async () => {
-    try {
-      // Only fetch market sentiment, /market-sectors is deprecated/removed
-      const sentRes = await fetch(`${BASE_URL}/market-sentiment`);
-      if (sentRes.ok) {
-        setSentiment(await sentRes.json());
-      }
-    } catch (err) {
-      console.error("Error fetching market dashboard data:", err);
-    }
-  }, []);
+  // Removed market sentiment feature - endpoint deprecated
+
 
   // تحديث الـ useEffect ليعمل عند فتح الصفحة أو عند أي تحليل جديد - with dependency array fix
   useEffect(() => {
-    fetchMarketDashboardData();
-  }, [fetchMarketDashboardData, recentAnalyses]);
+    // Market dashboard data fetch removed
+  }, [recentAnalyses]);
 
 
   // Hook 1: جلب بيانات المستخدم والنبض العلوي - Optimized with proper cleanup

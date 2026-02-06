@@ -749,15 +749,6 @@ export default function TradingJournal() {
                 </div>
 
                 <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
-                  <div className="text-4xl mb-4">🤖</div>
-                  <h3 className="text-xl font-bold text-amber-400 mb-3">AI Trade Scoring</h3>
-                  <p className="text-gray-400">
-                    Gemini AI analyzes your trades and provides actionable feedback. 
-                    Learn from wins and losses with intelligent insights.
-                  </p>
-                </div>
-
-                <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
                   <div className="text-4xl mb-4">📊</div>
                   <h3 className="text-xl font-bold text-amber-400 mb-3">Performance Analytics</h3>
                   <p className="text-gray-400">
@@ -807,10 +798,6 @@ export default function TradingJournal() {
 
               <p className="leading-relaxed">
                 Unlike manual spreadsheets or basic trading logs, our AI-powered journal understands the nuances of different asset classes. Forex trades are calculated with 5-decimal precision (3 decimals for JPY pairs), Gold with 2-decimal accuracy, and indices with 1-point increments. This ensures your pip calculations, risk-reward ratios, and profit/loss tracking are always 100% accurate, saving you hours of manual calculations and eliminating costly errors.
-              </p>
-
-              <p className="leading-relaxed">
-                The integration of Gemini AI takes your trading analysis to the next level. Each trade can be reviewed by our AI engine, which examines your entry timing, exit strategy, risk management, and market conditions. You'll receive personalized feedback on what you did right, what could be improved, and how to replicate your winning strategies while avoiding past mistakes. This is like having a professional trading mentor available 24/7.
               </p>
 
               <p className="leading-relaxed">
@@ -886,13 +873,6 @@ export default function TradingJournal() {
                       <div>
                         <div className="font-semibold text-white">Unlimited Trade Logs</div>
                         <div className="text-sm text-gray-400">Never lose track of your progress</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <span className="text-emerald-400 text-xl">✓</span>
-                      <div>
-                        <div className="font-semibold text-white">AI Trade Scoring</div>
-                        <div className="text-sm text-gray-400">Gemini AI analyzes every trade</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">

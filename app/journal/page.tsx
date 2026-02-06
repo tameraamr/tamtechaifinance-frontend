@@ -539,17 +539,21 @@ export default function TradingJournal() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-800/50">
                   <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">ID#</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Pair</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Entry</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Entry Time</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Exit</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Exit Time</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Lot</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Pips</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">P&L</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">R:R</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Strategy</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Session</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Notes</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
                   </tr>
@@ -557,13 +561,13 @@ export default function TradingJournal() {
                 <tbody className="divide-y divide-gray-800">
                   {loading ? (
                     <tr>
-                      <td colSpan={13} className="px-4 py-8 text-center text-gray-500 text-sm">
+                      <td colSpan={17} className="px-4 py-8 text-center text-gray-500 text-sm">
                         Loading trades...
                       </td>
                     </tr>
                   ) : trades.length === 0 ? (
                     <tr>
-                      <td colSpan={13} className="px-4 py-8 text-center text-gray-500 text-sm">
+                      <td colSpan={17} className="px-4 py-8 text-center text-gray-500 text-sm">
                         No trades yet. Start logging your journey! 📈
                       </td>
                     </tr>
@@ -575,6 +579,9 @@ export default function TradingJournal() {
                         animate={{ opacity: 1 }}
                         className="hover:bg-gray-800/30 transition-colors"
                       >
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 font-mono">
+                          #{trade.id}
+                        </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
                           {new Date(trade.entry_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </td>
@@ -592,8 +599,14 @@ export default function TradingJournal() {
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
                           {trade.entry_price ? trade.entry_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
                         </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
+                          {trade.entry_time ? new Date(trade.entry_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-'}
+                        </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
                           {trade.exit_price ? trade.exit_price.toFixed(trade.asset_type === 'forex' && trade.pair_ticker.includes('JPY') ? 3 : 5) : '-'}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
+                          {trade.exit_time ? new Date(trade.exit_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '-'}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">
                           {trade.lot_size || '-'}
@@ -624,6 +637,9 @@ export default function TradingJournal() {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
                           {trade.trading_session || '-'}
+                        </td>
+                        <td className="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate" title={trade.notes || '-'}>
+                          {trade.notes || '-'}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`px-2 py-0.5 rounded text-xs font-semibold ${

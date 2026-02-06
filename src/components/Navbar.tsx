@@ -195,6 +195,13 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
                 >
                   📊 Portfolio Tracker
                 </Link>
+                <Link 
+                  href="/journal" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-bold bg-gradient-to-r from-amber-600/20 to-yellow-600/20 border border-amber-500/50 px-4 py-3 rounded-lg transition-all text-amber-300 flex items-center gap-2"
+                >
+                  📓 Trading Journal
+                </Link>
               </>
             )}
 

@@ -46,6 +46,9 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             <Link href="/articles" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
               Articles
             </Link>
+            <Link href="/journal" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
+              Journal
+            </Link>
           </div>
 
           {/* Right: Credits, Language, User Actions */}

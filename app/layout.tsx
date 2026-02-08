@@ -10,6 +10,7 @@ import CookieBanner from '../src/components/CookieBanner';
 import ConditionalAnalytics from '../src/components/ConditionalAnalytics';
 import VerificationBannerWrapper from '../src/components/VerificationBannerWrapper';
 import FloatingThemeSwitcher from '../src/components/FloatingThemeSwitcher';
+import CanonicalHead from '../src/components/CanonicalHead';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -118,6 +119,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Dynamic Canonical URL for SEO */}
+        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : 'https://tamtech-finance.com'} />
         {/* Structured Data for Google */}
         <script
           type="application/ld+json"
@@ -138,6 +141,7 @@ export default function RootLayout({
           disableTransitionOnChange={false}
           themes={["default", "emerald-dark", "slate-grey", "deep-ocean", "royal-violet", "gold-alpha"]}
         >
+          <CanonicalHead />
           <AuthProvider>
             <ThemeProvider>
               <TranslationProvider>

@@ -300,440 +300,24 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="flex-1 p-4 md:p-6 overflow-y-auto pb-28">
               {error && (
                 <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
                   {error}
                 </div>
               )}
 
-              {/* Trade Basics */}
-              {activeSection === 'basics' && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Asset Pair/Ticker</label>
-                      <input
-                        type="text"
-                        value={formData.pair_ticker}
-                        onChange={(e) => setFormData({ ...formData, pair_ticker: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="EURUSD, AAPL, BTC..."
-                        required
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Asset Type</label>
-                      <select
-                        value={formData.asset_type}
-                        onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      >
-                        <option value="forex">Forex</option>
-                        <option value="crypto">Crypto</option>
-                        <option value="stocks">Stocks</option>
-                        <option value="commodities">Commodities</option>
-                        <option value="indices">Indices</option>
-                      </select>
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Order Type</label>
-                      <select
-                        value={formData.order_type}
-                        onChange={(e) => setFormData({ ...formData, order_type: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      >
-                        <option value="Buy">Buy</option>
-                        <option value="Sell">Sell</option>
-                      </select>
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Lot Size</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.lot_size}
-                        onChange={(e) => setFormData({ ...formData, lot_size: parseFloat(e.target.value) || 0.01 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="0.01"
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Entry Price</label>
-                      <input
-                        type="number"
-                        step="0.00001"
-                        value={formData.entry_price}
-                        onChange={(e) => setFormData({ ...formData, entry_price: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1.23456"
-                        required
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Stop Loss</label>
-                      <input
-                        type="number"
-                        step="0.00001"
-                        value={formData.stop_loss}
-                        onChange={(e) => setFormData({ ...formData, stop_loss: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1.23000"
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Take Profit</label>
-                      <input
-                        type="number"
-                        step="0.00001"
-                        value={formData.take_profit}
-                        onChange={(e) => setFormData({ ...formData, take_profit: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1.24000"
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Entry Time</label>
-                      <input
-                        type="datetime-local"
-                        value={formData.entry_time}
-                        onChange={(e) => setFormData({ ...formData, entry_time: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        required
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Account Size at Entry</label>
-                      <input
-                        type="number"
-                        value={formData.account_size_at_entry}
-                        onChange={(e) => setFormData({ ...formData, account_size_at_entry: parseFloat(e.target.value) || 1000 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1000"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              {/* Strategy & Notes */}
-              {activeSection === 'strategy' && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Strategy</label>
-                    <input
-                      type="text"
-                      value={formData.strategy}
-                      onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="e.g., Breakout, Reversal, Trend Following..."
-                    />
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Notes</label>
-                    <RichTextEditor
-                      value={formData.notes}
-                      onChange={(value) => setFormData({ ...formData, notes: value })}
-                      placeholder="Describe your trade setup, reasoning, and execution..."
-                    />
-                  </div>
-                </div>
-              )}
 
-              {/* Images */}
-              {activeSection === 'images' && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Screenshot URL</label>
-                    <input
-                      type="url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="https://example.com/screenshot.png"
-                    />
-                  </div>
-
-                  {formData.image_url && (
-                    <div className="border border-gray-600 rounded-lg p-4">
-                      <img
-                        src={formData.image_url}
-                        alt="Trade screenshot"
-                        className="w-full h-auto rounded-lg"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Tags */}
-              {activeSection === 'tags' && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Tags</label>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {formData.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="text-amber-400 hover:text-amber-300"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={newTag}
-                        onChange={(e) => setNewTag(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                        className="flex-1 px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="Add a tag..."
-                      />
-                      <button
-                        type="button"
-                        onClick={addTag}
-                        className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-            {/* Pre-Trade Checklist */}
-              {activeSection === 'basics' && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Asset Pair/Ticker</label>
-                      <input
-                        type="text"
-                        value={formData.pair_ticker}
-                        onChange={(e) => setFormData({ ...formData, pair_ticker: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="EURUSD, AAPL, BTC..."
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Asset Type</label>
-                      <select
-                        value={formData.asset_type}
-                        onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      >
-                        <option value="forex">Forex</option>
-                        <option value="crypto">Crypto</option>
-                        <option value="stocks">Stocks</option>
-                        <option value="commodities">Commodities</option>
-                        <option value="indices">Indices</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Order Type</label>
-                      <select
-                        value={formData.order_type}
-                        onChange={(e) => setFormData({ ...formData, order_type: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      >
-                        <option value="Buy">Buy</option>
-                        <option value="Sell">Sell</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Lot Size</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={formData.lot_size}
-                        onChange={(e) => setFormData({ ...formData, lot_size: parseFloat(e.target.value) || 0.01 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="0.01"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Entry Price</label>
-                      <input
-                        type="number"
-                        step="0.00001"
-                        value={formData.entry_price}
-                        onChange={(e) => setFormData({ ...formData, entry_price: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1.23456"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Stop Loss</label>
-                      <input
-                        type="number"
-                        step="0.00001"
-                        value={formData.stop_loss}
-                        onChange={(e) => setFormData({ ...formData, stop_loss: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1.23000"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Take Profit</label>
-                      <input
-                        type="number"
-                        step="0.00001"
-                        value={formData.take_profit}
-                        onChange={(e) => setFormData({ ...formData, take_profit: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1.24000"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Entry Time</label>
-                      <input
-                        type="datetime-local"
-                        value={formData.entry_time}
-                        onChange={(e) => setFormData({ ...formData, entry_time: e.target.value })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Account Size at Entry</label>
-                      <input
-                        type="number"
-                        value={formData.account_size_at_entry}
-                        onChange={(e) => setFormData({ ...formData, account_size_at_entry: parseFloat(e.target.value) || 1000 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1000"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Strategy & Notes */}
-              {activeSection === 'strategy' && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Strategy</label>
-                    <input
-                      type="text"
-                      value={formData.strategy}
-                      onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="e.g., Breakout, Reversal, Trend Following..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Notes</label>
-                    <RichTextEditor
-                      value={formData.notes}
-                      onChange={(value) => setFormData({ ...formData, notes: value })}
-                      placeholder="Describe your trade setup, reasoning, and execution..."
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Images */}
-              {activeSection === 'images' && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Screenshot URL</label>
-                    <input
-                      type="url"
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="https://example.com/screenshot.png"
-                    />
-                  </div>
-
-                  {formData.image_url && (
-                    <div className="border border-gray-600 rounded-lg p-4">
-                      <img
-                        src={formData.image_url}
-                        alt="Trade screenshot"
-                        className="w-full h-auto rounded-lg"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Tags */}
-              {activeSection === 'tags' && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Tags</label>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {formData.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="text-amber-400 hover:text-amber-300"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={newTag}
-                        onChange={(e) => setNewTag(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                        className="flex-1 px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="Add a tag..."
-                      />
-                      <button
-                        type="button"
-                        onClick={addTag}
-                        className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
 
             {/* Pre-Trade Checklist */}
             {activeSection === 'basics' && (
@@ -1116,26 +700,23 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
             )}
           </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between p-6 border-t border-gray-700/50 bg-gray-800/30">
-              <div className="text-xs text-gray-500">
-                Press <kbd className="px-1 py-0.5 bg-gray-700 rounded text-xs">Ctrl</kbd> + <kbd className="px-1 py-0.5 bg-gray-700 rounded text-xs">Enter</kbd> to save • <kbd className="px-1 py-0.5 bg-gray-700 rounded text-xs">Esc</kbd> to close
-              </div>
-
-              <div className="flex gap-3">
+            {/* Footer (compact) */}
+            <div className="sticky bottom-0 z-50 flex items-center justify-end gap-2 p-3 border-t border-gray-700/50 bg-gray-900/80 backdrop-blur-md">
+              <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                  className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors"
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-black font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1 text-sm bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-black rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Saving...' : 'Save Trade'}
+                  {loading ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </div>

@@ -1963,6 +1963,38 @@ export default function TradingJournal() {
                               initializeEditForm(trade);
                               setShowEditModal(true);
                             }}
+                            onContextMenu={(e) => {
+                              e.preventDefault();
+                              setTradeToDelete(trade.id);
+                              setShowDeleteConfirm(true);
+                            }}
+                          >
+                            {/* Action Buttons - Appear on Hover */}
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 flex gap-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTrade(trade);
+                                  initializeEditForm(trade);
+                                  setShowEditModal(true);
+                                }}
+                                className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 hover:text-amber-300 p-1.5 rounded-md transition-all"
+                                title="Edit Trade"
+                              >
+                                <Settings className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setTradeToDelete(trade.id);
+                                  setShowDeleteConfirm(true);
+                                }}
+                                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 p-1.5 rounded-md transition-all"
+                                title="Delete Trade"
+                              >
+                                <XCircle className="w-3 h-3" />
+                              </button>
+                            </div>
                           >
                             {/* Card Header */}
                             <div className={`px-3 py-2 border-b ${
@@ -2053,43 +2085,66 @@ export default function TradingJournal() {
                             </div>
 
                             {/* Hover Details Tooltip */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
-                              <div className="bg-black/95 backdrop-blur-sm border border-white/20 rounded-lg p-3 shadow-2xl min-w-64">
-                                <div className="space-y-2 text-xs">
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-400">Date:</span>
-                                    <span className="text-white font-mono">{format(new Date(trade.entry_time), 'MMM dd, yyyy HH:mm')}</span>
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50">
+                              <div className="bg-black/95 backdrop-blur-sm border border-white/20 rounded-lg p-4 shadow-2xl min-w-72 max-w-xs">
+                                <div className="space-y-3 text-sm">
+                                  <div className="text-center border-b border-white/10 pb-2 mb-3">
+                                    <div className="font-bold text-white text-base">{trade.pair_ticker}</div>
+                                    <div className="text-xs text-gray-400">{trade.asset_type} • {trade.order_type}</div>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-400">Entry:</span>
-                                    <span className="text-white font-mono">{trade.entry_price ? trade.entry_price.toFixed(5) : '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-400">Exit:</span>
-                                    <span className="text-white font-mono">{trade.exit_price ? trade.exit_price.toFixed(5) : '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-400">Lot Size:</span>
-                                    <span className="text-white">{trade.lot_size || '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-400">R:R:</span>
-                                    <span className="text-white">{trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-gray-400">Session:</span>
-                                    <span className="text-white">{trade.trading_session || '-'}</span>
-                                  </div>
-                                  {trade.strategy && (
-                                    <div className="flex justify-between">
-                                      <span className="text-gray-400">Strategy:</span>
-                                      <span className="text-white">{trade.strategy}</span>
-                                    </div>
-                                  )}
-                                  {trade.notes && (
+                                  
+                                  <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                      <span className="text-gray-400 block mb-1">Notes:</span>
-                                      <span className="text-white text-xs leading-relaxed">{trade.notes.length > 50 ? `${trade.notes.substring(0, 50)}...` : trade.notes}</span>
+                                      <span className="text-gray-400 text-xs block">Entry Price</span>
+                                      <span className="text-white font-mono text-sm">{trade.entry_price ? trade.entry_price.toFixed(5) : '-'}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400 text-xs block">Exit Price</span>
+                                      <span className="text-white font-mono text-sm">{trade.exit_price ? trade.exit_price.toFixed(5) : '-'}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400 text-xs block">Lot Size</span>
+                                      <span className="text-white text-sm">{trade.lot_size || '-'}</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400 text-xs block">Risk:Reward</span>
+                                      <span className="text-white text-sm">{trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}</span>
+                                    </div>
+                                  </div>
+
+                                  <div className="border-t border-white/10 pt-3 space-y-2">
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Date:</span>
+                                      <span className="text-white text-sm">{format(new Date(trade.entry_time), 'MMM dd, yyyy HH:mm')}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Session:</span>
+                                      <span className="text-white text-sm">{trade.trading_session || '-'}</span>
+                                    </div>
+                                    {trade.strategy && (
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Strategy:</span>
+                                        <span className="text-white text-sm">{trade.strategy}</span>
+                                      </div>
+                                    )}
+                                    {trade.market_trend && (
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Trend:</span>
+                                        <span className="text-white text-sm">{trade.market_trend}</span>
+                                      </div>
+                                    )}
+                                    {trade.tags && (
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Tags:</span>
+                                        <span className="text-white text-sm">{trade.tags}</span>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {trade.notes && (
+                                    <div className="border-t border-white/10 pt-3">
+                                      <span className="text-gray-400 block mb-2 text-xs">Notes:</span>
+                                      <span className="text-white text-sm leading-relaxed">{trade.notes}</span>
                                     </div>
                                   )}
                                 </div>

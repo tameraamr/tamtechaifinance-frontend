@@ -261,6 +261,7 @@ export default function TradingJournal() {
   const [activeView, setActiveView] = useState<'dashboard' | 'analytics' | 'trades'>('dashboard');
   const [filterStatus, setFilterStatus] = useState<'all' | 'open' | 'closed'>('all');
   const [filterResult, setFilterResult] = useState<'all' | 'win' | 'loss'>('all');
+  const [expandedTradeId, setExpandedTradeId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAchievements, setShowAchievements] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState<'day' | 'week' | 'month' | 'all'>('week');
@@ -1931,7 +1932,7 @@ export default function TradingJournal() {
                   </div>
                   
                   {/* Trade Cards Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
                     {(() => {
                       // Calculate pagination
                       const totalPages = Math.ceil(filteredTrades.length / tradesPerPage);
@@ -1950,13 +1951,14 @@ export default function TradingJournal() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className={`relative group bg-white/5 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                            className={`relative group bg-white/5 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl md:hover:scale-105 md:hover:shadow-2xl cursor-pointer ${
                               isWin 
-                                ? 'border-emerald-500/30 hover:border-emerald-400/50 bg-gradient-to-br from-emerald-500/5 to-transparent' 
+                                ? 'border-emerald-500/30 hover:border-emerald-400/50 md:hover:border-emerald-400/50 bg-gradient-to-br from-emerald-500/5 to-transparent' 
                                 : isLoss 
-                                ? 'border-red-500/30 hover:border-red-400/50 bg-gradient-to-br from-red-500/5 to-transparent'
-                                : 'border-blue-500/30 hover:border-blue-400/50 bg-gradient-to-br from-blue-500/5 to-transparent'
+                                ? 'border-red-500/30 hover:border-red-400/50 md:hover:border-red-400/50 bg-gradient-to-br from-red-500/5 to-transparent'
+                                : 'border-blue-500/30 hover:border-blue-400/50 md:hover:border-blue-400/50 bg-gradient-to-br from-blue-500/5 to-transparent'
                             }`}
+                            onClick={() => setExpandedTradeId(expandedTradeId === trade.id ? null : trade.id)}
                           >
                             {/* Card Header */}
                             <div className={`px-4 py-3 border-b ${
@@ -2024,14 +2026,17 @@ export default function TradingJournal() {
                               {/* Screenshot */}
                               <div className="aspect-video bg-black/20 rounded-lg overflow-hidden border border-white/10">
                                 {trade.image_url ? (
-                                  <div className="relative w-full h-full group cursor-pointer" onClick={() => window.open(trade.image_url, '_blank')}>
+                                  <div className="relative w-full h-full cursor-pointer" onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(trade.image_url, '_blank');
+                                  }}>
                                     <Image 
                                       src={trade.image_url} 
                                       alt="Trade screenshot"
                                       fill
-                                      className="object-cover transition-transform group-hover:scale-105"
+                                      className="object-cover"
                                     />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                       <Eye className="w-6 h-6 text-white" />
                                     </div>
                                   </div>
@@ -2042,66 +2047,77 @@ export default function TradingJournal() {
                                 )}
                               </div>
 
-                              {/* Hover Overlay with Full Details */}
-                              <div className="absolute inset-0 bg-black/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 overflow-y-auto">
-                                <div className="space-y-3 text-sm">
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">Date:</span>
-                                    <span className="text-white">{format(new Date(trade.entry_time), 'MMM dd, yyyy HH:mm')}</span>
-                                  </div>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">Entry:</span>
-                                    <span className="text-white font-mono">{trade.entry_price ? trade.entry_price.toFixed(5) : '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">Exit:</span>
-                                    <span className="text-white font-mono">{trade.exit_price ? trade.exit_price.toFixed(5) : '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">Lot Size:</span>
-                                    <span className="text-white">{trade.lot_size || '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">R:R:</span>
-                                    <span className="text-white">{trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}</span>
-                                  </div>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-gray-400">Session:</span>
-                                    <span className="text-white">{trade.trading_session || '-'}</span>
-                                  </div>
-                                  {trade.notes && (
-                                    <div>
-                                      <span className="text-gray-400 block mb-1">Notes:</span>
-                                      <span className="text-white text-xs leading-relaxed">{trade.notes}</span>
+                              {/* Expandable Details Overlay */}
+                              {expandedTradeId === trade.id && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  className="absolute inset-0 bg-black/95 backdrop-blur-sm p-4 overflow-y-auto z-10"
+                                >
+                                  <div className="space-y-3 text-sm">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-gray-400">Date:</span>
+                                      <span className="text-white">{format(new Date(trade.entry_time), 'MMM dd, yyyy HH:mm')}</span>
                                     </div>
-                                  )}
-                                  
-                                  {/* Action Buttons */}
-                                  <div className="flex gap-2 pt-2 border-t border-white/10">
-                                    <button
-                                      onClick={() => {
-                                        setSelectedTrade(trade);
-                                        initializeEditForm(trade);
-                                        setShowEditModal(true);
-                                      }}
-                                      className="flex-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 hover:text-amber-300 px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1"
-                                    >
-                                      <Settings className="w-4 h-4" />
-                                      Edit
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        setTradeToDelete(trade.id);
-                                        setShowDeleteConfirm(true);
-                                      }}
-                                      className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1"
-                                    >
-                                      <XCircle className="w-4 h-4" />
-                                      Delete
-                                    </button>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-gray-400">Entry:</span>
+                                      <span className="text-white font-mono">{trade.entry_price ? trade.entry_price.toFixed(5) : '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-gray-400">Exit:</span>
+                                      <span className="text-white font-mono">{trade.exit_price ? trade.exit_price.toFixed(5) : '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-gray-400">Lot Size:</span>
+                                      <span className="text-white">{trade.lot_size || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-gray-400">R:R:</span>
+                                      <span className="text-white">{trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-gray-400">Session:</span>
+                                      <span className="text-white">{trade.trading_session || '-'}</span>
+                                    </div>
+                                    {trade.notes && (
+                                      <div>
+                                        <span className="text-gray-400 block mb-1">Notes:</span>
+                                        <span className="text-white text-xs leading-relaxed">{trade.notes}</span>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Action Buttons */}
+                                    <div className="flex gap-2 pt-2 border-t border-white/10">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedTrade(trade);
+                                          initializeEditForm(trade);
+                                          setShowEditModal(true);
+                                          setExpandedTradeId(null);
+                                        }}
+                                        className="flex-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 hover:text-amber-300 px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1"
+                                      >
+                                        <Settings className="w-4 h-4" />
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setTradeToDelete(trade.id);
+                                          setShowDeleteConfirm(true);
+                                          setExpandedTradeId(null);
+                                        }}
+                                        className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1"
+                                      >
+                                        <XCircle className="w-4 h-4" />
+                                        Delete
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
+                                </motion.div>
+                              )}
                             </div>
                           </motion.div>
                         );

@@ -15,28 +15,8 @@ import {
   LineChart, ArrowUp, ArrowDown, Sparkles, Rocket, Shield
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { 
-  LineChart as RechartsLine, 
-  Line, 
-  AreaChart, 
-  Area, 
-  BarChart,
-  Bar,
-  PieChart as RechartsPie,
-  Pie,
-  Cell,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar
-} from 'recharts';
+import ReactECharts from 'echarts-for-react';
+import * as echarts from 'echarts';
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, parseISO } from 'date-fns';
 
 const API_BASE = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
@@ -1176,33 +1156,49 @@ export default function TradingJournal() {
                         <TrendingUp className="w-6 h-6 text-amber-500" />
                         Profit Curve
                       </h3>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={profitCurveData}>
-                          <defs>
-                            <linearGradient id="profitGradient" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                          <XAxis dataKey="date" stroke="#666" />
-                          <YAxis stroke="#666" />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: '#1f2937', 
-                              border: '1px solid #f59e0b',
-                              borderRadius: '8px'
-                            }} 
-                          />
-                          <Area 
-                            type="monotone" 
-                            dataKey="profit" 
-                            stroke="#f59e0b" 
-                            strokeWidth={3}
-                            fill="url(#profitGradient)" 
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
+                      <ReactECharts
+                        option={{
+                          backgroundColor: 'transparent',
+                          grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                          },
+                          xAxis: {
+                            type: 'category',
+                            data: profitCurveData.map(d => d.date),
+                            axisLine: { lineStyle: { color: '#666' } },
+                            axisLabel: { color: '#666' }
+                          },
+                          yAxis: {
+                            type: 'value',
+                            axisLine: { lineStyle: { color: '#666' } },
+                            axisLabel: { color: '#666' }
+                          },
+                          series: [{
+                            data: profitCurveData.map(d => d.profit),
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'none',
+                            lineStyle: { color: '#f59e0b', width: 3 },
+                            areaStyle: {
+                              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(245, 158, 11, 0.3)' },
+                                { offset: 1, color: 'rgba(245, 158, 11, 0)' }
+                              ])
+                            }
+                          }],
+                          tooltip: {
+                            trigger: 'axis',
+                            backgroundColor: '#1f2937',
+                            borderColor: '#f59e0b',
+                            borderRadius: 8,
+                            textStyle: { color: '#fff' }
+                          }
+                        }}
+                        style={{ height: '300px', width: '100%' }}
+                      />
                     </motion.div>
 
                     {/* Performance by Pair Chart */}
@@ -1216,21 +1212,42 @@ export default function TradingJournal() {
                         <PieChart className="w-6 h-6 text-blue-500" />
                         Top Pairs
                       </h3>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={performanceByPair}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                          <XAxis dataKey="pair" stroke="#666" />
-                          <YAxis stroke="#666" />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: '#1f2937', 
-                              border: '1px solid #3b82f6',
-                              borderRadius: '8px'
-                            }} 
-                          />
-                          <Bar dataKey="profit" fill="#3b82f6" radius={[8, 8, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
+                      <ReactECharts
+                        option={{
+                          backgroundColor: 'transparent',
+                          grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                          },
+                          xAxis: {
+                            type: 'category',
+                            data: performanceByPair.map(d => d.pair),
+                            axisLine: { lineStyle: { color: '#666' } },
+                            axisLabel: { color: '#666' }
+                          },
+                          yAxis: {
+                            type: 'value',
+                            axisLine: { lineStyle: { color: '#666' } },
+                            axisLabel: { color: '#666' }
+                          },
+                          series: [{
+                            data: performanceByPair.map(d => d.profit),
+                            type: 'bar',
+                            itemStyle: { color: '#3b82f6' },
+                            barWidth: '60%'
+                          }],
+                          tooltip: {
+                            trigger: 'axis',
+                            backgroundColor: '#1f2937',
+                            borderColor: '#3b82f6',
+                            borderRadius: 8,
+                            textStyle: { color: '#fff' }
+                          }
+                        }}
+                        style={{ height: '300px', width: '100%' }}
+                      />
                     </motion.div>
                   </div>
                 )}
@@ -1398,36 +1415,321 @@ export default function TradingJournal() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="space-y-6"
+                className="space-y-4"
               >
+                {/* Advanced Metrics Grid */}
+                {advancedMetrics && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-gradient-to-br from-emerald-500/10 to-transparent backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-300">Avg Win</h4>
+                        <TrendingUp className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div className="text-xl font-black text-emerald-400">
+                        ${(advancedMetrics.avgWin || 0).toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {(stats.average_win_pips || 0).toFixed(1)} pips avg
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-gradient-to-br from-red-500/10 to-transparent backdrop-blur-sm border border-red-500/30 rounded-2xl p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-300">Avg Loss</h4>
+                        <TrendingDown className="w-4 h-4 text-red-400" />
+                      </div>
+                      <div className="text-xl font-black text-red-400">
+                        ${(advancedMetrics.avgLoss || 0).toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {Math.abs(stats.average_loss_pips || 0).toFixed(1)} pips avg
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-gradient-to-br from-amber-500/10 to-transparent backdrop-blur-sm border border-amber-500/30 rounded-2xl p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-300">Max Loss Streak</h4>
+                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                      </div>
+                      <div className="text-xl font-black text-amber-400">
+                        {advancedMetrics.maxLossStreak}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Consecutive losses
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="bg-gradient-to-br from-purple-500/10 to-transparent backdrop-blur-sm border border-purple-500/30 rounded-2xl p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-300">Largest Win</h4>
+                        <Trophy className="w-4 h-4 text-purple-400" />
+                      </div>
+                      <div className="text-xl font-black text-purple-400">
+                        ${(stats.largest_win_usd || 0).toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Best single trade
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="bg-gradient-to-br from-orange-500/10 to-transparent backdrop-blur-sm border border-orange-500/30 rounded-2xl p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-300">Largest Loss</h4>
+                        <XCircle className="w-4 h-4 text-orange-400" />
+                      </div>
+                      <div className="text-xl font-black text-orange-400">
+                        ${Math.abs(stats.largest_loss_usd || 0).toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Worst single trade
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.7 }}
+                      className="bg-gradient-to-br from-blue-500/10 to-transparent backdrop-blur-sm border border-blue-500/30 rounded-2xl p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold text-gray-300">Risk/Reward</h4>
+                        <Shield className="w-4 h-4 text-blue-400" />
+                      </div>
+                      <div className="text-xl font-black text-blue-400">
+                        1:{((advancedMetrics.avgWin || 0) / (Math.abs(advancedMetrics.avgLoss) || 1)).toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Average R:R ratio
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+
                 {/* Performance by Session */}
                 {performanceBySession.some(s => s.total > 0) && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4"
                   >
-                    <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                      <Clock className="w-7 h-7 text-amber-500" />
+                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                      <Clock className="w-6 h-6 text-amber-500" />
                       Performance by Trading Session
                     </h3>
-                    <ResponsiveContainer width="100%" height={350}>
-                      <BarChart data={performanceBySession}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                        <XAxis dataKey="session" stroke="#666" />
-                        <YAxis stroke="#666" />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#1f2937', 
-                            border: '1px solid #f59e0b',
-                            borderRadius: '8px'
-                          }} 
-                        />
-                        <Legend />
-                        <Bar dataKey="profit" fill="#f59e0b" name="Profit ($)" radius={[8, 8, 0, 0]} />
-                        <Bar dataKey="winRate" fill="#10b981" name="Win Rate (%)" radius={[8, 8, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    <ReactECharts
+                      option={{
+                        backgroundColor: 'transparent',
+                        grid: {
+                          left: '5%',
+                          right: '5%',
+                          bottom: '15%',
+                          top: '10%',
+                          containLabel: true
+                        },
+                        legend: {
+                          data: ['Profit ($)', 'Win Rate (%)'],
+                          top: 'bottom',
+                          textStyle: { 
+                            color: '#9ca3af',
+                            fontSize: 12,
+                            fontWeight: '500'
+                          },
+                          itemWidth: 12,
+                          itemHeight: 12,
+                          itemGap: 20
+                        },
+                        xAxis: {
+                          type: 'category',
+                          data: performanceBySession.map(d => d.session),
+                          axisLine: { 
+                            lineStyle: { 
+                              color: '#374151',
+                              width: 2
+                            } 
+                          },
+                          axisLabel: { 
+                            color: '#9ca3af',
+                            fontSize: 11,
+                            fontWeight: '500',
+                            interval: 0,
+                            rotate: 0
+                          },
+                          axisTick: {
+                            show: false
+                          }
+                        },
+                        yAxis: [
+                          {
+                            type: 'value',
+                            name: 'Profit ($)',
+                            nameTextStyle: {
+                              color: '#f59e0b',
+                              fontSize: 12,
+                              fontWeight: '600'
+                            },
+                            axisLine: { 
+                              lineStyle: { 
+                                color: '#374151',
+                                width: 2
+                              } 
+                            },
+                            axisLabel: { 
+                              color: '#9ca3af',
+                              fontSize: 11,
+                              formatter: function(value: number) {
+                                return '$' + value.toLocaleString();
+                              }
+                            },
+                            splitLine: {
+                              lineStyle: {
+                                color: '#1f2937',
+                                type: 'dashed'
+                              }
+                            }
+                          },
+                          {
+                            type: 'value',
+                            name: 'Win Rate (%)',
+                            nameTextStyle: {
+                              color: '#3b82f6',
+                              fontSize: 12,
+                              fontWeight: '600'
+                            },
+                            axisLine: { 
+                              lineStyle: { 
+                                color: '#374151',
+                                width: 2
+                              } 
+                            },
+                            axisLabel: { 
+                              color: '#9ca3af',
+                              fontSize: 11,
+                              formatter: '{value}%'
+                            },
+                            splitLine: {
+                              show: false
+                            }
+                          }
+                        ],
+                        series: [
+                          {
+                            name: 'Profit ($)',
+                            type: 'bar',
+                            data: performanceBySession.map(d => ({
+                              value: d.profit,
+                              itemStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                  { offset: 0, color: '#f59e0b' },
+                                  { offset: 1, color: '#d97706' }
+                                ]),
+                                borderRadius: [4, 4, 0, 0]
+                              },
+                              label: {
+                                show: true,
+                                position: 'top',
+                                color: '#f59e0b',
+                                fontSize: 11,
+                                fontWeight: '600',
+                                formatter: function(params: any) {
+                                  return params.value > 0 ? '+$' + params.value.toLocaleString() : '$' + params.value.toLocaleString();
+                                }
+                              }
+                            })),
+                            barWidth: '35%',
+                            barGap: '20%'
+                          },
+                          {
+                            name: 'Win Rate (%)',
+                            type: 'bar',
+                            yAxisIndex: 1,
+                            data: performanceBySession.map(d => ({
+                              value: d.winRate,
+                              itemStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                  { offset: 0, color: '#3b82f6' },
+                                  { offset: 1, color: '#1d4ed8' }
+                                ]),
+                                borderRadius: [4, 4, 0, 0]
+                              },
+                              label: {
+                                show: true,
+                                position: 'top',
+                                color: '#3b82f6',
+                                fontSize: 11,
+                                fontWeight: '600',
+                                formatter: function(params: any) {
+                                  return params.value.toFixed(2) + '%';
+                                }
+                              }
+                            })),
+                            barWidth: '35%'
+                          }
+                        ],
+                        tooltip: {
+                          trigger: 'axis',
+                          backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                          borderColor: '#374151',
+                          borderWidth: 1,
+                          borderRadius: 12,
+                          textStyle: { 
+                            color: '#f9fafb',
+                            fontSize: 13
+                          },
+                          axisPointer: {
+                            type: 'cross',
+                            lineStyle: {
+                              color: '#6b7280',
+                              width: 1,
+                              type: 'dashed'
+                            }
+                          },
+                          formatter: function(params: any) {
+                            let result = `<div style="font-weight: 600; margin-bottom: 8px; color: #f59e0b;">${params[0].name}</div>`;
+                            params.forEach((param: any) => {
+                              const value = param.value;
+                              const color = param.seriesName === 'Profit ($)' ? '#f59e0b' : '#3b82f6';
+                              const formattedValue = param.seriesName === 'Profit ($)' 
+                                ? (value > 0 ? '+$' + value.toLocaleString() : '$' + value.toLocaleString())
+                                : value.toFixed(2) + '%';
+                              result += `<div style="display: flex; align-items: center; margin: 4px 0;">
+                                <div style="width: 8px; height: 8px; background: ${color}; border-radius: 50%; margin-right: 8px;"></div>
+                                <span style="color: #d1d5db; margin-right: 8px;">${param.seriesName}:</span>
+                                <span style="color: #f9fafb; font-weight: 600;">${formattedValue}</span>
+                              </div>`;
+                            });
+                            return result;
+                          }
+                        },
+                        animationDuration: 1000,
+                        animationEasing: 'cubicOut'
+                      }}
+                      style={{ height: '320px', width: '100%' }}
+                    />
                   </motion.div>
                 )}
 
@@ -1437,145 +1739,148 @@ export default function TradingJournal() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4"
                   >
-                    <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                      <BarChart3 className="w-7 h-7 text-blue-500" />
+                    <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5 text-blue-500" />
                       Win/Loss Distribution
                     </h3>
-                    <ResponsiveContainer width="100%" height={350}>
-                      <BarChart data={winLossDistribution}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                        <XAxis dataKey="range" stroke="#666" />
-                        <YAxis stroke="#666" />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#1f2937', 
-                            border: '1px solid #3b82f6',
-                            borderRadius: '8px'
-                          }} 
-                        />
-                        <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 0, 0]}>
-                          {winLossDistribution.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.value > 0 ? '#10b981' : '#ef4444'} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
+                    <ReactECharts
+                      option={{
+                        backgroundColor: 'transparent',
+                        grid: {
+                          left: '5%',
+                          right: '5%',
+                          bottom: '15%',
+                          top: '10%',
+                          containLabel: true
+                        },
+                        legend: {
+                          data: ['Wins', 'Losses'],
+                          top: 'bottom',
+                          textStyle: {
+                            color: '#9ca3af',
+                            fontSize: 12,
+                            fontWeight: '500'
+                          },
+                          itemWidth: 12,
+                          itemHeight: 12,
+                          itemGap: 20
+                        },
+                        xAxis: {
+                          type: 'category',
+                          data: winLossDistribution.map(d => d.range),
+                          axisLine: {
+                            lineStyle: {
+                              color: '#374151',
+                              width: 2
+                            }
+                          },
+                          axisLabel: {
+                            color: '#9ca3af',
+                            fontSize: 11,
+                            fontWeight: '500',
+                            interval: 0,
+                            rotate: 0
+                          },
+                          axisTick: {
+                            show: false
+                          }
+                        },
+                        yAxis: {
+                          type: 'value',
+                          name: 'Number of Trades',
+                          nameTextStyle: {
+                            color: '#6b7280',
+                            fontSize: 12,
+                            fontWeight: '600'
+                          },
+                          axisLine: {
+                            lineStyle: {
+                              color: '#374151',
+                              width: 2
+                            }
+                          },
+                          axisLabel: {
+                            color: '#9ca3af',
+                            fontSize: 11,
+                            formatter: '{value}'
+                          },
+                          splitLine: {
+                            lineStyle: {
+                              color: '#1f2937',
+                              type: 'dashed'
+                            }
+                          }
+                        },
+                        series: [{
+                          name: winLossDistribution.some(d => d.value > 0) ? 'Wins' : 'Losses',
+                          data: winLossDistribution.map(d => ({
+                            value: Math.abs(d.count),
+                            itemStyle: {
+                              color: d.value > 0
+                                ? new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: '#10b981' },
+                                    { offset: 1, color: '#059669' }
+                                  ])
+                                : new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: '#ef4444' },
+                                    { offset: 1, color: '#dc2626' }
+                                  ]),
+                              borderRadius: [4, 4, 0, 0]
+                            },
+                            label: {
+                              show: true,
+                              position: 'top',
+                              color: d.value > 0 ? '#10b981' : '#ef4444',
+                              fontSize: 11,
+                              fontWeight: '600',
+                              formatter: '{c}'
+                            }
+                          })),
+                          type: 'bar',
+                          barWidth: '70%'
+                        }],
+                        tooltip: {
+                          trigger: 'axis',
+                          backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                          borderColor: '#374151',
+                          borderWidth: 1,
+                          borderRadius: 12,
+                          textStyle: {
+                            color: '#f9fafb',
+                            fontSize: 13
+                          },
+                          axisPointer: {
+                            type: 'cross',
+                            lineStyle: {
+                              color: '#6b7280',
+                              width: 1,
+                              type: 'dashed'
+                            }
+                          },
+                          formatter: function(params: any) {
+                            const param = params[0];
+                            const value = param.value;
+                            const range = param.name;
+                            const isWin = winLossDistribution.find(d => d.range === range)?.value > 0;
+                            const color = isWin ? '#10b981' : '#ef4444';
+                            const type = isWin ? 'Wins' : 'Losses';
+
+                            return `<div style="font-weight: 600; margin-bottom: 8px; color: #f59e0b;">${range}</div>
+                              <div style="display: flex; align-items: center; margin: 4px 0;">
+                                <div style="width: 8px; height: 8px; background: ${color}; border-radius: 50%; margin-right: 8px;"></div>
+                                <span style="color: #d1d5db; margin-right: 8px;">${type}:</span>
+                                <span style="color: #f9fafb; font-weight: 600;">${value} trades</span>
+                              </div>`;
+                          }
+                        },
+                        animationDuration: 1000,
+                        animationEasing: 'cubicOut'
+                      }}
+                      style={{ height: '320px', width: '100%' }}
+                    />
                   </motion.div>
-                )}
-
-                {/* Advanced Metrics Grid */}
-                {advancedMetrics && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.2 }}
-                      className="bg-gradient-to-br from-emerald-500/10 to-transparent backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-300">Avg Win</h4>
-                        <TrendingUp className="w-6 h-6 text-emerald-400" />
-                      </div>
-                      <div className="text-3xl font-black text-emerald-400">
-                        ${(advancedMetrics.avgWin || 0).toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-2">
-                        {(stats.average_win_pips || 0).toFixed(1)} pips avg
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.3 }}
-                      className="bg-gradient-to-br from-red-500/10 to-transparent backdrop-blur-sm border border-red-500/30 rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-300">Avg Loss</h4>
-                        <TrendingDown className="w-6 h-6 text-red-400" />
-                      </div>
-                      <div className="text-3xl font-black text-red-400">
-                        ${(advancedMetrics.avgLoss || 0).toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-2">
-                        {Math.abs(stats.average_loss_pips || 0).toFixed(1)} pips avg
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.4 }}
-                      className="bg-gradient-to-br from-amber-500/10 to-transparent backdrop-blur-sm border border-amber-500/30 rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-300">Max Loss Streak</h4>
-                        <AlertTriangle className="w-6 h-6 text-amber-400" />
-                      </div>
-                      <div className="text-3xl font-black text-amber-400">
-                        {advancedMetrics.maxLossStreak}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-2">
-                        Consecutive losses
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className="bg-gradient-to-br from-purple-500/10 to-transparent backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-300">Largest Win</h4>
-                        <Trophy className="w-6 h-6 text-purple-400" />
-                      </div>
-                      <div className="text-3xl font-black text-purple-400">
-                        ${(stats.largest_win_usd || 0).toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-2">
-                        Best single trade
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.6 }}
-                      className="bg-gradient-to-br from-orange-500/10 to-transparent backdrop-blur-sm border border-orange-500/30 rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-300">Largest Loss</h4>
-                        <XCircle className="w-6 h-6 text-orange-400" />
-                      </div>
-                      <div className="text-3xl font-black text-orange-400">
-                        ${Math.abs(stats.largest_loss_usd || 0).toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-2">
-                        Worst single trade
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.7 }}
-                      className="bg-gradient-to-br from-blue-500/10 to-transparent backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-300">Risk/Reward</h4>
-                        <Shield className="w-6 h-6 text-blue-400" />
-                      </div>
-                      <div className="text-3xl font-black text-blue-400">
-                        1:{((advancedMetrics.avgWin || 0) / (Math.abs(advancedMetrics.avgLoss) || 1)).toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-2">
-                        Average R:R ratio
-                      </div>
-                    </motion.div>
-                  </div>
                 )}
               </motion.div>
             )}

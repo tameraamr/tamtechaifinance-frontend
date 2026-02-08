@@ -1932,7 +1932,7 @@ export default function TradingJournal() {
                   </div>
                   
                   {/* Trade Cards Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
+                  <div className="grid grid-cols-5 gap-2">
                     {(() => {
                       // Calculate pagination
                       const totalPages = Math.ceil(filteredTrades.length / tradesPerPage);
@@ -1951,25 +1951,29 @@ export default function TradingJournal() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className={`relative group bg-white/5 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl md:hover:scale-105 md:hover:shadow-2xl cursor-pointer ${
+                            className={`relative group bg-white/5 backdrop-blur-sm border rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer ${
                               isWin 
-                                ? 'border-emerald-500/30 hover:border-emerald-400/50 md:hover:border-emerald-400/50 bg-gradient-to-br from-emerald-500/5 to-transparent' 
+                                ? 'border-emerald-500/30 hover:border-emerald-400/50 bg-gradient-to-br from-emerald-500/5 to-transparent' 
                                 : isLoss 
-                                ? 'border-red-500/30 hover:border-red-400/50 md:hover:border-red-400/50 bg-gradient-to-br from-red-500/5 to-transparent'
-                                : 'border-blue-500/30 hover:border-blue-400/50 md:hover:border-blue-400/50 bg-gradient-to-br from-blue-500/5 to-transparent'
+                                ? 'border-red-500/30 hover:border-red-400/50 bg-gradient-to-br from-red-500/5 to-transparent'
+                                : 'border-blue-500/30 hover:border-blue-400/50 bg-gradient-to-br from-blue-500/5 to-transparent'
                             }`}
-                            onClick={() => setExpandedTradeId(expandedTradeId === trade.id ? null : trade.id)}
+                            onClick={() => {
+                              setSelectedTrade(trade);
+                              initializeEditForm(trade);
+                              setShowEditModal(true);
+                            }}
                           >
                             {/* Card Header */}
-                            <div className={`px-4 py-3 border-b ${
+                            <div className={`px-3 py-2 border-b ${
                               isWin ? 'border-emerald-500/20 bg-emerald-500/10' : 
                               isLoss ? 'border-red-500/20 bg-red-500/10' :
                               'border-blue-500/20 bg-blue-500/10'
                             }`}>
                               <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
                                   <span className="text-xs font-mono text-gray-400">#{filteredTrades.length - (startIndex + index)}</span>
-                                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                  <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
                                     trade.order_type === 'Buy' 
                                       ? 'bg-emerald-500/20 text-emerald-400' 
                                       : 'bg-red-500/20 text-red-400'
@@ -1977,7 +1981,7 @@ export default function TradingJournal() {
                                     {trade.order_type}
                                   </span>
                                 </div>
-                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
                                   isOpen 
                                     ? 'bg-blue-500/20 text-blue-400' 
                                     : isWin 
@@ -1990,18 +1994,18 @@ export default function TradingJournal() {
                             </div>
 
                             {/* Card Content */}
-                            <div className="p-4 space-y-3">
+                            <div className="p-3 space-y-2">
                               {/* Pair and Asset Type */}
                               <div>
-                                <div className="font-bold text-white text-lg">{trade.pair_ticker}</div>
+                                <div className="font-bold text-white text-sm">{trade.pair_ticker}</div>
                                 <div className="text-xs text-gray-400">{trade.asset_type}</div>
                               </div>
 
                               {/* P/L and Pips */}
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <div className="text-sm text-gray-400">P/L</div>
-                                  <div className={`font-bold text-lg ${
+                                  <div className="text-xs text-gray-400">P/L</div>
+                                  <div className={`font-bold text-sm ${
                                     isWin ? 'text-emerald-400' : isLoss ? 'text-red-400' : 'text-blue-400'
                                   }`}>
                                     {trade.profit_loss_usd !== null && trade.profit_loss_usd !== undefined 
@@ -2011,8 +2015,8 @@ export default function TradingJournal() {
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <div className="text-sm text-gray-400">Pips</div>
-                                  <div className={`font-semibold ${
+                                  <div className="text-xs text-gray-400">Pips</div>
+                                  <div className={`font-semibold text-sm ${
                                     (trade.profit_loss_pips || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'
                                   }`}>
                                     {trade.profit_loss_pips !== null && trade.profit_loss_pips !== undefined 
@@ -2023,8 +2027,8 @@ export default function TradingJournal() {
                                 </div>
                               </div>
 
-                              {/* Screenshot */}
-                              <div className="aspect-video bg-black/20 rounded-lg overflow-hidden border border-white/10">
+                              {/* Mini Screenshot */}
+                              <div className="aspect-video bg-black/20 rounded border border-white/10 overflow-hidden">
                                 {trade.image_url ? (
                                   <div className="relative w-full h-full cursor-pointer" onClick={(e) => {
                                     e.stopPropagation();
@@ -2036,88 +2040,60 @@ export default function TradingJournal() {
                                       fill
                                       className="object-cover"
                                     />
-                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                      <Eye className="w-6 h-6 text-white" />
+                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <Eye className="w-4 h-4 text-white" />
                                     </div>
                                   </div>
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center">
-                                    <ImageIcon className="w-8 h-8 text-gray-500" />
+                                    <ImageIcon className="w-6 h-6 text-gray-500" />
                                   </div>
                                 )}
                               </div>
+                            </div>
 
-                              {/* Expandable Details Overlay */}
-                              {expandedTradeId === trade.id && (
-                                <motion.div
-                                  initial={{ opacity: 0, height: 0 }}
-                                  animate={{ opacity: 1, height: 'auto' }}
-                                  exit={{ opacity: 0, height: 0 }}
-                                  className="absolute inset-0 bg-black/95 backdrop-blur-sm p-4 overflow-y-auto z-10"
-                                >
-                                  <div className="space-y-3 text-sm">
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-gray-400">Date:</span>
-                                      <span className="text-white">{format(new Date(trade.entry_time), 'MMM dd, yyyy HH:mm')}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-gray-400">Entry:</span>
-                                      <span className="text-white font-mono">{trade.entry_price ? trade.entry_price.toFixed(5) : '-'}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-gray-400">Exit:</span>
-                                      <span className="text-white font-mono">{trade.exit_price ? trade.exit_price.toFixed(5) : '-'}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-gray-400">Lot Size:</span>
-                                      <span className="text-white">{trade.lot_size || '-'}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-gray-400">R:R:</span>
-                                      <span className="text-white">{trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-gray-400">Session:</span>
-                                      <span className="text-white">{trade.trading_session || '-'}</span>
-                                    </div>
-                                    {trade.notes && (
-                                      <div>
-                                        <span className="text-gray-400 block mb-1">Notes:</span>
-                                        <span className="text-white text-xs leading-relaxed">{trade.notes}</span>
-                                      </div>
-                                    )}
-                                    
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2 pt-2 border-t border-white/10">
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedTrade(trade);
-                                          initializeEditForm(trade);
-                                          setShowEditModal(true);
-                                          setExpandedTradeId(null);
-                                        }}
-                                        className="flex-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 hover:text-amber-300 px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1"
-                                      >
-                                        <Settings className="w-4 h-4" />
-                                        Edit
-                                      </button>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setTradeToDelete(trade.id);
-                                          setShowDeleteConfirm(true);
-                                          setExpandedTradeId(null);
-                                        }}
-                                        className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-1"
-                                      >
-                                        <XCircle className="w-4 h-4" />
-                                        Delete
-                                      </button>
-                                    </div>
+                            {/* Hover Details Tooltip */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
+                              <div className="bg-black/95 backdrop-blur-sm border border-white/20 rounded-lg p-3 shadow-2xl min-w-64">
+                                <div className="space-y-2 text-xs">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Date:</span>
+                                    <span className="text-white font-mono">{format(new Date(trade.entry_time), 'MMM dd, yyyy HH:mm')}</span>
                                   </div>
-                                </motion.div>
-                              )}
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Entry:</span>
+                                    <span className="text-white font-mono">{trade.entry_price ? trade.entry_price.toFixed(5) : '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Exit:</span>
+                                    <span className="text-white font-mono">{trade.exit_price ? trade.exit_price.toFixed(5) : '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Lot Size:</span>
+                                    <span className="text-white">{trade.lot_size || '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">R:R:</span>
+                                    <span className="text-white">{trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Session:</span>
+                                    <span className="text-white">{trade.trading_session || '-'}</span>
+                                  </div>
+                                  {trade.strategy && (
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Strategy:</span>
+                                      <span className="text-white">{trade.strategy}</span>
+                                    </div>
+                                  )}
+                                  {trade.notes && (
+                                    <div>
+                                      <span className="text-gray-400 block mb-1">Notes:</span>
+                                      <span className="text-white text-xs leading-relaxed">{trade.notes.length > 50 ? `${trade.notes.substring(0, 50)}...` : trade.notes}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           </motion.div>
                         );

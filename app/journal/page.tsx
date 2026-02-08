@@ -22,8 +22,6 @@ import ReactECharts from 'echarts-for-react';
 import * as echarts from 'echarts';
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, parseISO } from 'date-fns';
 
-const API_BASE = typeof window !== 'undefined' ? 'http://localhost:8000' : 'https://tamtechaifinance-backend-production.up.railway.app';
-
 const countriesList = [
   { code: "US", name: "United States" },
   { code: "CA", name: "Canada" },
@@ -396,7 +394,7 @@ export default function TradingJournal() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch(`${API_BASE}/users/me`, {
+      const res = await fetch(`/api/users/me`, {
         credentials: 'include' // httpOnly cookie sent automatically
       });
       
@@ -443,7 +441,7 @@ export default function TradingJournal() {
       return;
     }
 
-    const url = authMode === "login" ? `${API_BASE}/token` : `${API_BASE}/register`;
+    const url = authMode === "login" ? `/api/token` : `/api/register`;
 
     let body, headers: any = {};
 
@@ -504,7 +502,7 @@ export default function TradingJournal() {
       } else {
         setAuthError("");
         try {
-          const loginResponse = await fetch(`${API_BASE}/login`, {
+          const loginResponse = await fetch(`/api/login`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             credentials: "include",
@@ -548,7 +546,7 @@ export default function TradingJournal() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`${API_BASE}/journal/stats`, {
+      const res = await fetch(`/api/journal/stats`, {
         credentials: 'include'
       });
       if (res.ok) {
@@ -560,7 +558,7 @@ export default function TradingJournal() {
           setShowPremiumModal(true);
         }
       } else {
-        console.error(`Stats fetch failed with status ${res.status}: ${API_BASE}/journal/stats`);
+        console.error(`Stats fetch failed with status ${res.status}: /api/journal/stats`);
       }
     } catch (error) {
       console.error('Failed to fetch stats:', error);
@@ -570,14 +568,14 @@ export default function TradingJournal() {
   const fetchTrades = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/journal/trades?limit=1000`, {
+      const res = await fetch(`/api/journal/trades?limit=1000`, {
         credentials: 'include'
       });
       if (res.ok) {
         const data = await res.json();
         setTrades(data);
       } else {
-        console.error(`Trades fetch failed with status ${res.status}: ${API_BASE}/journal/trades`);
+        console.error(`Trades fetch failed with status ${res.status}: /api/journal/trades`);
       }
     } catch (error) {
       console.error('Failed to fetch trades:', error);
@@ -588,7 +586,7 @@ export default function TradingJournal() {
 
   const handleDeleteTrade = async (tradeId: number) => {
     try {
-      const res = await fetch(`${API_BASE}/journal/trades/${tradeId}`, {
+      const res = await fetch(`/api/journal/trades/${tradeId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -628,7 +626,7 @@ export default function TradingJournal() {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/journal/trades/${selectedTrade.id}`, {
+      const res = await fetch(`/api/journal/trades/${selectedTrade.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -4068,7 +4066,7 @@ export default function TradingJournal() {
                 <button
                   onClick={async () => {
                     try {
-                      const res = await fetch(`${API_BASE}/journal/trades/${tradeToDelete}`, {
+                      const res = await fetch(`/api/journal/trades/${tradeToDelete}`, {
                         method: 'DELETE',
                         credentials: 'include',
                       });
@@ -4172,7 +4170,7 @@ export default function TradingJournal() {
                 };
 
                 try {
-                  const res = await fetch(`${API_BASE}/journal/trades/${selectedTrade.id}`, {
+                  const res = await fetch(`/api/journal/trades/${selectedTrade.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -4626,7 +4624,7 @@ export default function TradingJournal() {
                                 const formDataUpload = new FormData();
                                 formDataUpload.append('file', file);
 
-                                const response = await fetch(`${API_BASE}/journal/upload-image`, {
+                                const response = await fetch(`/api/journal/upload-image`, {
                                   method: 'POST',
                                   body: formDataUpload,
                                   credentials: 'include'

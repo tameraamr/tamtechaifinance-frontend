@@ -63,8 +63,6 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_BASE = typeof window !== 'undefined' ? 'http://localhost:8000' : 'https://tamtechaifinance-backend-production.up.railway.app';
-
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -98,7 +96,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
         checklist: JSON.stringify(formData.checklist)
       };
 
-      const res = await fetch(`${API_BASE}/journal/trades`, {
+      const res = await fetch(`/api/journal/trades`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -507,7 +505,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                             const formDataUpload = new FormData();
                             formDataUpload.append('file', file);
 
-                            const response = await fetch(`${API_BASE}/journal/upload-image`, {
+                            const response = await fetch(`/api/journal/upload-image`, {
                               method: 'POST',
                               body: formDataUpload,
                               credentials: 'include'

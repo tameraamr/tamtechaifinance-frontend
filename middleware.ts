@@ -33,10 +33,10 @@ export function middleware(request: NextRequest) {
     const host = request.headers.get('host') || '';
     const protocol = request.headers.get('x-forwarded-proto') || 'http';
 
-    // Redirect www to non-www
-    if (host.startsWith('www.')) {
+    // Redirect non-www to www
+    if (!host.startsWith('www.')) {
       const newUrl = new URL(request.url);
-      newUrl.host = host.replace('www.', '');
+      newUrl.host = `www.${host}`;
       newUrl.protocol = 'https';
       return NextResponse.redirect(newUrl, { status: 301 });
     }

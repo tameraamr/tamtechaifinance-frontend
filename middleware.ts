@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const isBot = /Googlebot|Bingbot/i.test(userAgent);
 
   // Protected routes that require authentication
-  const protectedRoutes = ['/journal', '/dashboard', '/account', '/portfolio'];
+  const protectedRoutes = ['/dashboard', '/account', '/portfolio'];
 
   // Check if current path is protected
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));

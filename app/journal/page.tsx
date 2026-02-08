@@ -1995,7 +1995,7 @@ export default function TradingJournal() {
                                 <XCircle className="w-3 h-3" />
                               </button>
                             </div>
-                          >
+
                             {/* Card Header */}
                             <div className={`px-3 py-2 border-b ${
                               isWin ? 'border-emerald-500/20 bg-emerald-500/10' : 
@@ -2085,7 +2085,7 @@ export default function TradingJournal() {
                             </div>
 
                             {/* Hover Details Tooltip */}
-                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50">
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50">
                               <div className="bg-black/95 backdrop-blur-sm border border-white/20 rounded-lg p-4 shadow-2xl min-w-72 max-w-xs">
                                 <div className="space-y-3 text-sm">
                                   <div className="text-center border-b border-white/10 pb-2 mb-3">

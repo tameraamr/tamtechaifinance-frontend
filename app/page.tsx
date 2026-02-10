@@ -11,7 +11,6 @@ import toast from 'react-hot-toast';
 
 // Import components
 import NewsAnalysis from '../src/components/NewsAnalysis';
-import ComparisonBattle from '../src/components/ComparisonBattle';
 import Forecasts from '../src/components/Forecasts';
 import RecentAnalyses from '../src/components/RecentAnalyses';
 import RegretMachine from '../src/components/RegretMachine';
@@ -58,7 +57,7 @@ const countriesList = [
   { code: "US", name: "United States" },
   { code: "CA", name: "Canada" },
   { code: "MX", name: "Mexico" },
-  
+
   // Europe
   { code: "GB", name: "United Kingdom" },
   { code: "DE", name: "Germany" },
@@ -83,7 +82,7 @@ const countriesList = [
   { code: "UA", name: "Ukraine" },
   { code: "RU", name: "Russia" },
   { code: "TR", name: "Turkey" },
-  
+
   // Middle East & North Africa
   { code: "SA", name: "Saudi Arabia" },
   { code: "AE", name: "United Arab Emirates" },
@@ -103,7 +102,7 @@ const countriesList = [
   { code: "PS", name: "Palestine" },
   { code: "IL", name: "Israel" },
   { code: "IR", name: "Iran" },
-  
+
   // Asia-Pacific
   { code: "CN", name: "China" },
   { code: "JP", name: "Japan" },
@@ -121,7 +120,7 @@ const countriesList = [
   { code: "BD", name: "Bangladesh" },
   { code: "AU", name: "Australia" },
   { code: "NZ", name: "New Zealand" },
-  
+
   // South America
   { code: "BR", name: "Brazil" },
   { code: "AR", name: "Argentina" },
@@ -130,14 +129,14 @@ const countriesList = [
   { code: "PE", name: "Peru" },
   { code: "VE", name: "Venezuela" },
   { code: "EC", name: "Ecuador" },
-  
+
   // Africa
   { code: "ZA", name: "South Africa" },
   { code: "NG", name: "Nigeria" },
   { code: "KE", name: "Kenya" },
   { code: "ET", name: "Ethiopia" },
   { code: "GH", name: "Ghana" },
-  
+
   // Other
   { code: "OTHER", name: "Other" }
 ];
@@ -163,11 +162,6 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState<{ symbol: string; name: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
-  const [showCompareModal, setShowCompareModal] = useState(false);
-  const [compareTickers, setCompareTickers] = useState<{ t1: string; t2: string }>({ t1: "", t2: "" });
-  const [compareResult, setCompareResult] = useState<any | null>(null);
-  const [loadingCompare, setLoadingCompare] = useState<boolean>(false);
-  const [compareError, setCompareError] = useState<string | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [modalTrigger, setModalTrigger] = useState<'credits' | 'portfolio' | 'pdf' | 'feature'>('feature');
 
@@ -243,7 +237,7 @@ export default function Home() {
       if (metaDescription) {
         metaDescription.setAttribute('content', 'Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.');
       }
-      
+
       // Add canonical tag
       let canonical = document.querySelector('link[rel="canonical"]');
       if (!canonical) {
@@ -253,7 +247,7 @@ export default function Home() {
       }
       canonical.setAttribute('href', 'https://tamtech-finance.com');
     }
-    
+
     // Fetch next event for timer
     fetchNextEvent();
   }, [fetchRecentAnalyses]); // Added dependency
@@ -289,7 +283,7 @@ export default function Home() {
         const hours = totalHours;
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
+
         setCountdown(
           `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
         );
@@ -305,7 +299,7 @@ export default function Home() {
 
   // ✅ Debounced ticker search - Optimized to prevent excessive API calls
   const debouncedTicker = useDebounce(ticker, 300); // 300ms debounce
-  
+
   useEffect(() => {
     const getSuggestions = async () => {
       // 1. إذا النص قصير جداً، لا تبحث وأخفِ القائمة
@@ -357,14 +351,14 @@ export default function Home() {
   const handleAuth = async () => {
     setIsSubmittingAuth(true); // 👈 تفعيل التحميل
     setAuthError(""); // تنظيف الأخطاء السابقة
-    
+
     // Validate Terms acceptance for signup
     if (authMode === "signup" && !acceptTerms) {
       setAuthError("You must accept the Terms of Service and Privacy Policy to register.");
       setIsSubmittingAuth(false);
       return;
     }
-    
+
     const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
 
     let body, headers: any = {};
@@ -389,9 +383,9 @@ export default function Home() {
     }
 
     try {
-      const res = await fetch(url, { 
-        method: "POST", 
-        headers, 
+      const res = await fetch(url, {
+        method: "POST",
+        headers,
         body,
         credentials: 'include' // 🔥 Send/receive httpOnly cookies
       });
@@ -430,12 +424,12 @@ export default function Home() {
       if (authMode === "login") {
         // البيانات الآن تأتي جاهزة من السيرفر داخل data.user و data.credits
         // Token is now in httpOnly cookie, no need to pass it
-        await login(data.user, data.credits); 
+        await login(data.user, data.credits);
         setShowAuthModal(false);
       } else {
         // Registration successful - auto login and show verification banner
         setAuthError("");
-        
+
         // Auto-login the newly registered user
         try {
           const loginResponse = await fetch(`${BASE_URL}/login`, {
@@ -447,7 +441,7 @@ export default function Home() {
               password: password
             })
           });
-          
+
           if (loginResponse.ok) {
             const loginData = await loginResponse.json();
             await login(loginData.user, loginData.credits);
@@ -481,8 +475,9 @@ export default function Home() {
       // عرض السبب الحقيقي إذا كان متاحاً، وإلا عرض الرسالة العامة
       // سيظهر الآن خطأ "Failed to fetch" فقط إذا كانت المشكلة في الشبكة/CORS فعلاً
       setAuthError(err.message || "Cannot connect to server. Check your connection.");
-    } finally { setIsSubmittingAuth(false); // 👈 إيقاف التحميل في كل الحالات
-  }
+    } finally {
+      setIsSubmittingAuth(false); // 👈 إيقاف التحميل في كل الحالات
+    }
   };
 
   const fetchRandomStock = async () => {
@@ -582,21 +577,21 @@ export default function Home() {
           'Expires': '0'
         }
       });
-      
+
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
-      
+
       const data = await res.json();
       console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
-      
+
       if (!data.ticker) {
         throw new Error('No ticker returned from server');
       }
 
       // Wait before stopping animation
       await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
-      
+
       // Stop animation and set results
       if (rollerRef.current) clearInterval(rollerRef.current);
       setDisplaySymbol(data.ticker);
@@ -611,8 +606,8 @@ export default function Home() {
             setDisplayPrice(q.price);
           }
         })
-        .catch(() => {});
-      
+        .catch(() => { });
+
       // Set rolling to false last to ensure proper state update
       setSpinnerRolling(false);
     } catch (err) {
@@ -638,7 +633,7 @@ export default function Home() {
     setAuthError("");
 
     try {
-      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}?lang=${lang}`, { 
+      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}?lang=${lang}`, {
         credentials: 'include' // 🔒 httpOnly cookie sent automatically
       });
 
@@ -694,11 +689,11 @@ export default function Home() {
   };
 
   const confirmRandomAnalysis = () => {
-    if (randomTicker) { 
-      setTicker(randomTicker); 
+    if (randomTicker) {
+      setTicker(randomTicker);
       const tickerToAnalyze = randomTicker;
       setRandomTicker(null); // Close modal first
-      setTimeout(() => handleAnalyze(tickerToAnalyze), 100); 
+      setTimeout(() => handleAnalyze(tickerToAnalyze), 100);
     }
   };
 
@@ -728,7 +723,7 @@ export default function Home() {
     if (!isLoggedIn && guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; }
 
     try {
-      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { 
+      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, {
         credentials: 'include' // 🔒 httpOnly cookie sent automatically
       });
 
@@ -816,71 +811,6 @@ export default function Home() {
     }
   };
 
-  const handleCompare = async () => {
-    if (!compareTickers.t1 || !compareTickers.t2) return;
-
-    // 🔥 PRO CHECK: Stock Battle is Pro-only feature
-    if (!isPro && isLoggedIn) {
-      setShowCompareModal(false);
-      setModalTrigger('feature');
-      setShowUpgradeModal(true);
-      toast.error("⚔️ Stock Battle is a Pro-only feature! Upgrade to unlock unlimited battles.", {
-        duration: 5000,
-        icon: "🔒"
-      });
-      return;
-    }
-
-    setCompareError(null);
-    setAuthError("");
-
-    setLoadingCompare(true);
-    try {
-      const res = await fetch(`${BASE_URL}/analyze-compare/${compareTickers.t1}/${compareTickers.t2}?lang=${lang}`, {
-        credentials: 'include' // 🔒 httpOnly cookie sent automatically
-      });
-
-      // 👇 التعديل الجديد: إذا استنفد الزائر محاولات الـ IP (403)
-      if (res.status === 403) {
-        const errorData = await res.json();
-        // Check if it's an email verification error
-        if (errorData.detail && errorData.detail.includes("verify your email")) {
-          setShowCompareModal(false);
-          toast.error("📧 Please verify your email first! Check your inbox.", {
-            duration: 5000,
-            icon: "⚠️"
-          });
-          setLoadingCompare(false);
-          return;
-        }
-        // Otherwise it's IP exhaustion
-        setShowCompareModal(false); // إغلاق نافذة المقارنة
-        setAuthMode("signup");      // تحويل لنمط التسجيل
-        setShowAuthModal(true);     // إظهار شاشة التسجيل
-        setLoadingCompare(false);
-        return;
-      }
-
-      if (res.status === 402) {
-        setCompareError("Insufficient credits. You need 2 credits for this battle.");
-        return;
-      }
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Comparison failed");
-      }
-
-      const data = await res.json();
-      setCompareResult(data);
-      if (isLoggedIn) updateCredits(data.credits_left);
-
-    } catch (err: any) {
-      setCompareError(err.message || "Something went wrong. Check tickers.");
-    } finally {
-      setLoadingCompare(false);
-    }
-  };
   const handleRedeem = async () => {
     setAuthError("");
     if (!licenseKey.trim()) return;
@@ -911,7 +841,7 @@ export default function Home() {
       <Suspense fallback={null}>
         <SearchParamsHandler setShowAuthModal={setShowAuthModal} setShowPaywall={setShowPaywall} />
       </Suspense>
-      
+
       <Navbar guestTrials={guestTrials} setShowAuthModal={setShowAuthModal} setAuthMode={setAuthMode} />
 
       {/* 👇 Compact Trading Journal Showcase - Horizontal & Professional 👇 */}
@@ -987,181 +917,181 @@ export default function Home() {
             <div className="absolute -left-16 -top-16 w-48 h-48 bg-blue-600/10 blur-3xl" aria-hidden="true" />
             <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
 
-          <div className="relative z-10 flex flex-col items-center text-center mb-4">
-            <p className="text-xs uppercase tracking-[0.25em] text-[var(--accent-primary)] font-bold">⚡ {t.primaryEngine}</p>
-            <h2 className="text-lg md:text-2xl font-black text-[var(--text-primary)] mt-1">{t.aiStockAnalyzer}</h2>
-          </div>
-
-          <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
-            {authError && !showAuthModal && !showPaywall && (
-              <div className="w-full mb-3 bg-red-500/10 border border-red-500/50 p-3 rounded-lg flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="text-red-500 w-4 h-4 shrink-0" />
-                  <span className="text-red-200 text-xs font-bold">{authError}</span>
-                </div>
-                <button onClick={() => setAuthError("")} className="text-red-400 hover:text-white p-1">
-                  <XCircle className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-
-            <div className="w-full relative">
-              <div className="flex items-center bg-slate-950/70 border border-slate-800 rounded-xl overflow-hidden shadow-lg focus-within:border-blue-500/50 transition-all">
-                <input
-                  id="ticker-input"
-                  name="ticker"
-                  type="text"
-                  placeholder={t.searchPlaceholder}
-                  className="w-full bg-transparent p-3 text-sm outline-none uppercase font-mono text-white"
-                  value={ticker}
-                  autoComplete="disabled-by-admin"
-                  autoCorrect="off"
-                  spellCheck="false"
-                  autoCapitalize="off"
-                  onChange={(e) => {
-                    setTicker(e.target.value.toUpperCase());
-                    setUserTyping(true);
-                  }}
-                  onFocus={() => ticker.length >= 2 && setShowSuggestions(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAnalyze();
-                    }
-                  }}
-                />
-                <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-5 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
-                  {loading ? "..." : t.analyze}
-                </button>
-                <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch">
-                  <Dices className="w-5 h-5 text-purple-400" />
-                </button>
-              </div>
-              
-              {/* 👇 Recent Analyses - Right Under Search Bar 👇 */}
-              <div className="mt-4">
-                <RecentAnalyses
-                  recentAnalyses={recentAnalyses}
-                  lang={lang}
-                  setTicker={setTicker}
-                  handleAnalyze={handleAnalyze}
-                />
-              </div>
-              {/* X Recent Analyses X */}
-
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute left-0 right-0 mt-2 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10" style={{
-                  backgroundColor: 'var(--card-bg)',
-                  border: '1px solid var(--border-primary)'
-                }}>
-                  {suggestions.map((s, i) => (
-                    <button
-                      key={i}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setTicker(s.symbol);
-                        setShowSuggestions(false);
-                        handleAnalyze(s.symbol);
-                      }}
-                      className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-600/20 border-b border-slate-800/50 last:border-0 transition-all group/item text-left text-sm"
-                    >
-                      <div className="flex flex-col items-start">
-                        <span className="text-blue-400 font-bold">{s.symbol}</span>
-                        <span className="text-slate-500 text-[10px] truncate max-w-[200px]">{s.name}</span>
-                      </div>
-                      <Search size={12} className="text-slate-600 group-hover/item:text-blue-500" />
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="relative z-10 flex flex-col items-center text-center mb-4">
+              <p className="text-xs uppercase tracking-[0.25em] text-[var(--accent-primary)] font-bold">⚡ {t.primaryEngine}</p>
+              <h2 className="text-lg md:text-2xl font-black text-[var(--text-primary)] mt-1">{t.aiStockAnalyzer}</h2>
             </div>
 
-            {/* Loading State - Premium AI Analysis Animation */}
-            {loading && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="w-full mt-4"
-              >
-                <div className="bg-gradient-to-br from-blue-900/40 via-purple-900/40 to-blue-900/40 border-2 border-blue-500/30 rounded-2xl p-6 text-center relative overflow-hidden">
-                  {/* Animated background gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10 animate-pulse" />
-                  
-                  {/* Floating particles effect */}
-                  <div className="absolute inset-0 overflow-hidden">
-                    {[...Array(15)].map((_, i) => (
-                      <div
+            <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
+              {authError && !showAuthModal && !showPaywall && (
+                <div className="w-full mb-3 bg-red-500/10 border border-red-500/50 p-3 rounded-lg flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="text-red-500 w-4 h-4 shrink-0" />
+                    <span className="text-red-200 text-xs font-bold">{authError}</span>
+                  </div>
+                  <button onClick={() => setAuthError("")} className="text-red-400 hover:text-white p-1">
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              <div className="w-full relative">
+                <div className="flex items-center bg-slate-950/70 border border-slate-800 rounded-xl overflow-hidden shadow-lg focus-within:border-blue-500/50 transition-all">
+                  <input
+                    id="ticker-input"
+                    name="ticker"
+                    type="text"
+                    placeholder={t.searchPlaceholder}
+                    className="w-full bg-transparent p-3 text-sm outline-none uppercase font-mono text-white"
+                    value={ticker}
+                    autoComplete="disabled-by-admin"
+                    autoCorrect="off"
+                    spellCheck="false"
+                    autoCapitalize="off"
+                    onChange={(e) => {
+                      setTicker(e.target.value.toUpperCase());
+                      setUserTyping(true);
+                    }}
+                    onFocus={() => ticker.length >= 2 && setShowSuggestions(true)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAnalyze();
+                      }
+                    }}
+                  />
+                  <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-5 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
+                    {loading ? "..." : t.analyze}
+                  </button>
+                  <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch">
+                    <Dices className="w-5 h-5 text-purple-400" />
+                  </button>
+                </div>
+
+                {/* 👇 Recent Analyses - Right Under Search Bar 👇 */}
+                <div className="mt-4">
+                  <RecentAnalyses
+                    recentAnalyses={recentAnalyses}
+                    lang={lang}
+                    setTicker={setTicker}
+                    handleAnalyze={handleAnalyze}
+                  />
+                </div>
+                {/* X Recent Analyses X */}
+
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 mt-2 rounded-xl shadow-2xl overflow-hidden z-[9999] max-h-[240px] overflow-y-auto custom-scrollbar ring-1 ring-white/10" style={{
+                    backgroundColor: 'var(--card-bg)',
+                    border: '1px solid var(--border-primary)'
+                  }}>
+                    {suggestions.map((s, i) => (
+                      <button
                         key={i}
-                        className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          top: `${Math.random() * 100}%`,
-                          animationDelay: `${Math.random() * 3}s`,
-                          animationDuration: `${3 + Math.random() * 4}s`
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setTicker(s.symbol);
+                          setShowSuggestions(false);
+                          handleAnalyze(s.symbol);
                         }}
-                      />
+                        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-600/20 border-b border-slate-800/50 last:border-0 transition-all group/item text-left text-sm"
+                      >
+                        <div className="flex flex-col items-start">
+                          <span className="text-blue-400 font-bold">{s.symbol}</span>
+                          <span className="text-slate-500 text-[10px] truncate max-w-[200px]">{s.name}</span>
+                        </div>
+                        <Search size={12} className="text-slate-600 group-hover/item:text-blue-500" />
+                      </button>
                     ))}
                   </div>
+                )}
+              </div>
 
-                  <div className="relative z-10">
-                    {/* Main spinner */}
-                    <div className="flex justify-center mb-4">
-                      <div className="relative">
-                        <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
-                        <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
-                        <div className="absolute top-2 left-2 w-12 h-12 border-4 border-transparent border-t-purple-500 rounded-full animate-spin-slow"></div>
-                        <Brain className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-blue-400 animate-pulse" />
+              {/* Loading State - Premium AI Analysis Animation */}
+              {loading && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-full mt-4"
+                >
+                  <div className="bg-gradient-to-br from-blue-900/40 via-purple-900/40 to-blue-900/40 border-2 border-blue-500/30 rounded-2xl p-6 text-center relative overflow-hidden">
+                    {/* Animated background gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10 animate-pulse" />
+
+                    {/* Floating particles effect */}
+                    <div className="absolute inset-0 overflow-hidden">
+                      {[...Array(15)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
+                          style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 3}s`,
+                            animationDuration: `${3 + Math.random() * 4}s`
+                          }}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="relative z-10">
+                      {/* Main spinner */}
+                      <div className="flex justify-center mb-4">
+                        <div className="relative">
+                          <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
+                          <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+                          <div className="absolute top-2 left-2 w-12 h-12 border-4 border-transparent border-t-purple-500 rounded-full animate-spin-slow"></div>
+                          <Brain className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-blue-400 animate-pulse" />
+                        </div>
+                      </div>
+
+                      {/* Loading text */}
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                          AI Analysis in Progress
+                        </span>
+                      </h3>
+                      <p className="text-slate-300 text-xs mb-3">
+                        {ticker ? `Analyzing ${ticker} with advanced AI algorithms...` : 'Running deep analysis...'}
+                      </p>
+
+                      {/* Progress steps */}
+                      <div className="space-y-1.5 max-w-md mx-auto">
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="flex items-center gap-2 text-left text-xs"
+                        >
+                          <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                          <span className="text-slate-300">Fetching real-time market data</span>
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.6 }}
+                          className="flex items-center gap-2 text-left text-xs"
+                        >
+                          <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin shrink-0"></div>
+                          <span className="text-slate-300">Running AI financial models</span>
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 1.0 }}
+                          className="flex items-center gap-2 text-left text-xs opacity-50"
+                        >
+                          <div className="w-4 h-4 border-2 border-slate-600 rounded-full shrink-0"></div>
+                          <span className="text-slate-400">Generating comprehensive report</span>
+                        </motion.div>
                       </div>
                     </div>
-
-                    {/* Loading text */}
-                    <h3 className="text-xl font-bold text-white mb-2">
-                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                        AI Analysis in Progress
-                      </span>
-                    </h3>
-                    <p className="text-slate-300 text-xs mb-3">
-                      {ticker ? `Analyzing ${ticker} with advanced AI algorithms...` : 'Running deep analysis...'}
-                    </p>
-
-                    {/* Progress steps */}
-                    <div className="space-y-1.5 max-w-md mx-auto">
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="flex items-center gap-2 text-left text-xs"
-                      >
-                        <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
-                        <span className="text-slate-300">Fetching real-time market data</span>
-                      </motion.div>
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.6 }}
-                        className="flex items-center gap-2 text-left text-xs"
-                      >
-                        <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin shrink-0"></div>
-                        <span className="text-slate-300">Running AI financial models</span>
-                      </motion.div>
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 1.0 }}
-                        className="flex items-center gap-2 text-left text-xs opacity-50"
-                      >
-                        <div className="w-4 h-4 border-2 border-slate-600 rounded-full shrink-0"></div>
-                        <span className="text-slate-400">Generating comprehensive report</span>
-                      </motion.div>
-                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </div> {/* End of analyzer column */}
+                </motion.div>
+              )}
+            </div>
+          </div> {/* End of analyzer column */}
         </div> {/* End of 2-column grid */}
 
         {/* Article of the Day - Mobile only */}
@@ -1178,7 +1108,7 @@ export default function Home() {
           >
             <div className="absolute -right-12 -bottom-12 w-40 h-40 bg-purple-500/10 blur-3xl" aria-hidden="true" />
             <div className="absolute -left-10 -top-14 w-28 h-28 bg-blue-500/10 blur-3xl" aria-hidden="true" />
-            
+
             {/* Spinner Display */}
             {spinnerRolling || selectedSpinnerTicker ? (
               <div className="relative z-10 text-center">
@@ -1282,11 +1212,10 @@ export default function Home() {
               <div className="flex items-center justify-center gap-2 mb-2">
                 <span className="text-xs text-slate-400 uppercase tracking-wide">{t.nextEvent}</span>
                 {nextEvent && (
-                  <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                    nextEvent.importance === 'High' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                  <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${nextEvent.importance === 'High' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
                     nextEvent.importance === 'Medium' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                    'bg-green-500/20 text-green-300 border border-green-500/30'
-                  }`}>
+                      'bg-green-500/20 text-green-300 border border-green-500/30'
+                    }`}>
                     {nextEvent.importance === 'High' ? t.highImpact : nextEvent.importance === 'Medium' ? t.mediumImpact : t.lowImpact}
                   </div>
                 )}
@@ -1314,41 +1243,7 @@ export default function Home() {
             </Link>
           </motion.div>
 
-          {/* Stock Battle Card */}
-          <motion.div
-            whileHover={{ y: -6, scale: 1.01, boxShadow: "0 20px 50px -25px rgba(16,185,129,0.45)" }}
-            className="relative overflow-hidden bg-gradient-to-br from-emerald-900/30 via-slate-900 to-[#0f172a] border border-emerald-500/30 rounded-2xl p-5 flex flex-col gap-3 shadow-xl"
-          >
-            <div className="absolute -left-12 -bottom-12 w-32 h-32 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
-            <div className="absolute -right-10 -top-10 w-28 h-28 bg-emerald-500/5 blur-2xl" aria-hidden="true" />
-            
-            <div className="flex items-center justify-between relative z-10">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-300 font-bold">{t.battleArena}</p>
-                <h3 className="text-xl font-black text-white mt-1">{t.stockBattle}</h3>
-                <p className="text-xs text-emerald-200 font-semibold mt-1">{t.headToHeadVerdict}</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600/30 to-emerald-400/10 border border-emerald-400/40 flex items-center justify-center shadow-lg">
-                <TrendingUp className="text-emerald-100" size={24} />
-              </div>
-            </div>
-            
-            <p className="text-slate-200 text-sm leading-relaxed">{t.battleDesc}</p>
-            
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-              <span className="bg-emerald-600/25 border border-emerald-400/50 rounded-lg px-2.5 py-1.5 text-center text-emerald-100 hover:bg-emerald-600/35 transition">TSLA vs F</span>
-              <span className="bg-blue-600/25 border border-blue-400/50 rounded-lg px-2.5 py-1.5 text-center text-blue-100 hover:bg-blue-600/35 transition">Momentum</span>
-              <span className="bg-red-600/25 border border-red-400/50 rounded-lg px-2.5 py-1.5 text-center text-red-100 hover:bg-red-600/35 transition">Risk Notes</span>
-              <span className="bg-purple-600/25 border border-purple-400/50 rounded-lg px-2.5 py-1.5 text-center text-purple-100 hover:bg-purple-600/35 transition">AI Verdict</span>
-            </div>
-            
-            <button
-              onClick={() => setShowCompareModal(true)}
-              className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-900/30"
-            >
-              Launch Battle <ArrowRight size={16} />
-            </button>
-          </motion.div>
+
         </div> {/* End of 3-card grid */}
 
         {/* 👇 Regret Machine 👇 */}
@@ -1745,8 +1640,8 @@ export default function Home() {
                 {/* Terms & Conditions Checkbox - Only for Signup */}
                 {authMode === "signup" && (
                   <div className="flex items-start gap-3 p-4 bg-slate-900/50 border border-slate-700 rounded-lg animate-in slide-in-from-bottom-5">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       id="acceptTerms"
                       checked={acceptTerms}
                       onChange={(e) => setAcceptTerms(e.target.checked)}
@@ -1765,22 +1660,22 @@ export default function Home() {
                   </div>
                 )}
 
-<button 
-  onClick={handleAuth} 
-  disabled={isSubmittingAuth} // يمنع الضغط المتكرر أثناء إرسال البيانات
-  className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm text-white transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
->
-  {isSubmittingAuth ? (
-    <>
-      {/* 🔄 دائرة التحميل المتحركة */}
-      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-      <span>{authMode === "login" ? "Logging in..." : "Creating Account..."}</span>
-    </>
-  ) : (
-    // النص الذي يظهر في الحالة العادية
-    authMode === "login" ? "Login" : "Register"
-  )}
-</button>
+                <button
+                  onClick={handleAuth}
+                  disabled={isSubmittingAuth} // يمنع الضغط المتكرر أثناء إرسال البيانات
+                  className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold text-sm text-white transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmittingAuth ? (
+                    <>
+                      {/* 🔄 دائرة التحميل المتحركة */}
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>{authMode === "login" ? "Logging in..." : "Creating Account..."}</span>
+                    </>
+                  ) : (
+                    // النص الذي يظهر في الحالة العادية
+                    authMode === "login" ? "Login" : "Register"
+                  )}
+                </button>
 
                 <div className="text-center pt-2">
                   <button onClick={() => { setAuthMode(authMode === "login" ? "signup" : "login"); setAuthError(""); }} className="text-xs text-slate-400 hover:text-white transition-colors">
@@ -1794,22 +1689,8 @@ export default function Home() {
 
         {/* Old paywall removed - using UpgradeModal instead */}
 
-        <ComparisonBattle
-          showCompareModal={showCompareModal}
-          setShowCompareModal={setShowCompareModal}
-          compareTickers={compareTickers}
-          setCompareTickers={setCompareTickers}
-          compareResult={compareResult}
-          loadingCompare={loadingCompare}
-          compareError={compareError}
-          handleCompare={handleCompare}
-          isLoggedIn={isLoggedIn}
-          setAuthMode={setAuthMode}
-          setShowAuthModal={setShowAuthModal}
-        />
-
-        <UpgradeModal 
-          isOpen={showUpgradeModal} 
+        <UpgradeModal
+          isOpen={showUpgradeModal}
           onClose={() => setShowUpgradeModal(false)}
           trigger={modalTrigger}
         />

@@ -7,26 +7,8 @@ export function middleware(request: NextRequest) {
   // Allow Googlebot and Bingbot to bypass authentication for indexing
   const isBot = /Googlebot|Bingbot/i.test(userAgent);
 
-  // Protected routes that require authentication
-  const protectedRoutes = ['/dashboard', '/account', '/portfolio'];
-
-  // Check if current path is protected
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
-  if (isProtectedRoute && !isBot) {
-    // Check for auth token in cookies
-    const authToken = request.cookies.get('auth-token');
-
-    if (!authToken) {
-      // Prevent redirect loop: don't redirect if already on /login or /account
-      if (pathname !== '/login' && pathname !== '/account') {
-        const loginUrl = new URL('/login', request.url);
-        // Preserve the original URL for redirect after login
-        loginUrl.searchParams.set('redirect', pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-    }
-  }
+  // Note: Authentication is now handled by individual pages via auth modal
+  // Removed middleware redirect to /login as that route doesn't exist
 
   // Force HTTPS and www unification in production
   if (process.env.NODE_ENV === 'production') {

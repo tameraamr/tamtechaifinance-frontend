@@ -33,20 +33,20 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
           </Link>
 
           {/* Center: Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-3 lg:gap-4">
-            <Link href="/stock-analyzer" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">
+            <Link href="/stock-analyzer" className="text-xs font-medium px-3 py-2 rounded-lg transition-all duration-200 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]/50">
               {t.analyzer}
             </Link>
-            <Link href="/random-picker" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
+            <Link href="/random-picker" className="text-xs font-medium px-3 py-2 rounded-lg transition-all duration-200 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]/50">
               {t.randomPicker}
             </Link>
-            <Link href="/calendar" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
+            <Link href="/calendar" className="text-xs font-medium px-3 py-2 rounded-lg transition-all duration-200 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]/50">
               {t.calendar}
             </Link>
-            <Link href="/articles" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
+            <Link href="/articles" className="text-xs font-medium px-3 py-2 rounded-lg transition-all duration-200 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]/50">
               Articles
             </Link>
-            <Link href="/journal" className="text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--bg-accent)] border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--accent-primary)]">
+            <Link href="/journal" className="text-xs font-medium px-3 py-2 rounded-lg transition-all duration-200 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]/50">
               Journal
             </Link>
           </div>
@@ -56,17 +56,17 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             {/* Dashboard Button - Desktop */}
             {isLoggedIn && (
               <>
-                <Link 
-                  href="/dashboard" 
+                <Link
+                  href="/dashboard"
                   className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600/30 hover:to-blue-600/30 border border-purple-500/50 hover:border-purple-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-purple-300 hover:text-purple-200 text-xs font-bold"
                   title="View your dashboard"
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
                   <span className="hidden lg:inline">Dashboard</span>
                 </Link>
-                
-                <Link 
-                  href="/portfolio" 
+
+                <Link
+                  href="/portfolio"
                   className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-green-600/20 to-emerald-600/20 hover:from-green-600/30 hover:to-emerald-600/30 border border-green-500/50 hover:border-green-400/70 px-3 py-1.5 rounded-lg transition-all duration-300 text-green-300 hover:text-green-200 text-xs font-bold"
                   title="Track your portfolio"
                 >
@@ -75,7 +75,7 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
                 </Link>
               </>
             )}
-            
+
             {/* Credits/Pro Badge Display */}
             {isLoading ? (
               <div className="flex items-center gap-1 bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-bold text-[var(--text-muted)]">
@@ -126,7 +126,7 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
             ) : (
               <button
                 onClick={() => { setAuthMode?.("login"); setShowAuthModal?.(true); }}
-                className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-4 py-2 rounded-lg transition-all text-white text-xs font-bold"
+                className="hidden md:flex items-center gap-1.5 border border-[var(--border-primary)] hover:border-[var(--accent-primary)]/50 px-4 py-2 rounded-lg transition-all text-[var(--text-secondary)] hover:text-[var(--accent-primary)] text-xs font-medium"
               >
                 <User className="w-3.5 h-3.5" />
                 Login
@@ -148,55 +148,55 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-slate-800 py-4 space-y-3 animate-in slide-in-from-top duration-200">
             {/* Navigation Links */}
-            <Link 
-              href="/stock-analyzer" 
+            <Link
+              href="/stock-analyzer"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
+              className="block text-sm font-medium bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-4 py-3 rounded-xl transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              📊 {t.analyzer}
+              {t.analyzer}
             </Link>
-            <Link 
-              href="/random-picker" 
+            <Link
+              href="/random-picker"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
+              className="block text-sm font-medium bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-4 py-3 rounded-xl transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              🎲 {t.randomPicker}
+              {t.randomPicker}
             </Link>
-            <Link 
-              href="/calendar" 
+            <Link
+              href="/calendar"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
+              className="block text-sm font-medium bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-4 py-3 rounded-xl transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              📅 {t.calendar}
+              {t.calendar}
             </Link>
-            <Link 
-              href="/articles" 
+            <Link
+              href="/articles"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
+              className="block text-sm font-medium bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-4 py-3 rounded-xl transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              📰 Articles
+              Articles
             </Link>
-            <Link 
-              href="/journal" 
+            <Link
+              href="/journal"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-bold bg-slate-900 hover:bg-slate-800 border border-slate-700 px-4 py-3 rounded-lg transition-all text-slate-300 hover:text-blue-300"
+              className="block text-sm font-medium bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-primary)] px-4 py-3 rounded-xl transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              📓 Trading Journal
+              Trading Journal
             </Link>
 
             {/* Dashboard Link - Before Language Selector */}
             {isLoggedIn && (
               <>
-                <Link 
-                  href="/dashboard" 
+                <Link
+                  href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
                   className="block text-sm font-bold bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 px-4 py-3 rounded-lg transition-all text-purple-300 flex items-center gap-2"
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   📊 Dashboard
                 </Link>
-                <Link 
-                  href="/portfolio" 
+                <Link
+                  href="/portfolio"
                   onClick={() => setMobileMenuOpen(false)}
                   className="block text-sm font-bold bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/50 px-4 py-3 rounded-lg transition-all text-green-300 flex items-center gap-2"
                 >
@@ -217,7 +217,7 @@ export default function Navbar({ guestTrials, setShowAuthModal, setAuthMode }: N
                 <span className="animate-pulse">Loading...</span>
               </div>
             ) : isLoggedIn ? (
-              <button 
+              <button
                 onClick={() => {
                   logout();
                   setMobileMenuOpen(false);

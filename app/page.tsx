@@ -852,13 +852,10 @@ export default function Home() {
         className="mb-8"
       >
         <motion.div
-          whileHover={{ y: -2, scale: 1.01 }}
+          whileHover={{ y: -2 }}
           onClick={() => router.push('/journal')}
-          className="relative overflow-hidden bg-gradient-to-r from-slate-900/90 via-slate-800/70 to-slate-900/90 backdrop-blur-xl border border-amber-500/30 rounded-2xl p-6 shadow-xl cursor-pointer hover:border-amber-500/50 transition-all duration-300 mx-4 md:mx-6 mt-6"
+          className="relative overflow-hidden bg-[var(--bg-secondary)] border border-[var(--border-primary)] border-l-4 border-l-amber-500/60 rounded-xl p-6 shadow-lg cursor-pointer hover:border-[var(--border-secondary)] transition-all duration-200 mx-4 md:mx-6 mt-6"
         >
-          {/* Subtle background effects */}
-          <div className="absolute -left-10 -top-10 w-20 h-20 bg-amber-500/5 blur-2xl rounded-full" />
-          <div className="absolute -right-10 -bottom-10 w-20 h-20 bg-yellow-500/5 blur-2xl rounded-full" />
 
           <div className="relative z-10 flex items-center justify-between gap-6">
             {/* Left side - Title and description */}
@@ -868,8 +865,8 @@ export default function Home() {
                   <BarChart3 className="text-amber-100" size={20} />
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-amber-300 font-bold">📓 Trading Journal</p>
-                  <h3 className="text-lg font-black text-white">Master Every Trade</h3>
+                  <p className="text-xs uppercase tracking-[0.15em] text-amber-400/80 font-semibold">Trading Journal</p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">Master Every Trade</h3>
                 </div>
               </div>
               <p className="text-xs text-amber-200/80 font-medium">Track, analyze & improve your trading performance</p>
@@ -893,7 +890,7 @@ export default function Home() {
 
             {/* Right side - CTA */}
             <div className="flex-shrink-0">
-              <div className="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-amber-500/30 flex items-center gap-2">
+              <div className="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
                 Open Journal
                 <ArrowRight className="w-4 h-4" />
@@ -913,13 +910,11 @@ export default function Home() {
           </div>
 
           {/* Compact AI Analyzer - Center Column */}
-          <div id="main-analyzer" className="relative z-20 overflow-visible bg-gradient-to-br from-[var(--bg-secondary)] via-[var(--bg-secondary)] to-[var(--accent-primary)]/20 border border-[var(--border-primary)] rounded-2xl p-4 md:p-6 shadow-2xl">
-            <div className="absolute -left-16 -top-16 w-48 h-48 bg-blue-600/10 blur-3xl" aria-hidden="true" />
-            <div className="absolute -right-16 bottom-0 w-48 h-48 bg-emerald-500/10 blur-3xl" aria-hidden="true" />
+          <div id="main-analyzer" className="relative z-20 overflow-visible bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-xl p-4 md:p-6 shadow-lg">
 
             <div className="relative z-10 flex flex-col items-center text-center mb-4">
-              <p className="text-xs uppercase tracking-[0.25em] text-[var(--accent-primary)] font-bold">⚡ {t.primaryEngine}</p>
-              <h2 className="text-lg md:text-2xl font-black text-[var(--text-primary)] mt-1">{t.aiStockAnalyzer}</h2>
+              <p className="text-xs uppercase tracking-[0.2em] text-[var(--accent-primary)]/80 font-semibold">{t.primaryEngine}</p>
+              <h2 className="text-lg md:text-2xl font-bold text-[var(--text-primary)] mt-1">{t.aiStockAnalyzer}</h2>
             </div>
 
             <div className="flex flex-col items-center w-full max-w-2xl mx-auto px-2 relative z-10">
@@ -960,7 +955,7 @@ export default function Home() {
                       }
                     }}
                   />
-                  <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-5 font-black text-xs disabled:opacity-50 transition-colors shrink-0 self-stretch flex items-center justify-center text-white">
+                  <button onClick={() => handleAnalyze()} disabled={loading} className="bg-[var(--accent-primary)] hover:opacity-90 px-4 md:px-5 font-semibold text-xs disabled:opacity-50 transition-all shrink-0 self-stretch flex items-center justify-center text-white rounded-r-xl">
                     {loading ? "..." : t.analyze}
                   </button>
                   <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch">
@@ -1021,7 +1016,7 @@ export default function Home() {
 
                     {/* Floating particles effect */}
                     <div className="absolute inset-0 overflow-hidden">
-                      {[...Array(15)].map((_, i) => (
+                      {[...Array(5)].map((_, i) => (
                         <div
                           key={i}
                           className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
@@ -1103,11 +1098,9 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10 items-start">
           {/* Random Stock Picker Card */}
           <motion.div
-            whileHover={{ y: -6, scale: 1.02, boxShadow: "0 25px 60px -25px rgba(168,85,247,0.55)" }}
-            className="relative overflow-hidden bg-gradient-to-br from-purple-900/40 via-slate-900 to-blue-900/30 border border-purple-500/40 ring-1 ring-purple-500/20 rounded-2xl p-5 flex flex-col gap-3 shadow-2xl"
+            whileHover={{ y: -2 }}
+            className="relative overflow-hidden bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-xl p-5 flex flex-col gap-3 shadow-lg"
           >
-            <div className="absolute -right-12 -bottom-12 w-40 h-40 bg-purple-500/10 blur-3xl" aria-hidden="true" />
-            <div className="absolute -left-10 -top-14 w-28 h-28 bg-blue-500/10 blur-3xl" aria-hidden="true" />
 
             {/* Spinner Display */}
             {spinnerRolling || selectedSpinnerTicker ? (
@@ -1139,11 +1132,11 @@ export default function Home() {
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-purple-200 font-bold">{t.instantPick}</p>
-                    <h3 className="text-xl font-black text-white mt-1">{t.stockSpinner}</h3>
+                    <p className="text-xs uppercase tracking-[0.15em] text-purple-300/80 font-semibold">{t.instantPick}</p>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">{t.stockSpinner}</h3>
                     <p className="text-xs text-purple-200 font-semibold mt-1">{t.luckyDipAnalysis}</p>
                   </div>
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-600/40 to-blue-600/20 border border-purple-400/50 flex items-center justify-center shadow-lg shadow-purple-900/30">
+                  <div className="w-12 h-12 rounded-xl bg-purple-600/15 border border-purple-400/30 flex items-center justify-center">
                     <Dices className="text-purple-100" size={24} />
                   </div>
                 </div>
@@ -1161,7 +1154,7 @@ export default function Home() {
             <button
               onClick={spinTicker}
               disabled={spinnerRolling}
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-purple-900/30 disabled:opacity-70 relative z-10"
+              className="inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition shadow-sm disabled:opacity-70 relative z-10"
             >
               <Dices className="text-white" size={16} />
               {spinnerRolling ? t.spinning : t.spinAgain}
@@ -1185,24 +1178,20 @@ export default function Home() {
 
           {/* Global Event Timer Card - The Pulse */}
           <motion.div
-            whileHover={{ y: -8, scale: 1.02, boxShadow: "0 25px 80px -20px rgba(0,255,255,0.4)" }}
-            className="relative overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-xl border border-cyan-500/30 rounded-3xl p-6 flex flex-col gap-4 shadow-2xl ring-1 ring-cyan-500/20"
+            whileHover={{ y: -2 }}
+            className="relative overflow-hidden bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-xl p-6 flex flex-col gap-4 shadow-lg"
           >
-            {/* Command Center Glow Effects */}
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/5 via-transparent to-blue-600/5 blur-3xl" aria-hidden="true" />
-            <div className="absolute -right-16 -top-16 w-40 h-40 bg-cyan-500/8 blur-3xl rounded-full" aria-hidden="true" />
-            <div className="absolute -left-16 -bottom-16 w-36 h-36 bg-blue-500/6 blur-3xl rounded-full" aria-hidden="true" />
 
             {/* Terminal-style header */}
             <div className="flex items-center justify-between relative z-10">
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-cyan-400" />
                 <div>
-                  <p className="text-xs uppercase tracking-[0.15em] text-cyan-300 font-bold">{t.commandCenter}</p>
-                  <h3 className="text-lg font-black text-white mt-0.5">{t.globalEventTimer}</h3>
+                  <p className="text-xs uppercase tracking-[0.15em] text-cyan-300/80 font-semibold">{t.commandCenter}</p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mt-0.5">{t.globalEventTimer}</h3>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-cyan-400/10 border border-cyan-400/30 flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 rounded-xl bg-cyan-600/15 border border-cyan-400/25 flex items-center justify-center">
                 <Timer className="text-cyan-100" size={20} />
               </div>
             </div>
@@ -1237,7 +1226,7 @@ export default function Home() {
               </div>
             </div>
 
-            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold px-5 py-3 rounded-xl text-sm transition-all duration-200 shadow-lg shadow-cyan-900/30 hover:shadow-cyan-900/50 relative z-10">
+            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all duration-200 relative z-10">
               <Calendar className="w-4 h-4" />
               {t.viewFullCalendar}
             </Link>
@@ -1269,20 +1258,15 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-400/10 to-transparent -translate-x-full animate-shimmer opacity-0" style={{ animation: 'shimmer 3s infinite' }} />
 
           {/* Glassmorphism Card */}
-          <div className="relative bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl overflow-hidden">
-            {/* Background Effects */}
-            <div className="absolute -left-20 -top-20 w-40 h-40 bg-blue-500/10 blur-3xl rounded-full" />
-            <div className="absolute -right-20 -bottom-20 w-40 h-40 bg-purple-500/10 blur-3xl rounded-full" />
+          <div className="relative bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-xl p-8 shadow-lg overflow-hidden">
 
             {/* PRO FEATURE Banner */}
             <div className="relative z-20 mb-6">
-              <div className="bg-gradient-to-r from-amber-500/20 to-yellow-600/20 border border-amber-400/40 rounded-2xl p-4 backdrop-blur-sm shadow-[0_0_30px_rgba(251,191,36,0.15)]">
-                <div className="flex items-center justify-center gap-3">
-                  <span className="text-2xl">👑</span>
-                  <span className="text-amber-300 font-bold text-sm uppercase tracking-wide">
+              <div className="bg-amber-500/10 border border-amber-400/25 rounded-xl p-3 backdrop-blur-sm">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-amber-300/80 font-semibold text-xs uppercase tracking-wide">
                     PRO EXCLUSIVE: Advanced Portfolio Analytics
                   </span>
-                  <span className="text-2xl">👑</span>
                 </div>
               </div>
             </div>
@@ -1290,9 +1274,8 @@ export default function Home() {
             {/* Pro Status Badge */}
             {!user?.is_pro && (
               <div className="absolute top-4 right-4 z-30">
-                <div className="bg-slate-800/90 backdrop-blur-sm border border-amber-500/30 rounded-lg px-3 py-1.5 shadow-lg">
-                  <span className="text-xs text-amber-400 font-bold flex items-center gap-1.5">
-                    <span className="text-base">👑</span>
+                <div className="bg-[var(--bg-tertiary)] border border-amber-500/20 rounded-lg px-3 py-1.5">
+                  <span className="text-xs text-amber-400 font-semibold flex items-center gap-1.5">
                     PRO Feature
                   </span>
                 </div>
@@ -1304,8 +1287,8 @@ export default function Home() {
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-blue-300 font-bold">💼 Portfolio Tracker</p>
-                  <h3 className="text-2xl font-black text-white mt-1">Professional Portfolio</h3>
+                  <p className="text-xs uppercase tracking-[0.15em] text-blue-300/80 font-semibold">Portfolio Tracker</p>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-1">Professional Portfolio</h3>
                   <p className="text-xs text-blue-200 font-semibold mt-1">Real-time tracking & analytics</p>
                 </div>
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600/30 to-purple-600/10 border border-blue-400/40 flex items-center justify-center shadow-lg">
@@ -1462,7 +1445,7 @@ export default function Home() {
               <div className="text-center">
                 <Link
                   href={user?.is_pro ? "/portfolio" : "/pricing"}
-                  className="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-black px-8 py-3 rounded-xl text-sm transition-all shadow-lg shadow-amber-500/30 mb-4 inline-block flex items-center gap-2 w-fit mx-auto"
+                  className="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all mb-4 inline-block flex items-center gap-2 w-fit mx-auto"
                 >
                   {user?.is_pro ? (
                     <>
@@ -1471,8 +1454,7 @@ export default function Home() {
                     </>
                   ) : (
                     <>
-                      <span className="text-base">👑</span>
-                      Upgrade to PRO - $9.99/mo
+                      PRO — Upgrade to PRO — $9.99/mo
                     </>
                   )}
                 </Link>

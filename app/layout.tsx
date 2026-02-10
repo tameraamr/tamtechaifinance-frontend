@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from '../src/context/AuthContext';
 import { TranslationProvider } from '../src/context/TranslationContext';
@@ -22,12 +22,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   // SEO الأساسي
   title: "Tamtech Finance | AI-Powered Stock Analysis & Insights",
   description: "Get institutional-grade market intelligence and financial health scores powered by advanced AI. Master the stock market with Tamtech Finance.",
   keywords: ["Stock Analysis", "AI Finance", "Market Intelligence", "Investment Tool", "Tamtech Finance", "Financial Analysis AI"],
-  
+
   // الأيقونة - Using logo.png for maximum compatibility
   icons: {
     icon: [
@@ -40,7 +46,7 @@ export const metadata: Metadata = {
 
   // كود التحقق من جوجل سيرتش كونسول (من الملف الذي رفعته)
   verification: {
-    google: "google7c0ae22a0cf47c58", 
+    google: "google7c0ae22a0cf47c58",
   },
 
   // لظهور الرابط بشكل احترافي عند المشاركة (Social Media)
@@ -132,7 +138,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo.PNG" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
         <NextThemeProvider
           attribute="class"

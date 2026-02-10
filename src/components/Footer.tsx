@@ -5,7 +5,7 @@ import { useTranslation } from "../context/TranslationContext";
 
 export default function Footer() {
   const { t } = useTranslation();
-  
+
   return (
     <footer className="border-t border-[var(--border-primary)] pt-12 pb-8 w-full" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -52,26 +52,26 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl shadow-inner">
-            <h4 className="text-white font-bold mb-2 text-sm flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-green-500" />
+          <div className="p-5 rounded-xl border" style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-primary)' }}>
+            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <ShieldCheck className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
               {t.footerEnterpriseGrade}
             </h4>
-            <p className="text-slate-500 text-[11px] leading-relaxed">
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               {t.footerEncryptionDesc}
             </p>
           </div>
         </div>
 
-        <div className="border-t border-slate-800/50 pt-8 mt-8 text-center">
+        <div className="border-t pt-8 mt-8 text-center" style={{ borderColor: 'var(--border-primary)' }}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4">
-            <div className="text-slate-600 text-[10px] font-mono tracking-widest uppercase">
+            <div className="text-[10px] font-mono tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
               {t.footerCopyright}
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/5 border border-green-500/20">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full" style={{ backgroundColor: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)' }}>
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                <span className="text-[10px] font-semibold text-green-500/80 uppercase tracking-tight">
                   {t.footerSystemStatus}
                 </span>
               </div>

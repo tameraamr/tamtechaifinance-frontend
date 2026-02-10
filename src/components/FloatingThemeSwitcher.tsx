@@ -177,23 +177,17 @@ export default function FloatingThemeSwitcher() {
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={`
-          group relative w-14 h-14 rounded-full
+          group relative w-12 h-12 rounded-full
           backdrop-blur-md bg-slate-900/80 border border-slate-700/50
           hover:bg-slate-800/90 hover:border-slate-600/70
-          transition-all duration-300 shadow-lg hover:shadow-xl
+          transition-all duration-200 shadow-md hover:shadow-lg
           flex items-center justify-center
           ${isExpanded ? 'rotate-45' : ''}
         `}
       >
-        {/* Glow effect */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Palette className="w-5 h-5 text-white relative z-10 transition-transform duration-200" />
 
-        <Palette className="w-6 h-6 text-white relative z-10 transition-transform duration-300" />
 
-        {/* Pulse animation when expanded */}
-        {isExpanded && (
-          <div className="absolute inset-0 rounded-full border-2 border-blue-400/50 animate-ping" />
-        )}
       </button>
     </div>
   );

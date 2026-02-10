@@ -1244,11 +1244,12 @@ export default function Home() {
           </motion.div>
 
 
+          {/* 👇 Compact Regret Machine - Added to Grid 👇 */}
+          <RegretMachine lang={lang} compact={true} />
+          {/* X Compact Regret Machine X */}
         </div> {/* End of 3-card grid */}
 
-        {/* 👇 Regret Machine 👇 */}
-        <RegretMachine lang={lang} />
-        {/* X Regret Machine X */}
+        {/* 👇 Regret Machine REMOVED from here 👇 */}
 
         {/* 👇 Master Universe Heatmap 👇 */}
         <MasterUniverseHeatmap

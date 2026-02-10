@@ -1,15 +1,16 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, TrendingUp, Share2, X, MessageCircle, Send, Instagram, Search } from 'lucide-react';
+import { DollarSign, TrendingUp, Share2, X, MessageCircle, Send, Instagram, Search, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '../context/TranslationContext';
 import toast from 'react-hot-toast';
 
 interface RegretMachineProps {
   lang: string;
+  compact?: boolean;
 }
 
-export default function RegretMachine({ lang }: RegretMachineProps) {
+export default function RegretMachine({ lang, compact = false }: RegretMachineProps) {
   const { t } = useTranslation();
   const [stockSymbol, setStockSymbol] = useState('');
   const [purchasePrice, setPurchasePrice] = useState('');
@@ -21,7 +22,7 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
   const [isRTL] = useState(lang === 'ar' || lang === 'he');
 
   // Autocomplete states
-  const [suggestions, setSuggestions] = useState<Array<{symbol: string, name: string}>>([]);
+  const [suggestions, setSuggestions] = useState<Array<{ symbol: string, name: string }>>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [debouncedSymbol, setDebouncedSymbol] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -70,6 +71,8 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
 
   // Fetch suggestions when debounced symbol changes
   useEffect(() => {
+    // If compact, we might want to skip suggestions or keep them small.
+    // For now we keep them but ensure the dropdown is positioned well.
     const fetchSuggestions = async () => {
       if (debouncedSymbol.length < 2) {
         setSuggestions([]);
@@ -98,7 +101,7 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (inputRef.current && !inputRef.current.contains(event.target as Node) &&
-          suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
     };
@@ -131,11 +134,11 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
   const calculateRegret = async () => {
     if (!stockSymbol || !purchasePrice || !purchaseDate) {
       toast.error(lang === 'ar' ? 'يرجى ملء جميع الحقول' :
-                 lang === 'es' ? 'Por favor complete todos los campos' :
-                 lang === 'he' ? 'אנא מלא את כל השדות' :
-                 lang === 'ru' ? 'Пожалуйста, заполните все поля' :
-                 lang === 'it' ? 'Si prega di compilare tutti i campi' :
-                 'Please fill in all fields');
+        lang === 'es' ? 'Por favor complete todos los campos' :
+          lang === 'he' ? 'אנא מלא את כל השדות' :
+            lang === 'ru' ? 'Пожалуйста, заполните все поля' :
+              lang === 'it' ? 'Si prega di compilare tutti i campi' :
+                'Please fill in all fields');
       return;
     }
 
@@ -151,18 +154,18 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
 
       setRegretAmount(regret);
 
-      // Screen shake animation for large losses
-      if (regret < -500) {
+      // Screen shake animation for large losses (only in full mode)
+      if (!compact && regret < -500) {
         document.body.classList.add('shake');
         setTimeout(() => document.body.classList.remove('shake'), 500);
       }
     } catch (error) {
       toast.error(lang === 'ar' ? 'فشل في جلب سعر السهم' :
-                 lang === 'es' ? 'Error al obtener el precio de la acción' :
-                 lang === 'he' ? 'שגיאה בקבלת מחיר המניה' :
-                 lang === 'ru' ? 'Ошибка получения цены акции' :
-                 lang === 'it' ? 'Errore nel recupero del prezzo dell\'azione' :
-                 'Failed to fetch stock price');
+        lang === 'es' ? 'Error al obtener el precio de la acción' :
+          lang === 'he' ? 'שגיאה בקבלת מחיר המניה' :
+            lang === 'ru' ? 'Ошибка получения цены акции' :
+              lang === 'it' ? 'Errore nel recupero del prezzo dell\'azione' :
+                'Failed to fetch stock price');
     } finally {
       setIsCalculating(false);
     }
@@ -173,7 +176,7 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
 
     const amount = Math.abs(regretAmount).toFixed(2);
     const stock = stockSymbol.toUpperCase();
-    
+
     // Get the appropriate share text based on language
     let text = '';
     switch (lang) {
@@ -202,11 +205,11 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
         // Instagram doesn't support direct sharing, so copy to clipboard
         navigator.clipboard.writeText(`${text.replace('${amount}', `$${amount}`).replace('{stock}', stock)} https://tamtechaifinance.com`);
         toast.success(lang === 'ar' ? 'تم نسخ النص إلى الحافظة' :
-                     lang === 'es' ? 'Texto copiado al portapapeles' :
-                     lang === 'he' ? 'הטקסט הועתק ללוח' :
-                     lang === 'ru' ? 'Текст скопирован в буфер обмена' :
-                     lang === 'it' ? 'Testo copiato negli appunti' :
-                     'Text copied to clipboard');
+          lang === 'es' ? 'Texto copiado al portapapeles' :
+            lang === 'he' ? 'הטקסט הועתק ללוח' :
+              lang === 'ru' ? 'Текст скопирован в буфер обмена' :
+                lang === 'it' ? 'Testo copiato negli appunti' :
+                  'Text copied to clipboard');
         return;
     }
 
@@ -224,6 +227,118 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
     setShowSuggestions(false);
   };
 
+  // ---------------------------------------------------------------------------
+  // RENDER: Compact Mode
+  // ---------------------------------------------------------------------------
+  if (compact) {
+    return (
+      <motion.div
+        whileHover={{ y: -6, scale: 1.02, boxShadow: "0 25px 60px -25px rgba(244,63,94,0.55)" }}
+        className="relative overflow-hidden bg-gradient-to-br from-rose-900/40 via-slate-900 to-red-900/30 border border-rose-500/40 ring-1 ring-rose-500/20 rounded-2xl p-5 flex flex-col gap-3 shadow-2xl h-full"
+      >
+        <div className="absolute -right-12 -bottom-12 w-40 h-40 bg-rose-500/10 blur-3xl" aria-hidden="true" />
+        <div className="absolute -left-10 -top-14 w-28 h-28 bg-red-500/10 blur-3xl" aria-hidden="true" />
+
+        {/* Header */}
+        <div className="relative z-10 flex items-center justify-between mb-1">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-rose-200 font-bold">FOMO Calculator</p>
+            <h3 className="text-xl font-black text-white mt-1">Regret Machine</h3>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-600/40 to-red-600/20 border border-rose-400/50 flex items-center justify-center shadow-lg shadow-rose-900/30">
+            <AlertTriangle className="text-rose-100" size={20} />
+          </div>
+        </div>
+
+        {/* Content: Form or Result */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center">
+          {regretAmount !== null ? (
+            // Result View (Compact)
+            <div className="text-center animate-in fade-in zoom-in duration-300">
+              <div className="mb-2">
+                <span className="text-slate-400 text-xs uppercase tracking-wider">
+                  You missed out on
+                </span>
+                <div className={`text-3xl font-black mt-1 ${regretAmount >= 0 ? 'text-green-400' : 'text-rose-400'}`}>
+                  ${Math.abs(regretAmount).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                </div>
+                {currentPrice && (
+                  <p className="text-slate-400 text-[10px] mt-1">
+                    Current Price: ${currentPrice.toFixed(2)}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={resetForm}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold py-2 rounded-lg transition"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => setShowShareTray(!showShareTray)}
+                  className="bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold py-2 px-3 rounded-lg transition flex items-center justify-center"
+                >
+                  <Share2 size={14} />
+                </button>
+              </div>
+
+              {showShareTray && (
+                <div className="flex gap-2 justify-center mt-3 bg-slate-800/50 rounded-lg p-2 animate-in slide-in-from-top-2">
+                  <button onClick={() => shareOnSocial('x')} className="p-2 hover:bg-white/10 rounded-full" title="Share on X">
+                    <X size={16} className="text-white" />
+                  </button>
+                  <button onClick={() => shareOnSocial('whatsapp')} className="p-2 hover:bg-white/10 rounded-full" title="Share on WhatsApp">
+                    <MessageCircle size={16} className="text-green-400" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Form View (Compact)
+            <div className="space-y-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={stockSymbol}
+                  onChange={(e) => setStockSymbol(e.target.value.toUpperCase())}
+                  placeholder="Ticker (e.g. BTC)"
+                  className="w-full bg-slate-900/50 border border-rose-500/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none uppercase"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  value={purchasePrice}
+                  onChange={(e) => setPurchasePrice(e.target.value)}
+                  placeholder="Price ($)"
+                  className="w-full bg-slate-900/50 border border-rose-500/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none"
+                />
+                <input
+                  type="date"
+                  value={purchaseDate}
+                  onChange={(e) => setPurchaseDate(e.target.value)}
+                  className="w-full bg-slate-900/50 border border-rose-500/30 rounded-lg px-3 py-2 text-[10px] text-white focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none"
+                />
+              </div>
+              <button
+                onClick={calculateRegret}
+                disabled={isCalculating}
+                className="w-full mt-2 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold py-2 rounded-lg text-sm shadow-lg shadow-rose-900/20 transition-all disabled:opacity-50"
+              >
+                {isCalculating ? 'Calculating...' : 'Calculate Regret'}
+              </button>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // RENDER: Full Mode (Original)
+  // ---------------------------------------------------------------------------
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -338,11 +453,11 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   {lang === 'ar' ? 'جاري الحساب...' :
-                   lang === 'es' ? 'Calculando...' :
-                   lang === 'he' ? 'מחשב...' :
-                   lang === 'ru' ? 'Расчет...' :
-                   lang === 'it' ? 'Calcolando...' :
-                   'Calculating...'}
+                    lang === 'es' ? 'Calculando...' :
+                      lang === 'he' ? 'מחשב...' :
+                        lang === 'ru' ? 'Расчет...' :
+                          lang === 'it' ? 'Calcolando...' :
+                            'Calculating...'}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
@@ -366,11 +481,11 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
                 onClick={resetForm}
                 className="absolute top-2 right-2 p-2 rounded-full bg-slate-700/50 hover:bg-slate-600/50 text-slate-400 hover:text-white transition-all duration-200 z-10"
                 title={lang === 'ar' ? 'إغلاق' :
-                       lang === 'es' ? 'Cerrar' :
-                       lang === 'he' ? 'סגור' :
-                       lang === 'ru' ? 'Закрыть' :
-                       lang === 'it' ? 'Chiudi' :
-                       'Close'}
+                  lang === 'es' ? 'Cerrar' :
+                    lang === 'he' ? 'סגור' :
+                      lang === 'ru' ? 'Закрыть' :
+                        lang === 'it' ? 'Chiudi' :
+                          'Close'}
               >
                 <X size={16} />
               </button>
@@ -391,9 +506,8 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  className={`text-4xl font-bold mb-4 ${
-                    regretAmount >= 0 ? 'text-green-400' : 'text-red-400'
-                  }`}
+                  className={`text-4xl font-bold mb-4 ${regretAmount >= 0 ? 'text-green-400' : 'text-red-400'
+                    }`}
                 >
                   ${Math.abs(regretAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </motion.div>
@@ -401,11 +515,11 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
                 {currentPrice && (
                   <p className="text-slate-400 text-sm">
                     {lang === 'ar' ? `السعر الحالي: $${currentPrice.toFixed(2)}` :
-                     lang === 'es' ? `Precio actual: $${currentPrice.toFixed(2)}` :
-                     lang === 'he' ? `המחיר הנוכחי: $${currentPrice.toFixed(2)}` :
-                     lang === 'ru' ? `Текущая цена: $${currentPrice.toFixed(2)}` :
-                     lang === 'it' ? `Prezzo attuale: $${currentPrice.toFixed(2)}` :
-                     `Current price: $${currentPrice.toFixed(2)}`}
+                      lang === 'es' ? `Precio actual: $${currentPrice.toFixed(2)}` :
+                        lang === 'he' ? `המחיר הנוכחי: $${currentPrice.toFixed(2)}` :
+                          lang === 'ru' ? `Текущая цена: $${currentPrice.toFixed(2)}` :
+                            lang === 'it' ? `Prezzo attuale: $${currentPrice.toFixed(2)}` :
+                              `Current price: $${currentPrice.toFixed(2)}`}
                   </p>
                 )}
 
@@ -429,11 +543,11 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
                   >
                     <Share2 size={18} />
                     {lang === 'ar' ? 'مشاركة' :
-                     lang === 'es' ? 'Compartir' :
-                     lang === 'he' ? 'שתף' :
-                     lang === 'ru' ? 'Поделиться' :
-                     lang === 'it' ? 'Condividi' :
-                     'Share'}
+                      lang === 'es' ? 'Compartir' :
+                        lang === 'he' ? 'שתף' :
+                          lang === 'ru' ? 'Поделиться' :
+                            lang === 'it' ? 'Condividi' :
+                              'Share'}
                   </motion.button>
                 </div>
               </div>
@@ -450,11 +564,11 @@ export default function RegretMachine({ lang }: RegretMachineProps) {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">
                   {lang === 'ar' ? 'مشاركة النتيجة' :
-                   lang === 'es' ? 'Compartir resultado' :
-                   lang === 'he' ? 'שתף תוצאה' :
-                   lang === 'ru' ? 'Поделиться результатом' :
-                   lang === 'it' ? 'Condividi risultato' :
-                   'Share Your Result'}
+                    lang === 'es' ? 'Compartir resultado' :
+                      lang === 'he' ? 'שתף תוצאה' :
+                        lang === 'ru' ? 'Поделиться результатом' :
+                          lang === 'it' ? 'Condividi risultato' :
+                            'Share Your Result'}
                 </h3>
                 <button
                   onClick={() => setShowShareTray(false)}

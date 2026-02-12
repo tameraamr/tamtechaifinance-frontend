@@ -206,12 +206,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Initialize auth state on app load
   useEffect(() => {
     const initializeAuth = async () => {
+      // 🚀 Optimization: specific check to avoid 401 errors for guests
+      const hasSessionHint = typeof window !== 'undefined' && localStorage.getItem('tamtech_session_hint') === 'true';
+
+      if (!hasSessionHint) {
+        // Guest mode - don't even try to fetch
+        setUser(null);
+        setCredits(0);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        return;
+      }
+
       const userData = await fetchUserData();
       if (userData) {
         setUser(userData.user);
         setCredits(userData.credits);
         setIsAuthenticated(true);
       } else {
+        // Session invalid (cookies expired/cleared but hint remained)
+        if (typeof window !== 'undefined') localStorage.removeItem('tamtech_session_hint');
         setUser(null);
         setCredits(0);
         setIsAuthenticated(false);
@@ -230,6 +244,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(completeUserData.user);
         setCredits(completeUserData.credits);
         setIsAuthenticated(true);
+        if (typeof window !== 'undefined') localStorage.setItem('tamtech_session_hint', 'true');
 
         // 🎉 Show welcome toast for fresh login
         const userName = completeUserData.user.first_name
@@ -245,6 +260,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(userData);
     setCredits(userCredits);
     setIsAuthenticated(true);
+    if (typeof window !== 'undefined') localStorage.setItem('tamtech_session_hint', 'true');
 
     // 🎉 Show welcome toast for fresh login
     const userName = userData.first_name
@@ -264,8 +280,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Logout request failed:', error);
     }
-    
+
     // Clear frontend state regardless of backend response
+    if (typeof window !== 'undefined') localStorage.removeItem('tamtech_session_hint');
     setUser(null);
     setCredits(0);
     setIsAuthenticated(false);
@@ -320,10 +337,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const data = await response.json();
-      
+
       // Refresh user data to get updated Pro status
       await refreshUserData();
-      
+
       toast.success('🎉 Pro subscription activated! You now have unlimited access.');
       return true;
     } catch (error) {

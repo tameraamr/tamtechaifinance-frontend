@@ -973,10 +973,10 @@ export default function Home() {
                       }
                     }}
                   />
-                  <button onClick={() => handleAnalyze()} disabled={loading} className="bg-[var(--accent-primary)] hover:opacity-90 px-4 md:px-5 font-semibold text-xs disabled:opacity-50 transition-all shrink-0 self-stretch flex items-center justify-center text-white rounded-r-xl">
+                  <button onClick={() => handleAnalyze()} disabled={loading} className="bg-blue-600 hover:bg-blue-500 px-4 md:px-5 font-semibold text-xs disabled:opacity-50 transition-all shrink-0 self-stretch flex items-center justify-center text-white rounded-r-xl">
                     {loading ? "..." : t.analyze}
                   </button>
-                  <button onClick={fetchRandomStock} className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch">
+                  <button onClick={fetchRandomStock} aria-label="Random Stock Picker" className="bg-slate-800/80 border-l border-slate-700 px-3 flex items-center justify-center hover:bg-slate-700 transition-all self-stretch">
                     <Dices className="w-5 h-5 text-purple-400" />
                   </button>
                 </div>

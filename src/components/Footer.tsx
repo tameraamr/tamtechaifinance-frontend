@@ -21,13 +21,13 @@ export default function Footer() {
               {t.footerDescription}
             </p>
             <div className="flex gap-4">
-              <a href="#" className="p-2 rounded-lg transition-all" style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
+              <a href="#" className="p-2 rounded-lg transition-all" style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'} aria-label="Visit our Twitter">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="p-2 rounded-lg transition-all" style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
+              <a href="#" className="p-2 rounded-lg transition-all" style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'} aria-label="Visit our LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="https://t.me/tamtechAi" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg transition-all" style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
+              <a href="https://t.me/tamtechAi" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg transition-all" style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'} aria-label="Join our Telegram">
                 <Send className="w-5 h-5" />
               </a>
             </div>

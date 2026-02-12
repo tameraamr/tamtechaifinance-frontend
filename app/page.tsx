@@ -3,7 +3,7 @@ import { useState, useEffect, Suspense, FormEvent, useRef, useCallback } from "r
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  TrendingUp, TrendingDown, DollarSign, PieChart, ShieldCheck, Target,
+  TrendingUp, TrendingDown, DollarSign, BookOpen, PieChart, ShieldCheck, Target,
   CheckCircle, XCircle, BarChart3, Search, Zap, AlertTriangle, Trophy, Lightbulb, Lock, Star, LogOut, User, Calendar, Brain, HelpCircle, Activity, Twitter, Linkedin, Send, Download, Dices, ArrowRight, Newspaper, Timer
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -908,7 +908,7 @@ export default function Home() {
 
             {/* Right side - CTA */}
             <div className="flex-shrink-0">
-              <div className="bg-amber-600 hover:bg-amber-500 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2">
+              <div className="bg-amber-700 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md cursor-pointer">
                 <BarChart3 className="w-4 h-4" />
                 Open Journal
                 <ArrowRight className="w-4 h-4" />
@@ -1246,7 +1246,7 @@ export default function Home() {
               </div>
             </div>
 
-            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all duration-200 relative z-10">
+            <Link href="/calendar" className="inline-flex items-center justify-center gap-2 bg-cyan-700 hover:bg-cyan-600 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-all duration-200 relative z-10">
               <Calendar className="w-4 h-4" />
               {t.viewFullCalendar}
             </Link>

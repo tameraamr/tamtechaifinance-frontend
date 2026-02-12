@@ -34,7 +34,7 @@ export default function RecentAnalyses({ recentAnalyses, lang, setTicker, handle
     <div className="mt-0.1 flex flex-wrap items-center justify-center gap-2 px-4 animate-in fade-in duration-500">
       <div className="flex items-center gap-1.5 mr-2">
         <History className="w-3 h-3 text-slate-500" />
-        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
           {lang === 'ar' ? 'محدث حديثاً:' : 'Recently Updated:'}
         </span>
       </div>
@@ -53,24 +53,23 @@ export default function RecentAnalyses({ recentAnalyses, lang, setTicker, handle
             {item.is_fresh && (
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             )}
-            
+
             <span className="relative text-[11px] font-black text-slate-300 group-hover:text-blue-400 transition-colors uppercase font-mono">
               {item.ticker}
             </span>
-            
+
             {/* Verdict indicator dot */}
-            <div className={`relative w-1.5 h-1.5 rounded-full ${
-                item.verdict?.includes('BUY') ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]' :
+            <div className={`relative w-1.5 h-1.5 rounded-full ${item.verdict?.includes('BUY') ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]' :
                 item.verdict?.includes('SELL') ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]' :
-                'bg-yellow-500 shadow-[0_0_5px_rgba(245,158,11,0.5)]'
-              }`} 
+                  'bg-yellow-500 shadow-[0_0_5px_rgba(245,158,11,0.5)]'
+              }`}
             />
-            
+
             {/* Fresh sparkle badge - show if analyzed within last 5 minutes */}
             {item.is_fresh && (
               <Sparkles className="relative w-3 h-3 text-emerald-400 animate-pulse" />
             )}
-            
+
             {/* Age indicator - show minutes ago */}
             <span className="relative text-[9px] text-slate-500 font-mono">
               {item.age_minutes < 60 ? `${item.age_minutes}m` : item.time}

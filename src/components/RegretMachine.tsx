@@ -305,6 +305,7 @@ export default function RegretMachine({ lang, compact = false }: RegretMachinePr
                   onChange={(e) => setStockSymbol(e.target.value.toUpperCase())}
                   placeholder="Ticker (e.g. BTC)"
                   className="w-full bg-slate-900/50 border border-rose-500/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none uppercase"
+                  aria-label="Stock Symbol"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -314,12 +315,14 @@ export default function RegretMachine({ lang, compact = false }: RegretMachinePr
                   onChange={(e) => setPurchasePrice(e.target.value)}
                   placeholder="Price ($)"
                   className="w-full bg-slate-900/50 border border-rose-500/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none"
+                  aria-label="Purchase Price"
                 />
                 <input
                   type="date"
                   value={purchaseDate}
                   onChange={(e) => setPurchaseDate(e.target.value)}
                   className="w-full bg-slate-900/50 border border-rose-500/30 rounded-lg px-3 py-2 text-[10px] text-white focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none"
+                  aria-label="Purchase Date"
                 />
               </div>
               <button
@@ -381,6 +384,7 @@ export default function RegretMachine({ lang, compact = false }: RegretMachinePr
                   onFocus={() => stockSymbol.length >= 2 && suggestions.length > 0 && setShowSuggestions(true)}
                   placeholder="AAPL"
                   className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-slate-400 pr-10"
+                  aria-label="Stock Symbol"
                 />
                 <Search className="absolute right-3 top-3.5 h-5 w-5 text-slate-400" />
               </div>
@@ -424,6 +428,7 @@ export default function RegretMachine({ lang, compact = false }: RegretMachinePr
                 placeholder="150.00"
                 step="0.01"
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-slate-400"
+                aria-label="Purchase Price"
               />
             </div>
 
@@ -436,6 +441,7 @@ export default function RegretMachine({ lang, compact = false }: RegretMachinePr
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
                 className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
+                aria-label="Purchase Date"
               />
             </div>
           </div>

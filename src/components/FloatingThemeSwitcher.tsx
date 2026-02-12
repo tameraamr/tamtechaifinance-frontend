@@ -184,6 +184,7 @@ export default function FloatingThemeSwitcher() {
           flex items-center justify-center
           ${isExpanded ? 'rotate-45' : ''}
         `}
+        aria-label="Toggle theme switcher"
       >
         <Palette className="w-5 h-5 text-white relative z-10 transition-transform duration-200" />
 

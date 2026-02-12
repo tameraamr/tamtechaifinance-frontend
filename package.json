@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "not dead"
+  ],
   "dependencies": {
     "@next/third-parties": "^16.1.4",
     "@tiptap/extension-character-count": "^3.19.0",

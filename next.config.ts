@@ -7,6 +7,21 @@ const nextConfig: NextConfig = {
   // Enable trailing slash for SEO consistency
   trailingSlash: true,
 
+  // Enable compression
+  compress: true,
+
+  // Optimize heavy packages
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'framer-motion',
+      'echarts-for-react',
+      'date-fns',
+      'lodash',
+    ],
+  },
+
   // Allow images from external domains (ImgBB)
   images: {
     remotePatterns: [

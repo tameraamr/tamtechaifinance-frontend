@@ -7,6 +7,24 @@ const nextConfig: NextConfig = {
   // Enable trailing slash for SEO consistency
   trailingSlash: true,
 
+  // Allow images from external domains (ImgBB)
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ibb.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.imgbb.com',
+      },
+    ],
+  },
+
   // 🔥 Proxy backend through same domain to make cookies first-party
   async rewrites() {
     // In development (localhost), use local backend

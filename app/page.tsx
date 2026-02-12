@@ -10,11 +10,29 @@ import { motion } from "framer-motion";
 import toast from 'react-hot-toast';
 
 // Import components
-import NewsAnalysis from '../src/components/NewsAnalysis';
-import Forecasts from '../src/components/Forecasts';
-import RecentAnalyses from '../src/components/RecentAnalyses';
-import RegretMachine from '../src/components/RegretMachine';
-import MasterUniverseHeatmap from '../src/components/MasterUniverseHeatmap';
+// Dynamic Imports for Code Splitting
+import dynamic from 'next/dynamic';
+
+const NewsAnalysis = dynamic(() => import('../src/components/NewsAnalysis'), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-slate-800/50 rounded-xl" />,
+  ssr: false
+});
+const Forecasts = dynamic(() => import('../src/components/Forecasts'), {
+  loading: () => <div className="h-64 w-full animate-pulse bg-slate-800/50 rounded-xl" />,
+  ssr: false
+});
+const RecentAnalyses = dynamic(() => import('../src/components/RecentAnalyses'), {
+  loading: () => <div className="h-20 w-full animate-pulse bg-slate-800/50 rounded-xl" />
+});
+const RegretMachine = dynamic(() => import('../src/components/RegretMachine'), {
+  loading: () => <div className="h-64 w-full animate-pulse bg-slate-800/50 rounded-xl" />,
+  ssr: false
+});
+const MasterUniverseHeatmap = dynamic(() => import('../src/components/MasterUniverseHeatmap'), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-slate-800/50 rounded-xl" />,
+  ssr: false
+});
+
 import ArticleOfTheDay from '../src/components/ArticleOfTheDay';
 import Navbar from '../src/components/Navbar';
 import Footer from '../src/components/Footer';
@@ -965,12 +983,14 @@ export default function Home() {
 
                 {/* 👇 Recent Analyses - Right Under Search Bar 👇 */}
                 <div className="mt-4">
-                  <RecentAnalyses
-                    recentAnalyses={recentAnalyses}
-                    lang={lang}
-                    setTicker={setTicker}
-                    handleAnalyze={handleAnalyze}
-                  />
+                  <Suspense fallback={<div className="h-24 w-full animate-pulse bg-slate-800/50 rounded-xl" />}>
+                    <RecentAnalyses
+                      recentAnalyses={recentAnalyses}
+                      lang={lang}
+                      setTicker={setTicker}
+                      handleAnalyze={handleAnalyze}
+                    />
+                  </Suspense>
                 </div>
                 {/* X Recent Analyses X */}
 
@@ -1234,17 +1254,21 @@ export default function Home() {
 
 
           {/* 👇 Compact Regret Machine - Added to Grid 👇 */}
-          <RegretMachine lang={lang} compact={true} />
+          <Suspense fallback={<div className="h-full w-full animate-pulse bg-slate-800/50 rounded-xl" />}>
+            <RegretMachine lang={lang} compact={true} />
+          </Suspense>
           {/* X Compact Regret Machine X */}
         </div> {/* End of 3-card grid */}
 
         {/* 👇 Regret Machine REMOVED from here 👇 */}
 
         {/* 👇 Master Universe Heatmap 👇 */}
-        <MasterUniverseHeatmap
-          lang={lang}
-          t={t}
-        />
+        <Suspense fallback={<div className="h-96 w-full animate-pulse bg-slate-800/50 rounded-xl mb-8" />}>
+          <MasterUniverseHeatmap
+            lang={lang}
+            t={t}
+          />
+        </Suspense>
         {/* X Master Universe Heatmap X */}
 
         {/* 👇 Portfolio Teaser - High-End Advertisement 👇 */}

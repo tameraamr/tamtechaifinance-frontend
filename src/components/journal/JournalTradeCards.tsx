@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { TrendingUp, TrendingDown, Clock, Tag, Eye, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Clock, Tag, Eye, X, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 
 interface Trade {
     id: number; pair_ticker: string; asset_type: string; order_type: string;
@@ -17,9 +17,10 @@ interface Trade {
 interface Props {
     trades: Trade[];
     onEdit: (trade: Trade) => void;
+    onDelete: (id: number) => void;
 }
 
-export default function JournalTradeCards({ trades, onEdit }: Props) {
+export default function JournalTradeCards({ trades, onEdit, onDelete }: Props) {
     const [previewTrade, setPreviewTrade] = useState<Trade | null>(null);
     const [page, setPage] = useState(0);
     const perPage = 6;
@@ -69,6 +70,10 @@ export default function JournalTradeCards({ trades, onEdit }: Props) {
                                     <button onClick={(e) => { e.stopPropagation(); setPreviewTrade(trade); }}
                                         className="absolute top-2 right-2 p-1.5 bg-black/50 rounded-lg text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Eye className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); onDelete(trade.id); }}
+                                        className="absolute top-2 right-10 p-1.5 bg-black/50 rounded-lg text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                     {/* Overlay info */}
                                     <div className="absolute bottom-2 left-3 right-3">
@@ -144,7 +149,7 @@ export default function JournalTradeCards({ trades, onEdit }: Props) {
                                 {/* Status badge */}
                                 <div className="flex items-center justify-between">
                                     <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${trade.status === 'open' ? 'bg-blue-500/10 text-blue-400' :
-                                            isWin(trade) ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                                        isWin(trade) ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
                                         }`}>
                                         {trade.status === 'open' ? 'OPEN' : isWin(trade) ? 'WIN' : 'LOSS'}
                                     </span>

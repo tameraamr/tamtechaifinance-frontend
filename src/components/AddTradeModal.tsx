@@ -251,6 +251,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                 ].map((section) => (
                   <button
                     key={section.id}
+                    type="button"
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${activeSection === section.id
                       ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
@@ -266,6 +267,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
               {/* Strategy Templates Quick Access */}
               <div className="mt-8 pt-6 border-t border-gray-700/50">
                 <button
+                  type="button"
                   onClick={() => setShowTemplates(!showTemplates)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${showTemplates
                     ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
@@ -288,6 +290,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                       {STRATEGY_TEMPLATES.map((strategy) => (
                         <button
                           key={strategy.name}
+                          type="button"
                           onClick={() => {
                             setFormData(prev => ({ ...prev, strategy: strategy.name }));
                             setActiveSection('strategy');
@@ -346,14 +349,27 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                         onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
                         className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                       >
-                        <option value="forex">Forex</option>
-                        <option value="crypto">Crypto</option>
-                        <option value="stocks">Stocks</option>
-                        <option value="commodities">Commodities</option>
-                        <option value="indices">Indices</option>
+                        <option value="Forex">Forex</option>
+                        <option value="Crypto">Crypto</option>
+                        <option value="Indices">Indices</option>
+                        <option value="Stocks">Stocks</option>
+                        <option value="Commodities">Commodities</option>
                       </select>
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Trading Session</label>
+                      <select
+                        value={formData.trading_session}
+                        onChange={(e) => setFormData({ ...formData, trading_session: e.target.value })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                      >
+                        <option value="London">London</option>
+                        <option value="New York">New York</option>
+                        <option value="Sydney">Sydney</option>
+                        <option value="Tokyo">Tokyo</option>
+                      </select>
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Order Type</label>
                       <select

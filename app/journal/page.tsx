@@ -398,7 +398,7 @@ export default function TradingJournal() {
                     </div>
                     <ChartCard title="Strategy Comparison"><StrategyComparison trades={trades} /></ChartCard>
                     <JournalDashboardWidgets trades={trades} stats={stats} metrics={advancedMetrics} />
-                    <JournalTradeCards trades={trades} onEdit={openEditModal} />
+                    <JournalTradeCards trades={trades} onEdit={openEditModal} onDelete={confirmDelete} />
                   </div>
                 )}
 
@@ -425,7 +425,7 @@ export default function TradingJournal() {
 
                 {/* TRADES VIEW */}
                 {activeView === 'trades' && (
-                  <JournalTradeTable trades={trades} onEdit={openEditModal} onDelete={confirmDelete} onExportCSV={handleExportCSV} />
+                  <JournalTradeCards trades={trades} onEdit={openEditModal} onDelete={confirmDelete} />
                 )}
               </div>
             ) : (

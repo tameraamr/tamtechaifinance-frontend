@@ -259,6 +259,9 @@ export default function JournalTradeTable({ trades, onEdit, onDelete, onExportCS
                                 <th className="px-3 py-2.5 text-left text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">Pips</th>
                                 <th className="px-3 py-2.5 text-left text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider cursor-pointer select-none" onClick={() => handleSort('risk_reward_ratio')}>
                                     <span className="flex items-center gap-1">R:R <SortIcon col="risk_reward_ratio" /></span></th>
+                                <th className="px-3 py-2.5 text-left text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">Strategy</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">Trend</th>
+                                <th className="px-3 py-2.5 text-left text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">Notes</th>
                                 <th className="px-3 py-2.5 text-left text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider cursor-pointer select-none" onClick={() => handleSort('status')}>
                                     <span className="flex items-center gap-1">Status <SortIcon col="status" /></span></th>
                                 <th className="px-3 py-2.5 text-left text-xs font-medium text-[var(--text-tertiary)] uppercase tracking-wider">Actions</th>
@@ -303,9 +306,24 @@ export default function JournalTradeTable({ trades, onEdit, onDelete, onExportCS
                                     <td className="px-3 py-2.5 whitespace-nowrap text-sm text-[var(--text-secondary)]">
                                         {trade.risk_reward_ratio ? `1:${trade.risk_reward_ratio.toFixed(1)}` : '-'}
                                     </td>
+                                    <td className="px-3 py-2.5 whitespace-nowrap text-sm text-[var(--text-secondary)]">
+                                        {trade.strategy || '-'}
+                                    </td>
+                                    <td className="px-3 py-2.5 whitespace-nowrap">
+                                        {trade.market_trend && (
+                                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${trade.market_trend === 'Bullish' ? 'bg-green-500/10 text-green-400' :
+                                                trade.market_trend === 'Bearish' ? 'bg-red-500/10 text-red-400' : 'bg-gray-500/10 text-gray-400'
+                                                }`}>
+                                                {trade.market_trend}
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-3 py-2.5 whitespace-nowrap text-sm text-[var(--text-secondary)] max-w-[150px] truncate" title={trade.notes?.replace(/<[^>]*>/g, '') || ''}>
+                                        {trade.notes ? trade.notes.replace(/<[^>]*>/g, '').substring(0, 20) + (trade.notes.length > 20 ? '...' : '') : '-'}
+                                    </td>
                                     <td className="px-3 py-2.5 whitespace-nowrap">
                                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${trade.status === 'open' ? 'bg-blue-500/10 text-blue-400' :
-                                                (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                                            (trade.profit_loss_usd || 0) > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
                                             }`}>
                                             {trade.status === 'open' ? 'OPEN' : (trade.profit_loss_usd || 0) > 0 ? 'WIN' : 'LOSS'}
                                         </span>
@@ -323,7 +341,7 @@ export default function JournalTradeTable({ trades, onEdit, onDelete, onExportCS
                                 </tr>
                             ))}
                             {filteredTrades.length === 0 && (
-                                <tr><td colSpan={11} className="px-3 py-12 text-center text-sm text-[var(--text-tertiary)]">No trades match your filters</td></tr>
+                                <tr><td colSpan={14} className="px-3 py-12 text-center text-sm text-[var(--text-tertiary)]">No trades match your filters</td></tr>
                             )}
                         </tbody>
                     </table>

@@ -226,11 +226,10 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                   key={id}
                   type="button"
                   onClick={() => setActiveSection(id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                    activeSection === id
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      : 'text-gray-300 hover:bg-gray-700/50'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeSection === id
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    : 'text-gray-300 hover:bg-gray-700/50'
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span className="hidden sm:inline">{label}</span>
@@ -254,11 +253,10 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                     key={id}
                     type="button"
                     onClick={() => setActiveSection(id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                      activeSection === id
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'text-gray-300 hover:bg-gray-700/50'
-                    }`}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${activeSection === id
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      : 'text-gray-300 hover:bg-gray-700/50'
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span className="text-sm font-medium">{label}</span>
@@ -319,386 +317,368 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
 
 
 
-            {/* Pre-Trade Checklist */}
-            {activeSection === 'basics' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Asset Pair/Ticker</label>
-                    <input
-                      type="text"
-                      value={formData.pair_ticker}
-                      onChange={(e) => setFormData({ ...formData, pair_ticker: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="EURUSD, AAPL, BTC..."
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Asset Type</label>
-                    <select
-                      value={formData.asset_type}
-                      onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                    >
-                      <option value="forex">Forex</option>
-                      <option value="crypto">Crypto</option>
-                      <option value="stocks">Stocks</option>
-                      <option value="commodities">Commodities</option>
-                      <option value="indices">Indices</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Order Type</label>
-                    <select
-                      value={formData.order_type}
-                      onChange={(e) => setFormData({ ...formData, order_type: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                    >
-                      <option value="Buy">Buy/Long</option>
-                      <option value="Sell">Sell/Short</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Lot Size</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={formData.lot_size}
-                      onChange={(e) => setFormData({ ...formData, lot_size: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="0.01"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Entry Price</label>
-                    <input
-                      type="number"
-                      step="0.00001"
-                      value={formData.entry_price}
-                      onChange={(e) => setFormData({ ...formData, entry_price: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="1.23456"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Stop Loss</label>
-                    <input
-                      type="number"
-                      step="0.00001"
-                      value={formData.stop_loss}
-                      onChange={(e) => setFormData({ ...formData, stop_loss: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="1.23000"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Take Profit</label>
-                    <input
-                      type="number"
-                      step="0.00001"
-                      value={formData.take_profit}
-                      onChange={(e) => setFormData({ ...formData, take_profit: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="1.25000"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Exit Price (Optional)</label>
-                    <input
-                      type="number"
-                      step="0.00001"
-                      value={formData.exit_price || ''}
-                      onChange={(e) => setFormData({ ...formData, exit_price: e.target.value ? parseFloat(e.target.value) : null })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="1.24500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Entry Time</label>
-                    <input
-                      type="datetime-local"
-                      value={formData.entry_time}
-                      onChange={(e) => setFormData({ ...formData, entry_time: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Exit Time (Optional)</label>
-                    <input
-                      type="datetime-local"
-                      value={formData.exit_time || ''}
-                      onChange={(e) => setFormData({ ...formData, exit_time: e.target.value || null })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Account Size at Entry</label>
-                    <input
-                      type="number"
-                      value={formData.account_size_at_entry}
-                      onChange={(e) => setFormData({ ...formData, account_size_at_entry: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="1000"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Market Trend</label>
-                    <select
-                      value={formData.market_trend}
-                      onChange={(e) => setFormData({ ...formData, market_trend: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                    >
-                      <option value="Bullish">Bullish</option>
-                      <option value="Bearish">Bearish</option>
-                      <option value="Sideways">Sideways</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Trading Session</label>
-                    <select
-                      value={formData.trading_session}
-                      onChange={(e) => setFormData({ ...formData, trading_session: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                    >
-                      <option value="London">London</option>
-                      <option value="New York">New York</option>
-                      <option value="Tokyo">Tokyo</option>
-                      <option value="Sydney">Sydney</option>
-                      <option value="Overnight">Overnight</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Strategy</label>
-                    <input
-                      type="text"
-                      value={formData.strategy}
-                      onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="Breakout, Reversal..."
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Strategy & Notes */}
-            {activeSection === 'strategy' && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Trade Notes</label>
-                  <RichTextEditor
-                    value={formData.notes}
-                    onChange={(content) => setFormData({ ...formData, notes: content })}
-                    placeholder="Document your trade setup, reasoning, and observations..."
-                  />
-                </div>
-
-                <div className="flex items-center gap-4 p-4 bg-gray-800/30 rounded-lg border border-gray-700/50">
-                  <Image className="w-5 h-5 text-gray-400" />
-                  <span className="text-sm text-gray-400">Image upload coming soon</span>
-                </div>
-              </div>
-            )}
-
-            {/* Screenshots */}
-            {activeSection === 'images' && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Trade Screenshots</label>
-                  <div className="space-y-4">
-                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-amber-500/50 transition-colors">
-                      <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-400 text-sm mb-2">Upload chart screenshots or trade images</p>
+              {/* Pre-Trade Checklist */}
+              {activeSection === 'basics' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Asset Pair/Ticker</label>
                       <input
-                        type="file"
-                        accept="image/*"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
+                        type="text"
+                        value={formData.pair_ticker}
+                        onChange={(e) => setFormData({ ...formData, pair_ticker: e.target.value })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="EURUSD, AAPL, BTC..."
+                        required
+                      />
+                    </div>
 
-                          // Check file size (5MB limit for base64 storage)
-                          if (file.size > 5 * 1024 * 1024) {
-                            setError('File too large. Maximum size is 5MB.');
-                            return;
-                          }
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Asset Type</label>
+                      <select
+                        value={formData.asset_type}
+                        onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                      >
+                        <option value="forex">Forex</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="stocks">Stocks</option>
+                        <option value="commodities">Commodities</option>
+                        <option value="indices">Indices</option>
+                      </select>
+                    </div>
 
-                          setLoading(true);
-                          try {
-                            const formDataUpload = new FormData();
-                            formDataUpload.append('file', file);
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Order Type</label>
+                      <select
+                        value={formData.order_type}
+                        onChange={(e) => setFormData({ ...formData, order_type: e.target.value })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                      >
+                        <option value="Buy">Buy/Long</option>
+                        <option value="Sell">Sell/Short</option>
+                      </select>
+                    </div>
 
-                            const response = await fetch(`/api/journal/upload-image`, {
-                              method: 'POST',
-                              body: formDataUpload,
-                              credentials: 'include'
-                            });
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Lot Size</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={formData.lot_size}
+                        onChange={(e) => setFormData({ ...formData, lot_size: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="0.01"
+                      />
+                    </div>
 
-                            if (!response.ok) {
-                              const errorData = await response.json();
-                              throw new Error(errorData.detail || 'Upload failed');
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Entry Price</label>
+                      <input
+                        type="number"
+                        step="0.00001"
+                        value={formData.entry_price}
+                        onChange={(e) => setFormData({ ...formData, entry_price: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="1.23456"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Stop Loss</label>
+                      <input
+                        type="number"
+                        step="0.00001"
+                        value={formData.stop_loss}
+                        onChange={(e) => setFormData({ ...formData, stop_loss: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="1.23000"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Take Profit</label>
+                      <input
+                        type="number"
+                        step="0.00001"
+                        value={formData.take_profit}
+                        onChange={(e) => setFormData({ ...formData, take_profit: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="1.25000"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Exit Price (Optional)</label>
+                      <input
+                        type="number"
+                        step="0.00001"
+                        value={formData.exit_price || ''}
+                        onChange={(e) => setFormData({ ...formData, exit_price: e.target.value ? parseFloat(e.target.value) : null })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="1.24500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Entry Time</label>
+                      <input
+                        type="datetime-local"
+                        value={formData.entry_time}
+                        onChange={(e) => setFormData({ ...formData, entry_time: e.target.value })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Exit Time (Optional)</label>
+                      <input
+                        type="datetime-local"
+                        value={formData.exit_time || ''}
+                        onChange={(e) => setFormData({ ...formData, exit_time: e.target.value || null })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Account Size at Entry</label>
+                      <input
+                        type="number"
+                        value={formData.account_size_at_entry}
+                        onChange={(e) => setFormData({ ...formData, account_size_at_entry: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="1000"
+                      />
+                    </div>
+                  </div>
+
+// Moved Strategy and Market Trend to Strategy tab
+                </div>
+              )}
+
+              {/* Strategy & Notes */}
+              {activeSection === 'strategy' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Strategy</label>
+                      <input
+                        type="text"
+                        value={formData.strategy}
+                        onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="Breakout, Reversal..."
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Market Trend</label>
+                      <select
+                        value={formData.market_trend}
+                        onChange={(e) => setFormData({ ...formData, market_trend: e.target.value })}
+                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                      >
+                        <option value="Bullish">Bullish</option>
+                        <option value="Bearish">Bearish</option>
+                        <option value="Sideways">Sideways</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Trade Notes</label>
+                    <RichTextEditor
+                      value={formData.notes}
+                      onChange={(content) => setFormData({ ...formData, notes: content })}
+                      placeholder="Document your trade setup, reasoning, and observations..."
+                    />
+                  </div>
+
+                </div>
+              )}
+
+              {/* Screenshots */}
+              {activeSection === 'images' && (
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Trade Screenshots</label>
+                    <div className="space-y-4">
+                      <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-amber-500/50 transition-colors">
+                        <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-gray-400 text-sm mb-2">Upload chart screenshots or trade images</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+
+                            // Check file size (5MB limit for base64 storage)
+                            if (file.size > 5 * 1024 * 1024) {
+                              setError('File too large. Maximum size is 5MB.');
+                              return;
                             }
 
-                            const result = await response.json();
-                            setFormData({ ...formData, image_url: result.image_url });
-                            setError('');
-                          } catch (err) {
-                            setError(err instanceof Error ? err.message : 'Upload failed');
-                          } finally {
-                            setLoading(false);
-                          }
-                        }}
-                        className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-500 file:cursor-pointer"
-                        disabled={loading}
-                      />
-                      <p className="text-xs text-gray-500 mt-2">Supported formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)</p>
-                      {loading && <p className="text-xs text-amber-400 mt-2">Uploading...</p>}
-                    </div>
-                    
-                    {formData.image_url && (
-                      <div className="bg-gray-800/30 rounded-lg p-4 border border-gray-700/50">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-white">Preview</h4>
-                          <button
-                            onClick={() => setFormData({ ...formData, image_url: '' })}
-                            className="text-red-400 hover:text-red-300 text-xs"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                        <img
-                          src={formData.image_url}
-                          alt="Trade screenshot"
-                          className="w-full max-h-64 object-contain rounded-lg border border-gray-600"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            const parent = e.currentTarget.parentElement;
-                            if (parent) {
-                              const errorMsg = document.createElement('p');
-                              errorMsg.textContent = 'Failed to load image.';
-                              errorMsg.className = 'text-red-400 text-sm';
-                              parent.appendChild(errorMsg);
+                            setLoading(true);
+                            try {
+                              const formDataUpload = new FormData();
+                              formDataUpload.append('file', file);
+
+                              const response = await fetch(`/api/journal/upload-image`, {
+                                method: 'POST',
+                                body: formDataUpload,
+                                credentials: 'include'
+                              });
+
+                              if (!response.ok) {
+                                const errorData = await response.json();
+                                throw new Error(errorData.detail || 'Upload failed');
+                              }
+
+                              const result = await response.json();
+                              setFormData({ ...formData, image_url: result.image_url });
+                              setError('');
+                            } catch (err) {
+                              setError(err instanceof Error ? err.message : 'Upload failed');
+                            } finally {
+                              setLoading(false);
                             }
                           }}
+                          className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-600 file:text-white hover:file:bg-amber-500 file:cursor-pointer"
+                          disabled={loading}
                         />
+                        <p className="text-xs text-gray-500 mt-2">Supported formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)</p>
+                        {loading && <p className="text-xs text-amber-400 mt-2">Uploading...</p>}
                       </div>
-                    )}
+
+                      {formData.image_url && (
+                        <div className="bg-gray-800/30 rounded-lg p-4 border border-gray-700/50">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-sm font-medium text-white">Preview</h4>
+                            <button
+                              onClick={() => setFormData({ ...formData, image_url: '' })}
+                              className="text-red-400 hover:text-red-300 text-xs"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          <img
+                            src={formData.image_url}
+                            alt="Trade screenshot"
+                            className="w-full max-h-64 object-contain rounded-lg border border-gray-600"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const parent = e.currentTarget.parentElement;
+                              if (parent) {
+                                const errorMsg = document.createElement('p');
+                                errorMsg.textContent = 'Failed to load image.';
+                                errorMsg.className = 'text-red-400 text-sm';
+                                parent.appendChild(errorMsg);
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Tags & Labels */}
-            {activeSection === 'tags' && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Tags</label>
-                  <div className="flex gap-2 mb-3">
-                    <input
-                      type="text"
-                      value={newTag}
-                      onChange={(e) => setNewTag(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                      className="flex-1 px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                      placeholder="Add a tag..."
-                    />
+              {/* Tags & Labels */}
+              {activeSection === 'tags' && (
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Tags</label>
+                    <div className="flex gap-2 mb-3">
+                      <input
+                        type="text"
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                        className="flex-1 px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                        placeholder="Add a tag..."
+                      />
+                      <button
+                        type="button"
+                        onClick={addTag}
+                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {formData.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm border border-amber-500/30"
+                        >
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => removeTag(tag)}
+                            className="hover:text-amber-300"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Pre-Trade Checklist */}
+              {activeSection === 'checklist' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-white">Pre-Trade Checklist</h3>
                     <button
                       type="button"
-                      onClick={addTag}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors"
+                      onClick={addChecklistItem}
+                      className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-black text-sm font-medium rounded-lg transition-colors"
                     >
-                      <Plus className="w-4 h-4" />
+                      Add Item
                     </button>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {formData.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm border border-amber-500/30"
-                      >
-                        {tag}
+                  <div className="space-y-3">
+                    {formData.checklist.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
                         <button
                           type="button"
-                          onClick={() => removeTag(tag)}
-                          className="hover:text-amber-300"
+                          onClick={() => toggleChecklistItem(item.id)}
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${item.completed
+                            ? 'bg-amber-500 border-amber-500 text-black'
+                            : 'border-gray-600 hover:border-amber-500'
+                            }`}
                         >
-                          <X className="w-3 h-3" />
+                          {item.completed && <CheckSquare className="w-3 h-3" />}
                         </button>
-                      </span>
+
+                        <input
+                          type="text"
+                          value={item.text}
+                          onChange={(e) => updateChecklistItem(item.id, e.target.value)}
+                          className="flex-1 bg-transparent text-white placeholder-gray-500 focus:outline-none"
+                          placeholder="Checklist item..."
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => removeChecklistItem(item.id)}
+                          className="text-gray-400 hover:text-red-400 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Pre-Trade Checklist */}
-            {activeSection === 'checklist' && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-white">Pre-Trade Checklist</h3>
-                  <button
-                    type="button"
-                    onClick={addChecklistItem}
-                    className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-black text-sm font-medium rounded-lg transition-colors"
-                  >
-                    Add Item
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {formData.checklist.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
-                      <button
-                        type="button"
-                        onClick={() => toggleChecklistItem(item.id)}
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                          item.completed
-                            ? 'bg-amber-500 border-amber-500 text-black'
-                            : 'border-gray-600 hover:border-amber-500'
-                        }`}
-                      >
-                        {item.completed && <CheckSquare className="w-3 h-3" />}
-                      </button>
-
-                      <input
-                        type="text"
-                        value={item.text}
-                        onChange={(e) => updateChecklistItem(item.id, e.target.value)}
-                        className="flex-1 bg-transparent text-white placeholder-gray-500 focus:outline-none"
-                        placeholder="Checklist item..."
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => removeChecklistItem(item.id)}
-                        className="text-gray-400 hover:text-red-400 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
             {/* Footer (compact) */}
             <div className="sticky bottom-0 z-50 flex items-center justify-end gap-2 p-3 border-t border-gray-700/50 bg-gray-900/80 backdrop-blur-md">
@@ -723,6 +703,6 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
           </div>
         </form>
       </motion.div>
-    </div>
+    </div >
   );
 }

@@ -43,6 +43,7 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
     trading_session: 'London',
     strategy: '',
     order_type: 'Buy',
+    account_size_at_entry: 0,
     lot_size: 0.01,
     entry_price: 0,
     stop_loss: 0,
@@ -50,7 +51,6 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
     exit_price: null as number | null,
     entry_time: new Date().toISOString().slice(0, 16),
     exit_time: null as string | null,
-    account_size_at_entry: 1000,
     notes: '',
     tags: [] as string[],
     checklist: [] as { id: string; text: string; completed: boolean }[],
@@ -442,19 +442,8 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Account Size at Entry</label>
-                      <input
-                        type="number"
-                        value={formData.account_size_at_entry}
-                        onChange={(e) => setFormData({ ...formData, account_size_at_entry: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
-                        placeholder="1000"
-                      />
-                    </div>
                   </div>
 
-// Moved Strategy and Market Trend to Strategy tab
                 </div>
               )}
 

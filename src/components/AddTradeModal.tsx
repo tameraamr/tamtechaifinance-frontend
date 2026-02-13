@@ -238,9 +238,9 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row flex-1 min-h-0">
+          <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
             {/* Desktop Sidebar Navigation */}
-            <div className="hidden md:block w-64 bg-gray-800/50 border-r border-gray-700/50 p-4 overflow-y-auto">
+            <div className="hidden md:block w-64 bg-gray-900/50 border-r border-gray-700/50 p-4 shrink-0 overflow-y-auto">
               <div className="space-y-2">
                 {[
                   { id: 'basics', label: 'Trade Basics', icon: Target },
@@ -248,57 +248,63 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
                   { id: 'images', label: 'Screenshots', icon: Image },
                   { id: 'tags', label: 'Tags & Labels', icon: Tag },
                   { id: 'checklist', label: 'Pre-Trade Checklist', icon: CheckSquare }
-                ].map(({ id, label, icon: Icon }) => (
+                ].map((section) => (
                   <button
-                    key={id}
-                    type="button"
-                    onClick={() => setActiveSection(id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${activeSection === id
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      : 'text-gray-300 hover:bg-gray-700/50'
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${activeSection === section.id
+                      ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
                       }`}
                   >
-                    <Icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{label}</span>
+                    <section.icon className="w-4 h-4" />
+                    {section.label}
                   </button>
                 ))}
               </div>
 
-              {/* Templates */}
-              <div className="mt-6">
+              {/* Strategy Templates Quick Access */}
+              <div className="mt-8 pt-6 border-t border-gray-700/50">
                 <button
-                  type="button"
                   onClick={() => setShowTemplates(!showTemplates)}
-                  className="w-full flex items-center gap-2 px-3 py-2 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-gray-300 text-sm font-medium transition-colors"
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${showTemplates
+                    ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                    : 'bg-gray-800/30 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                    }`}
                 >
                   <FileText className="w-4 h-4" />
                   Strategy Templates
                 </button>
 
+                {/* Assuming AnimatePresence is imported */}
                 {showTemplates && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 space-y-1"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
                   >
-                    {STRATEGY_TEMPLATES.map((template) => (
-                      <button
-                        key={template.name}
-                        type="button"
-                        onClick={() => applyTemplate(template)}
-                        className="w-full text-left px-3 py-2 bg-gray-800/50 hover:bg-gray-700 rounded text-xs text-gray-400 hover:text-gray-300 transition-colors"
-                      >
-                        {template.name}
-                      </button>
-                    ))}
+                    <div className="mt-2 space-y-1 ml-4 border-l border-gray-700/50 pl-3">
+                      {STRATEGY_TEMPLATES.map((strategy) => (
+                        <button
+                          key={strategy.name}
+                          onClick={() => {
+                            setFormData(prev => ({ ...prev, strategy: strategy.name }));
+                            setActiveSection('strategy');
+                          }}
+                          className="w-full text-left px-2 py-2 text-xs text-gray-500 hover:text-amber-500 transition-colors rounded hover:bg-gray-800/30"
+                        >
+                          {strategy.name}
+                        </button>
+                      ))}
+                    </div>
                   </motion.div>
                 )}
               </div>
             </div>
 
-            {/* Main Content */}
-            <div className="flex-1 p-4 md:p-6 overflow-y-auto pb-28">
+            {/* Main Form Area */}
+            <div className="flex-1 p-6 overflow-y-auto max-h-[70vh]">
               {error && (
                 <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
                   {error}

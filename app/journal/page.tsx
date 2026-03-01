@@ -425,7 +425,7 @@ export default function TradingJournal() {
 
                 {/* TRADES VIEW */}
                 {activeView === 'trades' && (
-                  <JournalTradeCards trades={trades} onEdit={openEditModal} onDelete={confirmDelete} />
+                  <JournalTradeTable trades={trades} onEdit={openEditModal} onDelete={confirmDelete} onExportCSV={handleExportCSV} />
                 )}
               </div>
             ) : (

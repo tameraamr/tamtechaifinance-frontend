@@ -366,8 +366,18 @@ export default function AnalysisPage() {
           // This allows users to view their analysis results multiple times
           // Only clear when navigating away or analyzing a new stock
         } else {
-          // No stored result - redirect back to analyzer instead of refetching
-          router.replace('/stock-analyzer');
+          // No stored result - fetch dynamically using mockApi for Portfolio mode
+          const data = await mockApi.getAnalysisReport(ticker);
+          setResult(data);
+          setLoading(false);
+          
+          // Save for future navigation
+          localStorage.setItem('analysis_result', JSON.stringify(data));
+          localStorage.setItem('analysis_ticker', ticker);
+          
+          // SEO Metadata
+          const companyName = data?.company_name || data?.data?.companyName || ticker.toUpperCase();
+          document.title = `${companyName} (${ticker.toUpperCase()}) Analysis | AI Stock Report - Tamtech Finance`;
           return;
         }
       } catch (err) {

@@ -315,8 +315,17 @@ export default function AnalysisPage() {
   // Allow both guests and logged-in users - check happens in data loading
   useEffect(() => {
     // Wait for auth to finish loading, but allow guests
-    if (authLoading) return;
-    setAuthChecked(true);
+    // If auth is still loading after 3 seconds, proceed anyway for the portfolio demo
+    const authTimer = setTimeout(() => {
+      setAuthChecked(true);
+    }, 3000);
+
+    if (!authLoading) {
+      setAuthChecked(true);
+      clearTimeout(authTimer);
+    }
+    
+    return () => clearTimeout(authTimer);
   }, [authLoading]);
 
   // Load analysis result from localStorage or fetch from backend
@@ -324,65 +333,32 @@ export default function AnalysisPage() {
     if (!authChecked || !ticker) return;
 
     const loadAnalysisResult = async () => {
+      console.log(`🚀 Loading analysis for: ${ticker}`);
       try {
         const storedResult = localStorage.getItem('analysis_result');
         const storedTicker = localStorage.getItem('analysis_ticker');
 
         if (storedResult && storedTicker && storedTicker.toUpperCase() === ticker.toUpperCase()) {
-          // Use stored data from recent analysis (works for both guests and users)
-          const parsedResult = JSON.parse(storedResult);
-          
-          // DEBUG: Log the actual structure
-          console.log('📊 Analysis Result Structure:', parsedResult);
-          console.log('📈 Data object:', parsedResult.data);
-          console.log('🎯 Analysis object:', parsedResult.analysis);
-          console.log('💰 PE Ratio paths:', {
-            'data.pe_ratio': parsedResult?.data?.pe_ratio,
-            'pe_ratio': parsedResult?.pe_ratio,
-            'metrics.pe_ratio': parsedResult?.metrics?.pe_ratio
-          });
-          
-          setResult(parsedResult);
-          setLoading(false);
-          
-          // SEO: Update page metadata dynamically
-          const companyName = parsedResult?.company_name || parsedResult?.data?.companyName || ticker.toUpperCase();
-          document.title = `${companyName} (${ticker.toUpperCase()}) Analysis | AI Stock Report - Tamtech Finance`;
-          const metaDescription = document.querySelector('meta[name="description"]');
-          if (metaDescription) {
-            metaDescription.setAttribute('content', `Comprehensive AI analysis for ${companyName} (${ticker.toUpperCase()}). Get financial health score, risk assessment, SWOT analysis, and investment insights.`);
-          }
-          
-          // Add canonical tag
-          let canonical = document.querySelector('link[rel="canonical"]');
-          if (!canonical) {
-            canonical = document.createElement('link');
-            canonical.setAttribute('rel', 'canonical');
-            document.head.appendChild(canonical);
-          }
-          canonical.setAttribute('href', `https://tamtech-finance.com/analysis/${ticker.toLowerCase()}`);
-
-          // DON'T delete localStorage - keep it for future views
-          // This allows users to view their analysis results multiple times
-          // Only clear when navigating away or analyzing a new stock
+          console.log('✅ Found cached result for', ticker);
+          setResult(JSON.parse(storedResult));
         } else {
-          // No stored result - fetch dynamically using mockApi for Portfolio mode
+          console.log('🌐 No cache, fetching from mockApi for', ticker);
           const data = await mockApi.getAnalysisReport(ticker);
-          setResult(data);
-          setLoading(false);
+          console.log('📊 data received from mockApi:', !!data);
           
-          // Save for future navigation
-          localStorage.setItem('analysis_result', JSON.stringify(data));
-          localStorage.setItem('analysis_ticker', ticker);
-          
-          // SEO Metadata
-          const companyName = data?.company_name || data?.data?.companyName || ticker.toUpperCase();
-          document.title = `${companyName} (${ticker.toUpperCase()}) Analysis | AI Stock Report - Tamtech Finance`;
-          return;
+          if (data) {
+            setResult(data);
+            localStorage.setItem('analysis_result', JSON.stringify(data));
+            localStorage.setItem('analysis_ticker', ticker);
+          } else {
+            throw new Error("No data returned from mockApi");
+          }
         }
       } catch (err) {
-        // Error - redirect to analyzer
-        router.replace('/stock-analyzer');
+        console.error('❌ Analysis loading error:', err);
+        setError("Failed to load analysis. Please try searching again.");
+      } finally {
+        setLoading(false);
       }
     };
 

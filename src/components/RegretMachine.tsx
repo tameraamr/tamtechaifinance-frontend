@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { DollarSign, TrendingUp, Share2, X, MessageCircle, Send, Instagram, Search, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '../context/TranslationContext';
+import { mockApi } from '../lib/mockApi';
 import toast from 'react-hot-toast';
 
 interface RegretMachineProps {
@@ -35,30 +36,14 @@ export default function RegretMachine({ lang, compact = false }: RegretMachinePr
     setSuggestions([]);
   };
 
-  // Fetch current price from backend with fallback
+  // Fetch current price from mock data
   const fetchCurrentPrice = async (symbol: string) => {
     try {
-      // Try backend API first
-      const response = await fetch(`/api/stock-quote/${symbol.toUpperCase()}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.price) return data.price;
-      }
-    } catch (backendError) {
-      console.log('Backend API failed, using mock data...');
+      const quote = await mockApi.getStockQuote(symbol);
+      return quote.price;
+    } catch {
+      return 100;
     }
-
-    // Final fallback: Mock prices for demo
-    const mockPrices: { [key: string]: number } = {
-      'AAPL': 259.48,
-      'GOOGL': 175.23,
-      'MSFT': 415.26,
-      'TSLA': 248.42,
-      'NVDA': 145.67,
-      'AMZN': 186.45
-    };
-
-    return mockPrices[symbol.toUpperCase()] || 100; // Default mock price
   };
 
   // Debounce stock symbol input for search suggestions
@@ -81,12 +66,9 @@ export default function RegretMachine({ lang, compact = false }: RegretMachinePr
       }
 
       try {
-        const response = await fetch(`/api/search-ticker/${debouncedSymbol}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-          setShowSuggestions(true);
-        }
+        const data = await mockApi.searchTicker(debouncedSymbol);
+        setSuggestions(data as any);
+        setShowSuggestions(true);
       } catch (error) {
         console.error('Search error:', error);
         setSuggestions([]);

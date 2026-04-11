@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Cookies from 'js-cookie';
 import RichTextEditor from './RichTextEditor';
 import { X, Plus, Tag, FileText, Image, CheckSquare, Clock, Target, TrendingUp } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface AddTradeModalProps {
   isOpen: boolean;
@@ -87,28 +88,9 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
     setError('');
 
     try {
-      const payload = {
-        ...formData,
-        entry_time: new Date(formData.entry_time).toISOString(),
-        exit_time: formData.exit_time ? new Date(formData.exit_time).toISOString() : null,
-        exit_price: formData.exit_price || null,
-        tags: formData.tags.join(','),
-        checklist: JSON.stringify(formData.checklist)
-      };
-
-      const res = await fetch(`/api/journal/trades`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.detail || 'Failed to create trade');
-      }
+      // Demo mode: simulate success without sending to backend
+      await new Promise(resolve => setTimeout(resolve, 600));
+      toast("🔒 Demo Mode — Trade recorded locally", { icon: "✅", duration: 2000 });
 
       onSuccess();
       onClose();
@@ -534,22 +516,9 @@ export default function AddTradeModal({ isOpen, onClose, onSuccess }: AddTradeMo
 
                             setLoading(true);
                             try {
-                              const formDataUpload = new FormData();
-                              formDataUpload.append('file', file);
-
-                              const response = await fetch(`/api/journal/upload-image`, {
-                                method: 'POST',
-                                body: formDataUpload,
-                                credentials: 'include'
-                              });
-
-                              if (!response.ok) {
-                                const errorData = await response.json();
-                                throw new Error(errorData.detail || 'Upload failed');
-                              }
-
-                              const result = await response.json();
-                              setFormData({ ...formData, image_url: result.image_url });
+                              // Demo mode: simulate upload
+                              await new Promise(resolve => setTimeout(resolve, 500));
+                              toast("🔒 Demo Mode — Image upload simulated", { icon: "ℹ️", duration: 2000 });
                               setError('');
                             } catch (err) {
                               setError(err instanceof Error ? err.message : 'Upload failed');

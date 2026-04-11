@@ -14,8 +14,10 @@ import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
 import { useAuth } from "../../src/context/AuthContext";
 import { useTranslation } from "../../src/context/TranslationContext";
+// 🔒 Portfolio Demo Mode — all data served from mock layer
+import { mockApi } from '../../src/lib/mockApi';
 
-const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
+const BASE_URL = '/api'; // Retained for type compatibility
 
 interface AnalysisItem {
   id: number;
@@ -153,6 +155,7 @@ export default function DashboardPage() {
   const [refreshingTicker, setRefreshingTicker] = useState<string | null>(null);
   const [showRefreshModal, setShowRefreshModal] = useState(false);
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null);
+  const [showProRedeemModal, setShowProRedeemModal] = useState(false);
   
   // Settings state
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -198,16 +201,8 @@ export default function DashboardPage() {
 
   const fetchUserProfile = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/users/me`, {
-        credentials: 'include',
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to load user profile");
-      }
-
-      const data = await res.json();
-      setUserProfile(data);
+      const data = await mockApi.getUserMe();
+      setUserProfile(data as any);
       setFirstName(data.first_name || "");
       setLastName(data.last_name || "");
     } catch (err: any) {
@@ -219,17 +214,8 @@ export default function DashboardPage() {
   const fetchHistory = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${BASE_URL}/dashboard/history`, {
-        credentials: 'include',
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Failed to load history");
-      }
-
-      const data = await res.json();
-      setHistory(data.history || []);
+      const data = await mockApi.getDashboardHistory();
+      setHistory(data as any);
     } catch (err: any) {
       console.error("History fetch error:", err);
       toast.error(err.message || "Failed to load analysis history");
@@ -247,34 +233,15 @@ export default function DashboardPage() {
       return;
     }
     
-    // Show loading toast
     const loadingToast = toast.loading(`Loading ${ticker} analysis...`);
     
     try {
-      // Fetch the historical analysis from backend
-      const res = await fetch(`${BASE_URL}/dashboard/analysis/${ticker}`, {
-        credentials: 'include',
-      });
+      const analysisData = await mockApi.getDashboardAnalysis(ticker);
       
-      if (res.status === 410) {
-        toast.error("⏰ This report has expired. Use Instant Refresh instead.", { id: loadingToast });
-        return;
-      }
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Failed to load analysis");
-      }
-      
-      const analysisData = await res.json();
-      
-      // Store the analysis data in localStorage for the analysis page to read
       localStorage.setItem('analysis_result', JSON.stringify(analysisData));
       localStorage.setItem('analysis_ticker', ticker);
       
       toast.success(`✅ Opening ${ticker} analysis`, { id: loadingToast });
-      
-      // Navigate to the analysis page
       router.push(`/analysis/${ticker}`);
       
     } catch (err: any) {
@@ -295,37 +262,18 @@ export default function DashboardPage() {
     setRefreshingTicker(selectedTicker);
 
     try {
-      const res = await fetch(`${BASE_URL}/analyze/${selectedTicker}?force_refresh=true`, {
-        credentials: 'include',
-      });
-
-      if (res.status === 402) {
-        toast.error("❌ No credits left! Please purchase more credits.", { duration: 5000 });
-        return;
-      }
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Refresh failed");
-      }
-
-      const data = await res.json();
+      const data = await mockApi.getAnalysisReport(selectedTicker);
       
-      // Update credits
-      if (data.credits_left !== undefined) {
-        updateCredits(data.credits_left);
+      if ((data as any).credits_left !== undefined) {
+        updateCredits((data as any).credits_left);
       }
 
-      // Store the fresh analysis data in localStorage for the analysis page
       localStorage.setItem('analysis_result', JSON.stringify(data));
       localStorage.setItem('analysis_ticker', selectedTicker);
 
       toast.success(`✅ ${selectedTicker} analysis refreshed successfully!`, { duration: 3000 });
-      
-      // Navigate to the updated analysis
       router.push(`/analysis/${selectedTicker}`);
       
-      // Refresh the history list
       await fetchHistory();
       
     } catch (err: any) {
@@ -337,39 +285,23 @@ export default function DashboardPage() {
     }
   };
 
+  /** Demo mode: simulates profile save */
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSavingProfile(true);
 
     try {
-      const res = await fetch(`${BASE_URL}/users/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Failed to update profile");
-      }
-
-      const data = await res.json();
-      toast.success("✅ Profile updated successfully!");
-      await fetchUserProfile();
+      await new Promise(resolve => setTimeout(resolve, 800));
+      toast.success("✅ Profile updated successfully! (Demo Mode)");
     } catch (err: any) {
       console.error("Profile update error:", err);
-      toast.error(err.message || "Failed to update profile");
+      toast.error("Failed to update profile");
     } finally {
       setSavingProfile(false);
     }
   };
 
+  /** Demo mode: simulates password change */
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -386,55 +318,30 @@ export default function DashboardPage() {
     setChangingPassword(true);
 
     try {
-      const res = await fetch(`${BASE_URL}/users/change-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Failed to change password");
-      }
-
-      toast.success("✅ Password changed successfully!");
+      await new Promise(resolve => setTimeout(resolve, 800));
+      toast.success("✅ Password changed successfully! (Demo Mode)");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
       console.error("Password change error:", err);
-      toast.error(err.message || "Failed to change password");
+      toast.error("Failed to change password");
     } finally {
       setChangingPassword(false);
     }
   };
 
+  /** Demo mode: simulates redeeming a top-up license */
   const handleRedeem = async () => {
     setRedeemError("");
     if (!licenseKey.trim()) return;
 
     setRedeeming(true);
     try {
-      const res = await fetch(`${BASE_URL}/verify-license`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-        body: JSON.stringify({ license_key: licenseKey.trim() }),
-      });
-      const data = await res.json();
-      if (data.valid) {
-        updateCredits(data.credits);
-        setLicenseKey("");
-        toast.success(`🎉 License activated! New balance: ${data.credits} credits`);
-      } else {
-        setRedeemError(data.message);
-      }
+      await new Promise(resolve => setTimeout(resolve, 800));
+      updateCredits(credits + 50);
+      setLicenseKey("");
+      toast.success(`🎉 License activated! Added 50 credits (Demo Mode)`);
     } catch (err: any) {
       setRedeemError("Error connecting to server");
     } finally {
@@ -442,19 +349,25 @@ export default function DashboardPage() {
     }
   };
 
+  /** Demo mode: simulates redeeming a pro license */
   const handleProRedeem = async () => {
     setProRedeemError("");
     if (!proLicenseKey.trim()) return;
 
     setProRedeeming(true);
-    const success = await verifyGumroadLicense(proLicenseKey.trim());
-    setProRedeeming(false);
-
-    if (success) {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      // In demo mode we are always pro, but we can animate a success toast
+      toast.success("🎉 Lifetime License verified successfully! Welcome to Pro! (Demo Mode)", {
+        duration: 5000,
+        icon: "👑"
+      });
       setProLicenseKey("");
-      await refreshUserData();
-    } else {
-      setProRedeemError("Invalid or already used license key");
+      setTimeout(() => setShowProRedeemModal(false), 2000);
+    } catch (error) {
+      setProRedeemError("An error occurred during verification.");
+    } finally {
+      setProRedeeming(false);
     }
   };
 

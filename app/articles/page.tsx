@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Calendar, ArrowRight, Newspaper } from 'lucide-react';
 import Navbar from '../../src/components/Navbar';
 import Footer from '../../src/components/Footer';
+import { mockApi } from '../../src/lib/mockApi';
 
 interface Article {
   id: number;
@@ -30,15 +31,10 @@ export default function ArticlesPage() {
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch('/api/articles');
-      const data = await response.json();
+      const data = await mockApi.getArticles();
       
-      console.log('Articles API response:', data);
-      console.log('Articles count:', data.articles?.length);
-      console.log('Sample article:', data.articles?.[0]);
-      
-      if (data.success) {
-        setArticles(data.articles.filter((a: Article) => a.published === 1));
+      if (data && data.length > 0) {
+        setArticles(data as any);
       }
     } catch (err) {
       console.error('Failed to fetch articles:', err);

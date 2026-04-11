@@ -28,6 +28,7 @@ import {
   Sun
 } from "lucide-react";
 import { useTranslation } from '../context/TranslationContext';
+import { mockApi } from '../lib/mockApi';
 
 interface MasterUniverseHeatmapProps {
   lang: string;
@@ -270,13 +271,8 @@ export default function MasterUniverseHeatmap({ lang, t }: MasterUniverseHeatmap
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/master-universe-heatmap');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setHeatmapData(data);
+      const data = await mockApi.getHeatmapData();
+      setHeatmapData(data as any);
     } catch (err) {
       console.error('Failed to fetch heatmap data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load market data');

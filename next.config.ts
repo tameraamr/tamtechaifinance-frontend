@@ -40,21 +40,8 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // 🔥 Proxy backend through same domain to make cookies first-party
-  async rewrites() {
-    // In development (localhost), use local backend
-    // In production (Vercel), use the Railway
-    const isDevelopment = process.env.NODE_ENV === 'development';
-
-    return [
-      {
-        source: '/api/:path*',
-        destination: isDevelopment
-          ? 'http://localhost:8000/:path*'  // Dev: Use local backend
-          : 'https://tamtechaifinance-backend-production.up.railway.app/:path*', // Prod: Railway
-      },
-    ];
-  },
+  // 🔒 Backend proxy removed — running in Portfolio Demo Mode
+  // Original rewrites proxied /api/* to Railway backend for first-party cookies
 
 };
 

@@ -1,9 +1,21 @@
+/**
+ * @fileoverview Authentication Context — Portfolio Demo Mode.
+ *
+ * In demo mode, this provider bypasses all backend authentication
+ * and immediately presents the user as a verified Pro subscriber.
+ * No fetch() calls are made; all state is hardcoded.
+ *
+ * Original architecture supported httpOnly cookie-based JWT sessions
+ * with the FastAPI backend on Railway.
+ *
+ * @author Tamer — TamtechAI Finance
+ * @version 2.0.0 — Portfolio Demo Mode
+ */
 "use client";
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import toast from 'react-hot-toast';
 
-// 🔥 Use relative path to leverage Vercel rewrite (makes cookies first-party)
-const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import toast from "react-hot-toast";
+import { MOCK_USER } from "../lib/mockData";
 
 interface User {
   email: string;
@@ -12,9 +24,9 @@ interface User {
   phone_number?: string;
   country?: string;
   address?: string;
-  is_verified?: number | boolean;  // 0/1 or false/true
-  is_pro?: number | boolean;  // 0/1 or false/true
-  subscription_expiry?: string | null;  // ISO datetime string
+  is_verified?: number | boolean;
+  is_pro?: number | boolean;
+  subscription_expiry?: string | null;
 }
 
 interface AuthContextType {
@@ -35,10 +47,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/** Hook to access authentication state throughout the app */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -47,307 +60,84 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+/**
+ * AuthProvider — Demo Mode Implementation.
+ *
+ * Immediately sets the user as a verified Pro subscriber with 999 credits.
+ * All auth actions (login, logout, license verification) are no-ops that
+ * display toast notifications indicating demo mode.
+ */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [credits, setCredits] = useState(0);
+  const [credits, setCredits] = useState(999);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const isLoggedIn = isAuthenticated && !!user;
-  // Handle both boolean true and number 1 for is_verified
-  const isVerified = user?.is_verified === 1 || user?.is_verified === true;
-  // Handle Pro status
-  const isPro = user?.is_pro === 1 || user?.is_pro === true;
-  const subscriptionExpiry = user?.subscription_expiry || null;
+  const isLoggedIn = true;
+  const isVerified = true;
+  const isPro = true;
+  const subscriptionExpiry = MOCK_USER.subscription_expiry;
 
-  // 🎉 Personalized Welcome Notification
-  const showWelcomeToast = (userName: string, userCredits: number, isProUser: boolean = false) => {
-    // Only show toast on client side
-    if (typeof window === 'undefined') return;
-
-    const displayName = userName || 'User';
-
-    // Get current theme from localStorage (avoiding circular dependency)
-    const currentTheme = localStorage.getItem('tamtech-theme') || 'default';
-
-    // Theme-aware styling
-    const getThemeStyles = () => {
-      switch (currentTheme) {
-        case 'gold-alpha':
-          return {
-            style: {
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)',
-              border: '1px solid #FFD700',
-              boxShadow: '0 10px 40px rgba(255, 215, 0, 0.3)',
-              color: '#FFD700',
-            },
-            icon: '✨',
-          };
-        case 'royal-violet':
-          return {
-            style: {
-              background: 'linear-gradient(135deg, #1a0b2e 0%, #2a1b4a 100%)',
-              border: '1px solid #A855F7',
-              boxShadow: '0 10px 40px rgba(168, 85, 247, 0.3)',
-              color: '#e9d5ff',
-            },
-            icon: '👑',
-          };
-        case 'emerald-dark':
-          return {
-            style: {
-              background: 'linear-gradient(135deg, #050505 0%, #0a0a0a 100%)',
-              border: '1px solid #10B981',
-              boxShadow: '0 10px 40px rgba(16, 185, 129, 0.3)',
-              color: '#d1fae5',
-            },
-            icon: '🌟',
-          };
-        case 'deep-ocean':
-          return {
-            style: {
-              background: 'linear-gradient(135deg, #020617 0%, #0f172a 100%)',
-              border: '1px solid #38BDF8',
-              boxShadow: '0 10px 40px rgba(56, 189, 248, 0.3)',
-              color: '#e0f2fe',
-            },
-            icon: '🌊',
-          };
-        case 'slate-grey':
-          return {
-            style: {
-              background: 'linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%)',
-              border: '1px solid #E4E4E7',
-              boxShadow: '0 10px 40px rgba(228, 228, 231, 0.3)',
-              color: '#E4E4E7',
-            },
-            icon: '💎',
-          };
-        default: // default theme
-          return {
-            style: {
-              background: 'linear-gradient(135deg, #0b1121 0%, #070b14 100%)',
-              border: '1px solid #00D4FF',
-              boxShadow: '0 10px 40px rgba(0, 212, 255, 0.3)',
-              color: '#f1f5f9',
-            },
-            icon: '🚀',
-          };
-      }
+  // Initialize with mock user immediately
+  useEffect(() => {
+    const mockUser: User = {
+      email: MOCK_USER.email,
+      first_name: MOCK_USER.first_name,
+      last_name: MOCK_USER.last_name,
+      phone_number: MOCK_USER.phone_number,
+      country: MOCK_USER.country,
+      address: MOCK_USER.address ?? undefined,
+      is_verified: MOCK_USER.is_verified,
+      is_pro: MOCK_USER.is_pro,
+      subscription_expiry: MOCK_USER.subscription_expiry,
     };
 
-    const themeStyles = getThemeStyles();
+    setUser(mockUser);
+    setCredits(MOCK_USER.credits);
 
-    const message = isProUser
-      ? `Welcome back, ${displayName}! ${themeStyles.icon}\n\n💎 PRO Member • Unlimited analyses available!`
-      : `Welcome back, ${displayName}! ${themeStyles.icon}\n\nYou have ${userCredits} 💎 credits available. Ready for a new analysis?`;
-
-    toast.success(
-      message,
-      {
-        duration: 5000,
-        position: 'top-right',
-        style: themeStyles.style,
-        className: 'welcome-toast',
-      }
-    );
-  };
-
-  // 🧹 Clean up old localStorage token on mount (one-time migration)
-  useEffect(() => {
-    const oldToken = localStorage.getItem('access_token');
-    if (oldToken) {
-      console.log('🧹 Cleaning up old localStorage token...');
-      localStorage.removeItem('access_token');
-    }
-  }, []);
-
-  // Fetch user data from API (cookie is sent automatically)
-  const fetchUserData = async (): Promise<{ user: User; credits: number } | null> => {
-    try {
-      const response = await fetch(`${BASE_URL}/users/me`, {
-        credentials: 'include', // 🔥 Critical: Send httpOnly cookie automatically
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return {
-          user: {
-            email: data.email,
-            first_name: data.first_name,
-            last_name: data.last_name,
-            phone_number: data.phone_number,
-            country: data.country,
-            address: data.address,
-            is_verified: data.is_verified,
-            is_pro: data.is_pro,  // 🔥 CRITICAL: Include Pro status
-            subscription_expiry: data.subscription_expiry,  // 🔥 CRITICAL: Include expiry
-          },
-          credits: data.credits,
-        };
-      } else if (response.status === 401) {
-        // Token invalid or expired
-        return null;
-      } else {
-        // For other errors (5xx, network issues), don't clear auth state
-        console.warn('Auth validation failed, but keeping session:', response.status);
-        return null;
-      }
-    } catch (error) {
-      // Network errors - keep session
-      console.warn('Auth validation network error, keeping session:', error);
-      return null;
-    }
-  };
-
-  // Initialize auth state on app load
-  useEffect(() => {
-    const initializeAuth = async () => {
-      // 🚀 Optimization: specific check to avoid 401 errors for guests
-      const hasSessionHint = typeof window !== 'undefined' && localStorage.getItem('tamtech_session_hint') === 'true';
-
-      if (!hasSessionHint) {
-        // Guest mode - don't even try to fetch
-        setUser(null);
-        setCredits(0);
-        setIsAuthenticated(false);
-        setIsLoading(false);
-        return;
-      }
-
-      const userData = await fetchUserData();
-      if (userData) {
-        setUser(userData.user);
-        setCredits(userData.credits);
-        setIsAuthenticated(true);
-      } else {
-        // Session invalid (cookies expired/cleared but hint remained)
-        if (typeof window !== 'undefined') localStorage.removeItem('tamtech_session_hint');
-        setUser(null);
-        setCredits(0);
-        setIsAuthenticated(false);
-      }
+    // Simulate brief loading for skeleton effect
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    };
+    }, 400);
 
-    initializeAuth();
+    return () => clearTimeout(timer);
   }, []);
 
-  const login = async (userData: User, userCredits: number) => {
-    // If is_verified is missing, fetch complete user data from /users/me
-    if (userData.is_verified === undefined) {
-      const completeUserData = await fetchUserData();
-      if (completeUserData) {
-        setUser(completeUserData.user);
-        setCredits(completeUserData.credits);
-        setIsAuthenticated(true);
-        if (typeof window !== 'undefined') localStorage.setItem('tamtech_session_hint', 'true');
-
-        // 🎉 Show welcome toast for fresh login
-        const userName = completeUserData.user.first_name
-          ? `${completeUserData.user.first_name} ${completeUserData.user.last_name || ''}`.trim()
-          : completeUserData.user.email.split('@')[0];
-        const isProUser = completeUserData.user.is_pro === 1 || completeUserData.user.is_pro === true;
-        showWelcomeToast(userName, completeUserData.credits, isProUser);
-
-        return;
-      }
-    }
-
-    setUser(userData);
-    setCredits(userCredits);
-    setIsAuthenticated(true);
-    if (typeof window !== 'undefined') localStorage.setItem('tamtech_session_hint', 'true');
-
-    // 🎉 Show welcome toast for fresh login
-    const userName = userData.first_name
-      ? `${userData.first_name} ${userData.last_name || ''}`.trim()
-      : userData.email.split('@')[0];
-    const isProUser = userData.is_pro === 1 || userData.is_pro === true;
-    showWelcomeToast(userName, userCredits, isProUser);
+  /** No-op login — shows demo toast */
+  const login = async (_userData: User, _credits: number) => {
+    toast.success("🔒 Portfolio Demo Mode — You're already logged in!", {
+      duration: 3000,
+    });
   };
 
+  /** No-op logout — shows demo toast */
   const logout = async () => {
-    try {
-      // Call backend logout to clear cookie
-      await fetch(`${BASE_URL}/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.error('Logout request failed:', error);
-    }
-
-    // Clear frontend state regardless of backend response
-    if (typeof window !== 'undefined') localStorage.removeItem('tamtech_session_hint');
-    setUser(null);
-    setCredits(0);
-    setIsAuthenticated(false);
+    toast("🔒 Portfolio Demo Mode — Logout disabled", {
+      icon: "ℹ️",
+      duration: 3000,
+    });
   };
 
+  /** Updates credit count in state */
   const updateCredits = (newCredits: number) => {
     setCredits(newCredits);
   };
 
+  /** No-op refresh — data is static */
   const refreshUserData = async () => {
-    const userData = await fetchUserData();
-    if (userData) {
-      setUser(userData.user);
-      setCredits(userData.credits);
-      setIsAuthenticated(true);
-    } else {
-      // Token became invalid during refresh
-      await logout();
-    }
+    // No-op in demo mode
   };
 
+  /** No-op retry — always valid */
   const retryValidation = async () => {
-    setIsLoading(true);
-    const userData = await fetchUserData();
-    if (userData) {
-      setUser(userData.user);
-      setCredits(userData.credits);
-      setIsAuthenticated(true);
-    } else {
-      setUser(null);
-      setCredits(0);
-      setIsAuthenticated(false);
-    }
-    setIsLoading(false);
+    // No-op in demo mode
   };
 
-  const verifyGumroadLicense = async (licenseKey: string): Promise<boolean> => {
-    try {
-      const response = await fetch(`${BASE_URL}/verify-gumroad-license`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ license_key: licenseKey }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        toast.error(error.detail || 'License verification failed');
-        return false;
-      }
-
-      const data = await response.json();
-
-      // Refresh user data to get updated Pro status
-      await refreshUserData();
-
-      toast.success('🎉 Pro subscription activated! You now have unlimited access.');
-      return true;
-    } catch (error) {
-      console.error('License verification error:', error);
-      toast.error('Failed to verify license. Please try again.');
-      return false;
-    }
+  /** No-op license verification — always succeeds */
+  const verifyGumroadLicense = async (_licenseKey: string): Promise<boolean> => {
+    toast.success("🔒 Portfolio Demo Mode — License verification simulated", {
+      duration: 3000,
+    });
+    return true;
   };
 
   const value: AuthContextType = {

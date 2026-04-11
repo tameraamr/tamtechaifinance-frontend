@@ -9,9 +9,9 @@ import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
 import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
+import { mockApi } from '../../src/lib/mockApi';
 
-const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
-
+const BASE_URL = '/api'; // Retained for type compatibility
 export default function StockAnalyzerPage() {
   const router = useRouter();
   const { credits, isLoggedIn, isPro, updateCredits } = useAuth();
@@ -65,12 +65,9 @@ export default function StockAnalyzerPage() {
       if (loading || !userTyping) return;
 
       try {
-        const response = await fetch(`${BASE_URL}/search-ticker/${ticker}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-          setShowSuggestions(true);
-        }
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setSuggestions([{ symbol: ticker.toUpperCase(), name: `${ticker.toUpperCase()} Corporation` }]);
+        setShowSuggestions(true);
       } catch (error) { 
         console.error("Search error:", error); 
       }
@@ -89,18 +86,8 @@ export default function StockAnalyzerPage() {
 
   const fetchRandomStock = async () => {
     try {
-      // ✅ NEW ENDPOINT V2 - GUARANTEED FRESH
-      const res = await fetch(`${BASE_URL}/get-random-ticker-v2?bust=${Date.now()}_${Math.random()}`, {
-        cache: 'no-store',
-        next: { revalidate: 0 },
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
-      const data = await res.json();
-      console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
+      const data = await mockApi.getRandomTicker();
+      console.log('🎲 V2 Random:', data.ticker);
       if (data.ticker) {
         setTicker(data.ticker);
         setUserTyping(false);
@@ -160,55 +147,9 @@ export default function StockAnalyzerPage() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000);
       
-      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, { 
-        credentials: 'include', // 🔒 httpOnly cookie sent automatically
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-
-      // Check for email verification or IP-based guest trial limit (403)
-      if (res.status === 403) {
-        const errorData = await res.json();
-        if (errorData.detail && errorData.detail.includes("verify your email")) {
-          // User is logged in but not verified
-          toast.error("📧 Please verify your email first! Check your inbox.", {
-            duration: 5000,
-            icon: "⚠️"
-          });
-        } else {
-          // Guest IP exhausted
-          setShowAuthModal(true);
-        }
-        setLoading(false);
-        return;
-      }
-
-      if (res.status === 402) {
-        router.push("/?paywall=true");
-        setLoading(false);
-        return;
-      }
-
-      if (!res.ok) {
-        let errorMessage = "Analysis failed";
-        try {
-          const error = await res.json();
-          errorMessage = error.detail || errorMessage;
-        } catch {
-          // Response is not JSON (likely HTML error page)
-          const text = await res.text();
-          errorMessage = text.substring(0, 100) || `Server error (${res.status})`;
-        }
-        throw new Error(errorMessage);
-      }
-
-      let data;
-      try {
-        data = await res.json();
-      } catch (jsonError) {
-        throw new Error("Invalid response from server. Please try again.");
-      }
+      // DEMO MODE: Simulate analysis wait time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const data = await mockApi.getAnalysisReport(targetTicker);
       
       // Save to BOTH localStorage AND sessionStorage for navigation (with language)
       localStorage.setItem("analysis_result", JSON.stringify(data));
@@ -220,7 +161,7 @@ export default function StockAnalyzerPage() {
 
       // Update credits/trials
       if (isLoggedIn) {
-        updateCredits(data.credits_left);
+        updateCredits((data as any).credits_left);
       } else {
         const ng = guestTrials - 1;
         setGuestTrials(ng);

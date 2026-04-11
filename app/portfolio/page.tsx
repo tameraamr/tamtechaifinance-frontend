@@ -7,6 +7,7 @@ import Navbar from '../../src/components/Navbar';
 import Footer from '../../src/components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { mockApi } from '../../src/lib/mockApi';
 import {
   TrendingUp, TrendingDown, Plus, Trash2, Edit2, X, Check,
   DollarSign, PieChart, BarChart3, LineChart as LineChartIcon,
@@ -86,24 +87,16 @@ export default function PortfolioPage() {
     }
   }, [isPro, user, router]);
 
-  // Fetch Portfolio Data
   const fetchPortfolio = useCallback(async () => {
     if (!user || !isPro) return;
 
     try {
       setLoading(true);
-      const response = await fetch('/api/portfolio', {
-        credentials: 'include',
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      });
+      const data = await mockApi.getPortfolio();
 
-      if (!response.ok) throw new Error('Failed to fetch portfolio');
-
-      const data = await response.json();
-      setHoldings(Array.isArray(data) ? data : []);
+      setHoldings(Array.isArray(data) ? data as any : []);
       setLastUpdate(new Date());
-      calculateMetrics(Array.isArray(data) ? data : []);
+      calculateMetrics(Array.isArray(data) ? data as any : []);
     } catch (error) {
       console.error('Error fetching portfolio:', error);
       toast.error('Failed to load portfolio data');
@@ -126,11 +119,10 @@ export default function PortfolioPage() {
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const data = await response.json();
-        setExchangeRates(data.rates);
+        const rates = await mockApi.getExchangeRates();
+        setExchangeRates(rates.rates || rates as any);
       } catch (error) {
-        console.error('Failed to fetch exchange rates');
+        console.error('Failed to load exchange rates');
       }
     };
     fetchRates();
@@ -213,7 +205,7 @@ export default function PortfolioPage() {
     });
   };
 
-  // Add/Edit Holding
+  // Add/Edit Holding (Demo mode simulation)
   const handleSubmit = async () => {
     if (!formData.ticker || !formData.shares) {
       toast.error('Please fill in all required fields');
@@ -223,23 +215,9 @@ export default function PortfolioPage() {
     const loadingToast = toast.loading(editingId ? 'Updating holding...' : 'Adding holding...');
 
     try {
-      const endpoint = editingId ? `/api/portfolio/${editingId}` : '/api/portfolio/add';
-      const method = editingId ? 'PUT' : 'POST';
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      const response = await fetch(endpoint, {
-        method,
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          ticker: formData.ticker.toUpperCase(),
-          quantity: formData.shares,
-          ...(formData.avgPrice && { avg_buy_price: formData.avgPrice })
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to save holding');
-
-      toast.success(editingId ? 'Holding updated!' : 'Holding added!', { id: loadingToast });
+      toast.success(editingId ? 'Holding updated! (Demo)' : 'Holding added! (Demo)', { id: loadingToast });
       setShowAddModal(false);
       setEditingId(null);
       setFormData({ ticker: '', shares: '', avgPrice: '' });
@@ -249,20 +227,15 @@ export default function PortfolioPage() {
     }
   };
 
-  // Delete Holding
+  // Delete Holding (Demo mode simulation)
   const handleDelete = async (id: number, symbol: string) => {
     if (!confirm(`Delete ${symbol} from portfolio?`)) return;
 
     const loadingToast = toast.loading('Deleting...');
     try {
-      const response = await fetch(`/api/portfolio/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete');
-
-      toast.success('Holding deleted!', { id: loadingToast });
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      toast.success('Holding deleted! (Demo)', { id: loadingToast });
       fetchPortfolio();
     } catch (error) {
       toast.error('Failed to delete holding', { id: loadingToast });

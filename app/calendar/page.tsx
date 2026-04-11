@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
 import { useTranslation } from '../../src/context/TranslationContext';
+import { mockApi } from '../../src/lib/mockApi';
 
 interface CalendarEvent {
   name: string;
@@ -44,9 +45,8 @@ export default function CalendarPage() {
   
   const fetchEvents = async () => {
     try {
-      const response = await fetch('/api/calendar-events');
-      const data = await response.json();
-      setEvents(data.events || []);
+      const data = await mockApi.getCalendarEvents();
+      setEvents(data as any);
     } catch (error) {
       console.error('Failed to fetch calendar events:', error);
     } finally {

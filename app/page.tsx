@@ -41,8 +41,9 @@ import { useAuth } from '../src/context/AuthContext';
 import { useTranslation } from '../src/context/TranslationContext';
 import { useDebounce } from '../src/hooks/useDebounce';
 
-// 🔥 Use relative path to leverage Vercel rewrite (makes cookies first-party)
-const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
+// 🔒 Portfolio Demo Mode — all data served from mock layer
+import { mockApi } from '../src/lib/mockApi';
+const BASE_URL = '/api'; // Retained for type compatibility, unused in demo mode
 
 // Component to handle search params with Suspense
 function SearchParamsHandler({ setShowAuthModal, setShowPaywall }: { setShowAuthModal: (show: boolean) => void, setShowPaywall: (show: boolean) => void }) {
@@ -220,11 +221,10 @@ export default function Home() {
   const [nextEvent, setNextEvent] = useState<{ name: string; date_time: string; importance: string; ai_impact_note: string } | null>(null);
   const [countdown, setCountdown] = useState<string>("00:00:00");
 
-  // دالة لجلب التحليلات الأخيرة من الباك-إند (memoized to prevent recreating on every render)
+  // Fetch recent analyses from mock data layer
   const fetchRecentAnalyses = useCallback(async () => {
     try {
-      const res = await fetch(`${BASE_URL}/recent-analyses`);
-      const data = await res.json();
+      const data = await mockApi.getRecentAnalyses();
       setRecentAnalyses(data);
     } catch (err) {
       console.error("Error fetching recent analyses:", err);
@@ -273,11 +273,9 @@ export default function Home() {
   // Fetch next calendar event
   const fetchNextEvent = async () => {
     try {
-      const response = await fetch('/api/calendar-events');
-      const data = await response.json();
-      if (data.events && data.events.length > 0) {
-        const next = data.events[0]; // Get the first upcoming event
-        setNextEvent(next);
+      const events = await mockApi.getCalendarEvents();
+      if (events && events.length > 0) {
+        setNextEvent(events[0] as any);
       }
     } catch (error) {
       console.error('Failed to fetch next event:', error);
@@ -331,12 +329,9 @@ export default function Home() {
       if (loading || analysisComplete || !userTyping) return;
 
       try {
-        const response = await fetch(`${BASE_URL}/search-ticker/${debouncedTicker}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-          setShowSuggestions(true);
-        }
+        const data = await mockApi.searchTicker(debouncedTicker);
+        setSuggestions(data as any);
+        setShowSuggestions(true);
       } catch (error) { console.error("Search error:", error); }
     };
 
@@ -366,153 +361,17 @@ export default function Home() {
 
   // REMOVED: Auto-redirect useEffect - now using manual confirmation
 
+  /** Demo mode: auth is bypassed — shows toast notification */
   const handleAuth = async () => {
-    setIsSubmittingAuth(true); // 👈 تفعيل التحميل
-    setAuthError(""); // تنظيف الأخطاء السابقة
-
-    // Validate Terms acceptance for signup
-    if (authMode === "signup" && !acceptTerms) {
-      setAuthError("You must accept the Terms of Service and Privacy Policy to register.");
-      setIsSubmittingAuth(false);
-      return;
-    }
-
-    const url = authMode === "login" ? `${BASE_URL}/token` : `${BASE_URL}/register`;
-
-    let body, headers: any = {};
-
-    if (authMode === "login") {
-      const formData = new URLSearchParams();
-      formData.append('username', email);
-      formData.append('password', password);
-      body = formData;
-      headers = { "Content-Type": "application/x-www-form-urlencoded" };
-    } else {
-      body = JSON.stringify({
-        email,
-        password,
-        first_name: firstName,
-        last_name: lastName,
-        phone_number: phone,
-        country: country,
-        address: address || null
-      });
-      headers = { "Content-Type": "application/json" };
-    }
-
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers,
-        body,
-        credentials: 'include' // 🔥 Send/receive httpOnly cookies
-      });
-
-      // 👇 التعديل الجوهري: التحقق من نوع الاستجابة قبل محاولة قراءة JSON
-      const contentType = res.headers.get("content-type");
-      let data;
-
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        data = await res.json();
-      } else {
-        // إذا لم يكن JSON (مثلاً صفحة خطأ HTML من السيرفر)، نقرأه كنص لنعرف السبب
-        const text = await res.text();
-        throw new Error(`Server Error (${res.status}): Please try again later.`);
-      }
-
-      // معالجة الأخطاء القادمة من الباك-إند (400, 401, 422)
-      if (!res.ok) {
-        if (data.detail) {
-          // حالة أخطاء التحقق (Validation Errors)
-          if (Array.isArray(data.detail)) {
-            const messages = data.detail.map((err: any) => err.msg).join(" & ");
-            setAuthError(messages);
-          }
-          // حالة الأخطاء المنطقية العادية
-          else {
-            setAuthError(data.detail);
-          }
-        } else {
-          setAuthError("Unknown error occurred.");
-        }
-        return;
-      }
-
-      // ✅ النجاح
-      if (authMode === "login") {
-        // البيانات الآن تأتي جاهزة من السيرفر داخل data.user و data.credits
-        // Token is now in httpOnly cookie, no need to pass it
-        await login(data.user, data.credits);
-        setShowAuthModal(false);
-      } else {
-        // Registration successful - auto login and show verification banner
-        setAuthError("");
-
-        // Auto-login the newly registered user
-        try {
-          const loginResponse = await fetch(`${BASE_URL}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            credentials: "include",
-            body: new URLSearchParams({
-              username: email,
-              password: password
-            })
-          });
-
-          if (loginResponse.ok) {
-            const loginData = await loginResponse.json();
-            await login(loginData.user, loginData.credits);
-            toast.success("✅ Account created! Please check your email to verify your account.", {
-              duration: 7000,
-              icon: "📧"
-            });
-            setShowAuthModal(false);
-          } else {
-            const errorData = await loginResponse.json();
-            console.error("Auto-login failed:", errorData);
-            toast.success("✅ Account created! Please log in to continue.", {
-              duration: 5000
-            });
-            setShowAuthModal(false);
-            // Switch to login mode so user can log in
-            setAuthMode("login");
-            setTimeout(() => setShowAuthModal(true), 1000);
-          }
-        } catch (error) {
-          console.error("Auto-login error:", error);
-          toast.success("✅ Account created! Please log in and verify your email.", {
-            duration: 5000
-          });
-          setShowAuthModal(false);
-        }
-      }
-
-    } catch (err: any) {
-      console.error("Auth Error:", err);
-      // عرض السبب الحقيقي إذا كان متاحاً، وإلا عرض الرسالة العامة
-      // سيظهر الآن خطأ "Failed to fetch" فقط إذا كانت المشكلة في الشبكة/CORS فعلاً
-      setAuthError(err.message || "Cannot connect to server. Check your connection.");
-    } finally {
-      setIsSubmittingAuth(false); // 👈 إيقاف التحميل في كل الحالات
-    }
+    toast("🔒 Portfolio Demo Mode — Authentication disabled", { icon: "ℹ️", duration: 3000 });
+    setShowAuthModal(false);
+    setIsSubmittingAuth(false);
   };
 
   const fetchRandomStock = async () => {
     setLoadingRandom(true);
     try {
-      // ✅ NEW ENDPOINT V2 - GUARANTEED FRESH
-      const res = await fetch(`${BASE_URL}/get-random-ticker-v2?bust=${Date.now()}_${Math.random()}`, {
-        cache: 'no-store',
-        next: { revalidate: 0 },
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
-      const data = await res.json();
-      console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
+      const data = await mockApi.getRandomTicker();
       setRandomTicker(data.ticker);
     } catch {
       setAuthError("Error fetching suggestion");
@@ -524,37 +383,10 @@ export default function Home() {
   const handleServiceRandomPick = async () => {
     setPickerLoading(true);
     try {
-      // ✅ NEW ENDPOINT V2 - GUARANTEED FRESH
-      const res = await fetch(`${BASE_URL}/get-random-ticker-v2?bust=${Date.now()}_${Math.random()}`, {
-        cache: 'no-store',
-        next: { revalidate: 0 },
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
-      const data = await res.json();
-      console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
-      const tickerSymbol = data?.ticker || data?.symbol;
-
-      let companyName: string | undefined;
-      let lastPrice: number | null | undefined;
-
-      try {
-        const quoteRes = await fetch(`/api/stock-quote/${tickerSymbol}`);
-        if (quoteRes.ok) {
-          const quoteData = await quoteRes.json();
-          if (quoteData.price) {
-            companyName = quoteData.companyName;
-            lastPrice = quoteData.price;
-          }
-        }
-      } catch (err) {
-        console.warn("Quote fetch fallback", err);
-      }
-
-      setPickerResult({ ticker: tickerSymbol, name: companyName, price: lastPrice });
+      const data = await mockApi.getRandomTicker();
+      const tickerSymbol = data.ticker;
+      const quote = await mockApi.getStockQuote(tickerSymbol);
+      setPickerResult({ ticker: tickerSymbol, name: quote.name, price: quote.price });
     } catch (err) {
       toast.error("Could not pick a stock. Try again.");
     } finally {
@@ -585,120 +417,41 @@ export default function Home() {
     }, 85);
 
     try {
-      // ✅ NEW ENDPOINT V2 - GUARANTEED FRESH
-      const res = await fetch(`${BASE_URL}/get-random-ticker-v2?bust=${Date.now()}_${Math.random()}`, {
-        cache: 'no-store',
-        next: { revalidate: 0 },
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
-
-      const data = await res.json();
-      console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
-
-      if (!data.ticker) {
-        throw new Error('No ticker returned from server');
-      }
+      const data = await mockApi.getRandomTicker();
 
       // Wait before stopping animation
       await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
 
-      // Stop animation and set results
       if (rollerRef.current) clearInterval(rollerRef.current);
       setDisplaySymbol(data.ticker);
       setSelectedSpinnerTicker(data.ticker);
 
-      // Fetch price from backend API (happens in background)
-      fetch(`/api/stock-quote/${data.ticker}`)
-        .then((r) => r.json())
-        .then((q) => {
-          if (q.price) {
-            setDisplayName(q.companyName || "");
-            setDisplayPrice(q.price);
-          }
-        })
-        .catch(() => { });
+      // Fetch price from mock
+      const quote = await mockApi.getStockQuote(data.ticker);
+      setDisplayName(quote.name || "");
+      setDisplayPrice(quote.price);
 
-      // Set rolling to false last to ensure proper state update
       setSpinnerRolling(false);
     } catch (err) {
       if (rollerRef.current) clearInterval(rollerRef.current);
       setSpinnerRolling(false);
-      console.error('Random stock fetch error:', err);
-      toast.error("Failed to pick a stock. Please try again.", {
-        duration: 3000
-      });
+      toast.error("Failed to pick a stock. Please try again.", { duration: 3000 });
     }
   };
 
+  /** Demo mode: analyze a stock using mock data */
   const handleSpinnerAnalyze = async () => {
     if (!selectedSpinnerTicker) return;
-
-    if (!isLoggedIn && guestTrials <= 0) {
-      setAuthMode("signup");
-      setShowAuthModal(true);
-      return;
-    }
 
     setLoading(true);
     setAuthError("");
 
     try {
-      const res = await fetch(`${BASE_URL}/analyze/${selectedSpinnerTicker}?lang=${lang}`, {
-        credentials: 'include' // 🔒 httpOnly cookie sent automatically
-      });
-
-      if (res.status === 403) {
-        const errorData = await res.json();
-        console.log('Spinner 403 Error:', errorData);
-        // Check if it's an email verification error
-        if (errorData.detail && errorData.detail.includes("verify your email")) {
-          // User is logged in but not verified
-          toast.error("📧 Please verify your email first! Check your inbox.", {
-            duration: 5000,
-            icon: "⚠️"
-          });
-          setLoading(false);
-          return;
-        }
-        // Otherwise it's IP exhaustion
-        setAuthMode("signup");
-        setShowAuthModal(true);
-        setLoading(false);
-        return;
-      }
-
-      if (res.status === 402) {
-        setShowPaywall(true);
-        setLoading(false);
-        return;
-      }
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Stock not found");
-      }
-
-      const data = await res.json();
+      const data = await mockApi.getAnalysisReport(selectedSpinnerTicker);
       sessionStorage.setItem("analysis_result", JSON.stringify(data));
       sessionStorage.setItem("analysis_ticker", selectedSpinnerTicker);
       setResult(data);
       setAnalysisComplete(true);
-
-      if (isLoggedIn) {
-        updateCredits(data.credits_left);
-      } else {
-        const ng = guestTrials - 1;
-        setGuestTrials(ng);
-        localStorage.setItem("guest_trials", ng.toString());
-      }
     } catch (err: any) {
       setAuthError(err.message);
     } finally {
@@ -715,11 +468,10 @@ export default function Home() {
     }
   };
 
+  /** Demo mode: stock analysis via mock data */
   const handleAnalyze = async (overrideTicker?: string) => {
     const targetTicker = overrideTicker || ticker;
     if (!targetTicker) return;
-
-    // Prevent double-calls while loading
     if (loading) return;
 
     setLoading(true);
@@ -729,75 +481,14 @@ export default function Home() {
     setResult(null);
     setAnalysisComplete(false);
 
-    // 1. فحص الرصيد محلياً للمسجلين (Pro users bypass this)
-    if (isLoggedIn && !isPro && credits <= 0) {
-      setModalTrigger('credits');
-      setShowUpgradeModal(true);
-      setLoading(false);
-      return;
-    }
-
-    // 2. فحص أولي للزوار (بناءً على المتصفح)
-    if (!isLoggedIn && guestTrials <= 0) { setAuthMode("signup"); setShowAuthModal(true); setLoading(false); return; }
-
     try {
-      const res = await fetch(`${BASE_URL}/analyze/${targetTicker}?lang=${lang}`, {
-        credentials: 'include' // 🔒 httpOnly cookie sent automatically
-      });
-
-      // 👇 التعديل الجديد: التعامل مع حظر الـ IP القادم من السيرفر
-      if (res.status === 403) {
-        const errorData = await res.json();
-        console.log('403 Error received:', errorData);
-        // Check if it's an email verification error
-        if (errorData.detail && errorData.detail.includes("verify your email")) {
-          // User is logged in but not verified - banner is already showing
-          console.log('Email verification required - showing toast');
-          toast.error("📧 Please verify your email first! Check your inbox.", {
-            duration: 5000,
-            icon: "⚠️"
-          });
-          setLoading(false);
-          return;
-        }
-        // Otherwise it's IP exhaustion for guests
-        console.log('Guest IP exhausted - showing auth modal');
-        setAuthMode("signup");
-        setShowAuthModal(true);
-        setLoading(false);
-        return;
-      }
-
-      if (res.status === 402) {
-        setModalTrigger('credits');
-        setShowUpgradeModal(true);
-        setLoading(false);
-        return;
-      }
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Stock not found");
-      }
-
-      const data = await res.json();
+      const data = await mockApi.getAnalysisReport(targetTicker);
       setResult(data);
 
-      // Save to sessionStorage for confirmation step
       sessionStorage.setItem('analysis_result', JSON.stringify(data));
       sessionStorage.setItem('analysis_ticker', targetTicker);
 
       setAnalysisComplete(true);
-
-      if (isLoggedIn) {
-        updateCredits(data.credits_left);
-      } else {
-        // تحديث عداد المتصفح المحلي
-        const ng = guestTrials - 1;
-        setGuestTrials(ng);
-        localStorage.setItem("guest_trials", ng.toString());
-      }
-
     } catch (err: any) {
       setAuthError(err.message);
     } finally {

@@ -9,9 +9,9 @@ import Navbar from "../../src/components/Navbar";
 import Footer from "../../src/components/Footer";
 import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
+import { mockApi } from '../../src/lib/mockApi';
 
-const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
-
+const BASE_URL = '/api'; // Retained for type compatibility
 export default function RandomPickerPage() {
   const router = useRouter();
   const { credits, isLoggedIn, logout, updateCredits } = useAuth();
@@ -63,18 +63,8 @@ export default function RandomPickerPage() {
     }, 85);
 
     try {
-      // ✅ NEW ENDPOINT V2 - GUARANTEED FRESH
-      const res = await fetch(`${BASE_URL}/get-random-ticker-v2?bust=${Date.now()}_${Math.random()}`, {
-        cache: 'no-store',
-        next: { revalidate: 0 },
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      });
-      const data = await res.json();
-      console.log('🎲 V2 Random:', data.ticker, 'Version:', data.version);
+      const data = await mockApi.getRandomTicker();
+      console.log('🎲 V2 Random:', data.ticker);
 
       // Wait before stopping animation
       await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
@@ -84,12 +74,11 @@ export default function RandomPickerPage() {
       setDisplaySymbol(data.ticker);
       setSelectedTicker(data.ticker);
 
-      // Fetch price from backend API (happens in background)
-      fetch(`/api/stock-quote/${data.ticker}`)
-        .then((r) => r.json())
+      // Fetch price using mock API (happens in background)
+      mockApi.getStockQuote(data.ticker)
         .then((q) => {
           if (q.price) {
-            setDisplayName(q.companyName || "");
+            setDisplayName((q as any).name || (q as any).companyName || "");
             setDisplayPrice(q.price);
           }
         })
@@ -121,48 +110,9 @@ export default function RandomPickerPage() {
     console.log('Starting analysis for:', selectedTicker);
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/analyze/${selectedTicker}`, { 
-        credentials: 'include' // 🔒 httpOnly cookie sent automatically
-      });
-
-      console.log('Response status:', res.status);
-
-      if (res.status === 403) {
-        const errorData = await res.json();
-        console.log('Random Picker 403 Error:', errorData);
-        // Check if it's an email verification error
-        if (errorData.detail && errorData.detail.includes("verify your email")) {
-          // User is logged in but not verified
-          console.log('Email verification required - showing toast');
-          toast.error("📧 Please verify your email first! Check your inbox.", {
-            duration: 5000,
-            icon: "⚠️"
-          });
-          setLoading(false);
-          return;
-        }
-        // Otherwise it's IP exhaustion
-        console.log('Guest IP exhausted - showing auth modal');
-        setShowAuthModal(true);
-        setLoading(false);
-        return;
-      }
-
-      if (res.status === 402) {
-        router.push("/?paywall=true");
-        setLoading(false);
-        return;
-      }
-
-      if (!res.ok) {
-        const error = await res.json();
-        console.log('Error response:', error);
-        toast.error(error.detail || "Analysis failed");
-        setLoading(false);
-        return;
-      }
-
-      const data = await res.json();
+      // DEMO MODE: Simulate analysis wait time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const data = await mockApi.getAnalysisReport(selectedTicker);
       console.log('Analysis successful, data received:', data);
       
       // Store analysis data with language for the analysis page
@@ -175,7 +125,7 @@ export default function RandomPickerPage() {
       console.log('Data stored in storage, navigating to:', `/analysis/${selectedTicker}`);
 
       if (isLoggedIn) {
-        updateCredits(data.credits_left);
+        updateCredits((data as any).credits_left);
       } else {
         const ng = guestTrials - 1;
         setGuestTrials(ng);

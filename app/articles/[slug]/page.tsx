@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Navbar from '../../../src/components/Navbar';
 import Footer from '../../../src/components/Footer';
 import Link from 'next/link';
+import { mockApi } from '../../../src/lib/mockApi';
 
 // Dynamic route segment for articles
 export const dynamicParams = true;
@@ -25,24 +26,13 @@ interface ArticleData {
 
 async function getArticle(slug: string): Promise<ArticleData | null> {
   try {
-    const url = `https://tamtechaifinance-backend-production.up.railway.app/articles/${slug}`;
-    console.log('Fetching article from:', url);
+    const data = await mockApi.getArticleBySlug(slug);
     
-    const response = await fetch(url, {
-      cache: 'no-store'
-    });
+    if (!data) return null;
 
-    console.log('Article response status:', response.status);
-    
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('Article fetch failed:', response.status, text);
-      return null;
-    }
-
-    const data = await response.json();
-    console.log('Article data:', data);
-    return data.success ? data.article : null;
+    // Parse related_tickers if it is a string
+    const tickers = typeof data.related_tickers === 'string' ? JSON.parse(data.related_tickers) : data.related_tickers;
+    return { ...data as any, related_tickers: tickers };
   } catch (error) {
     console.error('Error fetching article:', error);
     return null;

@@ -8,7 +8,7 @@ import { ThemeProvider } from '../src/context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import CookieBanner from '../src/components/CookieBanner';
 import ConditionalAnalytics from '../src/components/ConditionalAnalytics';
-import VerificationBannerWrapper from '../src/components/VerificationBannerWrapper';
+import DemoWatermark from '../src/components/DemoWatermark';
 import FloatingThemeSwitcher from '../src/components/FloatingThemeSwitcher';
 import CanonicalHead from '../src/components/CanonicalHead';
 
@@ -151,12 +151,11 @@ export default function RootLayout({
           <AuthProvider>
             <ThemeProvider>
               <TranslationProvider>
-                <VerificationBannerWrapper>
                   {children}
-                </VerificationBannerWrapper>
                 <Toaster position="top-center" reverseOrder={false} />
                 <CookieBanner />
                 <FloatingThemeSwitcher />
+                <DemoWatermark />
               </TranslationProvider>
             </ThemeProvider>
           </AuthProvider>

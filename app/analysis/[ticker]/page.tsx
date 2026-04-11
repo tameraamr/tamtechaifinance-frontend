@@ -19,8 +19,9 @@ import UpgradeModal from '../../../src/components/UpgradeModal';
 import { useAuth } from '../../../src/context/AuthContext';
 import { useTranslation } from '../../../src/context/TranslationContext';
 
-const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://tamtechaifinance-backend-production.up.railway.app';
-
+// 🔒 Portfolio Demo Mode — all data served from mock layer
+import { mockApi } from '../../../src/lib/mockApi';
+const BASE_URL = '/api'; // Retained for type compatibility
 // Utility functions
 const cleanAIOutput = (text: string) => {
   if (!text) return "";
@@ -259,19 +260,7 @@ export default function AnalysisPage() {
     try {
       const refreshToast = toast.loading(isRTL ? "جاري تحديث التحليل..." : "Refreshing analysis...");
       
-      const res = await fetch(`${BASE_URL}/analyze/${ticker}?lang=${lang}&force_refresh=true`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || 'Failed to refresh analysis');
-      }
-
-      const data = await res.json();
+      const data = await mockApi.getAnalysisReport(ticker);
       
       // DEBUG: Log the returned data
       console.log('Refresh response data:', data);

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Newspaper, ArrowRight, Calendar, Sparkles } from 'lucide-react';
+import { mockApi } from '../lib/mockApi';
 
 interface Article {
   id: number;
@@ -21,13 +22,13 @@ export default function ArticleOfTheDay() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch featured article from API
-    fetch('/api/featured-article')
-      .then(res => res.json())
+    // Fetch featured article from mock data
+    mockApi.getFeaturedArticle()
       .then(data => {
-        console.log('Featured article API response:', data);
-        if (data.success && data.article) {
-          setArticle(data.article);
+        if (data) {
+          // Parse related_tickers if it's a string
+          const tickers = typeof data.related_tickers === 'string' ? JSON.parse(data.related_tickers) : data.related_tickers;
+          setArticle({ ...data as any, related_tickers: tickers });
         }
         setLoading(false);
       })

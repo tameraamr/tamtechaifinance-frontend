@@ -328,7 +328,7 @@ export default function AnalysisPage() {
         const storedResult = localStorage.getItem('analysis_result');
         const storedTicker = localStorage.getItem('analysis_ticker');
 
-        if (storedResult && storedTicker === ticker) {
+        if (storedResult && storedTicker && storedTicker.toUpperCase() === ticker.toUpperCase()) {
           // Use stored data from recent analysis (works for both guests and users)
           const parsedResult = JSON.parse(storedResult);
           

@@ -313,34 +313,34 @@ export const MOCK_TRADES = [
     strategy: "Trend Continuation",
     trading_session: "New York",
     market_trend: "Bullish",
-    notes: "Gold continuation after consolidation. Strong close above 2280.",
-    tags: "trend,gold-bull",
+    notes: "Gold rallied on dovish Fed expectations. Entered on pullback to 50 EMA.",
+    tags: "gold,bullish",
     checklist: null,
     image_url: null,
     account_size_at_entry: 10000,
   },
   {
     id: 12,
-    pair_ticker: "NAS100",
-    asset_type: "indices",
-    order_type: "Buy",
-    entry_price: 18520.0,
-    exit_price: null,
-    stop_loss: 18400.0,
-    take_profit: 18700.0,
+    pair_ticker: "XAUUSD",
+    asset_type: "gold",
+    order_type: "Sell",
+    entry_price: 2350.00,
+    exit_price: 2320.00,
+    stop_loss: 2365.00,
+    take_profit: 2300.00,
     lot_size: 0.5,
-    risk_reward_ratio: 1.5,
-    profit_loss_usd: undefined,
-    profit_loss_pips: undefined,
-    status: "open",
-    result: undefined,
-    entry_time: "2026-03-18T14:00:00Z",
-    exit_time: null,
-    strategy: "NY Session Momentum",
-    trading_session: "New York",
-    market_trend: "Bullish",
-    notes: "Riding the AI sector momentum. Trailing stop at 18480.",
-    tags: "open,momentum",
+    risk_reward_ratio: 3.33,
+    profit_loss_usd: 1500.0,
+    profit_loss_pips: 3000.0,
+    status: "closed",
+    result: "win",
+    entry_time: "2026-03-20T10:30:00Z",
+    exit_time: "2026-03-21T09:00:00Z",
+    strategy: "Double Top",
+    trading_session: "London",
+    market_trend: "Bearish",
+    notes: "Perfect rejection at previous high. Strong H4 bearish engulfing candle.",
+    tags: "reversal,double-top",
     checklist: null,
     image_url: null,
     account_size_at_entry: 10000,
@@ -353,18 +353,18 @@ export const MOCK_TRADES = [
 
 export const MOCK_JOURNAL_STATS = {
   total_trades: 12,
-  open_trades: 1,
-  closed_trades: 11,
-  wins: 8,
-  losses: 3,
+  open_trades: 0,
+  closed_trades: 12,
+  wins: 10,
+  losses: 2,
   breakeven: 0,
-  win_rate: 72.7,
-  total_pips: 4992.0,
-  total_profit_usd: 4841.0,
-  net_profit_usd: 4841.0,
-  profit_factor: 7.75,
-  average_win_pips: 624.0,
-  average_loss_pips: 433.3,
+  win_rate: 83.3,
+  total_pips: 11200.0,
+  total_profit_usd: 8641.0,
+  net_profit_usd: 8641.0,
+  profit_factor: 15.0,
+  average_win_pips: 1120.0,
+  average_loss_pips: 400.0,
   largest_win_usd: 1665.0,
   largest_loss_usd: -375.0,
   trades_remaining_free: 0,
@@ -440,7 +440,7 @@ export const MOCK_HEATMAP_DATA = [
 ];
 
 // ─────────────────────────────────────────────────────────────
-// NVDA — FULL AI ANALYSIS REPORT
+// NVDA — FULL AI ANALYSIS REPORT (FRONTEND OPTIMIZED)
 // ─────────────────────────────────────────────────────────────
 
 export const MOCK_NVDA_REPORT = {
@@ -462,7 +462,7 @@ export const MOCK_NVDA_REPORT = {
     return_on_equity: 115.2,
     debt_to_equity: 0.41,
     current_ratio: 4.17,
-    market_cap: "3.5T",
+    market_cap: 3500000000000,
     fiftyTwoWeekLow: 47.32,
     fiftyTwoWeekHigh: 153.13,
     recommendationKey: "strong_buy",
@@ -471,63 +471,78 @@ export const MOCK_NVDA_REPORT = {
   analysis: {
     verdict: "STRONG BUY",
     confidence_score: 87,
-    summary: "NVIDIA Corporation stands at the epicenter of the artificial intelligence revolution, commanding an estimated 80-90% market share in data center GPUs — the silicon backbone powering every major AI model from GPT to Gemini. With its Blackwell B200 architecture shipping to hyperscale customers including Microsoft, Google, Amazon, and Meta, the company has engineered a competitive moat that rivals anything seen in semiconductor history.",
-    chapter_1: "NVIDIA's business DNA has undergone a fundamental transformation over the past three years. Once primarily known as a gaming GPU company, NVIDIA now derives over 80% of its revenue from the Data Center segment, which grew 409% year-over-year in Q4 FY2025. The company's CUDA software ecosystem, built over 17 years with 4 million+ developers, creates a lock-in effect that AMD and Intel have struggled to replicate. The Blackwell architecture represents a generational leap — offering 4x the training performance and 30x the inference performance of the previous Hopper generation. This isn't merely an incremental upgrade; it's a platform shift that reinforces NVIDIA's position as the default infrastructure provider for the AI era. Revenue concentration risk exists with hyperscalers, but their insatiable demand for compute capacity provides a multi-year growth runway.",
-    chapter_2: "NVIDIA's financial health is extraordinary by any measure. Gross margins have expanded to 73.5%, reflecting the pricing power inherent in a near-monopoly position. Operating margins of 61.6% exceed most software companies, despite NVIDIA being a hardware manufacturer — a testament to the value-add of its software stack. Free cash flow generation of $27B annually funds R&D investment of $8.7B without requiring debt financing. The balance sheet carries $26B in cash against just $11.3B in long-term debt, giving NVIDIA a fortress-like financial position. Revenue growth of 122% YoY in the most recent quarter demonstrates that this is still an acceleration story, not a maturation story.",
-    chapter_3: "The valuation at 62.5x trailing P/E appears elevated in isolation, but the PEG ratio of 1.28 suggests the stock is reasonably priced relative to its growth trajectory. Forward estimates project EPS growth of 40%+ over the next two years as Blackwell revenue ramps. The key risk is the 'AI Winter' scenario — a slowdown in enterprise AI spending that would compress multiples. However, current indicators suggest the opposite: hyperscaler capital expenditure guidance for 2026 is $200B+ collectively, with 60-70% directed at AI infrastructure. The sovereign AI trend, where nations build their own AI compute capacity, provides an additional demand vector. At current levels, NVIDIA offers asymmetric upside with identifiable but manageable risks.",
-    swot: {
+    summary: "NVIDIA Corporation stands at the epicenter of the artificial intelligence revolution, commanding an estimated 80-90% market share in data center GPUs.",
+    chapter_1_the_business: "NVIDIA's business DNA has undergone a fundamental transformation. Once a gaming CPU company, it now derives over 80% of its revenue from Data Center computing. CUDA software creates a massive moat.",
+    chapter_2_financials: "Financial health is extraordinary. Gross margins at 73.5% reflect near-monopoly pricing power. Fortress balance sheet with massive cash reserves and manageable debt.",
+    chapter_3_valuation: "Valuation of 62.5x P/E is elevated but high growth justifies the premium. PEG ratio of 1.28 suggests reasonable pricing relative to long-term gains.",
+    swot_analysis: {
       strengths: [
-        "80-90% market share in data center GPUs — near-monopoly position",
-        "CUDA ecosystem with 4M+ developers creates deep software moat",
-        "73.5% gross margin — best-in-class for semiconductor industry",
-        "Blackwell architecture delivering 30x inference performance gains",
+        "80-90% market share in data center GPUs",
+        "CUDA ecosystem with 4M+ developers",
+        "73.5% gross margin — industry-leading",
+        "Blackwell architecture delivering 30x performance"
       ],
       weaknesses: [
-        "Revenue concentration: top 4 customers represent ~40% of sales",
+        "Revenue concentration: top 4 customers represent ~40%",
         "Valuation premium leaves limited margin of safety",
-        "China export restrictions reduce addressable market by ~15%",
-        "Supply chain dependency on TSMC for advanced node manufacturing",
+        "China export restrictions impacts",
+        "Supply chain dependency on TSMC"
       ],
       opportunities: [
-        "Sovereign AI: $50B+ opportunity as nations build domestic compute",
-        "Automotive/robotics: DRIVE Thor platform targeting $30B TAM",
-        "Software licensing (NVIDIA AI Enterprise) — high-margin recurring revenue",
-        "Edge AI inference — next frontier beyond cloud data centers",
+        "Sovereign AI capacity buildout by nations",
+        "Automotive/robotics platform targeting $30B TAM",
+        "Software licensing high-margin recurring revenue",
+        "Edge AI inference expansion"
       ],
       threats: [
-        "Custom ASIC development by Google (TPU), Amazon (Trainium), Microsoft (Maia)",
-        "Potential antitrust scrutiny as AI chip dominance grows",
-        "Cyclical semiconductor downturn could compress valuations",
-        "AMD MI300X gaining traction in inference workloads",
+        "Custom ASIC development by Big Tech",
+        "Antitrust scrutiny in major markets",
+        "Cyclical semiconductor downturn risks",
+        "AMD competition in inference workloads"
       ],
     },
-    bull_case: "NVIDIA becomes the 'picks and shovels' company of the $10T AI economy. Blackwell drives 50%+ revenue growth through 2027 while software licensing creates a high-margin recurring revenue stream. Stock reaches $200+ within 18 months as AI capex continues to accelerate.",
-    bear_case: "Enterprise AI spending slows as ROI proves harder to demonstrate. Custom ASICs capture 30%+ of inference market. Multiple compresses from 60x to 30x P/E, sending stock to $80-90 range despite continued revenue growth.",
+    bull_case_points: [
+      "NVIDIA becomes the backbone of the $10T AI economy",
+      "Blackwell drives 50%+ revenue growth through 2027",
+      "Software licensing creates massive recurring revenue",
+      "Sovereign AI demand adds multi-billion dollar vector"
+    ],
+    bear_case_points: [
+      "Enterprise AI spending slows significantly",
+      "Custom ASICs capture 30%+ of the inference market",
+      "Profit margins compress as competition intensifies",
+      "Multiple de-rating from 60x to 30x P/E"
+    ],
     competitors: [
-      { name: "AMD", ticker: "AMD", comparison: "MI300X competitive in inference; ~15% data center GPU share" },
-      { name: "Intel", ticker: "INTC", comparison: "Gaudi 3 targets mid-range; struggles in high-end training" },
-      { name: "Broadcom", ticker: "AVGO", comparison: "Custom ASIC partner for Google TPU and Meta MTIA" },
+      { ticker: "AMD", ticker_name: "AMD Inc.", strength: "Inference specialist" },
+      { ticker: "INTC", ticker_name: "Intel Corp.", strength: "Manufacturing giant" },
+      { ticker: "AVGO", ticker_name: "Broadcom", strength: "Custom ASIC leader" }
     ],
-    upcoming_catalysts: [
-      "Q1 FY2026 earnings — Blackwell revenue ramp update",
-      "GTC 2026 — next-generation architecture reveal",
-      "Sovereign AI contracts — Middle East and ASEAN deployments",
-    ],
-    ownership_insights: "Vanguard (8.2%), BlackRock (7.1%), and Fidelity (5.4%) are top institutional holders. CEO Jensen Huang holds ~3.5% — significant skin in the game. Insider selling has been minimal relative to stock price appreciation.",
-    news: [
-      { headline: "NVIDIA Blackwell B200 Ships to All Major Cloud Providers", source: "Reuters", date: "2 hours ago", sentiment: "positive", impact_score: 9 },
-      { headline: "AI Data Center Spending to Exceed $200B in 2026, Analysts Say", source: "Bloomberg", date: "1 day ago", sentiment: "positive", impact_score: 8 },
-      { headline: "China Develops Alternative AI Chips Amid US Export Controls", source: "Financial Times", date: "2 days ago", sentiment: "negative", impact_score: 5 },
-      { headline: "NVIDIA Stock Hits All-Time High as AI Demand Surges", source: "CNBC", date: "3 days ago", sentiment: "positive", impact_score: 7 },
-      { headline: "AMD MI300X Gains Market Share in Cloud Inference Workloads", source: "The Information", date: "5 days ago", sentiment: "negative", impact_score: 4 },
-    ],
-    radar_scores: {
-      value: 35,
-      growth: 95,
-      profitability: 92,
-      health: 88,
-      momentum: 90,
+    upcoming_catalysts: {
+      next_earnings_date: "2026-05-22T20:00:00Z",
+      events: ["Blackwell chip shipment ramp", "GTC 2026 Sovereign AI Panel"]
     },
+    ownership_insights: {
+      institutional_sentiment: "Extremely Bullish. Vanguard and BlackRock increased positions by 12% in Q4.",
+      insider_trading: "Minimal selling by CEO Jensen Huang; mostly structured RSU sales.",
+      dividend_safety: "High. Buyback program authorized for $50B."
+    },
+    news_analysis: [
+      { headline: "NVIDIA Blackwell B200 Ships to All Major Cloud Providers", time: "2 hours ago", sentiment: "positive", impact_score: 9 },
+      { headline: "AI Data Center Spending to Exceed $200B in 2026", time: "1 day ago", sentiment: "positive", impact_score: 8 },
+      { headline: "China Develops Alternative AI Chips Amid US Restrictions", time: "2 days ago", sentiment: "negative", impact_score: 5 }
+    ],
+    radar_scores: [
+      { subject: "Value", A: 4, fullMark: 10 },
+      { subject: "Growth", A: 9, fullMark: 10 },
+      { subject: "Profit", A: 10, fullMark: 10 },
+      { subject: "Health", A: 9, fullMark: 10 },
+      { subject: "Momentum", A: 9, fullMark: 10 }
+    ],
+    forecasts: {
+      next_1_year: "Projected target of $185 per share (+30%)",
+      next_5_years: "Market cap likely to exceed $10T as AI matures"
+    }
   },
 };
 
@@ -536,219 +551,68 @@ export const MOCK_NVDA_REPORT = {
 // ─────────────────────────────────────────────────────────────
 
 export const MOCK_CALENDAR_EVENTS = [
-  { id: 1, name: "FOMC Interest Rate Decision", date_time: getFutureDate(3), importance: "High", ai_impact_note: "Federal Reserve expected to hold rates steady. Any hawkish surprise could strengthen USD and pressure equities." },
-  { id: 2, name: "US CPI (Consumer Price Index)", date_time: getFutureDate(5), importance: "High", ai_impact_note: "Core CPI expected at 3.2% YoY. Lower-than-expected reading could trigger risk-on rally." },
-  { id: 3, name: "Non-Farm Payrolls (NFP)", date_time: getFutureDate(8), importance: "High", ai_impact_note: "Consensus: 185K new jobs. Weak print may increase rate cut expectations." },
-  { id: 4, name: "ECB Monetary Policy Meeting", date_time: getFutureDate(10), importance: "High", ai_impact_note: "ECB likely to signal June rate cut. EUR weakness expected on dovish forward guidance." },
-  { id: 5, name: "US Retail Sales", date_time: getFutureDate(12), importance: "Medium", ai_impact_note: "Consumer spending indicator. Strong data supports soft landing narrative." },
-  { id: 6, name: "BOJ Policy Decision", date_time: getFutureDate(14), importance: "Medium", ai_impact_note: "BOJ expected to maintain ultra-loose policy. USDJPY intervention risk if yen weakens further." },
-  { id: 7, name: "US PMI Manufacturing", date_time: getFutureDate(17), importance: "Medium", ai_impact_note: "Manufacturing expansion above 50 would signal economic resilience." },
-  { id: 8, name: "NVIDIA Q1 Earnings", date_time: getFutureDate(21), importance: "High", ai_impact_note: "Blackwell revenue ramp data will be closely watched. Could move entire AI sector." },
+  { id: 1, name: "FOMC Interest Rate Decision", date_time: getFutureDate(3), importance: "High", ai_impact_note: "Federal Reserve expected to hold rates steady." },
+  { id: 2, name: "US CPI (Consumer Price Index)", date_time: getFutureDate(5), importance: "High", ai_impact_note: "Core CPI expected at 3.2% YoY." },
+  { id: 3, name: "Non-Farm Payrolls (NFP)", date_time: getFutureDate(8), importance: "High", ai_impact_note: "Consensus: 185K new jobs." },
 ];
-
-// ─────────────────────────────────────────────────────────────
-// DASHBOARD HISTORY
-// ─────────────────────────────────────────────────────────────
 
 export const MOCK_DASHBOARD_HISTORY = [
   { id: 1, ticker: "NVDA", company_name: "NVIDIA Corporation", last_price: 142.80, verdict: "STRONG BUY", confidence_score: 87, created_at: getRecentDate(0), is_expired: false, hours_ago: 2 },
   { id: 2, ticker: "AAPL", company_name: "Apple Inc.", last_price: 198.45, verdict: "BUY", confidence_score: 74, created_at: getRecentDate(1), is_expired: false, hours_ago: 18 },
-  { id: 3, ticker: "TSLA", company_name: "Tesla Inc.", last_price: 252.30, verdict: "HOLD", confidence_score: 52, created_at: getRecentDate(2), is_expired: false, hours_ago: 36 },
-  { id: 4, ticker: "MSFT", company_name: "Microsoft Corp.", last_price: 428.50, verdict: "BUY", confidence_score: 81, created_at: getRecentDate(3), is_expired: true, hours_ago: 72 },
-  { id: 5, ticker: "GOOGL", company_name: "Alphabet Inc.", last_price: 178.92, verdict: "BUY", confidence_score: 78, created_at: getRecentDate(5), is_expired: true, hours_ago: 120 },
-  { id: 6, ticker: "AMZN", company_name: "Amazon.com", last_price: 192.15, verdict: "STRONG BUY", confidence_score: 85, created_at: getRecentDate(7), is_expired: true, hours_ago: 168 },
 ];
-
-// ─────────────────────────────────────────────────────────────
-// PORTFOLIO HOLDINGS
-// ─────────────────────────────────────────────────────────────
 
 export const MOCK_PORTFOLIO = [
   { id: 1, symbol: "NVDA", current_price: 142.80, change_p: 3.45, shares: 50, avg_buy_price: 88.50, sector: "Technology" },
   { id: 2, symbol: "AAPL", current_price: 198.45, change_p: 1.23, shares: 30, avg_buy_price: 165.20, sector: "Technology" },
-  { id: 3, symbol: "MSFT", current_price: 428.50, change_p: 0.87, shares: 15, avg_buy_price: 340.00, sector: "Technology" },
-  { id: 4, symbol: "GOOGL", current_price: 178.92, change_p: -0.34, shares: 25, avg_buy_price: 142.30, sector: "Technology" },
-  { id: 5, symbol: "TSLA", current_price: 252.30, change_p: -2.18, shares: 20, avg_buy_price: 210.50, sector: "Consumer Cyclical" },
 ];
-
-// ─────────────────────────────────────────────────────────────
-// FEATURED ARTICLE
-// ─────────────────────────────────────────────────────────────
 
 export const MOCK_ARTICLE = {
-  id: 1,
-  slug: "nvidia-blackwell-revolution-2026",
-  title: "The Blackwell Revolution: How NVIDIA Is Reshaping the AI Landscape in 2026",
-  description: "An in-depth analysis of NVIDIA's Blackwell architecture and its implications for the global AI infrastructure buildout.",
-  content: "The semiconductor industry stands at an inflection point. NVIDIA's Blackwell B200 GPU architecture represents not merely an incremental improvement, but a paradigm shift in how artificial intelligence workloads are processed at scale...\n\nWith 208 billion transistors fabricated on TSMC's custom 4NP process, the Blackwell GPU delivers 4x the training throughput and 30x the inference performance compared to its Hopper predecessor. This leap in efficiency is enabling a new class of AI applications that were previously computationally prohibitive.\n\nThe implications extend far beyond Silicon Valley. Sovereign nations from the UAE to Japan are investing billions in domestic AI compute capacity, creating a geopolitical dimension to the AI infrastructure buildout that few anticipated even two years ago.",
-  author: "TamtechAI Research",
-  hero_emoji: "🚀",
-  hero_gradient: "blue,purple,pink",
-  image_url: null,
-  related_tickers: '["NVDA", "AMD", "AVGO", "TSM"]',
-  is_featured: 1,
-  published: 1,
-  created_at: getRecentDate(1),
-  updated_at: getRecentDate(0),
+  id: 1, slug: "nvidia-blackwell-revolution-2026", title: "The Blackwell Revolution",
+  description: "An in-depth analysis of NVIDIA's Blackwell architecture.",
+  content: "The semiconductor industry stands at an inflection point. NVIDIA's Blackwell B200 GPU architecture...",
+  author: "TamtechAI Research", hero_emoji: "🚀", hero_gradient: "blue,purple,pink", image_url: null,
+  related_tickers: '["NVDA", "AMD", "AVGO", "TSM"]', is_featured: 1, published: 1, created_at: getRecentDate(1), updated_at: getRecentDate(0),
 };
 
-export const MOCK_ARTICLES_LIST = [
-  MOCK_ARTICLE,
-  {
-    id: 2, slug: "fed-rate-outlook-2026", title: "Fed Rate Outlook: What Markets Expect for the Second Half of 2026",
-    description: "Analysis of Federal Reserve monetary policy trajectory and impact on equity and bond markets.",
-    content: "The Federal Reserve faces a delicate balancing act as inflation shows signs of stickiness while the labor market cools...",
-    author: "TamtechAI Research", hero_emoji: "📊", hero_gradient: "green,teal,blue", image_url: null,
-    related_tickers: '["SPY", "TLT", "GLD"]', is_featured: 0, published: 1, created_at: getRecentDate(3), updated_at: getRecentDate(2),
-  },
-  {
-    id: 3, slug: "gold-2500-bull-case", title: "Gold at $2,500: The Bull Case for Precious Metals in 2026",
-    description: "Why institutional investors are increasing gold allocations amid geopolitical uncertainty.",
-    content: "Central bank gold purchases reached a record 1,136 tonnes in 2025, signaling a fundamental shift in reserve asset allocation...",
-    author: "TamtechAI Research", hero_emoji: "🥇", hero_gradient: "yellow,amber,orange", image_url: null,
-    related_tickers: '["GC=F", "GLD", "NEM", "GOLD"]', is_featured: 0, published: 1, created_at: getRecentDate(5), updated_at: getRecentDate(4),
-  },
-];
-
-// ─────────────────────────────────────────────────────────────
-// RECENT ANALYSES (ticker marquee on landing page)
-// ─────────────────────────────────────────────────────────────
+export const MOCK_ARTICLES_LIST = [MOCK_ARTICLE];
 
 export const MOCK_RECENT_ANALYSES = [
   { ticker: "NVDA", verdict: "STRONG BUY", confidence: 87 },
   { ticker: "AAPL", verdict: "BUY", confidence: 74 },
-  { ticker: "TSLA", verdict: "HOLD", confidence: 52 },
-  { ticker: "MSFT", verdict: "BUY", confidence: 81 },
-  { ticker: "GOOGL", verdict: "BUY", confidence: 78 },
-  { ticker: "AMZN", verdict: "STRONG BUY", confidence: 85 },
-  { ticker: "META", verdict: "BUY", confidence: 76 },
-  { ticker: "AMD", verdict: "BUY", confidence: 72 },
 ];
-
-// ─────────────────────────────────────────────────────────────
-// STOCK QUOTES (for RegretMachine, Random Picker, etc.)
-// ─────────────────────────────────────────────────────────────
 
 export const MOCK_STOCK_QUOTES: Record<string, { price: number; name: string; change_p: number }> = {
   AAPL: { price: 198.45, name: "Apple Inc.", change_p: 1.23 },
   MSFT: { price: 428.50, name: "Microsoft Corp.", change_p: 0.87 },
   NVDA: { price: 142.80, name: "NVIDIA Corp.", change_p: 3.45 },
-  GOOGL: { price: 178.92, name: "Alphabet Inc.", change_p: -0.34 },
-  AMZN: { price: 192.15, name: "Amazon.com", change_p: 1.56 },
-  TSLA: { price: 252.30, name: "Tesla Inc.", change_p: -2.18 },
-  META: { price: 523.40, name: "Meta Platforms", change_p: 1.92 },
-  AMD: { price: 168.75, name: "AMD Inc.", change_p: 2.67 },
-  NFLX: { price: 698.20, name: "Netflix Inc.", change_p: 0.45 },
-  JPM: { price: 212.80, name: "JPMorgan Chase", change_p: 0.56 },
-  "BTC-USD": { price: 98450.00, name: "Bitcoin", change_p: 2.34 },
-  "ETH-USD": { price: 3850.00, name: "Ethereum", change_p: 3.12 },
-  "GC=F": { price: 2348.50, name: "Gold Futures", change_p: 0.78 },
 };
-
-// ─────────────────────────────────────────────────────────────
-// TICKER SEARCH SUGGESTIONS
-// ─────────────────────────────────────────────────────────────
 
 export const MOCK_TICKER_LIST = [
   { symbol: "AAPL", name: "Apple Inc." },
   { symbol: "MSFT", name: "Microsoft Corporation" },
   { symbol: "NVDA", name: "NVIDIA Corporation" },
-  { symbol: "GOOGL", name: "Alphabet Inc." },
-  { symbol: "AMZN", name: "Amazon.com Inc." },
-  { symbol: "TSLA", name: "Tesla Inc." },
-  { symbol: "META", name: "Meta Platforms Inc." },
-  { symbol: "AMD", name: "Advanced Micro Devices" },
-  { symbol: "NFLX", name: "Netflix Inc." },
-  { symbol: "CRM", name: "Salesforce Inc." },
-  { symbol: "JPM", name: "JPMorgan Chase & Co." },
-  { symbol: "V", name: "Visa Inc." },
-  { symbol: "BRK-B", name: "Berkshire Hathaway" },
-  { symbol: "UNH", name: "UnitedHealth Group" },
-  { symbol: "XOM", name: "Exxon Mobil Corporation" },
-  { symbol: "BTC-USD", name: "Bitcoin USD" },
-  { symbol: "ETH-USD", name: "Ethereum USD" },
-  { symbol: "SOL-USD", name: "Solana USD" },
-  { symbol: "GC=F", name: "Gold Futures" },
-  { symbol: "CL=F", name: "Crude Oil WTI" },
-  { symbol: "EURUSD=X", name: "EUR/USD" },
-  { symbol: "SPY", name: "SPDR S&P 500 ETF" },
-  { symbol: "QQQ", name: "Invesco QQQ Trust" },
 ];
-
-// ─────────────────────────────────────────────────────────────
-// RANDOM TICKER POOL
-// ─────────────────────────────────────────────────────────────
 
 export const MOCK_RANDOM_TICKERS = [
   { ticker: "NVDA", name: "NVIDIA Corporation", price: 142.80, sector: "Technology" },
   { ticker: "AAPL", name: "Apple Inc.", price: 198.45, sector: "Technology" },
-  { ticker: "TSLA", name: "Tesla Inc.", price: 252.30, sector: "Consumer Cyclical" },
-  { ticker: "AMD", name: "AMD Inc.", price: 168.75, sector: "Technology" },
-  { ticker: "MSFT", name: "Microsoft Corp.", price: 428.50, sector: "Technology" },
-  { ticker: "GOOGL", name: "Alphabet Inc.", price: 178.92, sector: "Technology" },
-  { ticker: "META", name: "Meta Platforms", price: 523.40, sector: "Technology" },
-  { ticker: "AMZN", name: "Amazon.com", price: 192.15, sector: "Consumer Cyclical" },
-  { ticker: "NFLX", name: "Netflix Inc.", price: 698.20, sector: "Technology" },
-  { ticker: "JPM", name: "JPMorgan Chase", price: 212.80, sector: "Financial Services" },
 ];
 
-// ─────────────────────────────────────────────────────────────
-// EXCHANGE RATES (static)
-// ─────────────────────────────────────────────────────────────
+export const MOCK_EXCHANGE_RATES = { USD: 1, EUR: 0.92, GBP: 0.79, JPY: 151.85, CAD: 1.36, AUD: 1.53 };
 
-export const MOCK_EXCHANGE_RATES = {
-  USD: 1, EUR: 0.92, GBP: 0.79, JPY: 151.85, CAD: 1.36, AUD: 1.53,
-  CHF: 0.88, CNY: 7.24, INR: 83.12, SGD: 1.34, HKD: 7.82, SEK: 10.45,
-};
-
-
-// ─────────────────────────────────────────────────────────────
-// HELPER FUNCTIONS
-// ─────────────────────────────────────────────────────────────
-
-/** Generate 250 daily OHLCV points for a stock chart */
 function generateChartData(): Array<{ date: string; price: number }> {
-  const data: Array<{ date: string; price: number }> = [];
-  let price = 48.0; // NVDA price ~1 year ago (pre-split adjusted)
-  const now = new Date();
-
-  for (let i = 250; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-
-    // Skip weekends
-    if (date.getDay() === 0 || date.getDay() === 6) continue;
-
-    // Simulate realistic price movement with upward drift
-    const drift = 0.002;
-    const volatility = 0.025;
-    const change = drift + volatility * (Math.random() - 0.45);
-    price = price * (1 + change);
-    price = Math.max(price, 40);
-
-    data.push({
-      date: date.toISOString().split("T")[0],
-      price: parseFloat(price.toFixed(2)),
-    });
-  }
-
-  // Ensure final price matches our mock
-  if (data.length > 0) {
-    data[data.length - 1].price = 142.80;
-  }
-
-  return data;
+  return Array.from({ length: 100 }, (_, i) => ({
+    date: new Date(Date.now() - (100 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    price: 100 + Math.random() * 50
+  }));
 }
 
-/** Get a future date N days from now (for calendar events) */
 function getFutureDate(daysAhead: number): string {
   const d = new Date();
   d.setDate(d.getDate() + daysAhead);
-  d.setHours(14, 30, 0, 0);
   return d.toISOString();
 }
 
-/** Get a recent date N days ago (for history items) */
 function getRecentDate(daysAgo: number): string {
   const d = new Date();
   d.setDate(d.getDate() - daysAgo);

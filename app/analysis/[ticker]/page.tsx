@@ -978,19 +978,19 @@ const handleDownloadPDF = async () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
               <div className="bg-emerald-900/10 border border-emerald-500/20 p-6 md:p-8 rounded-3xl transform hover:scale-[1.02] transition-all">
                 <h4 className="text-emerald-400 font-black mb-4 flex gap-3 items-center text-sm md:text-xl"><CheckCircle size={24} /> {t.strengths}</h4>
-                <ul className="space-y-3">{result.analysis.swot_analysis.strengths.map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
+                <ul className="space-y-3">{(result.analysis.swot_analysis?.strengths || []).map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
               </div>
               <div className="bg-orange-900/10 border border-orange-500/20 p-6 md:p-8 rounded-3xl transform hover:scale-[1.02] transition-all">
                 <h4 className="text-orange-400 font-black mb-4 flex gap-3 items-center text-sm md:text-xl"><AlertTriangle size={24} /> {t.weaknesses}</h4>
-                <ul className="space-y-3">{result.analysis.swot_analysis.weaknesses.map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
+                <ul className="space-y-3">{(result.analysis.swot_analysis?.weaknesses || []).map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
               </div>
               <div className="bg-blue-900/10 border border-blue-500/20 p-6 md:p-8 rounded-3xl transform hover:scale-[1.02] transition-all">
                 <h4 className="text-[var(--accent-secondary)] font-black mb-4 flex gap-3 items-center text-sm md:text-xl"><Lightbulb size={24} /> {t.opportunities}</h4>
-                <ul className="space-y-3">{result.analysis.swot_analysis.opportunities.map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
+                <ul className="space-y-3">{(result.analysis.swot_analysis?.opportunities || []).map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
               </div>
               <div className="bg-red-900/10 border border-red-500/20 p-6 md:p-8 rounded-3xl transform hover:scale-[1.02] transition-all">
                 <h4 className="text-red-400 font-black mb-4 flex gap-3 items-center text-sm md:text-xl"><XCircle size={24} /> {t.threats}</h4>
-                <ul className="space-y-3">{result.analysis.swot_analysis.threats.map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
+                <ul className="space-y-3">{(result.analysis.swot_analysis?.threats || []).map((s: any, i: any) => <li key={i} className="text-slate-300 text-xs md:text-sm font-medium flex gap-2"><span>•</span> {s}</li>)}</ul>
               </div>
             </div>
           </div>
@@ -998,11 +998,11 @@ const handleDownloadPDF = async () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
             <div className="bg-emerald-900/5 border border-emerald-500/10 p-6 md:p-10 rounded-3xl">
               <h3 className="text-lg md:text-2xl font-black text-emerald-500/80 mb-6 uppercase tracking-tighter">{t.bull}</h3>
-              <ul className="space-y-4">{result.analysis.bull_case_points.map((p: any, i: any) => <li key={i} className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed flex gap-3"><CheckCircle className="text-emerald-500 w-5 h-5 shrink-0" size={14} /> {p}</li>)}</ul>
+              <ul className="space-y-4">{(result.analysis.bull_case_points || []).map((p: any, i: any) => <li key={i} className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed flex gap-3"><CheckCircle className="text-emerald-500 w-5 h-5 shrink-0" size={14} /> {p}</li>)}</ul>
             </div>
             <div className="bg-red-900/5 border border-red-500/10 p-6 md:p-10 rounded-3xl">
               <h3 className="text-lg md:text-2xl font-black text-red-500/80 mb-6 uppercase tracking-tighter">{t.bear}</h3>
-              <ul className="space-y-4">{result.analysis.bear_case_points.map((p: any, i: any) => <li key={i} className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed flex gap-3"><AlertTriangle className="text-red-500 w-5 h-5 shrink-0" size={14} /> {p}</li>)}</ul>
+              <ul className="space-y-4">{(result.analysis.bear_case_points || []).map((p: any, i: any) => <li key={i} className="text-slate-400 text-xs md:text-sm font-medium leading-relaxed flex gap-3"><AlertTriangle className="text-red-500 w-5 h-5 shrink-0" size={14} /> {p}</li>)}</ul>
             </div>
           </div>
 

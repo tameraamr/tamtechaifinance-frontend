@@ -136,7 +136,7 @@ const getVerdictColor = (v: string) => v?.includes("BUY") ? "text-[#10b981] bord
 const calculateRangePos = (c: number, l: number, h: number) => Math.min(Math.max(((c-l)/(h-l))*100, 0), 100);
 
 const analysisProgressMessages = [
-  "Fetching latest market data...",
+  "Fetching latest market data (Syncing...)",
   "Analyzing technical indicators...",
   "Processing fundamental metrics...",
   "Generating AI insights...",

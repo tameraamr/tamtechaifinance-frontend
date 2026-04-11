@@ -6,6 +6,7 @@ import { TrendingUp, TrendingDown, PieChart, Calendar, Target, DollarSign, Spark
 import { motion } from 'framer-motion';
 import ReactECharts from 'echarts-for-react';
 import * as echarts from 'echarts';
+import { mockApi } from '../../../../src/lib/mockApi';
 
 interface PublicStats {
   username: string;
@@ -31,17 +32,19 @@ export default function PublicJournalPage() {
   useEffect(() => {
     const fetchPublicStats = async () => {
       try {
-        const res = await fetch(`/api/journal/public-stats/${userId}`);
-        if (!res.ok) {
-          if (res.status === 404) {
-            setError('Journal not found or sharing is disabled');
-          } else {
-            setError('Failed to load journal stats');
-          }
+        const data = await mockApi.getPublicJournalStats(userId);
+        if (!data) {
+          setError('Journal not found or sharing is disabled');
           return;
         }
-        const data = await res.json();
-        setStats(data);
+        
+        // Ensure data matches PublicStats format (map user_name to username if needed)
+        const formattedData = {
+          ...data,
+          username: (data as any).user_name || (data as any).username || 'Demo User'
+        };
+        
+        setStats(formattedData as any);
       } catch (err) {
         setError('Failed to load journal stats');
       } finally {

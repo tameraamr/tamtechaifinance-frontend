@@ -525,20 +525,17 @@ export default function Home() {
     if (!licenseKey.trim()) return;
 
     try {
-      const res = await fetch(`${BASE_URL}/verify-license`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include', // 🔒 httpOnly cookie sent automatically
-        body: JSON.stringify({ license_key: licenseKey.trim() }),
-      });
-      const data = await res.json();
+      // Demo Mode Validation
+      await new Promise(resolve => setTimeout(resolve, 800));
+      const data = await mockApi.verifyLicense(licenseKey.trim());
+      
       if (data.valid) {
         updateCredits(data.credits);
         setShowPaywall(false);
         setLicenseKey("");
-        alert(`🎉 Success! Balance: ${data.credits}`);
+        alert(`🎉 Success! License activated for Portfolio Demo Mode.`);
       } else {
-        setAuthError(data.message);
+        setAuthError(data.message || "Invalid license");
       }
     } catch {
       setAuthError("Error connecting to server");

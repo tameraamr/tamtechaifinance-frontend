@@ -23,28 +23,16 @@ function VerifyEmailContent() {
     // Call backend to verify the token
     const verifyEmail = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/auth/verify-email?token=${token}`, {
-          credentials: 'include',
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setStatus('success');
-          setMessage(data.message);
-          
-          // Redirect to dashboard after 3 seconds
-          setTimeout(() => {
-            router.push('/dashboard?verified=true');
-          }, 3000);
-        } else if (response.status === 410) {
-          // Token expired
-          setStatus('expired');
-          setMessage(data.detail);
-        } else {
-          setStatus('error');
-          setMessage(data.detail || 'Verification failed');
-        }
+        // Mock successful email verification
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        setStatus('success');
+        setMessage('Email verified successfully in demo mode!');
+        
+        // Redirect to dashboard after 3 seconds
+        setTimeout(() => {
+          router.push('/dashboard?verified=true');
+        }, 3000);
       } catch (error) {
         setStatus('error');
         setMessage('Network error. Please try again.');

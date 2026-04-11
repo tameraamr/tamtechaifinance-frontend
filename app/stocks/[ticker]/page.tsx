@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import StockAnalysisPage from './StockAnalysisPage';
+import { mockApi } from '../../../src/lib/mockApi';
 
-const BASE_URL = 'https://tamtechaifinance-backend-production.up.railway.app';
+const BASE_URL = '/api';
 
 // Generate static paths for top 270 tickers
 export async function generateStaticParams() {
@@ -27,11 +28,9 @@ export async function generateMetadata({ params }: { params: Promise<{ ticker: s
   
   try {
     // Fetch cached analysis data for metadata  
-    const response = await fetch(`${BASE_URL}/stocks/${ticker}?lang=en`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
-    });
+    const data = await mockApi.getAnalysisReport(ticker);
     
-    if (!response.ok) {
+    if (!data) {
       return {
         title: `${ticker} Stock Analysis 2026 - AI-Powered Insights | Tamtech Finance`,
         description: `Comprehensive AI analysis for ${ticker} stock. Get buy/sell recommendations, intrinsic value, financial health scores, and investment insights.`,
@@ -42,9 +41,8 @@ export async function generateMetadata({ params }: { params: Promise<{ ticker: s
       };
     }
     
-    const data = await response.json();
-    const analysis = data.analysis;
-    const stockData = data.data;
+    const analysis = data.analysis as any;
+    const stockData = data.data as any;
     
     // Dynamic SEO title with verdict
     const title = `${ticker} Analysis: ${analysis.verdict} (${analysis.confidence_score}% Confidence) | Tamtech Finance`;
@@ -125,14 +123,9 @@ export default async function StockPage({ params }: { params: Promise<{ ticker: 
   
   try {
     // Fetch TEASER analysis data from public endpoint (no auth required)
-    const response = await fetch(`${BASE_URL}/stocks/${ticker}?lang=en`, {
-      next: { revalidate: 86400 }, // ISR: Revalidate every 24 hours
-      headers: {
-        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800'
-      }
-    });
+    const data = await mockApi.getAnalysisReport(ticker);
     
-    if (!response.ok) {
+    if (!data) {
       // No cached data exists - show landing page
       return (
         <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white flex items-center justify-center p-4">
@@ -152,9 +145,8 @@ export default async function StockPage({ params }: { params: Promise<{ ticker: 
       );
     }
     
-    const data = await response.json();
-    const analysis = data.analysis;
-    const stockData = data.data;
+    const analysis = data.analysis as any;
+    const stockData = data.data as any;
     
     // Generate JSON-LD structured data for rich snippets
     const jsonLd = {
